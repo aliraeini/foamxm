@@ -1,6 +1,6 @@
 ###  foamx4m
 This is a minified and intermediate version of foam-extend code derived
-from foam-extend-4.1, with few additions from OpenFOAM-1712 (for reading VTK files....), 
+from foam-extend-4.1, with some level of compatibility with OpenFOAM, 
 prepared by Ali Raeini for use in poreFoam codes.
 
 * See the file Changelog.current for the list of changes.
