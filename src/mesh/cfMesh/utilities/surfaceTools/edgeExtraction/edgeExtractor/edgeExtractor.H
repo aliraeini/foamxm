@@ -61,9 +61,6 @@ class triSurf;
 class triSurfaceClassifyEdges;
 class triSurfacePartitioner;
 
-/*---------------------------------------------------------------------------*\
-                    Class edgeExtractor Declaration
-\*---------------------------------------------------------------------------*/
 
 class edgeExtractor
 {

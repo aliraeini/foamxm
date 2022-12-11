@@ -56,9 +56,6 @@ namespace Foam
 // Forward declarations
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                Class refineBoundaryLayers Declaration
-\*---------------------------------------------------------------------------*/
 
 class refineBoundaryLayers
 {

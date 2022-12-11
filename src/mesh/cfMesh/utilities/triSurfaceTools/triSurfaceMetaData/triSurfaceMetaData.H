@@ -51,9 +51,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceMetaData Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceMetaData
 {

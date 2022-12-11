@@ -44,9 +44,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                  Class passiveProcessorFvsPatch Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class passiveProcessorFvsPatchField

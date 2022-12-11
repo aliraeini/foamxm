@@ -51,9 +51,6 @@ namespace Foam
 class meshOctree;
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                Class meshSurfaceEdgeExtractorFUN Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceEdgeExtractorFUN
 {

@@ -56,9 +56,6 @@ namespace Foam
 
 class processorPolyPatch;
 
-/*---------------------------------------------------------------------------*\
-                Class processorMeshesReconstructor Declaration
-\*---------------------------------------------------------------------------*/
 
 class processorMeshesReconstructor
 {

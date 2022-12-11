@@ -134,12 +134,6 @@ inline Foam::quaternion Foam::quaternion::invTransform
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
-inline void Foam::quaternion::operator=(const quaternion& q)
-{
-	w_ = q.w_;
-	v_ = q.v_;
-}
-
 inline void Foam::quaternion::operator+=(const quaternion& q)
 {
 	w_ += q.w_;

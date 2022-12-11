@@ -52,9 +52,6 @@ namespace Foam
 
 class polyMeshGen;
 
-/*---------------------------------------------------------------------------*\
-                    Class workflowControls Declaration
-\*---------------------------------------------------------------------------*/
 
 class workflowControls
 {

@@ -52,9 +52,6 @@ template<class graphType> class subGraph;
 template<class graphType>
 Ostream& operator<<(Ostream&, const subGraph<graphType>&);
 
-/*---------------------------------------------------------------------------*\
-                           Class subGraph Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class graphType>
 class subGraph

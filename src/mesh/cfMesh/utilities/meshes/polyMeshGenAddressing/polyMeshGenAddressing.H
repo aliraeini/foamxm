@@ -66,9 +66,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class polyMeshGenAddressing Declaration
-\*---------------------------------------------------------------------------*/
 
 class polyMeshGenAddressing
 {

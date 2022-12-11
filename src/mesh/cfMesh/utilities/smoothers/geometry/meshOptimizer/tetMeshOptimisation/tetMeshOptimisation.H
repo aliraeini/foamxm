@@ -55,9 +55,6 @@ namespace Foam
 class partTetMesh;
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                    Class tetMeshOptimisation Declaration
-\*---------------------------------------------------------------------------*/
 
 class tetMeshOptimisation
 {

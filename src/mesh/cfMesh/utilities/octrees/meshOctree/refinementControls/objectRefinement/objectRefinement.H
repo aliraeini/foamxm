@@ -51,9 +51,6 @@ namespace Foam
 // Forward declarations
 class boundBox;
 
-/*---------------------------------------------------------------------------*\
-                     Class objectRefinement Declaration
-\*---------------------------------------------------------------------------*/
 
 class objectRefinement
 {

@@ -46,9 +46,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                     Class meshOctreeCubeBasic Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeCubeBasic
 : public meshOctreeCubeCoordinates
@@ -114,8 +111,6 @@ public:
         inline const meshOctreeCubeCoordinates& coordinates() const;
 
         // Member operators
-
-        inline void operator=(const meshOctreeCubeBasic&);
 
         // Friend operators
 

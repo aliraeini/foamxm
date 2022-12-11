@@ -6,8 +6,8 @@
     int nNonOrthCorr =
         pimple.lookupOrDefault<int>("nNonOrthogonalCorrectors", 0);
 
-	bool momentumPredictor =
+	[[maybe_unused]]  bool momentumPredictor =
 		pimple.lookupOrDefault<Switch>("momentumPredictor", true);
 
-	bool transonic =
+	[[maybe_unused]]  bool transonic =
 		pimple.lookupOrDefault<Switch>("transonic", false);

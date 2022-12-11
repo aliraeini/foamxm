@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class topologicalCleaner Declaration
-\*---------------------------------------------------------------------------*/
 
 class topologicalCleaner
 {

@@ -49,9 +49,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfacePatchManipulator Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfacePatchManipulator
 {

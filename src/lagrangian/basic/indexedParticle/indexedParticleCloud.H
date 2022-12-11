@@ -43,9 +43,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class indexedParticleCloud Declaration
-\*---------------------------------------------------------------------------*/
 
 class indexedParticleCloud
 :

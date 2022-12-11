@@ -53,9 +53,6 @@ class triSurf;
 class VRWGraph;
 class meshOctreeSlot;
 
-/*---------------------------------------------------------------------------*\
-                    Class meshOctreeCube Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeCube
 : public meshOctreeCubeBasic

@@ -46,9 +46,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceExtrude2DEdges Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceExtrude2DEdges
 {

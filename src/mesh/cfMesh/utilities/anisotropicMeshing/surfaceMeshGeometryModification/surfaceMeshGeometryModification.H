@@ -52,9 +52,6 @@ namespace Foam
 class triSurf;
 class dictionary;
 
-/*---------------------------------------------------------------------------*\
-                Class surfaceMeshGeometryModification Declaration
-\*---------------------------------------------------------------------------*/
 
 class surfaceMeshGeometryModification
 {

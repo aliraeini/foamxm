@@ -49,9 +49,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class meshSurfacePartitioner Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfacePartitioner
 {

@@ -49,9 +49,6 @@ namespace Foam
 
 class meshOctree;
 
-/*---------------------------------------------------------------------------*\
-             Class triSurfaceImportSurfaceAsSubset Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceImportSurfaceAsSubset
 {

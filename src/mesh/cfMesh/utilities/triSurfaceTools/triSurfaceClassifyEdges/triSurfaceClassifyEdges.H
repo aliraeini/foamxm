@@ -52,9 +52,6 @@ namespace Foam
 //- Forward declarations
 class meshOctree;
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceClassifyEdges Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceClassifyEdges
 {

@@ -50,9 +50,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                     Class domainDecomposition Declaration
-\*---------------------------------------------------------------------------*/
 
 class domainDecomposition
 {

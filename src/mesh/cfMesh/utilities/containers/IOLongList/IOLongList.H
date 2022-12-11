@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class IOLongList Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class T, label Offset = 19>
 class IOLongList

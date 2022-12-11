@@ -52,9 +52,6 @@ namespace Foam
 class meshOctree;
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                Class correctEdgesBetweenPatches Declaration
-\*---------------------------------------------------------------------------*/
 
 class correctEdgesBetweenPatches
 {

@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class partTetMeshSimplex;
 
-/*---------------------------------------------------------------------------*\
-                    Class volumeOptimizer Declaration
-\*---------------------------------------------------------------------------*/
 
 //- class for volume optimizer
 class volumeOptimizer

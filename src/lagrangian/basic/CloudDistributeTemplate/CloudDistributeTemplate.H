@@ -48,9 +48,6 @@ class Cloud;
 class polyMesh;
 class cloud;
 
-/*---------------------------------------------------------------------------*\
-                           Class Cloud Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class ParticleType>
 class CloudDistribute

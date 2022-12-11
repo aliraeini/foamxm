@@ -59,9 +59,6 @@ class meshSurfaceEngine;
 class meshSurfacePartitioner;
 class dictionary;
 
-/*---------------------------------------------------------------------------*\
-                Class boundaryLayerOptimisation Declaration
-\*---------------------------------------------------------------------------*/
 
 class boundaryLayerOptimisation
 {

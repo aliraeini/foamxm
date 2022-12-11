@@ -46,9 +46,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class sortEdgesIntoChains Declaration
-\*---------------------------------------------------------------------------*/
 
 class sortEdgesIntoChains
 {

@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                        Class surfaceOptimizer Declaration
-\*---------------------------------------------------------------------------*/
 
 class surfaceOptimizer
 {

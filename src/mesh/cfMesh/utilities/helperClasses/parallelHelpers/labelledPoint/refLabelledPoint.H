@@ -46,9 +46,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class refLabelledPoint Declaration
-\*---------------------------------------------------------------------------*/
 
 class refLabelledPoint
 {

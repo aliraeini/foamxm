@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class partTetMeshSimplex;
 
-/*---------------------------------------------------------------------------*\
-                           Class knuppMetric Declaration
-\*---------------------------------------------------------------------------*/
 
 //- class for mesh untangler
 class knuppMetric

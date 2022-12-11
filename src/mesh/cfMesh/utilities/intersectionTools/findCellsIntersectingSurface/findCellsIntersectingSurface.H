@@ -50,9 +50,6 @@ class polyMeshGen;
 class triSurf;
 class meshOctree;
 
-/*---------------------------------------------------------------------------*\
-                Class findCellsIntersectingSurface Declaration
-\*---------------------------------------------------------------------------*/
 
 class findCellsIntersectingSurface
 {

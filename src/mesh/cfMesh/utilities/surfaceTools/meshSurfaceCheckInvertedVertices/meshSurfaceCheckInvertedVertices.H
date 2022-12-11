@@ -51,9 +51,6 @@ namespace Foam
 // Forward declarations
 class meshSurfacePartitioner;
 
-/*---------------------------------------------------------------------------*\
-            Class meshSurfaceCheckInvertedVertices Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceCheckInvertedVertices
 {

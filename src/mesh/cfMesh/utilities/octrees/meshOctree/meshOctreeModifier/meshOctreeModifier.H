@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class meshOctreeModifier Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeModifier
 {

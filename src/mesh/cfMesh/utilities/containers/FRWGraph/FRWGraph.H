@@ -69,9 +69,6 @@ Istream& operator>>
     FRWGraph<T, width>&
 );
 
-/*---------------------------------------------------------------------------*\
-                           Class FRWGraph Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class T, label width>
 class FRWGraph

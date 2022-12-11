@@ -48,9 +48,6 @@ namespace Foam
 // Forward declarations
 class IOdictionary;
 
-/*---------------------------------------------------------------------------*\
-                           Class renameBoundaryPatches Declaration
-\*---------------------------------------------------------------------------*/
 
 class renameBoundaryPatches
 {

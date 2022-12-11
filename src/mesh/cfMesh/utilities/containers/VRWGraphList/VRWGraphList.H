@@ -54,9 +54,6 @@ class VRWGraphList;
 
 Ostream& operator<<(Ostream&, const VRWGraphList&);
 
-/*---------------------------------------------------------------------------*\
-                           Class VRWGraphList Declaration
-\*---------------------------------------------------------------------------*/
 
 class VRWGraphList
 {

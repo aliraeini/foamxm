@@ -52,9 +52,6 @@ namespace Foam
 class triSurf;
 class boundBox;
 
-/*---------------------------------------------------------------------------*\
-                Class meshOctreeCubeCoordinates Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeCubeCoordinates
 {

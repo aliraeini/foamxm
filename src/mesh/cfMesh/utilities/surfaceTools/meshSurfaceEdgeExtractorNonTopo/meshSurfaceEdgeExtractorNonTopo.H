@@ -48,9 +48,6 @@ namespace Foam
 // Forward declarations
 class meshOctree;
 
-/*---------------------------------------------------------------------------*\
-                Class meshSurfaceEdgeExtractorNonTopo Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceEdgeExtractorNonTopo
 {

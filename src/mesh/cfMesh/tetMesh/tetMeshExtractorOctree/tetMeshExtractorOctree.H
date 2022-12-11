@@ -48,9 +48,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class tetMeshExtractorOctree Declaration
-\*---------------------------------------------------------------------------*/
 
 class tetMeshExtractorOctree
 {

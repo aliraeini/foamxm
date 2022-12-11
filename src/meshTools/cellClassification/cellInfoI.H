@@ -104,13 +104,6 @@ inline Foam::cellInfo::cellInfo(const label type)
 {}
 
 
-// Construct as copy
-inline Foam::cellInfo::cellInfo(const cellInfo& w2)
-:
-	type_(w2.type())
-{}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 inline bool Foam::cellInfo::valid() const

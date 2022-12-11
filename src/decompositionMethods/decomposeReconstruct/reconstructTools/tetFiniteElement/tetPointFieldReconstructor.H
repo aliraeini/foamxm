@@ -53,9 +53,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                  Class tetPointFieldReconstructor Declaration
-\*---------------------------------------------------------------------------*/
 
 class tetPointFieldReconstructor
 {

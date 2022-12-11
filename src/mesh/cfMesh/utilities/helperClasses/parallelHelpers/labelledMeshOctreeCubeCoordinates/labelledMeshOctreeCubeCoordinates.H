@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class labelledMeshOctreeCubeCoordinates Declaration
-\*---------------------------------------------------------------------------*/
 
 class labelledMeshOctreeCubeCoordinates
 {

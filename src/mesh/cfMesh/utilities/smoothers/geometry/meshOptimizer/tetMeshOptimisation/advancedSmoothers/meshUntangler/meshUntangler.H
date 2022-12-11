@@ -51,9 +51,6 @@ namespace Foam
 class plane;
 class partTetMeshSimplex;
 
-/*---------------------------------------------------------------------------*\
-                        Class meshUntangler Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshUntangler
 :

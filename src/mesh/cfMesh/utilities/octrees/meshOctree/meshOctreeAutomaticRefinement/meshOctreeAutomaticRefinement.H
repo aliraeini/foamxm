@@ -53,9 +53,6 @@ class triSurfaceCurvatureEstimator;
 class triSurfacePartitioner;
 class meshOctreeAddressing;
 
-/*---------------------------------------------------------------------------*\
-                Class meshOctreeAutomaticRefinement Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeAutomaticRefinement
 {

@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class sphereRefinement Declaration
-\*---------------------------------------------------------------------------*/
 
 class sphereRefinement
 :

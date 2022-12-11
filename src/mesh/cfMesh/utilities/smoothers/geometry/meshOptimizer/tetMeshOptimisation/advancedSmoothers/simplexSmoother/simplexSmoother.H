@@ -52,9 +52,6 @@ namespace Foam
 // Forward declarations
 class partTetMeshSimplex;
 
-/*---------------------------------------------------------------------------*\
-                    Class simplexSmoother Declaration
-\*---------------------------------------------------------------------------*/
 
 //- class for volume optimizer
 class simplexSmoother

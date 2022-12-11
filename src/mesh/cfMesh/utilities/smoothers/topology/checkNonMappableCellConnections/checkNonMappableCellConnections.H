@@ -50,9 +50,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-            Class checkNonMappableCellConnections Declaration
-\*---------------------------------------------------------------------------*/
 
 class checkNonMappableCellConnections
 {

@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class checkCellConnectionsOverFaces Declaration
-\*---------------------------------------------------------------------------*/
 
 class checkCellConnectionsOverFaces
 {

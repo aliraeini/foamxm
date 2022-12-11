@@ -51,9 +51,6 @@ namespace Foam
 // Forward declarations
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                Class createFundamentalSheetsJFS Declaration
-\*---------------------------------------------------------------------------*/
 
 class createFundamentalSheetsJFS
 :

@@ -51,9 +51,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class meshSurfaceEngine Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceEngine
 {

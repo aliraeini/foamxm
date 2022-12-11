@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-            Class meshOctreeCubeCoordinatesScalar Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeCubeCoordinatesScalar
 {

@@ -50,9 +50,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class triSurfacePartitioner Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfacePartitioner
 {

@@ -57,9 +57,6 @@ namespace Foam
 class meshSurfaceEngine;
 class meshSurfacePartitioner;
 
-/*---------------------------------------------------------------------------*\
-                           Class boundaryLayers Declaration
-\*---------------------------------------------------------------------------*/
 
 class boundaryLayers
 {

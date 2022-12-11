@@ -57,9 +57,6 @@ class meshSurfaceEngine;
 class plane;
 class partTetMesh;
 
-/*---------------------------------------------------------------------------*\
-                        Class meshOptimizer Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOptimizer
 {

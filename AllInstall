@@ -13,11 +13,12 @@ if [ "$PWD" != "$WM_PROJECT_DIR" ] ; then
     exit 1
 fi
 
+msInst=${msInst:-$1}
+msInst=${msInst:-../..}
+echo "msInst: '${msInst}'"
 
-echo "Warning Assuming msRoot == '${msRoot}' == ../.."
+mkdir -p ${msInst}/bin/foamx4m
+mkdir -p ${msInst}/lib
 
-mkdir -p ../../bin/foamx4m
-mkdir -p ../../lib
-
-cp  $FOAM_APPBIN/*  ../../bin/foamx4m   || echo "not built"
-cp  $FOAM_LIBBIN/*  ../../lib/          || echo "not built"
+cp  $FOAM_APPBIN/*  ${msInst}/bin/foamx4m   || echo "not built"
+cp  $FOAM_LIBBIN/*  ${msInst}/lib/          || echo "not built"

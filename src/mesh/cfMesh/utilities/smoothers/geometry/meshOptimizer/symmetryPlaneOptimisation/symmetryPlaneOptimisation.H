@@ -53,9 +53,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class symmetryPlaneOptimisation Declaration
-\*---------------------------------------------------------------------------*/
 
 class symmetryPlaneOptimisation
 {

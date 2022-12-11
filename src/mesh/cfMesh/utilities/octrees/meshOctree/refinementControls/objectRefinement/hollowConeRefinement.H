@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class coneRefinement Declaration
-\*---------------------------------------------------------------------------*/
 
 class hollowConeRefinement
 :

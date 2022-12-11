@@ -60,9 +60,6 @@ class meshOctree;
 class meshSurfaceMapper;
 class plane;
 
-/*---------------------------------------------------------------------------*\
-                    Class meshSurfaceOptimizer Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceOptimizer
 {

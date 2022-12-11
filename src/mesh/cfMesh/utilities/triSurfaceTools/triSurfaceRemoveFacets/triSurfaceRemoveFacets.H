@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceRemoveFacets Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceRemoveFacets
 {

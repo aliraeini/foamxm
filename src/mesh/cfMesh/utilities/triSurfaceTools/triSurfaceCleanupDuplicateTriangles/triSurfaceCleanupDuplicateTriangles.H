@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class triSurf;
 
-/*---------------------------------------------------------------------------*\
-            Class triSurfaceCleanupDuplicateTriangles Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceCleanupDuplicateTriangles
 {

@@ -50,9 +50,6 @@ namespace Foam
 // Forward declaration
 class meshOctree;
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceCleanupDuplicates Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceCleanupDuplicates
 {

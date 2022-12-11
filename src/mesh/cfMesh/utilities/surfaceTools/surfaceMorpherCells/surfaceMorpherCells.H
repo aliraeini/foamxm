@@ -48,9 +48,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class surfaceMorpherCells Declaration
-\*---------------------------------------------------------------------------*/
 
 class surfaceMorpherCells
 {

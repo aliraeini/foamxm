@@ -50,9 +50,6 @@ namespace Foam
 // Forward declarations
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-            Class meshSurfaceCheckEdgeTypes Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceCheckEdgeTypes
 {

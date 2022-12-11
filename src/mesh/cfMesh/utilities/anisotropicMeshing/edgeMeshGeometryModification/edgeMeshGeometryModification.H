@@ -52,9 +52,6 @@ namespace Foam
 class edgeMesh;
 class dictionary;
 
-/*---------------------------------------------------------------------------*\
-                Class edgeMeshGeometryModification Declaration
-\*---------------------------------------------------------------------------*/
 
 class edgeMeshGeometryModification
 {

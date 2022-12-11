@@ -52,9 +52,6 @@ namespace Foam
 class meshOctree;
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-                Class createFundamentalSheets Declaration
-\*---------------------------------------------------------------------------*/
 
 class createFundamentalSheets
 {

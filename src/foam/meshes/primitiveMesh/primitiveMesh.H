@@ -759,7 +759,7 @@ public:
 			//- Clear all geometry and addressing unnecessary for CFD
 			void clearOut();
 
-			void clearNonOrtho(); //AQR?
+			void clearNonOrtho(); // AQR
 };
 
 

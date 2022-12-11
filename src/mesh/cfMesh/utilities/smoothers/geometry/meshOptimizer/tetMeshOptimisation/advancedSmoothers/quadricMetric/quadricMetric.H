@@ -48,9 +48,6 @@ namespace Foam
 // Forward declarations
 class partTetMeshSimplex;
 
-/*---------------------------------------------------------------------------*\
-                           Class quadricMetric Declaration
-\*---------------------------------------------------------------------------*/
 
 class quadricMetric
 :

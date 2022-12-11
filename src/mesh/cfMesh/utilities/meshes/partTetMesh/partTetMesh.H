@@ -56,9 +56,6 @@ namespace Foam
 class polyMeshGen;
 class VRWGraph;
 
-/*---------------------------------------------------------------------------*\
-                        Class partTetMesh Declaration
-\*---------------------------------------------------------------------------*/
 
 class partTetMesh
 {

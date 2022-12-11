@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class IODynList Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class T, class IndexType=label>
 class IODynList

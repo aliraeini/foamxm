@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-               Class pointFieldDecomposer Declaration
-\*---------------------------------------------------------------------------*/
 
 class pointFieldDecomposer
 {

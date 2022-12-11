@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class labelledPoint Declaration
-\*---------------------------------------------------------------------------*/
 
 class labelledPoint
 {
@@ -105,12 +102,6 @@ class labelledPoint
         }
 
     // Member operators
-
-        inline void operator=(const labelledPoint& lp)
-        {
-            pLabel_ = lp.pLabel_;
-            coords_ = lp.coords_;
-        }
 
         inline bool operator==(const labelledPoint& lp) const
         {

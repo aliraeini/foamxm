@@ -56,9 +56,6 @@ namespace Foam
 // Froward declarations
 class triSurfModifier;
 
-/*---------------------------------------------------------------------------*\
-                        Class triSurf Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurf
 :

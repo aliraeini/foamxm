@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                  Class VRWGraphSMPModifier Declaration
-\*---------------------------------------------------------------------------*/
 
 class VRWGraphSMPModifier
 {

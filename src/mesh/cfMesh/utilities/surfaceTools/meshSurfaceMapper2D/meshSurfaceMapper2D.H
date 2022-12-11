@@ -59,9 +59,6 @@ class meshSurfaceEngine;
 class meshSurfacePartitioner;
 class triSurfacePartitioner;
 
-/*---------------------------------------------------------------------------*\
-                    Class meshSurfaceMapper2D Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshSurfaceMapper2D
 {

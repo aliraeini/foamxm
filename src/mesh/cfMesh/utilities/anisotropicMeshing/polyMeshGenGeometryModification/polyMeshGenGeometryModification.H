@@ -50,9 +50,6 @@ namespace Foam
 
 class dictionary;
 
-/*---------------------------------------------------------------------------*\
-                Class polyMeshGenGeometryModification Declaration
-\*---------------------------------------------------------------------------*/
 
 class polyMeshGenGeometryModification
 {

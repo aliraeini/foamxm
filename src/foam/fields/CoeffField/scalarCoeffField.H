@@ -85,12 +85,6 @@ public:
 			scalarField(size, pTraits<scalar>::zero)
 		{}
 
-		//- Construct as copy
-		CoeffField(const CoeffField<scalar>& f)
-		:
-			scalarField(f)
-		{}
-
 		//- Construct from Istream
 		CoeffField(Istream& is)
 		:

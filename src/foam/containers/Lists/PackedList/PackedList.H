@@ -141,7 +141,7 @@ template<unsigned nBits=1>
 class PackedList
 :
 	public PackedListCore,
-	private List<unsigned int>
+	public List<unsigned int>
 {
 protected:
 

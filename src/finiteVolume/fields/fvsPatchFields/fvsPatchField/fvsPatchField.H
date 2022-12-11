@@ -246,7 +246,7 @@ public:
 
 	// Destructor
 
-		virtual ~fvsPatchField<Type>()
+		virtual ~fvsPatchField()
 		{}
 
 

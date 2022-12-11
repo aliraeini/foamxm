@@ -43,9 +43,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                   Class passiveParticleCloud Declaration
-\*---------------------------------------------------------------------------*/
 
 class passiveParticleCloud
 :

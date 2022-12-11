@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class partTetMesh;
 
-/*---------------------------------------------------------------------------*\
-                           Class partTetMeshSimplex Declaration
-\*---------------------------------------------------------------------------*/
 
 class partTetMeshSimplex
 {

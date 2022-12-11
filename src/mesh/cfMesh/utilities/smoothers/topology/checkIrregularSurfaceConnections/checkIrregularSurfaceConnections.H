@@ -48,9 +48,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class checkIrregularSurfaceConnections Declaration
-\*---------------------------------------------------------------------------*/
 
 class checkIrregularSurfaceConnections
 {

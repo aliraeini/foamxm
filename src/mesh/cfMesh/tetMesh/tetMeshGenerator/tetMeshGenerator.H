@@ -53,9 +53,6 @@ class triSurf;
 class meshOctree;
 class Time;
 
-/*---------------------------------------------------------------------------*\
-                           Class tetMeshGenerator Declaration
-\*---------------------------------------------------------------------------*/
 
 class tetMeshGenerator
 {

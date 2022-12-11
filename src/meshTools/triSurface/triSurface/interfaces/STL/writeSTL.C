@@ -95,8 +95,8 @@ void triSurface::writeSTLASCII(Ostream& os) const
 void triSurface::writeSTLBINARY(std::ostream& os) const
 {
 	// Write the STL header
-	string header("Foam binary STL", STLheaderSize);
-	os.write(header.c_str(), STLheaderSize);
+	char header[STLheaderSize] = "Foam binary STL";
+	os.write(header, STLheaderSize);
 
 	label nTris = size();
 	os.write(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));

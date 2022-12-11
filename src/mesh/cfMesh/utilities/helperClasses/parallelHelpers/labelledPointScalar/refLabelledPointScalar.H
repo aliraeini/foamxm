@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class refLabelledPointScalar Declaration
-\*---------------------------------------------------------------------------*/
 
 class refLabelledPointScalar
 {

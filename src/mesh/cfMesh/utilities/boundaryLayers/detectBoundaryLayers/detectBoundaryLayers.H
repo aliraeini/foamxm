@@ -56,9 +56,6 @@ namespace Foam
 // Forward declarations
 class meshSurfacePartitioner;
 
-/*---------------------------------------------------------------------------*\
-                Class detectBoundaryLayers Declaration
-\*---------------------------------------------------------------------------*/
 
 class detectBoundaryLayers
 {

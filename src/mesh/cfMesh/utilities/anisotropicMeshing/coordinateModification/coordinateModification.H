@@ -52,9 +52,6 @@ namespace Foam
 class boundBox;
 class plane;
 
-/*---------------------------------------------------------------------------*\
-                   Class coordinateModification Declaration
-\*---------------------------------------------------------------------------*/
 
 class coordinateModification
 {

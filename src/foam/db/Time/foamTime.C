@@ -1108,11 +1108,10 @@ void Foam::Time::endSubCycle()
 {
 	if (subCycling_)
 	{
+		subCycling_ = false;
 		TimeState::operator=(prevTimeState());
 		prevTimeState_.clear();
 	}
-
-	subCycling_ = false;
 }
 
 

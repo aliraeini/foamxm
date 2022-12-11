@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class partTriMesh;
 
-/*---------------------------------------------------------------------------*\
-                           Class partTriMeshSimplex Declaration
-\*---------------------------------------------------------------------------*/
 
 class partTriMeshSimplex
 {

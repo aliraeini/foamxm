@@ -46,9 +46,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class matrix3D Declaration
-\*---------------------------------------------------------------------------*/
 
 class matrix3D
 : public FixedList<FixedList<scalar, 3>, 3>

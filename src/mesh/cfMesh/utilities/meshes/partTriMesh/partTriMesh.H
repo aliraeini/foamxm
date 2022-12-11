@@ -56,9 +56,6 @@ namespace Foam
 class meshSurfacePartitioner;
 class VRWGraph;
 
-/*---------------------------------------------------------------------------*\
-                        Class partTriMesh Declaration
-\*---------------------------------------------------------------------------*/
 
 class partTriMesh
 {

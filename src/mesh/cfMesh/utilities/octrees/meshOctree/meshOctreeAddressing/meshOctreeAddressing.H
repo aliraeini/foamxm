@@ -56,9 +56,6 @@ namespace Foam
 class meshOctree;
 class IOdictionary;
 
-/*---------------------------------------------------------------------------*\
-                    Class meshOctreeAddressing Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeAddressing
 {

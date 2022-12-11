@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                    Class meshOctreeInsideOutside Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeInsideOutside
 {

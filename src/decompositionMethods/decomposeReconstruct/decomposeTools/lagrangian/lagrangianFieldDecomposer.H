@@ -47,9 +47,6 @@ namespace Foam
 
 class IOobjectList;
 
-/*---------------------------------------------------------------------------*\
-                    Class lagrangianFieldDecomposer Declaration
-\*---------------------------------------------------------------------------*/
 
 class lagrangianFieldDecomposer
 {

@@ -50,9 +50,6 @@ SourceFiles
     using namespace Foam;
 #endif
 
-/*---------------------------------------------------------------------------*\
-                           Class faMeshDecomposition Declaration
-\*---------------------------------------------------------------------------*/
 
 class faMeshDecomposition
 :

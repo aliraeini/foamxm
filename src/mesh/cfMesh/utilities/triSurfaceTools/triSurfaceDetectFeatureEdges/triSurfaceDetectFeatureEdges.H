@@ -47,9 +47,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                Class triSurfaceDetectFeatureEdges Declaration
-\*---------------------------------------------------------------------------*/
 
 class triSurfaceDetectFeatureEdges
 {

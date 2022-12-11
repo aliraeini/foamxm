@@ -71,9 +71,6 @@ Istream& operator>>
     LongList<T, Offset>&
 );
 
-/*---------------------------------------------------------------------------*\
-                           Class LongList Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class T, label Offset = 19>
 class LongList

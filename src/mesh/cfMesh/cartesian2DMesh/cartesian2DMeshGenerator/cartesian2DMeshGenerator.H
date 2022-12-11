@@ -52,9 +52,6 @@ class triSurf;
 class meshOctree;
 class Time;
 
-/*---------------------------------------------------------------------------*\
-                    Class cartesian2DMeshGenerator Declaration
-\*---------------------------------------------------------------------------*/
 
 class cartesian2DMeshGenerator
 {

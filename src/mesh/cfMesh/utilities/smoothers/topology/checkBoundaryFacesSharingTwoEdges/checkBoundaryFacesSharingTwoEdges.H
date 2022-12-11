@@ -53,9 +53,6 @@ namespace Foam
 // Forward declarations
 class meshSurfaceEngine;
 
-/*---------------------------------------------------------------------------*\
-            Class checkBoundaryFacesSharingTwoEdges Declaration
-\*---------------------------------------------------------------------------*/
 
 class checkBoundaryFacesSharingTwoEdges
 {

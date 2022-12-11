@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class matrix2D Declaration
-\*---------------------------------------------------------------------------*/
 
 class matrix2D
 : public FixedList<FixedList<scalar, 2>, 2>

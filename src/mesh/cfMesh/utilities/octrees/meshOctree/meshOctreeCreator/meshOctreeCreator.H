@@ -54,9 +54,6 @@ namespace Foam
 // Forward declarations
 class meshOctreeCube;
 
-/*---------------------------------------------------------------------------*\
-                    Class meshOctreeCreator Declaration
-\*---------------------------------------------------------------------------*/
 
 class meshOctreeCreator
 {

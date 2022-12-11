@@ -52,9 +52,6 @@ class triSurf;
 class meshOctree;
 class Time;
 
-/*---------------------------------------------------------------------------*\
-                     Class voronoiMeshGenerator Declaration
-\*---------------------------------------------------------------------------*/
 
 class voronoiMeshGenerator
 {

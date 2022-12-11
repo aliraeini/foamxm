@@ -47,9 +47,6 @@ namespace Foam
 
 class IOobjectList;
 
-/*---------------------------------------------------------------------------*\
-                    Class fvFieldDecomposer Declaration
-\*---------------------------------------------------------------------------*/
 
 class fvFieldDecomposer
 {

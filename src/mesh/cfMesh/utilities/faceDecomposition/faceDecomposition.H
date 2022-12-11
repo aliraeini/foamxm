@@ -44,9 +44,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                           Class faceDecomposition Declaration
-\*---------------------------------------------------------------------------*/
 
 class faceDecomposition
 {

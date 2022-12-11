@@ -505,17 +505,4 @@ void Foam::IOobject::setBad(const string& s)
 }
 
 
-void Foam::IOobject::operator=(const IOobject& io)
-{
-	name_ = io.name_;
-	headerClassName_ = io.headerClassName_;
-	note_ = io.note_;
-	instance_ = io.instance_;
-	local_ = io.local_;
-	rOpt_ = io.rOpt_;
-	wOpt_ = io.wOpt_;
-	objState_ = io.objState_;
-}
-
-
 // ************************************************************************* //

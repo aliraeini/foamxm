@@ -105,9 +105,6 @@ class VRWGraph;
 
 Ostream& operator<<(Ostream&, const VRWGraph&);
 
-/*---------------------------------------------------------------------------*\
-                           Class VRWGraph Declaration
-\*---------------------------------------------------------------------------*/
 
 class VRWGraph
 {

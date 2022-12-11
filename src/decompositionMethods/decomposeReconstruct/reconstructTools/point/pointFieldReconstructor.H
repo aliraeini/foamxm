@@ -45,9 +45,6 @@ SourceFiles
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                     Class pointFieldReconstructor Declaration
-\*---------------------------------------------------------------------------*/
 
 class pointFieldReconstructor
 {

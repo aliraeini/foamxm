@@ -53,9 +53,6 @@ template<class graphType> class graphRow;
 template<class graphType>
 Ostream& operator<<(Ostream&, const graphRow<graphType>&);
 
-/*---------------------------------------------------------------------------*\
-                           Class graphRow Declaration
-\*---------------------------------------------------------------------------*/
 
 template<class graphType>
 class graphRow

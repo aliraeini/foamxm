@@ -108,14 +108,6 @@ Istream& boundaryPatch::operator>>(Istream& is)
     return is;
 }
 
-void boundaryPatch::operator=(const boundaryPatch& wp)
-{
-    name_ = wp.name_;
-    type_ = wp.type_;
-    nFaces_ = wp.nFaces_;
-    startFace_ = wp.startFace_;
-}
-
 bool boundaryPatch::operator!=(const boundaryPatch& wp) const
 {
     if( name_ != wp.name_ )

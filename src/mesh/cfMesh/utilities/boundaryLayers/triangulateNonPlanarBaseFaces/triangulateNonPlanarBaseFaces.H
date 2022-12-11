@@ -49,9 +49,6 @@ namespace Foam
 // Forward declarations
 class dictionary;
 
-/*---------------------------------------------------------------------------*\
-            Class triangulateNonPlanarBaseFaces Declaration
-\*---------------------------------------------------------------------------*/
 
 class triangulateNonPlanarBaseFaces
 {
