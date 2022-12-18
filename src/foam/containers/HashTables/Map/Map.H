@@ -70,12 +70,6 @@ public:
 			HashTable<T, label, Hash<label> >(is)
 		{}
 
-		//- Construct as copy
-		Map(const Map<T>& map)
-		:
-			HashTable<T, label, Hash<label> >(map)
-		{}
-
 		//- Construct by transferring the parameter contents
 		Map(const Xfer<Map<T> >& map)
 		:

@@ -85,16 +85,6 @@ inline Foam::FixedList<T, Size>::FixedList(const SLList<T>& lst)
 
 
 template<class T, unsigned Size>
-inline Foam::FixedList<T, Size>::FixedList(const FixedList<T, Size>& lst)
-{
-	for (unsigned i = 0; i < Size; i++)
-	{
-		v_[i] = lst[i];
-	}
-}
-
-
-template<class T, unsigned Size>
 inline Foam::autoPtr< Foam::FixedList<T, Size> >
 Foam::FixedList<T, Size>::clone() const
 {

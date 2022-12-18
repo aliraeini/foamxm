@@ -682,7 +682,7 @@ Foam::dictionary Foam::dictionary::subOrEmptyDict
 			)   << "keyword " << keyword << " is undefined in dictionary "
 				<< name()
 				<< exit(FatalIOError);
-			return entryPtr->dict();
+			return nullptr;
 		}
 		else
 		{

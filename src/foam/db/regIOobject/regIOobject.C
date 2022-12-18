@@ -391,26 +391,4 @@ void Foam::regIOobject::rename(const word& newName)
 }
 
 
-// Assign to IOobject
-void Foam::regIOobject::operator=(const IOobject& io)
-{
-	if (isPtr_)
-	{
-		delete isPtr_;
-		isPtr_ = nullptr;
-	}
-
-	// Check out of objectRegistry
-	checkOut();
-
-	IOobject::operator=(io);
-
-	if (registerObject())
-	{
-		// Re-register object with objectRegistry
-		checkIn();
-	}
-}
-
-
 // ************************************************************************* //

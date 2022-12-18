@@ -43,15 +43,6 @@ Foam::boundaryPatch::boundaryPatch
 	start_(start)
 {}
 
-
-Foam::boundaryPatch::boundaryPatch(const boundaryPatch& sp)
-:
-	patchIdentifier(sp.name(), sp.index(), sp.physicalType()),
-	size_(sp.size()),
-	start_(sp.start())
-{}
-
-
 Foam::boundaryPatch::boundaryPatch
 (
 	const word& name,

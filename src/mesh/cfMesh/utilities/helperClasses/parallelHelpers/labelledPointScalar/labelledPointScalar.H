@@ -119,13 +119,6 @@ class labelledPointScalar
 
     // Member operators
 
-        inline void operator=(const labelledPointScalar& lps)
-        {
-            pLabel_ = lps.pLabel_;
-            coords_ = lps.coords_;
-            weight_ = lps.weight_;
-        }
-
         inline bool operator==(const labelledPointScalar& lps) const
         {
             if( pLabel_ == lps.pLabel_ )

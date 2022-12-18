@@ -14,7 +14,7 @@ if [ "$PWD" != "$WM_PROJECT_DIR" ] ; then
 fi
 
 msInst=${msInst:-$1}
-msInst=${msInst:-../..}
+msInst=${msInst:-../../..}
 echo "msInst: '${msInst}'"
 
 mkdir -p ${msInst}/bin/foamx4m

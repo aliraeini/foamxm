@@ -96,10 +96,6 @@ public:
 			const label index
 		);
 
-		//- Construct as copy
-		surfacePatch(const surfacePatch&);
-
-
 	// Member Functions
 
 		//- Return start label of this patch in the polyMesh face list

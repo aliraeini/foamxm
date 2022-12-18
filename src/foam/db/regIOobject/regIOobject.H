@@ -282,10 +282,6 @@ public:
 			//- Write using setting from DB
 			virtual bool write() const;
 
-
-	// Member operators
-
-		void operator=(const IOobject&);
 };
 
 

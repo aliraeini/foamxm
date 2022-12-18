@@ -52,10 +52,10 @@ bool Foam::fileFormats::STARCDsurfaceFormatCore::readHeader
 	string line;
 
 	is.getLine(line);
-	IStringStream(line)() >> header;
+	IStringStream{line}() >> header;
 
 	is.getLine(line);
-	IStringStream(line)() >> majorVersion;
+	IStringStream{line}() >> majorVersion;
 
 	// add other checks ...
 	if (header != signature)
@@ -193,4 +193,3 @@ void Foam::fileFormats::STARCDsurfaceFormatCore::writeCase
 
 
 // ************************************************************************* //
-

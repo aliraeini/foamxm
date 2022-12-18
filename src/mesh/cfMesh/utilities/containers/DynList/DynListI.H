@@ -75,7 +75,7 @@ inline void Foam::DynList<T, staticSize>::allocateSize(const label s)
     }
     else
     {
-        if( nAllocated_ > staticSize )
+        if( nAllocated_ > staticSize  && dataPtr_!=staticData_)
         {
             //- delete dynamically allocated data
             for(label i=0;i<s;++i)
