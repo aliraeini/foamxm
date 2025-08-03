@@ -80,7 +80,7 @@ public:
 	// Constructors
 
 		//- Construct given size
-		explicit CoeffField<scalar>(const label size)
+		explicit CoeffField(const label size)
 		:
 			scalarField(size, pTraits<scalar>::zero)
 		{}
