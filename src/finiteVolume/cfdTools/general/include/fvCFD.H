@@ -12,6 +12,7 @@
 #include "linear.H"
 #include "uniformDimensionedFields.H"
 #include "calculatedFvPatchFields.H"
+#include "extrapolatedCalculatedFvPatchFields.H"
 #include "fixedValueFvPatchFields.H"
 #include "adjustPhi.H"
 #include "findRefCell.H"
@@ -23,7 +24,7 @@
 
 #ifndef namespaceFoam
 #define namespaceFoam
-	using namespace Foam;
+    using namespace Foam;
 #endif
 
 #endif

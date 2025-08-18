@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	UCM
+    UCM
 
 Description
-	UCM non linear viscoelastic fluid model (BIRD et al., 1987).
+    UCM non linear viscoelastic fluid model (BIRD et al., 1987).
 
 Author
-	Miguel Nóbrega, Silvino Araújo, Célio Fernandes, Luís Ferrás.
-	All rights reserved
+    Miguel Nóbrega, Silvino Araújo, Célio Fernandes, Luís Ferrás.
+    All rights reserved
 
 SourceFiles
-	UCM.C
+    UCM.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,77 +46,80 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class UCM Declaration
+\*---------------------------------------------------------------------------*/
 
 class UCM
 :
-	public viscoelasticLaw
+    public viscoelasticLaw
 {
-	// Private data
+    // Private data
 
-		//- Transported viscoelastic stress
-		volSymmTensorField tau_;
-
-
-		// Model constants
-
-			//- Density
-			dimensionedScalar rho_;
-
-			//- Zero shear rate polymer viscosity
-			dimensionedScalar etaP_;
-
-			//- Relaxation time
-			dimensionedScalar lambda_;
-
-			//- Stabilization viscosity
-			dimensionedScalar etaStab_;
+        //- Transported viscoelastic stress
+        volSymmTensorField tau_;
 
 
-	// Private Member Functions
+        // Model constants
 
-		//- Disallow default bitwise copy construct
-		UCM(const UCM&);
+            //- Density
+            dimensionedScalar rho_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const UCM&);
+            //- Zero shear rate polymer viscosity
+            dimensionedScalar etaP_;
+
+            //- Relaxation time
+            dimensionedScalar lambda_;
+
+            //- Stabilization viscosity
+            dimensionedScalar etaStab_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        UCM(const UCM&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const UCM&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("UCM");
+    //- Runtime type information
+    TypeName("UCM");
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		UCM
-		(
-			const word& name,
-			const volVectorField& U,
-			const surfaceScalarField& phi,
-			const dictionary& dict
-		);
-
-
-	// Destructor
-
-		virtual ~UCM()
-		{}
+        //- Construct from components
+        UCM
+        (
+            const word& name,
+            const volVectorField& U,
+            const surfaceScalarField& phi,
+            const dictionary& dict
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Return the viscoelastic stress tensor
-		virtual tmp<volSymmTensorField> tau() const
-		{
-			return tau_;
-		}
+        virtual ~UCM()
+        {}
 
-		//- Return the coupling term for the momentum equation
-		virtual tmp<fvVectorMatrix> divTau(volVectorField& U) const;
 
-		//- Correct the viscoelastic stress
-		virtual void correct();
+    // Member Functions
+
+        //- Return the viscoelastic stress tensor
+        virtual tmp<volSymmTensorField> tau() const
+        {
+            return tau_;
+        }
+
+        //- Return the coupling term for the momentum equation
+        virtual tmp<fvVectorMatrix> divTau(volVectorField& U) const;
+
+        //- Correct the viscoelastic stress
+        virtual void correct();
 };
 
 

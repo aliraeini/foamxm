@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,13 +32,13 @@ namespace Foam
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-defineTemplateTypeNameAndDebug(volScalarField::Internal, 0);
-defineTemplateTypeNameAndDebug(volVectorField::Internal, 0);
-defineTemplateTypeNameAndDebug(volSphericalTensorField::Internal, 0);
-defineTemplateTypeNameAndDebug(volSymmTensorField::Internal, 0);
-defineTemplateTypeNameAndDebug(volSymmTensor4thOrderField::Internal, 0);
-defineTemplateTypeNameAndDebug(volDiagTensorField::Internal, 0);
-defineTemplateTypeNameAndDebug(volTensorField::Internal, 0);
+defineTemplateTypeNameAndDebug(volScalarField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volVectorField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volSphericalTensorField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volSymmTensorField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volSymmTensor4thOrderField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volDiagTensorField::DimensionedInternalField, 0);
+defineTemplateTypeNameAndDebug(volTensorField::DimensionedInternalField, 0);
 
 defineTemplateTypeNameAndDebug(volScalarField, 0);
 defineTemplateTypeNameAndDebug(volVectorField, 0);
@@ -52,20 +52,20 @@ template<>
 tmp<GeometricField<scalar, fvPatchField, volMesh> >
 GeometricField<scalar, fvPatchField, volMesh>::component
 (
-	const direction
+    const direction
 ) const
 {
-	return *this;
+    return *this;
 }
 
 template<>
 void GeometricField<scalar, fvPatchField, volMesh>::replace
 (
-	const direction,
-	const GeometricField<scalar, fvPatchField, volMesh>& gsf
+    const direction,
+    const GeometricField<scalar, fvPatchField, volMesh>& gsf
 )
 {
-	*this == gsf;
+    *this == gsf;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,9 +38,9 @@ namespace Foam
 template<template<class> class Field, class Type>
 void component
 (
-	FieldField<Field, typename FieldField<Field, Type>::cmptType>& sf,
-	const FieldField<Field, Type>& f,
-	const direction d
+    FieldField<Field, typename FieldField<Field, Type>::cmptType>& sf,
+    const FieldField<Field, Type>& f,
+    const direction d
 );
 
 template<template<class> class Field, class Type>
@@ -50,32 +50,32 @@ void T(FieldField<Field, Type>& f1, const FieldField<Field, Type>& f2);
 template<template<class> class Field, class Type, int r>
 void pow
 (
-	FieldField<Field, typename powProduct<Type, r>::type>& f,
-	const FieldField<Field, Type>& vf
+    FieldField<Field, typename powProduct<Type, r>::type>& f,
+    const FieldField<Field, Type>& vf
 );
 
 template<template<class> class Field, class Type, int r>
 tmp<FieldField<Field, typename powProduct<Type, r>::type> >
 pow
 (
-	const FieldField<Field, Type>& f, typename powProduct<Type, r>::type
-		= pTraits<typename powProduct<Type, r>::type>::zero
+    const FieldField<Field, Type>& f, typename powProduct<Type, r>::type
+        = pTraits<typename powProduct<Type, r>::type>::zero
 );
 
 template<template<class> class Field, class Type, int r>
 tmp<FieldField<Field, typename powProduct<Type, r>::type> >
 pow
 (
-	const tmp<FieldField<Field, Type> >& tf, typename powProduct<Type, r>::type
-		= pTraits<typename powProduct<Type, r>::type>::zero
+    const tmp<FieldField<Field, Type> >& tf, typename powProduct<Type, r>::type
+        = pTraits<typename powProduct<Type, r>::type>::zero
 );
 
 
 template<template<class> class Field, class Type>
 void sqr
 (
-	FieldField<Field, typename outerProduct<Type, Type>::type>& f,
-	const FieldField<Field, Type>& vf
+    FieldField<Field, typename outerProduct<Type, Type>::type>& f,
+    const FieldField<Field, Type>& vf
 );
 
 template<template<class> class Field, class Type>
@@ -108,85 +108,85 @@ tmp<FieldField<Field, scalar> > mag(const tmp<FieldField<Field, Type> >& tf);
 template<template<class> class Field, class Type>
 void cmptMax
 (
-	FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
-	const FieldField<Field, Type>& f
+    FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptMax
 (
-	const FieldField<Field, Type>& f
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptMax
 (
-	const tmp<FieldField<Field, Type> >& tf
+    const tmp<FieldField<Field, Type> >& tf
 );
 
 
 template<template<class> class Field, class Type>
 void cmptMin
 (
-	FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
-	const FieldField<Field, Type>& f
+    FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptMin
 (
-	const FieldField<Field, Type>& f
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptMin
 (
-	const tmp<FieldField<Field, Type> >& tf
+    const tmp<FieldField<Field, Type> >& tf
 );
 
 
 template<template<class> class Field, class Type>
 void cmptAv
 (
-	FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
-	const FieldField<Field, Type>& f
+    FieldField<Field, typename FieldField<Field, Type>::cmptType>& cf,
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptAv
 (
-	const FieldField<Field, Type>& f
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, typename FieldField<Field, Type>::cmptType> > cmptAv
 (
-	const tmp<FieldField<Field, Type> >& tf
+    const tmp<FieldField<Field, Type> >& tf
 );
 
 
 template<template<class> class Field, class Type>
 void cmptMag
 (
-	FieldField<Field, Type>& cf,
-	const FieldField<Field, Type>& f
+    FieldField<Field, Type>& cf,
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, Type> > cmptMag
 (
-	const FieldField<Field, Type>& f
+    const FieldField<Field, Type>& f
 );
 
 template<template<class> class Field, class Type>
 tmp<FieldField<Field, Type> > cmptMag
 (
-	const tmp<FieldField<Field, Type> >& tf
+    const tmp<FieldField<Field, Type> >& tf
 );
 
 
 #define TMP_UNARY_FUNCTION(returnType, func)                                  \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type>                             \
 returnType func(const tmp<FieldField<Field, Type> >& tf1);
 
@@ -217,7 +217,7 @@ TMP_UNARY_FUNCTION(Type, average)
 
 
 #define G_UNARY_FUNCTION(returnType, gFunc, func, rFunc)                      \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type>                             \
 returnType gFunc(const FieldField<Field, Type>& f);                           \
 TMP_UNARY_FUNCTION(returnType, gFunc)
@@ -268,99 +268,99 @@ BINARY_TYPE_OPERATOR_FS(Type, Type, scalar, /, divide)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #define PRODUCT_OPERATOR(product, op, opFunc)                                 \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type1, class Type2>               \
 void opFunc                                                                   \
 (                                                                             \
-	FieldField<Field, typename product<Type1, Type2>::type>& f,               \
-	const FieldField<Field, Type1>& f1,                                       \
-	const FieldField<Field, Type2>& f2                                        \
+    FieldField<Field, typename product<Type1, Type2>::type>& f,               \
+    const FieldField<Field, Type1>& f1,                                       \
+    const FieldField<Field, Type2>& f2                                        \
 );                                                                            \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type1, class Type2>               \
 tmp<FieldField<Field, typename product<Type1, Type2>::type> >                 \
 operator op                                                                   \
 (                                                                             \
-	const FieldField<Field, Type1>& f1,                                       \
-	const FieldField<Field, Type2>& f2                                        \
+    const FieldField<Field, Type1>& f1,                                       \
+    const FieldField<Field, Type2>& f2                                        \
 );                                                                            \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type1, class Type2>               \
 tmp<FieldField<Field, typename product<Type1, Type2>::type> >                 \
 operator op                                                                   \
 (                                                                             \
-	const FieldField<Field, Type1>& f1,                                       \
-	const tmp<FieldField<Field, Type2> >& tf2                                 \
+    const FieldField<Field, Type1>& f1,                                       \
+    const tmp<FieldField<Field, Type2> >& tf2                                 \
 );                                                                            \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type1, class Type2>               \
 tmp<FieldField<Field, typename product<Type1, Type2>::type> >                 \
 operator op                                                                   \
 (                                                                             \
-	const tmp<FieldField<Field, Type1> >& tf1,                                \
-	const FieldField<Field, Type2>& f2                                        \
+    const tmp<FieldField<Field, Type1> >& tf1,                                \
+    const FieldField<Field, Type2>& f2                                        \
 );                                                                            \
-					                                                          \
+                                                                              \
 template<template<class> class Field, class Type1, class Type2>               \
 tmp<FieldField<Field, typename product<Type1, Type2>::type> >                 \
 operator op                                                                   \
 (                                                                             \
-	const tmp<FieldField<Field, Type1> >& tf1,                                \
-	const tmp<FieldField<Field, Type2> >& tf2                                 \
+    const tmp<FieldField<Field, Type1> >& tf1,                                \
+    const tmp<FieldField<Field, Type2> >& tf2                                 \
 );                                                                            \
-					                                                          \
+                                                                              \
 template                                                                      \
 <template<class> class Field, class Type, class Form, class Cmpt, int nCmpt>  \
 void opFunc                                                                   \
 (                                                                             \
-	FieldField<Field, typename product<Type, Form>::type>& f,                 \
-	const FieldField<Field, Type>& f1,                                        \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
+    FieldField<Field, typename product<Type, Form>::type>& f,                 \
+    const FieldField<Field, Type>& f1,                                        \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
 );                                                                            \
-					                                                          \
-template                                                                      \
-<template<class> class Field, class Type, class Form, class Cmpt, int nCmpt>  \
-tmp<FieldField<Field, typename product<Type, Form>::type> >                   \
-operator op                                                                   \
-(                                                                             \
-	const FieldField<Field, Type>& f1,                                        \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
-);                                                                            \
-					                                                          \
+                                                                              \
 template                                                                      \
 <template<class> class Field, class Type, class Form, class Cmpt, int nCmpt>  \
 tmp<FieldField<Field, typename product<Type, Form>::type> >                   \
 operator op                                                                   \
 (                                                                             \
-	const tmp<FieldField<Field, Type> >& tf1,                                 \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
+    const FieldField<Field, Type>& f1,                                        \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
 );                                                                            \
-					                                                          \
+                                                                              \
+template                                                                      \
+<template<class> class Field, class Type, class Form, class Cmpt, int nCmpt>  \
+tmp<FieldField<Field, typename product<Type, Form>::type> >                   \
+operator op                                                                   \
+(                                                                             \
+    const tmp<FieldField<Field, Type> >& tf1,                                 \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
+);                                                                            \
+                                                                              \
 template                                                                      \
 <template<class> class Field, class Form, class Cmpt, int nCmpt, class Type>  \
 void opFunc                                                                   \
 (                                                                             \
-	FieldField<Field, typename product<Form, Type>::type>& f,                 \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
-	const FieldField<Field, Type>& f1                                         \
+    FieldField<Field, typename product<Form, Type>::type>& f,                 \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
+    const FieldField<Field, Type>& f1                                         \
 );                                                                            \
-					                                                          \
+                                                                              \
 template                                                                      \
 <template<class> class Field, class Form, class Cmpt, int nCmpt, class Type>  \
 tmp<FieldField<Field, typename product<Form, Type>::type> >                   \
 operator op                                                                   \
 (                                                                             \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
-	const FieldField<Field, Type>& f1                                         \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
+    const FieldField<Field, Type>& f1                                         \
 );                                                                            \
-					                                                          \
+                                                                              \
 template                                                                      \
 <template<class> class Field, class Form, class Cmpt, int nCmpt, class Type>  \
 tmp<FieldField<Field, typename product<Form, Type>::type> >                   \
 operator op                                                                   \
 (                                                                             \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
-	const tmp<FieldField<Field, Type> >& tf1                                  \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
+    const tmp<FieldField<Field, Type> >& tf1                                  \
 );
 
 PRODUCT_OPERATOR(typeOfSum, +, add)

@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::reconCentral
+    Foam::reconCentral
 
 Description
-	reconCentral interpolation scheme uses extrapolated gradient-based
-	correction from both sides onto the face, using 1/2 weighting.
-	Class is derived from upwind and returns upwind weighting factors.
-	Correction is calculated using the extrapolated gradients.
+    reconCentral interpolation scheme uses extrapolated gradient-based
+    correction from both sides onto the face, using 1/2 weighting.
+    Class is derived from upwind and returns upwind weighting factors.
+    Correction is calculated using the extrapolated gradients.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 SourceFiles
-	reconCentral.C
+    reconCentral.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,107 +49,121 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class reconCentral Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class reconCentral
 :
-	public upwind<Type>
+    public upwind<Type>
 {
-	// Private Data
+    // Private Data
 
-		tmp<fv::gradScheme<Type> > gradScheme_;
+        //- Name of gradient scheme
+        word gradSchemeName_;
+
+        //- Gradient scheme
+        tmp<fv::gradScheme<Type> > gradScheme_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		reconCentral(const reconCentral&);
+        //- Disallow default bitwise copy construct
+        reconCentral(const reconCentral&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const reconCentral&);
+        //- Disallow default bitwise assignment
+        void operator=(const reconCentral&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("reconCentral");
+    //- Runtime type information
+    TypeName("reconCentral");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from faceFlux
-		reconCentral
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField& faceFlux
-		)
-		:
-			upwind<Type>(mesh, faceFlux),
-			gradScheme_
-			(
-				new fv::gaussGrad<Type>(mesh)
-			)
-		{}
+        //- Construct from faceFlux
+        reconCentral
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField& faceFlux
+        )
+        :
+            upwind<Type>(mesh, faceFlux),
+            gradSchemeName_("grad"),
+            gradScheme_
+            (
+                new fv::gaussGrad<Type>(mesh)
+            )
+        {}
 
-		//- Construct from Istream.
-		//  The name of the flux field is read from the Istream and looked-up
-		//  from the mesh objectRegistry
-		reconCentral
-		(
-			const fvMesh& mesh,
-			Istream& schemeData
-		)
-		:
-			upwind<Type>(mesh, schemeData),
-			gradScheme_
-			(
-				fv::gradScheme<Type>::New
-				(
-					mesh,
-					schemeData
-				)
-			)
-		{}
+        //- Construct from Istream.
+        //  The name of the flux field is read from the Istream and looked-up
+        //  from the mesh objectRegistry
+        reconCentral
+        (
+            const fvMesh& mesh,
+            Istream& schemeData
+        )
+        :
+            upwind<Type>(mesh, schemeData),
+            gradSchemeName_(schemeData),
+            gradScheme_
+            (
+                fv::gradScheme<Type>::New
+                (
+                    mesh,
+                    schemeData
+                )
+            )
+        {}
 
-		//- Construct from faceFlux and Istream
-		reconCentral
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField& faceFlux,
-			Istream& schemeData
-		)
-		:
-			upwind<Type>(mesh, faceFlux, schemeData),
-			gradScheme_
-			(
-				fv::gradScheme<Type>::New
-				(
-					mesh,
-					schemeData
-				)
-			)
-		{}
+        //- Construct from faceFlux and Istream
+        reconCentral
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField& faceFlux,
+            Istream& schemeData
+        )
+        :
+            upwind<Type>(mesh, faceFlux, schemeData),
+            gradSchemeName_(schemeData),
+            gradScheme_
+            (
+                fv::gradScheme<Type>::New
+                (
+                    mesh,
+                    mesh.schemesDict().gradScheme(gradSchemeName_)
+                )
+            )
+        {}
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~reconCentral() = default;
 
-		//- Return the face-interpolate of the given cell field
-		//  with explicit correction
-		virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
-		interpolate(const GeometricField<Type, fvPatchField, volMesh>&) const;
 
-		//- Return true if this scheme uses an explicit correction
-		virtual bool corrected() const
-		{
-			return true;
-		}
+    // Member Functions
 
-		//- Return the explicit correction to the face-interpolate
-		virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
-		correction
-		(
-			const GeometricField<Type, fvPatchField, volMesh>& vf
-		) const;
+        //- Return the face-interpolate of the given cell field
+        //  with explicit correction
+        virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+        interpolate(const GeometricField<Type, fvPatchField, volMesh>&) const;
+
+        //- Return true if this scheme uses an explicit correction
+        virtual bool corrected() const
+        {
+            return true;
+        }
+
+        //- Return the explicit correction to the face-interpolate
+        virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+        correction
+        (
+            const GeometricField<Type, fvPatchField, volMesh>& vf
+        ) const;
 };
 
 

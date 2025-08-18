@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,55 +50,49 @@ addToRunTimeSelectionTable(polyPatch, cohesivePolyPatch, dictionary);
 
 cohesivePolyPatch::cohesivePolyPatch
 (
-	const word& name,
-	const label size,
-	const label start,
-	const label index,
-	const polyBoundaryMesh& bm
+    const word& name,
+    const label size,
+    const label start,
+    const label index,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(name, size, start, index, bm)
+    polyPatch(name, size, start, index, bm)
 {}
 
 
 cohesivePolyPatch::cohesivePolyPatch
 (
-	const word& name,
-	const dictionary& dict,
-	const label index,
-	const polyBoundaryMesh& bm
+    const word& name,
+    const dictionary& dict,
+    const label index,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(name, dict, index, bm)
+    polyPatch(name, dict, index, bm)
 {}
 
 
 cohesivePolyPatch::cohesivePolyPatch
 (
-	const cohesivePolyPatch& pp,
-	const polyBoundaryMesh& bm
+    const cohesivePolyPatch& pp,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(pp, bm)
+    polyPatch(pp, bm)
 {}
 
 
 cohesivePolyPatch::cohesivePolyPatch
 (
-	const cohesivePolyPatch& pp,
-	const polyBoundaryMesh& bm,
-	const label index,
-	const label newSize,
-	const label newStart
+    const cohesivePolyPatch& pp,
+    const polyBoundaryMesh& bm,
+    const label index,
+    const label newSize,
+    const label newStart
 )
 :
-	polyPatch(pp, bm, index, newSize, newStart)
-{}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-cohesivePolyPatch::~cohesivePolyPatch()
+    polyPatch(pp, bm, index, newSize, newStart)
 {}
 
 
@@ -114,159 +108,159 @@ void cohesivePolyPatch::initOrder(const primitivePatch& pp) const
 // is identity, rotation is 0)
 bool cohesivePolyPatch::order
 (
-	const primitivePatch& pp,
-	labelList& faceMap,
-	labelList& rotation
+    const primitivePatch& pp,
+    labelList& faceMap,
+    labelList& rotation
 ) const
 {
-	// Grab faceMap
-	SortableList<label> topoFaceMap(faceMap);
+    // Grab faceMap
+    SortableList<label> topoFaceMap(faceMap);
 
-	faceMap.setSize(pp.size());
-	faceMap = -1;
+    faceMap.setSize(pp.size());
+    faceMap = -1;
 
-	rotation.setSize(pp.size());
-	rotation = 0;
+    rotation.setSize(pp.size());
+    rotation = 0;
 
-	if (pp.size() == 0)
-	{
-		// No faces, nothing to change.
-		return false;
-	}
+    if (pp.size() == 0)
+    {
+        // No faces, nothing to change.
+        return false;
+    }
 
-	label oldFacesStartIndex = -1;
-	for (label i = 0; i < topoFaceMap.size(); i += 2)
-	{
-		if (topoFaceMap[i + 1] - topoFaceMap[i] == 1)
-		{
-			oldFacesStartIndex = i;
-			break;
-		}
-	}
+    label oldFacesStartIndex = -1;
+    for (label i = 0; i < topoFaceMap.size(); i += 2)
+    {
+        if (topoFaceMap[i + 1] - topoFaceMap[i] == 1)
+        {
+            oldFacesStartIndex = i;
+            break;
+        }
+    }
 
-	label oldFacesSize = 0;
-	if (oldFacesStartIndex != -1)
-	{
-		oldFacesSize = oldFacesSize + 2;
-		for (label i = oldFacesStartIndex + 2; i < topoFaceMap.size(); i += 2)
-		{
-			oldFacesSize += 2*(topoFaceMap[i + 1]-topoFaceMap[i]);
-		}
-	}
+    label oldFacesSize = 0;
+    if (oldFacesStartIndex != -1)
+    {
+        oldFacesSize = oldFacesSize + 2;
+        for (label i = oldFacesStartIndex + 2; i < topoFaceMap.size(); i += 2)
+        {
+            oldFacesSize += 2*(topoFaceMap[i + 1]-topoFaceMap[i]);
+        }
+    }
 
-	// Indices of faces on half0
-	labelList half0ToPatch(pp.size());
-	// Indices of faces on half1
-	labelList half1ToPatch(pp.size());
+    // Indices of faces on half0
+    labelList half0ToPatch(pp.size());
+    // Indices of faces on half1
+    labelList half1ToPatch(pp.size());
 
-	{
-		// Calculate normals
-		vectorField normals(pp.size());
+    {
+        // Calculate normals
+        vectorField normals(pp.size());
 
-		forAll (pp, faceI)
-		{
-			normals[faceI] = pp[faceI].normal(pp.points());
-		}
+        forAll (pp, faceI)
+        {
+            normals[faceI] = pp[faceI].normal(pp.points());
+        }
 
-		normals /= mag(normals) + VSMALL;
+        normals /= mag(normals) + VSMALL;
 
-		label n0Faces = 0;
-		label n1Faces = 0;
+        label n0Faces = 0;
+        label n1Faces = 0;
 
-		label sizeByTwo = oldFacesSize/2;
+        label sizeByTwo = oldFacesSize/2;
 
-		if (oldFacesStartIndex != -1)
-		{
-			for
-			(
-				label i = oldFacesStartIndex;
-				i < oldFacesStartIndex+sizeByTwo;
-				i++
-			)
-			{
-				half0ToPatch[n0Faces++] = i;
-				half1ToPatch[n1Faces++] = i + sizeByTwo;
-			}
+        if (oldFacesStartIndex != -1)
+        {
+            for
+            (
+                label i = oldFacesStartIndex;
+                i < oldFacesStartIndex+sizeByTwo;
+                i++
+            )
+            {
+                half0ToPatch[n0Faces++] = i;
+                half1ToPatch[n1Faces++] = i + sizeByTwo;
+            }
 
-			for (label i = 0; i < oldFacesStartIndex; i += 2)
-			{
-				half0ToPatch[n0Faces++] = i;
-				half1ToPatch[n1Faces++] = i + 1;
-			}
+            for (label i = 0; i < oldFacesStartIndex; i += 2)
+            {
+                half0ToPatch[n0Faces++] = i;
+                half1ToPatch[n1Faces++] = i + 1;
+            }
 
-			for
-			(
-				label i=oldFacesStartIndex+oldFacesSize;
-				i<topoFaceMap.size();
-				i = i + 2
-			)
-			{
-				half0ToPatch[n0Faces++] = i;
-				half1ToPatch[n1Faces++] = i + 1;
-			}
-		}
-		else
-		{
-			for
-			(
-				label i = 0;
-				i < topoFaceMap.size();
-				i += 2
-			)
-			{
-				half0ToPatch[n0Faces++] = i;
-				half1ToPatch[n1Faces++] = i + 1;
-			}
-		}
+            for
+            (
+                label i=oldFacesStartIndex+oldFacesSize;
+                i<topoFaceMap.size();
+                i = i + 2
+            )
+            {
+                half0ToPatch[n0Faces++] = i;
+                half1ToPatch[n1Faces++] = i + 1;
+            }
+        }
+        else
+        {
+            for
+            (
+                label i = 0;
+                i < topoFaceMap.size();
+                i += 2
+            )
+            {
+                half0ToPatch[n0Faces++] = i;
+                half1ToPatch[n1Faces++] = i + 1;
+            }
+        }
 
-		half0ToPatch.setSize(n0Faces);
-		half1ToPatch.setSize(n1Faces);
+        half0ToPatch.setSize(n0Faces);
+        half1ToPatch.setSize(n1Faces);
 
-		Pout<< "cohesivePolyPatch::order : "
-			<< "Number of faces per zone:("
-			<< n0Faces << ' ' << n1Faces << ')' << endl;
-	}
+        Pout<< "cohesivePolyPatch::order : "
+            << "Number of faces per zone:("
+            << n0Faces << ' ' << n1Faces << ')' << endl;
+    }
 
-	if (half0ToPatch.size() != half1ToPatch.size())
-	{
-		SeriousErrorIn
-		(
-			"cohesivePolyPatch::order"
-			"(const primitivePatch&, labelList&, labelList&) const"
-		)   << " patch:" << name() << " : "
-			<< "Patch " << name() << " gets decomposed in two zones of"
-			<< "inequal size: " << half0ToPatch.size()
-			<< " and " << half1ToPatch.size() << endl
-			<< "Continuing with incorrect face ordering from now on!" << endl;
+    if (half0ToPatch.size() != half1ToPatch.size())
+    {
+        SeriousErrorIn
+        (
+            "cohesivePolyPatch::order"
+            "(const primitivePatch&, labelList&, labelList&) const"
+        )   << " patch:" << name() << " : "
+            << "Patch " << name() << " gets decomposed in two zones of"
+            << "inequal size: " << half0ToPatch.size()
+            << " and " << half1ToPatch.size() << endl
+            << "Continuing with incorrect face ordering from now on!" << endl;
 
-		return false;
-	}
+        return false;
+    }
 
-	forAll (half0ToPatch, faceI)
-	{
-		// Label in original patch
-		label patchFaceI = topoFaceMap.indices()[half0ToPatch[faceI]];
+    forAll (half0ToPatch, faceI)
+    {
+        // Label in original patch
+        label patchFaceI = topoFaceMap.indices()[half0ToPatch[faceI]];
 
-		faceMap[patchFaceI] = faceI;
-	}
+        faceMap[patchFaceI] = faceI;
+    }
 
-	forAll (half1ToPatch, faceI)
-	{
-		// Label in original patch
-		label patchFaceI = topoFaceMap.indices()[half1ToPatch[faceI]];
+    forAll (half1ToPatch, faceI)
+    {
+        // Label in original patch
+        label patchFaceI = topoFaceMap.indices()[half1ToPatch[faceI]];
 
-		faceMap[patchFaceI] = half0ToPatch.size() + faceI;
-	}
+        faceMap[patchFaceI] = half0ToPatch.size() + faceI;
+    }
 
-	forAll (faceMap, faceI)
-	{
-		if (faceMap[faceI] != faceI)
-		{
-			return true;
-		}
-	}
+    forAll (faceMap, faceI)
+    {
+        if (faceMap[faceI] != faceI)
+        {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 

@@ -25,54 +25,54 @@ scalar distance(const vector&, const vector&);
 
 bool stepForwardsToNextPoint
 (
-	const vector&,
-	vector&,
-	label&,
-	label&,
-	scalar,
-	const curve&
+    const vector&,
+    vector&,
+    label&,
+    label&,
+    scalar,
+    const curve&
 );
 
 
 bool stepBackwardsToNextPoint
 (
-	const vector&,
-	vector&,
-	label&,
-	label&,
-	scalar,
-	const curve&
+    const vector&,
+    vector&,
+    label&,
+    label&,
+    scalar,
+    const curve&
 );
 
 
 bool interpolate
 (
-	const vector&,
-	const vector&,
-	const vector&,
-	vector&,
-	scalar
+    const vector&,
+    const vector&,
+    const vector&,
+    vector&,
+    scalar
 );
 
 
 bool XstepForwardsToNextPoint
 (
-	const vector&,
-	vector&,
-	label&,
-	label&,
-	scalar,
-	const curve&
+    const vector&,
+    vector&,
+    label&,
+    label&,
+    scalar,
+    const curve&
 );
 
 
 bool Xinterpolate
 (
-	const vector&,
-	const vector&,
-	const vector&,
-	vector&,
-	scalar
+    const vector&,
+    const vector&,
+    const vector&,
+    vector&,
+    scalar
 );
 
 

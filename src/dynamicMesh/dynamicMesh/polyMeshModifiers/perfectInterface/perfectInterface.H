@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::perfectInterface
+    Foam::perfectInterface
 
 Description
-	Hack of attachDetach to couple patches when they perfectly align.
-	Does not decouple. Used by stitchMesh app. Does geometric matching.
+    Hack of attachDetach to couple patches when they perfectly align.
+    Does not decouple. Used by stitchMesh app. Does geometric matching.
 
 SourceFiles
-	perfectInterface.C
+    perfectInterface.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,93 +48,96 @@ namespace Foam
 // Forward declaration of classes
 class Time;
 
+/*---------------------------------------------------------------------------*\
+                       Class perfectInterface Declaration
+\*---------------------------------------------------------------------------*/
 
 class perfectInterface
 :
-	public polyMeshModifier
+    public polyMeshModifier
 {
-	// Private data
+    // Private data
 
-		//- Master face zone ID
-		faceZoneID faceZoneID_;
+        //- Master face zone ID
+        faceZoneID faceZoneID_;
 
-		//- Master patch ID
-		polyPatchID masterPatchID_;
+        //- Master patch ID
+        polyPatchID masterPatchID_;
 
-		//- Slave patch ID
-		polyPatchID slavePatchID_;
+        //- Slave patch ID
+        polyPatchID slavePatchID_;
 
-		//- Tolerance used for distance comparison (fraction of minimum edge
-		//  length)
-		static const scalar tol_;
+        //- Tolerance used for distance comparison (fraction of minimum edge
+        //  length)
+        static const scalar tol_;
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Calculate face centres on patch
-		static pointField calcFaceCentres(const primitivePatch&);
+        //- Calculate face centres on patch
+        static pointField calcFaceCentres(const primitivePatch&);
 
 
-		//- Disallow default bitwise copy construct
-		perfectInterface(const perfectInterface&);
+        //- Disallow default bitwise copy construct
+        perfectInterface(const perfectInterface&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const perfectInterface&);
+        //- Disallow default bitwise assignment
+        void operator=(const perfectInterface&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("perfectInterface");
+    //- Runtime type information
+    TypeName("perfectInterface");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		perfectInterface
-		(
-			const word& name,
-			const label index,
-			const polyTopoChanger& mme,
-			const word& faceZoneName,
-			const word& masterPatchName,
-			const word& slavePatchName
-		);
+        //- Construct from components
+        perfectInterface
+        (
+            const word& name,
+            const label index,
+            const polyTopoChanger& mme,
+            const word& faceZoneName,
+            const word& masterPatchName,
+            const word& slavePatchName
+        );
 
-		//- Construct from dictionary
-		perfectInterface
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index,
-			const polyTopoChanger& mme
-		);
-
-
-	// Destructor
-
-		virtual ~perfectInterface();
+        //- Construct from dictionary
+        perfectInterface
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index,
+            const polyTopoChanger& mme
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Check for topology change
-		virtual bool changeTopology() const;
+        virtual ~perfectInterface();
 
-		//- Insert the layer addition/removal instructions
-		//  into the topological change
-		virtual void setRefinement(polyTopoChange&) const;
 
-		//- Modify motion points to comply with the topological change
-		virtual void modifyMotionPoints(pointField& motionPoints) const;
+    // Member Functions
 
-		//- Force recalculation of locally stored data on topological change
-		virtual void updateMesh(const mapPolyMesh&);
+        //- Check for topology change
+        virtual bool changeTopology() const;
 
-		//- Write
-		virtual void write(Ostream&) const;
+        //- Insert the layer addition/removal instructions
+        //  into the topological change
+        virtual void setRefinement(polyTopoChange&) const;
 
-		//- Write dictionary
-		virtual void writeDict(Ostream&) const;
+        //- Modify motion points to comply with the topological change
+        virtual void modifyMotionPoints(pointField& motionPoints) const;
+
+        //- Force recalculation of locally stored data on topological change
+        virtual void updateMesh(const mapPolyMesh&);
+
+        //- Write
+        virtual void write(Ostream&) const;
+
+        //- Write dictionary
+        virtual void writeDict(Ostream&) const;
 
 };
 

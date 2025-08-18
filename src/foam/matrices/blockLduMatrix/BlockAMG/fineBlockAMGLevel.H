@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	fineBlockAMGLevel
+    fineBlockAMGLevel
 
 Description
-	Fine AMG level refers to matrix, x and b data from the solver or
-	preconditioner, implemented for the BlockLduMatrix
+    Fine AMG level refers to matrix, x and b data from the solver or
+    preconditioner, implemented for the BlockLduMatrix
 
 Author
-	Klas Jareteg, 2012-12-13
+    Klas Jareteg, 2012-12-13
 
 SourceFiles
-	fineBlockAMGLevel.C
+    fineBlockAMGLevel.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,139 +57,142 @@ class coarseBlockAMGLevel;
 template<class Type>
 class BlockMatrixCoarsening;
 
+/*---------------------------------------------------------------------------*\
+                        Class fineBlockAMGLevel Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class fineBlockAMGLevel
 :
-	public BlockAMGLevel<Type>
+    public BlockAMGLevel<Type>
 {
-	// Private data
+    // Private data
 
-		 //- Reference to matrix
-		const BlockLduMatrix<Type>& matrix_;
+         //- Reference to matrix
+        const BlockLduMatrix<Type>& matrix_;
 
-		//- Dictionary
-		const dictionary& dict_;
+        //- Dictionary
+        const dictionary& dict_;
 
-		//- AMG coarsening
-		autoPtr<BlockMatrixCoarsening<Type> > coarseningPtr_;
+        //- AMG coarsening
+        autoPtr<BlockMatrixCoarsening<Type> > coarseningPtr_;
 
-		//- Smoother
-		autoPtr<BlockLduSmoother<Type> > smootherPtr_;
+        //- Smoother
+        autoPtr<BlockLduSmoother<Type> > smootherPtr_;
 
-		//- Ax buffer
-		mutable Field<Type> Ax_;
+        //- Ax buffer
+        mutable Field<Type> Ax_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		fineBlockAMGLevel(const fineBlockAMGLevel<Type>&);
+        //- Disallow default bitwise copy construct
+        fineBlockAMGLevel(const fineBlockAMGLevel<Type>&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const fineBlockAMGLevel<Type>&);
+        //- Disallow default bitwise assignment
+        void operator=(const fineBlockAMGLevel<Type>&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("fineBlockAMGLevel");
+    //- Runtime type information
+    TypeName("fineBlockAMGLevel");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		fineBlockAMGLevel
-		(
-			const BlockLduMatrix<Type>& matrix,
-			const dictionary& dict,
-			const word& coarseningType,
-			const label groupSize,
-			const label minCoarseEqns
-		);
-
-
-	//- Destructor
-	virtual ~fineBlockAMGLevel()
-	{}
+        //- Construct from components
+        fineBlockAMGLevel
+        (
+            const BlockLduMatrix<Type>& matrix,
+            const dictionary& dict,
+            const word& coarseningType,
+            const label groupSize,
+            const label minCoarseEqns
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~fineBlockAMGLevel()
+    {}
 
-		//- Return reference to dictionary
-		const dictionary& dict() const
-		{
-			return dict_;
-		}
 
-		//- Return reference to matrix
-		virtual BlockLduMatrix<Type>& matrix();
+    // Member Functions
 
-		//- Return reference to x
-		virtual Field<Type>& x();
+        //- Return reference to dictionary
+        const dictionary& dict() const
+        {
+            return dict_;
+        }
 
-		//- Return reference to b
-		virtual Field<Type>& b();
+        //- Return reference to matrix
+        virtual BlockLduMatrix<Type>& matrix();
 
-		//- Calculate residual
-		virtual void residual
-		(
-			const Field<Type>& x,
-			const Field<Type>& b,
-			Field<Type>& res
-		) const;
+        //- Return reference to x
+        virtual Field<Type>& x();
 
-		//- Restrict residual
-		virtual void restrictResidual
-		(
-			const Field<Type>& x,
-			const Field<Type>& b,
-			Field<Type>& xBuffer,
-			Field<Type>& coarseRes,
-			bool preSweepsDone
-		) const;
+        //- Return reference to b
+        virtual Field<Type>& b();
 
-		//- Prolongate correction
-		virtual void prolongateCorrection
-		(
-			Field<Type>& x,
-			const Field<Type>& coarseX
-		) const;
+        //- Calculate residual
+        virtual void residual
+        (
+            const Field<Type>& x,
+            const Field<Type>& b,
+            Field<Type>& res
+        ) const;
 
-		//- Smooth level
-		virtual void smooth
-		(
-			Field<Type>& x,
-			const Field<Type>& b,
-			const label nSweeps
-		) const;
+        //- Restrict residual
+        virtual void restrictResidual
+        (
+            const Field<Type>& x,
+            const Field<Type>& b,
+            Field<Type>& xBuffer,
+            Field<Type>& coarseRes,
+            bool preSweepsDone
+        ) const;
 
-		//- Solve level
-		virtual void solve
-		(
-			Field<Type>& x,
-			const Field<Type>& b,
-			const scalar tolerance,
-			const scalar relTol
-		) const;
+        //- Prolongate correction
+        virtual void prolongateCorrection
+        (
+            Field<Type>& x,
+            const Field<Type>& coarseX
+        ) const;
 
-		//- Scale x
-		virtual void scaleX
-		(
-			Field<Type>& x,
-			const Field<Type>& b,
-			Field<Type>& xBuffer
-		) const;
+        //- Smooth level
+        virtual void smooth
+        (
+            Field<Type>& x,
+            const Field<Type>& b,
+            const label nSweeps
+        ) const;
 
-		//- Create next level from current level
-		virtual autoPtr<BlockAMGLevel<Type> > makeNextLevel() const;
+        //- Solve level
+        virtual void solve
+        (
+            Field<Type>& x,
+            const Field<Type>& b,
+            const scalar tolerance,
+            const scalar relTol
+        ) const;
 
-		//- Re-initialise AMG level after matrix coefficient update
-		//  and update matrix coefficients on coarse level using same coarsening
-		virtual void initLevel
-		(
-			autoPtr<Foam::BlockAMGLevel<Type> >& coarseLevelPtr
-		);
+        //- Scale x
+        virtual void scaleX
+        (
+            Field<Type>& x,
+            const Field<Type>& b,
+            Field<Type>& xBuffer
+        ) const;
+
+        //- Create next level from current level
+        virtual autoPtr<BlockAMGLevel<Type> > makeNextLevel() const;
+
+        //- Re-initialise AMG level after matrix coefficient update
+        //  and update matrix coefficients on coarse level using same coarsening
+        virtual void initLevel
+        (
+            autoPtr<Foam::BlockAMGLevel<Type> >& coarseLevelPtr
+        );
 };
 
 
@@ -200,7 +203,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "fineBlockAMGLevel.C"
+#   include "fineBlockAMGLevel.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

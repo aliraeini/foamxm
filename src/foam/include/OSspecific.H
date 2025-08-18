@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 InNamespace
-	Foam
+    Foam
 
 Description
-	Functions used by FOAM that are specific to POSIX compliant
-	operating systems and need to be replaced or emulated on other systems.
+    Functions used by FOAM that are specific to POSIX compliant
+    operating systems and need to be replaced or emulated on other systems.
 
 SourceFiles
-	POSIX.C
+    POSIX.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -117,9 +117,9 @@ bool chDir(const fileName& dir);
 //  Optionally stop search after the first file has been found.
 fileNameList findEtcFiles
 (
-	const fileName&,
-	bool mandatory=false,
-	bool findFirst=false
+    const fileName&,
+    bool mandatory=false,
+    bool findFirst=false
 );
 
 //- Search for a file using findEtcFiles.
@@ -161,9 +161,9 @@ time_t lastModified(const fileName&);
 //- Read a directory and return the entries as a string list
 fileNameList readDir
 (
-	const fileName&,
-	const fileName::Type = fileName::FILE,
-	const bool filtergz = true
+    const fileName&,
+    const fileName::Type = fileName::FILE,
+    const bool filtergz = true
 );
 
 //- Copy, recursively if necessary, the source to the destination

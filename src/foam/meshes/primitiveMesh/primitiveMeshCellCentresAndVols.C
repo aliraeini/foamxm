@@ -1,29 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
-
-Description
-	Efficient cell-centre calculation using face-addressing, face-centres and
-	face-areas.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,174 +31,174 @@ Description
 
 void Foam::primitiveMesh::calcCellCentresAndVols() const
 {
-	if (debug)
-	{
-		Pout<< "primitiveMesh::calcCellCentresAndVols() : "
-			<< "Calculating cell centres and cell volumes"
-			<< endl;
-	}
+    if (debug)
+    {
+        Pout<< "primitiveMesh::calcCellCentresAndVols() : "
+            << "Calculating cell centres and cell volumes"
+            << endl;
+    }
 
-	// It is an error to attempt to recalculate cellCentres
-	// if the pointer is already set
-	if (cellCentresPtr_ || cellVolumesPtr_)
-	{
-		FatalErrorIn("primitiveMesh::calcCellCentresAndVols() const")
-			<< "Cell centres or cell volumes already calculated"
-			<< abort(FatalError);
-	}
+    // It is an error to attempt to recalculate cellCentres
+    // if the pointer is already set
+    if (cellCentresPtr_ || cellVolumesPtr_)
+    {
+        FatalErrorInFunction
+            << "Cell centres or cell volumes already calculated"
+            << abort(FatalError);
+    }
 
-	// set the accumulated cell centre to zero vector
-	cellCentresPtr_ = new vectorField(nCells());
-	vectorField& cellCtrs = *cellCentresPtr_;
+    // set the accumulated cell centre to zero vector
+    cellCentresPtr_ = new vectorField(nCells());
+    vectorField& cellCtrs = *cellCentresPtr_;
 
-	// Initialise cell volumes to 0
-	cellVolumesPtr_ = new scalarField(nCells());
-	scalarField& cellVols = *cellVolumesPtr_;
+    // Initialise cell volumes to 0
+    cellVolumesPtr_ = new scalarField(nCells());
+    scalarField& cellVols = *cellVolumesPtr_;
 
-	// Make centres and volumes
-	makeCellCentresAndVols(faceCentres(), faceAreas(), cellCtrs, cellVols);
+    // Make centres and volumes
+    makeCellCentresAndVols(faceCentres(), faceAreas(), cellCtrs, cellVols);
 
-	if (debug)
-	{
-		Pout<< "primitiveMesh::calcCellCentresAndVols() : "
-			<< "Finished calculating cell centres and cell volumes"
-			<< endl;
-	}
+    if (debug)
+    {
+        Pout<< "primitiveMesh::calcCellCentresAndVols() : "
+            << "Finished calculating cell centres and cell volumes"
+            << endl;
+    }
 }
 
 
 void Foam::primitiveMesh::makeCellCentresAndVols
 (
-	const vectorField& fCtrs,
-	const vectorField& fAreas,
-	vectorField& cellCtrs,
-	scalarField& cellVols
+    const vectorField& fCtrs,
+    const vectorField& fAreas,
+    vectorField& cellCtrs,
+    scalarField& cellVols
 ) const
 {
-	// Clear the fields for accumulation
-	cellCtrs = vector::zero;
-	cellVols = 0.0;
+    // Clear the fields for accumulation
+    cellCtrs = vector::zero;
+    cellVols = 0.0;
 
-	const labelList& own = faceOwner();
-	const labelList& nei = faceNeighbour();
+    const labelList& own = faceOwner();
+    const labelList& nei = faceNeighbour();
 
-	// first estimate the approximate cell centre as the average of
-	// face centres
+    // first estimate the approximate cell centre as the average of
+    // face centres
 
-	vectorField cEst(nCells(), vector::zero);
-	labelField nCellFaces(nCells(), 0);
+    vectorField cEst(nCells(), vector::zero);
+    labelField nCellFaces(nCells(), 0);
 
-	forAll (own, facei)
-	{
-		cEst[own[facei]] += fCtrs[facei];
-		nCellFaces[own[facei]] += 1;
-	}
+    forAll (own, facei)
+    {
+        cEst[own[facei]] += fCtrs[facei];
+        nCellFaces[own[facei]] += 1;
+    }
 
-	forAll (nei, facei)
-	{
-		cEst[nei[facei]] += fCtrs[facei];
-		nCellFaces[nei[facei]] += 1;
-	}
+    forAll (nei, facei)
+    {
+        cEst[nei[facei]] += fCtrs[facei];
+        nCellFaces[nei[facei]] += 1;
+    }
 
-	forAll(cEst, celli)
-	{
-		cEst[celli] /= nCellFaces[celli];
-	}
+    forAll(cEst, celli)
+    {
+        cEst[celli] /= nCellFaces[celli];
+    }
 
-	const faceList& allFaces = faces();
-	const pointField& allPoints = points();
+    const faceList& allFaces = faces();
+    const pointField& allPoints = points();
 
-	forAll(own, faceI)
-	{
-		const face& f = allFaces[faceI];
+    forAll(own, faceI)
+    {
+        const face& f = allFaces[faceI];
 
-		if (f.size() == 3)
-		{
-			tetPointRef tpr
-			(
-				allPoints[f[2]],
-				allPoints[f[1]],
-				allPoints[f[0]],
-				cEst[own[faceI]]
-			);
+        if (f.size() == 3)
+        {
+            tetPointRef tpr
+            (
+                allPoints[f[2]],
+                allPoints[f[1]],
+                allPoints[f[0]],
+                cEst[own[faceI]]
+            );
 
-			scalar tetVol = tpr.mag();
+            scalar tetVol = tpr.mag();
 
-			// Accumulate volume-weighted tet centre
-			cellCtrs[own[faceI]] += tetVol*tpr.centre();
+            // Accumulate volume-weighted tet centre
+            cellCtrs[own[faceI]] += tetVol*tpr.centre();
 
-			// Accumulate tet volume
-			cellVols[own[faceI]] += tetVol;
-		}
-		else
-		{
-			forAll(f, pI)
-			{
-				tetPointRef tpr
-				(
-					allPoints[f[pI]],
-					allPoints[f.prevLabel(pI)],
-					fCtrs[faceI],
-					cEst[own[faceI]]
-				);
+            // Accumulate tet volume
+            cellVols[own[faceI]] += tetVol;
+        }
+        else
+        {
+            forAll(f, pI)
+            {
+                tetPointRef tpr
+                (
+                    allPoints[f[pI]],
+                    allPoints[f.prevLabel(pI)],
+                    fCtrs[faceI],
+                    cEst[own[faceI]]
+                );
 
-				scalar tetVol = tpr.mag();
+                scalar tetVol = tpr.mag();
 
-				// Accumulate volume-weighted tet centre
-				cellCtrs[own[faceI]] += tetVol*tpr.centre();
+                // Accumulate volume-weighted tet centre
+                cellCtrs[own[faceI]] += tetVol*tpr.centre();
 
-				// Accumulate tet volume
-				cellVols[own[faceI]] += tetVol;
-			}
-		}
-	}
+                // Accumulate tet volume
+                cellVols[own[faceI]] += tetVol;
+            }
+        }
+    }
 
-	forAll(nei, faceI)
-	{
-		const face& f = allFaces[faceI];
+    forAll(nei, faceI)
+    {
+        const face& f = allFaces[faceI];
 
-		if (f.size() == 3)
-		{
-			tetPointRef tpr
-			(
-				allPoints[f[0]],
-				allPoints[f[1]],
-				allPoints[f[2]],
-				cEst[nei[faceI]]
-			);
+        if (f.size() == 3)
+        {
+            tetPointRef tpr
+            (
+                allPoints[f[0]],
+                allPoints[f[1]],
+                allPoints[f[2]],
+                cEst[nei[faceI]]
+            );
 
-			scalar tetVol = tpr.mag();
+            scalar tetVol = tpr.mag();
 
-			// Accumulate volume-weighted tet centre
-			cellCtrs[nei[faceI]] += tetVol*tpr.centre();
+            // Accumulate volume-weighted tet centre
+            cellCtrs[nei[faceI]] += tetVol*tpr.centre();
 
-			// Accumulate tet volume
-			cellVols[nei[faceI]] += tetVol;
-		}
-		else
-		{
-			forAll(f, pI)
-			{
-				tetPointRef tpr
-				(
-					allPoints[f[pI]],
-					allPoints[f.nextLabel(pI)],
-					fCtrs[faceI],
-					cEst[nei[faceI]]
-				);
+            // Accumulate tet volume
+            cellVols[nei[faceI]] += tetVol;
+        }
+        else
+        {
+            forAll(f, pI)
+            {
+                tetPointRef tpr
+                (
+                    allPoints[f[pI]],
+                    allPoints[f.nextLabel(pI)],
+                    fCtrs[faceI],
+                    cEst[nei[faceI]]
+                );
 
-				scalar tetVol = tpr.mag();
+                scalar tetVol = tpr.mag();
 
-				// Accumulate volume-weighted tet centre
-				cellCtrs[nei[faceI]] += tetVol*tpr.centre();
+                // Accumulate volume-weighted tet centre
+                cellCtrs[nei[faceI]] += tetVol*tpr.centre();
 
-				// Accumulate tet volume
-				cellVols[nei[faceI]] += tetVol;
-			}
-		}
-	}
+                // Accumulate tet volume
+                cellVols[nei[faceI]] += tetVol;
+            }
+        }
+    }
 
-	cellCtrs /= cellVols + VSMALL;
+    cellCtrs /= cellVols + VSMALL;
 }
 
 
@@ -210,23 +206,23 @@ void Foam::primitiveMesh::makeCellCentresAndVols
 
 const Foam::vectorField& Foam::primitiveMesh::cellCentres() const
 {
-	if (!cellCentresPtr_)
-	{
-		calcCellCentresAndVols();
-	}
+    if (!cellCentresPtr_)
+    {
+        calcCellCentresAndVols();
+    }
 
-	return *cellCentresPtr_;
+    return *cellCentresPtr_;
 }
 
 
 const Foam::scalarField& Foam::primitiveMesh::cellVolumes() const
 {
-	if (!cellVolumesPtr_)
-	{
-		calcCellCentresAndVols();
-	}
+    if (!cellVolumesPtr_)
+    {
+        calcCellCentresAndVols();
+    }
 
-	return *cellVolumesPtr_;
+    return *cellVolumesPtr_;
 }
 
 

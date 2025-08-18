@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::STLtriangle
+    Foam::STLtriangle
 
 Description
-	A triangle representation for STL files.
+    A triangle representation for STL files.
 
 SourceFiles
-	STLtriangleI.H
+    STLtriangleI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,71 +49,74 @@ class STLtriangle;
 Ostream& operator<<(Ostream&, const STLtriangle&);
 
 
+/*---------------------------------------------------------------------------*\
+                         Class STLtriangle Declaration
+\*---------------------------------------------------------------------------*/
 
 class STLtriangle
 {
-	// Private data
+    // Private data
 
-		//- Attribute is 16-bit
-		typedef unsigned short STLattrib;
+        //- Attribute is 16-bit
+        typedef unsigned short STLattrib;
 
-		//- The face normal, many programs write zore or other junk
-		STLpoint normal_;
+        //- The face normal, many programs write zore or other junk
+        STLpoint normal_;
 
-		//- The three points defining the triangle
-		STLpoint a_, b_, c_;
+        //- The three points defining the triangle
+        STLpoint a_, b_, c_;
 
-		//- The attribute information could for colour or solid id, etc
-		STLattrib attrib_;
+        //- The attribute information could for colour or solid id, etc
+        STLattrib attrib_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		inline STLtriangle();
+        //- Construct null
+        inline STLtriangle();
 
-		//- Construct from components
-		inline STLtriangle
-		(
-			const STLpoint& normal,
-			const STLpoint& a,
-			const STLpoint& b,
-			const STLpoint& c,
-			unsigned short attrib
-		);
+        //- Construct from components
+        inline STLtriangle
+        (
+            const STLpoint& normal,
+            const STLpoint& a,
+            const STLpoint& b,
+            const STLpoint& c,
+            unsigned short attrib
+        );
 
-		//- Construct from istream (read binary)
-		inline STLtriangle(istream&);
-
-
-	// Member Functions
-
-		// Access
-
-			inline const STLpoint& normal() const;
-			inline const STLpoint& a() const;
-			inline const STLpoint& b() const;
-			inline const STLpoint& c() const;
-			inline unsigned short attrib() const;
+        //- Construct from istream (read binary)
+        inline STLtriangle(istream&);
 
 
-		// Read
+    // Member Functions
 
-			//- Read from istream (binary)
-			inline void read(istream&);
+        // Access
+
+            inline const STLpoint& normal() const;
+            inline const STLpoint& a() const;
+            inline const STLpoint& b() const;
+            inline const STLpoint& c() const;
+            inline unsigned short attrib() const;
 
 
-		// Write
+        // Read
 
-			//- Write to ostream (binary)
-			inline void write(ostream&);
+            //- Read from istream (binary)
+            inline void read(istream&);
 
 
-	// Ostream operator
+        // Write
 
-		inline friend Ostream& operator<<(Ostream&, const STLtriangle&);
+            //- Write to ostream (binary)
+            inline void write(ostream&);
+
+
+    // Ostream operator
+
+        inline friend Ostream& operator<<(Ostream&, const STLtriangle&);
 };
 
 

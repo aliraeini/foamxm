@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Harmonic-mean differencing scheme class.
+    Harmonic-mean differencing scheme class.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,169 +31,171 @@ Description
 template<class Type>
 Foam::tmp<Foam::surfaceScalarField> Foam::harmonic<Type>::weights
 (
-	const GeometricField<Type, fvPatchField, volMesh>& phi
+    const GeometricField<Type, fvPatchField, volMesh>& phi
 ) const
 {
-	// Implement weights-based stabilised harmonic interpolation using
-	// magnitude of type
-	// Algorithm:
-	// 1) calculate magnitude of internal field and neighbour field
-	// 2) calculate harmonic mean magnitude
-	// 3) express harmonic mean magnitude as: mean = w*mOwn + (1 - w)*mNei
-	// 4) Based on above, calculate w = (mean - mNei)/(mOwn - mNei)
-	// 5) Use weights to interpolate values
+    // Implement weights-based stabilised harmonic interpolation using
+    // magnitude of type
+    // Algorithm:
+    // 1) calculate magnitude of internal field and neighbour field
+    // 2) calculate harmonic mean magnitude
+    // 3) express harmonic mean magnitude as: mean = w*mOwn + (1 - w)*mNei
+    // 4) Based on above, calculate w = (mean - mNei)/(mOwn - mNei)
+    // 5) Use weights to interpolate values
 
-	tmp<surfaceScalarField> tw
-	(
-		new surfaceScalarField
-		(
-			IOobject
-			(
-				"harmonicWeightingFactors" + phi.name(),
-				this->mesh().time().timeName(),
-				this->mesh()
-			),
-			this->mesh() ,
-			dimless
-		)
-	);
+    tmp<surfaceScalarField> tw
+    (
+        new surfaceScalarField
+        (
+            IOobject
+            (
+                "harmonicWeightingFactors" + phi.name(),
+                this->mesh().time().timeName(),
+                this->mesh()
+            ),
+            this->mesh() ,
+            dimless
+        )
+    );
 
-	const surfaceScalarField& deltaCoeffs = this->mesh().deltaCoeffs();
-	const surfaceScalarField& weights = this->mesh().weights();
+    // updateCoupledPatchFields for patchNeighbourField update
+    // HJ, 21/Apr/2022
+    phi.boundaryField().updateCoupledPatchFields();
 
-	const magLongDelta& mld = magLongDelta::New(this->mesh());
-	const surfaceScalarField& longDelta = mld.magDelta();
+    const surfaceScalarField& deltaCoeffs = this->mesh().deltaCoeffs();
+    const surfaceScalarField& weights = this->mesh().weights();
 
-	surfaceScalarField& w = tw();
+    const surfaceScalarField& longDelta = this->mesh().magLongDeltas();
 
-	const unallocLabelList& owner = this->mesh().owner();
-	const unallocLabelList& neighbour = this->mesh().neighbour();
+    surfaceScalarField& w = tw.ref();
 
-	scalarField magPhi = mag(phi);
+    const labelUList& owner = this->mesh().owner();
+    const labelUList& neighbour = this->mesh().neighbour();
 
-	scalarField& wIn = w.internalField();
+    scalarField magPhi = mag(phi);
 
-	// Larger small for complex arithmetic accuracy
-	const scalar kSmall = 1000*SMALL;
+    scalarField& wIn = w.internalField();
 
-	// Calculate internal weights using field magnitude
-	forAll (owner, faceI)
-	{
-		const label own = owner[faceI];
-		const label nei = neighbour[faceI];
+    // Larger small for complex arithmetic accuracy
+    const scalar kSmall = 1000*SMALL;
 
-		const scalar mOwn = magPhi[own]/(1 - weights[faceI]);
-		const scalar mNei = magPhi[nei]/weights[faceI];
+    // Calculate internal weights using field magnitude
+    forAll (owner, faceI)
+    {
+        const label own = owner[faceI];
+        const label nei = neighbour[faceI];
 
-		const scalar den = magPhi[nei] - magPhi[own];
+        const scalar mOwn = magPhi[own]/(1 - weights[faceI]);
+        const scalar mNei = magPhi[nei]/weights[faceI];
 
-		// Note: complex arithmetic requires extra accuracy
-		// This is a division of two close subtractions
-		// HJ, 28/Sep/2011
-		if (mOwn > VSMALL && mNei > VSMALL && mag(den) > kSmall)
-		{
-			const scalar mean = mOwn*mNei/
-				((mOwn + mNei)*longDelta[faceI]*deltaCoeffs[faceI]);
+        const scalar den = magPhi[nei] - magPhi[own];
 
-			// Limit weights for round-off safety
-			wIn[faceI] =
-				Foam::max(0, Foam::min((magPhi[nei] - mean)/den, 1));
-		}
-		else
-		{
-			wIn[faceI] = 0.5;
-		}
-	}
+        // Note: complex arithmetic requires extra accuracy
+        // This is a division of two close subtractions
+        // HJ, 28/Sep/2011
+        if (mOwn > VSMALL && mNei > VSMALL && mag(den) > kSmall)
+        {
+            const scalar mean = mOwn*mNei/
+                ((mOwn + mNei)*longDelta[faceI]*deltaCoeffs[faceI]);
 
-	forAll (phi.boundaryField(), pi)
-	{
-		fvsPatchScalarField& wp = w.boundaryField()[pi];
+            // Limit weights for round-off safety
+            wIn[faceI] =
+                Foam::max(0, Foam::min((magPhi[nei] - mean)/den, 1));
+        }
+        else
+        {
+            wIn[faceI] = 0.5;
+        }
+    }
 
-		const fvPatchField<Type>& pPhi = phi.boundaryField()[pi];
+    forAll (phi.boundaryField(), pi)
+    {
+        fvsPatchScalarField& wp = w.boundaryField()[pi];
 
-		if (pPhi.coupled())
-		{
-			wp = this->weights
-			(
-				pPhi.patchInternalField(),
-				pPhi.patchNeighbourField(),
-				pPhi.patch()
-			);
-		}
-		else
-		{
-			// Boundary weights for uncoupled patches are 1
-			wp = 1;
-		}
-	}
+        const fvPatchField<Type>& pPhi = phi.boundaryField()[pi];
 
-	return tw;
+        if (pPhi.coupled())
+        {
+            wp = this->weights
+            (
+                pPhi.patchInternalField(),
+                pPhi.patchNeighbourField(),
+                pPhi.patch()
+            );
+        }
+        else
+        {
+            // Boundary weights for uncoupled patches are 1
+            wp = 1;
+        }
+    }
+
+    return tw;
 }
 
 
 template<class Type>
 Foam::tmp<Foam::scalarField> Foam::harmonic<Type>::weights
 (
-	const Field<Type>& fOwn,
-	const Field<Type>& fNei,
-	const fvPatch& patch
+    const Field<Type>& fOwn,
+    const Field<Type>& fNei,
+    const fvPatch& patch
 ) const
 {
-	// Implement weights-based stabilised harmonic interpolation using
-	// magnitude of type
-	// Algorithm:
-	// 1) calculate magnitude of internal field and neighbour field
-	// 2) calculate harmonic mean magnitude
-	// 3) express harmonic mean magnitude as: mean = w*mOwn + (1 - w)*mNei
-	// 4) Based on above, calculate w = (mean - mNei)/(mOwn - mNei)
-	// 5) Use weights to interpolate values
+    // Implement weights-based stabilised harmonic interpolation using
+    // magnitude of type
+    // Algorithm:
+    // 1) calculate magnitude of internal field and neighbour field
+    // 2) calculate harmonic mean magnitude
+    // 3) express harmonic mean magnitude as: mean = w*mOwn + (1 - w)*mNei
+    // 4) Based on above, calculate w = (mean - mNei)/(mOwn - mNei)
+    // 5) Use weights to interpolate values
 
-	tmp<scalarField> tweights(new scalarField(fOwn.size(), 0.5));
-	scalarField& weights = tweights();
+    tmp<scalarField> tweights(new scalarField(fOwn.size(), 0.5));
+    scalarField& weights = tweights.ref();
 
-	// Larger small for complex arithmetic accuracy
-	const scalar kSmall = 1000*SMALL;
+    // Larger small for complex arithmetic accuracy
+    const scalar kSmall = 1000*SMALL;
 
-	// Mag long deltas are identical on both sides.  HJ, 28/Sep/2011
-	const magLongDelta& mld = magLongDelta::New(this->mesh());
+    // Mag long deltas are identical on both sides.  HJ, 28/Sep/2011
 
-	scalarField magPhiOwn = mag(fOwn);
-	scalarField magPhiNei = mag(fNei);
+    scalarField magPhiOwn = mag(fOwn);
+    scalarField magPhiNei = mag(fNei);
 
-	const scalarField& pWeights = patch.weights();
-	const scalarField& pDeltaCoeffs = patch.deltaCoeffs();
-	const scalarField& pLongDelta = mld.magDelta(patch.index());
+    const scalarField& pWeights = patch.weights();
+    const scalarField& pDeltaCoeffs = patch.deltaCoeffs();
+    const scalarField& pLongDelta = patch.magLongDeltas();
 
-	forAll (weights, faceI)
-	{
-		scalar mOwn = magPhiOwn[faceI]/(1 - pWeights[faceI]);
-		scalar mNei = magPhiNei[faceI]/pWeights[faceI];
+    forAll (weights, faceI)
+    {
+        scalar mOwn = magPhiOwn[faceI]/(1 - pWeights[faceI]);
+        scalar mNei = magPhiNei[faceI]/pWeights[faceI];
 
-		scalar den = magPhiNei[faceI] - magPhiOwn[faceI];
+        scalar den = magPhiNei[faceI] - magPhiOwn[faceI];
 
-		// Note: complex arithmetic requires extra accuracy
-		// This is a division of two close subtractions
-		// HJ, 28/Sep/2011
-		if (mOwn > VSMALL && mNei > VSMALL && mag(den) > kSmall)
-		{
-			scalar mean = mOwn*mNei/
-				(
-					(mOwn + mNei)*
-					pLongDelta[faceI]*
-					pDeltaCoeffs[faceI]
-				);
+        // Note: complex arithmetic requires extra accuracy
+        // This is a division of two close subtractions
+        // HJ, 28/Sep/2011
+        if (mOwn > VSMALL && mNei > VSMALL && mag(den) > kSmall)
+        {
+            scalar mean = mOwn*mNei/
+                (
+                    (mOwn + mNei)*
+                    pLongDelta[faceI]*
+                    pDeltaCoeffs[faceI]
+                );
 
-			// Limit weights for round-off safety
-			weights[faceI] =
-				Foam::max(0, Foam::min((magPhiNei[faceI] - mean)/den, 1));
-		}
-		else
-		{
-			// Use 0.5 weights
-		}
-	}
+            // Limit weights for round-off safety
+            weights[faceI] =
+                Foam::max(0, Foam::min((magPhiNei[faceI] - mean)/den, 1));
+        }
+        else
+        {
+            // Use 0.5 weights
+        }
+    }
 
-	return tweights;
+    return tweights;
 }
 
 

@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 InClass
-	Foam::GeometricScalarField
+    Foam::GeometricScalarField
 
 Description
-	Scalar specific part of the implementation of GeometricField.
+    Scalar specific part of the implementation of GeometricField.
 
 SourceFiles
-	GeometricScalarField.C
+    GeometricScalarField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,23 +51,23 @@ namespace Foam
 template<template<class> class PatchField, class GeoMesh>
 void stabilise
 (
-	GeometricField<scalar, PatchField, GeoMesh>&,
-	const GeometricField<scalar, PatchField, GeoMesh>&,
-	const dimensioned<scalar>&
+    GeometricField<scalar, PatchField, GeoMesh>&,
+    const GeometricField<scalar, PatchField, GeoMesh>&,
+    const dimensioned<scalar>&
 );
 
 template<template<class> class PatchField, class GeoMesh>
 tmp<GeometricField<scalar, PatchField, GeoMesh> > stabilise
 (
-	const GeometricField<scalar, PatchField, GeoMesh>&,
-	const dimensioned<scalar>&
+    const GeometricField<scalar, PatchField, GeoMesh>&,
+    const dimensioned<scalar>&
 );
 
 template<template<class> class PatchField, class GeoMesh>
 tmp<GeometricField<scalar, PatchField, GeoMesh> > stabilise
 (
-	const tmp<GeometricField<scalar, PatchField, GeoMesh> >&,
-	const dimensioned<scalar>&
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >&,
+    const dimensioned<scalar>&
 );
 
 
@@ -124,27 +124,27 @@ UNARY_FUNCTION(scalar, scalar, y1, trans)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #define BesselFunc(func)                                                       \
-					                                                           \
+                                                                               \
 template<template<class> class PatchField, class GeoMesh>                      \
 void func                                                                      \
 (                                                                              \
-	GeometricField<scalar, PatchField, GeoMesh>& Res,                          \
-	const int n,                                                               \
-	const GeometricField<scalar, PatchField, GeoMesh>& sf                      \
+    GeometricField<scalar, PatchField, GeoMesh>& Res,                          \
+    const int n,                                                               \
+    const GeometricField<scalar, PatchField, GeoMesh>& sf                      \
 );                                                                             \
-					                                                           \
+                                                                               \
 template<template<class> class PatchField, class GeoMesh>                      \
 tmp<GeometricField<scalar, PatchField, GeoMesh> > func                         \
 (                                                                              \
-	const int n,                                                               \
-	const GeometricField<scalar, PatchField, GeoMesh>&                         \
+    const int n,                                                               \
+    const GeometricField<scalar, PatchField, GeoMesh>&                         \
 );                                                                             \
-					                                                           \
+                                                                               \
 template<template<class> class PatchField, class GeoMesh>                      \
 tmp<GeometricField<scalar, PatchField, GeoMesh> > func                         \
 (                                                                              \
-	const int n,                                                               \
-	const tmp<GeometricField<scalar, PatchField, GeoMesh> >&                   \
+    const int n,                                                               \
+    const tmp<GeometricField<scalar, PatchField, GeoMesh> >&                   \
 );
 
 BesselFunc(jn)
@@ -162,7 +162,7 @@ BesselFunc(yn)
 #include "undefFieldFunctionsM.H"
 
 #ifdef NoRepository
-#	include "GeometricScalarField.C"
+#   include "GeometricScalarField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

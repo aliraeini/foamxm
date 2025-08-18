@@ -4,7 +4,6 @@ set -x
 
 wmakeLnInclude dynamicMesh
 wmakeLnInclude dynamicFvMesh
-echo "skipping wmakeLnInclude topoChangerFvMesh"
 
 # Make lnInclude directories for motionSolvers
 meshMotion/AllwmakeLnInclude

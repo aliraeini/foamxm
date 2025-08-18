@@ -4,7 +4,7 @@
 
     Foam::argList::addOption
     (
-		"dict",
-		"file",
-		"read control dictionary from specified location"
-	);
+        "dict",
+        "file",
+        "read control dictionary from specified location"
+    );

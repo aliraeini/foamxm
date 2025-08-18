@@ -74,24 +74,24 @@ public:
    //------------------------------------
 
    gzstreambuf()
-	  : opened(0)
+      : opened(0)
    {
-	  setp( buffer, buffer + (bufferSize-1));
-	  setg( buffer + 4,     // beginning of putback area
-			buffer + 4,     // read position
-			buffer + 4);    // end position
-	  // ASSERT: both input & output capabilities will not be used together
+      setp( buffer, buffer + (bufferSize-1));
+      setg( buffer + 4,     // beginning of putback area
+            buffer + 4,     // read position
+            buffer + 4);    // end position
+      // ASSERT: both input & output capabilities will not be used together
    }
    ~gzstreambuf()
    {
-	  close();
+      close();
    }
 
    //------------------------------------
 
    int is_open()
    {
-	  return opened;
+      return opened;
    }
    gzstreambuf* open( const char* name, int open_mode );
    gzstreambuf* close();
@@ -119,7 +119,7 @@ public:
 
    gzstreambase()
    {
-	  init(&buf);
+      init(&buf);
    }
    gzstreambase( const char* _name, int _open_mode );
    ~gzstreambase();
@@ -130,7 +130,7 @@ public:
    void close();
    gzstreambuf* rdbuf()
    {
-	  return &buf;
+      return &buf;
    }
 };
 
@@ -153,24 +153,24 @@ public:
    //------------------------------------
 
    igzstream()
-	  : std::istream( &buf)
+      : std::istream( &buf)
    {}
    igzstream( const char*  _name,
-			  int          _open_mode = std::ios::in )
-	  : std::istream( &buf )
-	  , gzstreambase( _name, _open_mode )
+              int          _open_mode = std::ios::in )
+      : std::istream( &buf )
+      , gzstreambase( _name, _open_mode )
    {}
 
    //------------------------------------
 
    gzstreambuf* rdbuf()
    {
-	  return gzstreambase::rdbuf();
+      return gzstreambase::rdbuf();
    }
    void open( const char*  _name,
-			  int          _open_mode = std::ios::in )
+              int          _open_mode = std::ios::in )
    {
-	   gzstreambase::open( _name, _open_mode );
+       gzstreambase::open( _name, _open_mode );
    }
 };
 
@@ -187,25 +187,25 @@ public:
    //------------------------------------
 
    ogzstream()
-	  : std::ostream( &buf)
+      : std::ostream( &buf)
    {}
    explicit
    ogzstream( const char* _name,
-			  int         _open_mode = std::ios::out )
-	  : gzstreambase( _name, _open_mode )
-	  , std::ostream( &buf)
+              int         _open_mode = std::ios::out )
+      : gzstreambase( _name, _open_mode )
+      , std::ostream( &buf)
    {}
 
    //------------------------------------
 
    gzstreambuf* rdbuf()
    {
-	  return gzstreambase::rdbuf();
+      return gzstreambase::rdbuf();
    }
    void open( const char*  _name,
-			  int          _open_mode = std::ios::out )
+              int          _open_mode = std::ios::out )
    {
-	  gzstreambase::open( _name, _open_mode );
+      gzstreambase::open( _name, _open_mode );
    }
 };
 

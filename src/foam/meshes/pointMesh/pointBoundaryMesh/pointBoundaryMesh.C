@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,24 +33,24 @@ License
 
 Foam::pointBoundaryMesh::pointBoundaryMesh
 (
-	const pointMesh& m,
-	const polyBoundaryMesh& basicBdry
+    const pointMesh& m,
+    const polyBoundaryMesh& basicBdry
 )
 :
-	pointPatchList(basicBdry.size()),
-	mesh_(m)
+    pointPatchList(basicBdry.size()),
+    mesh_(m)
 {
-	// Set boundary patches
-	pointPatchList& Patches = *this;
+    // Set boundary patches
+    pointPatchList& Patches = *this;
 
-	forAll(Patches, patchI)
-	{
-		Patches.set
-		(
-			patchI,
-			facePointPatch::New(basicBdry[patchI], *this).ptr()
-		);
-	}
+    forAll(Patches, patchI)
+    {
+        Patches.set
+        (
+            patchI,
+            facePointPatch::New(basicBdry[patchI], *this).ptr()
+        );
+    }
 }
 
 
@@ -58,96 +58,96 @@ Foam::pointBoundaryMesh::pointBoundaryMesh
 
 void Foam::pointBoundaryMesh::calcGeometry()
 {
-	forAll(*this, patchi)
-	{
-		operator[](patchi).initGeometry();
-	}
+    forAll(*this, patchi)
+    {
+        operator[](patchi).initGeometry();
+    }
 
-	forAll(*this, patchi)
-	{
-		operator[](patchi).calcGeometry();
-	}
+    forAll(*this, patchi)
+    {
+        operator[](patchi).calcGeometry();
+    }
 }
 
 
 const Foam::globalPointPatch&
 Foam::pointBoundaryMesh::globalPatch() const
 {
-	const pointPatchList& patches = *this;
+    const pointPatchList& patches = *this;
 
-	forAll (patches, patchI)
-	{
-		if (isType<globalPointPatch>(patches[patchI]))
-		{
-			return refCast<const globalPointPatch>(patches[patchI]);
-		}
-	}
+    forAll (patches, patchI)
+    {
+        if (isType<globalPointPatch>(patches[patchI]))
+        {
+            return refCast<const globalPointPatch>(patches[patchI]);
+        }
+    }
 
-	FatalErrorIn
-	(
-		"const pointBoundaryMesh::"
-		"globalPointPatch& globalPatch() const"
-	)   << "patch not found."
-		<< abort(FatalError);
+    FatalErrorIn
+    (
+        "const pointBoundaryMesh::"
+        "globalPointPatch& globalPatch() const"
+    )   << "patch not found."
+        << abort(FatalError);
 
-	// Dummy return
-	return refCast<const globalPointPatch>(patches[0]);
+    // Dummy return
+    return refCast<const globalPointPatch>(patches[0]);
 }
 
 
 void Foam::pointBoundaryMesh::movePoints()
 {
-	pointPatchList& patches = *this;
+    pointPatchList& patches = *this;
 
-	forAll(patches, patchi)
-	{
-		patches[patchi].movePoints();
-	}
+    forAll(patches, patchi)
+    {
+        patches[patchi].movePoints();
+    }
 }
 
 
 void Foam::pointBoundaryMesh::updateMesh
 (
-	const polyMesh& pMesh
+    const polyMesh& pMesh
 )
 {
-	const polyBoundaryMesh& pBoundary = pMesh.boundaryMesh();
-	pointPatchList& patches = *this;
+    const polyBoundaryMesh& pBoundary = pMesh.boundaryMesh();
+    pointPatchList& patches = *this;
 
-	// 21.1.19 HR : Patches need to be recreated in PLB
-	patches.clear();
-	patches.setSize(pBoundary.size());
+    // 21.1.19 HR : Patches need to be recreated in PLB
+    patches.clear();
+    patches.setSize(pBoundary.size());
 
-	forAll(patches, patchI)
-	{
-		patches.set
-		(
-			patchI,
-			facePointPatch::New(pBoundary[patchI], *this).ptr()
-		);
-	}
+    forAll(patches, patchI)
+    {
+        patches.set
+        (
+            patchI,
+            facePointPatch::New(pBoundary[patchI], *this).ptr()
+        );
+    }
 
-	// Add the globalPointPatch
-	if(pMesh.globalData().nGlobalPoints())
-	{
-		patches.setSize(pBoundary.size() + 1);
+    // Add the globalPointPatch
+    if(pMesh.globalData().nGlobalPoints())
+    {
+        patches.setSize(pBoundary.size() + 1);
 
-		patches.set
-		(
-			patches.size() - 1,
-			new globalPointPatch(*this, patches.size() - 1)
-		);
-	}
+        patches.set
+        (
+            patches.size() - 1,
+            new globalPointPatch(*this, patches.size() - 1)
+        );
+    }
 
-	forAll(patches, patchi)
-	{
-		patches[patchi].initUpdateMesh();
-	}
+    forAll(patches, patchi)
+    {
+        patches[patchi].initUpdateMesh();
+    }
 
-	forAll(patches, patchi)
-	{
-		patches[patchi].updateMesh();
-	}
+    forAll(patches, patchi)
+    {
+        patches[patchi].updateMesh();
+    }
 }
 
 

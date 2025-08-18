@@ -1,48 +1,48 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	multiThreader
+    multiThreader
 
 Description
-	Class which provides support for generic multi-threaded execution of class
-	methods using POSIX threads.
+    Class which provides support for generic multi-threaded execution of class
+    methods using POSIX threads.
 
-	The IOmultiThreader is an inherited class which allows integration with
-	the object registry, thereby allowing a single multi-threader object to
-	be accessed by multiple classes in a global sense.
+    The IOmultiThreader is an inherited class which allows integration with
+    the object registry, thereby allowing a single multi-threader object to
+    be accessed by multiple classes in a global sense.
 
-	Thread-pooling is implemented as described in:
+    Thread-pooling is implemented as described in:
    "Using POSIX Threads: Programming with Pthreads"
-	by Brad Nichols, Dick Buttlar, Jackie Farrell
-	  O'Reilly & Associates, Inc.
+    by Brad Nichols, Dick Buttlar, Jackie Farrell
+      O'Reilly & Associates, Inc.
 
 Author
-	Sandeep Menon
-	University of Massachusetts Amherst
+    Sandeep Menon
+    University of Massachusetts Amherst
 
 SourceFiles
-	multiThreader.C
+    multiThreader.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -59,7 +59,7 @@ SourceFiles
 
 extern "C"
 {
-	typedef void *(*externThreadFunctionType)(void *);
+    typedef void *(*externThreadFunctionType)(void *);
 }
 
 typedef void *(*threadFunctionType)(void *);
@@ -74,237 +74,243 @@ namespace Foam
 
 class Mutex
 {
-	// Private data
+    // Private data
 
-		mutable pthread_mutex_t lock_;
+        mutable pthread_mutex_t lock_;
 
 public:
 
-	// Debug switch
-	static bool debug;
+    // Debug switch
+    static bool debug;
 
-	// Constructor
-	Mutex();
+    // Constructor
+    Mutex();
 
-	// Destructor
-	~Mutex();
+    // Destructor
+    ~Mutex();
 
-	// Lock the mutex
-	void lock() const;
+    // Lock the mutex
+    void lock() const;
 
-	// Try to acquire the mutex.
-	// Returns zero if successful
-	bool tryLock() const;
+    // Try to acquire the mutex.
+    // Returns zero if successful
+    bool tryLock() const;
 
-	// Unlock the mutex
-	void unlock() const;
+    // Unlock the mutex
+    void unlock() const;
 
-	// Operator overload
-	inline pthread_mutex_t* operator()()
-	{
-		return &lock_;
-	}
+    // Operator overload
+    inline pthread_mutex_t* operator()()
+    {
+        return &lock_;
+    }
 };
 
 class rwMutex
 {
-	// Private data
+    // Private data
 
-		mutable pthread_rwlock_t lock_;
+        mutable pthread_rwlock_t lock_;
 
 public:
 
-	// Enumerants for lock-types
-	enum lockType
-	{
-		READ_LOCK,
-		WRITE_LOCK
-	};
+    // Enumerants for lock-types
+    enum lockType
+    {
+        READ_LOCK,
+        WRITE_LOCK
+    };
 
-	// Debug switch
-	static bool debug;
+    // Debug switch
+    static bool debug;
 
-	// Constructor
-	rwMutex();
+    // Constructor
+    rwMutex();
 
-	// Destructor
-	~rwMutex();
+    // Destructor
+    ~rwMutex();
 
-	// Lock the mutex
-	void lock(const lockType lType) const;
+    // Lock the mutex
+    void lock(const lockType lType) const;
 
-	// Try to acquire a lock
-	bool tryLock(const lockType lType) const;
+    // Try to acquire a lock
+    bool tryLock(const lockType lType) const;
 
-	// Unlock the mutex
-	void unlock() const;
+    // Unlock the mutex
+    void unlock() const;
 
-	// Operator overload
-	inline pthread_rwlock_t* operator()()
-	{
-		return &lock_;
-	}
+    // Operator overload
+    inline pthread_rwlock_t* operator()()
+    {
+        return &lock_;
+    }
 };
 
 class Conditional
 {
-	// Private data
+    // Private data
 
-		mutable pthread_cond_t condition_;
+        mutable pthread_cond_t condition_;
 
 public:
 
-	// Constructor
-	Conditional();
+    // Constructor
+    Conditional();
 
-	// Destructor
-	~Conditional();
+    // Destructor
+    ~Conditional();
 
-	// Operator overload
-	inline pthread_cond_t* operator()()
-	{
-		return &condition_;
-	}
+    // Operator overload
+    inline pthread_cond_t* operator()()
+    {
+        return &condition_;
+    }
 };
 
+/*---------------------------------------------------------------------------*\
+                           Class multiThreader Declaration
+\*---------------------------------------------------------------------------*/
 
 class multiThreader
 {
-	// Private data
+    // Private data
 
-		mutable int numThreads_;
+        mutable int numThreads_;
 
-		mutable int maxQueueSize_;
+        mutable int maxQueueSize_;
 
-		// Work-queue item: Holds a pointer to the method and its argument
-		struct workQueueItem
-		{
-			void (*function)(void*);
-			void *arg;
-			workQueueItem *next;
-		};
+        // Work-queue item: Holds a pointer to the method and its argument
+        struct workQueueItem
+        {
+            void (*function)(void*);
+            void *arg;
+            workQueueItem *next;
+        };
 
-		// Common structure for all threads in the pool.
-		mutable struct threadPool
-		{
-			multiThreader *threader;
-			int numThreads;
-			int queueSize;
-			pthread_t *threads;
-			pthread_attr_t attr;
-			workQueueItem *head, *tail;
+        // Common structure for all threads in the pool.
+        mutable struct threadPool
+        {
+            multiThreader *threader;
+            int numThreads;
+            int queueSize;
+            pthread_t *threads;
+            pthread_attr_t attr;
+            workQueueItem *head, *tail;
 
-			// Flags
-			bool queueClosed;
-			bool shutDown;
+            // Flags
+            bool queueClosed;
+            bool shutDown;
 
-			// Synchronization
-			Mutex queueLock;
-			Conditional queueNotEmpty;
-			Conditional queueNotFull;
-			Conditional queueEmpty;
-		} *poolInfo_;
+            // Synchronization
+            Mutex queueLock;
+            Conditional queueNotEmpty;
+            Conditional queueNotFull;
+            Conditional queueEmpty;
+        } *poolInfo_;
 
-	// Private Member Functions
+    // Private Member Functions
 
-		void initializeThreadPool();
+        void initializeThreadPool();
 
-		static threadReturnType poolThread(void *arg);
+        static threadReturnType poolThread(void *arg);
 
-		void destroyThreadPool();
+        void destroyThreadPool();
 
-		//- Disallow default bitwise copy construct
-		multiThreader(const multiThreader&);
+        //- Disallow default bitwise copy construct
+        multiThreader(const multiThreader&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const multiThreader&);
+        //- Disallow default bitwise assignment
+        void operator=(const multiThreader&);
 
 public:
 
-	// Debug switch
+    // Debug switch
 
-		static bool debug;
+        static bool debug;
 
-	// Constructor
+    // Constructor
 
-		//- Construct with specified number of threads
-		multiThreader(int numThreads);
-
-
-	// Destructor
-
-		~multiThreader();
+        //- Construct with specified number of threads
+        multiThreader(int numThreads);
 
 
-	// Member Functions
+    // Destructor
 
-		//- Return the number of threads
-		int getNumThreads() const;
+        ~multiThreader();
 
-		//- Obtain the thread ID for a given index
-		pthread_t getID(int index) const;
 
-		//- Return true if the number of threads is equal to one.
-		bool singleThreaded() const;
+    // Member Functions
 
-		//- Return true if the number of threads is more than one.
-		bool multiThreaded() const;
+        //- Return the number of threads
+        int getNumThreads() const;
 
-		//- Return the maxQueueSize
-		int getMaxQueueSize() const;
+        //- Obtain the thread ID for a given index
+        pthread_t getID(int index) const;
 
-		//- Set the maxQueueSize
-		void setMaxQueueSize(int size) const;
+        //- Return true if the number of threads is equal to one.
+        bool singleThreaded() const;
 
-		//- Add a function to the work queue
-		void addToWorkQueue(void (*tFunction)(void*), void *arg) const;
+        //- Return true if the number of threads is more than one.
+        bool multiThreaded() const;
 
-		//- Conditional handling
-		void waitForCondition(Conditional&, Mutex&) const;
-		void broadCast(Conditional&) const;
-		void signal(Conditional&) const;
+        //- Return the maxQueueSize
+        int getMaxQueueSize() const;
+
+        //- Set the maxQueueSize
+        void setMaxQueueSize(int size) const;
+
+        //- Add a function to the work queue
+        void addToWorkQueue(void (*tFunction)(void*), void *arg) const;
+
+        //- Conditional handling
+        void waitForCondition(Conditional&, Mutex&) const;
+        void broadCast(Conditional&) const;
+        void signal(Conditional&) const;
 };
 
+/*---------------------------------------------------------------------------*\
+                         Class IOmultiThreader Declaration
+\*---------------------------------------------------------------------------*/
 
 class IOmultiThreader
 :
-	public regIOobject,
-	public multiThreader
+    public regIOobject,
+    public multiThreader
 {
 
-	// Member functions
+    // Member functions
 
-		//- Disallow default bitwise copy construct
-		IOmultiThreader(const IOmultiThreader&);
+        //- Disallow default bitwise copy construct
+        IOmultiThreader(const IOmultiThreader&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const IOmultiThreader&);
+        //- Disallow default bitwise assignment
+        void operator=(const IOmultiThreader&);
 
 public:
 
-	//- Runtime type information
-	TypeName("multiThreader");
+    //- Runtime type information
+    TypeName("multiThreader");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject and specified number of threads
-		IOmultiThreader(const IOobject& io, int numThreads)
-		:
-			regIOobject(io),
-			multiThreader(numThreads)
-		{}
+        //- Construct from IOobject and specified number of threads
+        IOmultiThreader(const IOobject& io, int numThreads)
+        :
+            regIOobject(io),
+            multiThreader(numThreads)
+        {}
 
-	// Destructor
+    // Destructor
 
-		virtual ~IOmultiThreader() {}
+        virtual ~IOmultiThreader() {}
 
-	// Member functions
+    // Member functions
 
-		bool writeData(Ostream&) const
-		{
-			return true;
-		}
+        bool writeData(Ostream&) const
+        {
+            return true;
+        }
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

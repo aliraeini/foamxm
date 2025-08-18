@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,8 +35,8 @@ defineRunTimeSelectionTable(Foam::functionObject, dictionary);
 Foam::debug::debugSwitch
 Foam::functionObject::debug
 (
-	"functionObject",
-	0
+    "functionObject",
+    0
 );
 
 
@@ -44,7 +44,7 @@ Foam::functionObject::debug
 
 Foam::functionObject::functionObject(const word& name)
 :
-	name_(name)
+    name_(name)
 {}
 
 
@@ -52,109 +52,97 @@ Foam::functionObject::functionObject(const word& name)
 
 Foam::autoPtr<Foam::functionObject> Foam::functionObject::New
 (
-	const word& name,
-	const Time& t,
-	const dictionary& functionDict
+    const word& name,
+    const Time& t,
+    const dictionary& functionDict
 )
 {
-	word functionType(functionDict.lookup("type"));
+    word functionType(functionDict.lookup("type"));
 
-	if (debug)
-	{
-		Info<< "Selecting function " << functionType << endl;
-	}
+    if (debug)
+    {
+        Info<< "Selecting function " << functionType << endl;
+    }
 
-	if (functionDict.found("functionObjectLibs"))
-	{
-		const_cast<Time&>(t).libs().open
-		(
-			functionDict,
-			"functionObjectLibs",
-			dictionaryConstructorTablePtr_
-		);
-	}
-	else
-	{
-		const_cast<Time&>(t).libs().open
-		(
-			functionDict,
-			"libs",
-			dictionaryConstructorTablePtr_
-		);
-	}
+    if (functionDict.found("functionObjectLibs"))
+    {
+        const_cast<Time&>(t).libs().open
+        (
+            functionDict,
+            "functionObjectLibs",
+            dictionaryConstructorTablePtr_
+        );
+    }
+    else
+    {
+        const_cast<Time&>(t).libs().open
+        (
+            functionDict,
+            "libs",
+            dictionaryConstructorTablePtr_
+        );
+    }
 
-	if (!dictionaryConstructorTablePtr_)
-	{
-		FatalErrorIn
-		(
-			"functionObject::New"
-			"(const word& name, const Time&, const dictionary&)"
-		)   << "Unknown function type "
-			<< functionType << nl << nl
-			<< "Table of functionObjects is empty" << endl
-			<< exit(FatalError);
-	}
+    if (!dictionaryConstructorTablePtr_)
+    {
+        FatalErrorInFunction
+            << "Unknown function type "
+            << functionType << nl << nl
+            << "Table of functionObjects is empty" << endl
+            << exit(FatalError);
+    }
 
-	dictionaryConstructorTable::iterator cstrIter =
-		dictionaryConstructorTablePtr_->find(functionType);
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(functionType);
 
-	if (cstrIter == dictionaryConstructorTablePtr_->end())
-	{
-		FatalErrorIn
-		(
-			"functionObject::New"
-			"(const word& name, const Time&, const dictionary&)"
-		)   << "Unknown function type "
-			<< functionType << nl << nl
-			<< "Valid functions are : " << nl
-			<< dictionaryConstructorTablePtr_->sortedToc() << endl
-			<< exit(FatalError);
-	}
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorInFunction
+            << "Unknown function type "
+            << functionType << nl << nl
+            << "Valid functions are : " << nl
+            << dictionaryConstructorTablePtr_->sortedToc() << endl
+            << exit(FatalError);
+    }
 
-	return autoPtr<functionObject>(cstrIter()(name, t, functionDict));
+    return autoPtr<functionObject>(cstrIter()(name, t, functionDict));
 }
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::functionObject::~functionObject()
-{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 const Foam::word& Foam::functionObject::name() const
 {
-	return name_;
+    return name_;
 }
 
 
 bool Foam::functionObject::end()
 {
-	return execute(false);
+    return execute(false);
 }
 
 
 bool Foam::functionObject::timeSet()
 {
-	return false;
+    return false;
 }
 
 
 bool Foam::functionObject::adjustTimeStep()
 {
-	return false;
+    return false;
 }
 
 
 Foam::autoPtr<Foam::functionObject> Foam::functionObject::iNew::operator()
 (
-	const word& name,
-	Istream& is
+    const word& name,
+    Istream& is
 ) const
 {
-	dictionary dict(is);
-	return functionObject::New(name, time_, dict);
+    dictionary dict(is);
+    return functionObject::New(name, time_, dict);
 }
 
 

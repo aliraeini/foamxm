@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ template<class Type>
 const Foam::wordList Foam::TimeActivatedExplicitSource<Type>::
 selectionModeTypeNames_
 (
-	IStringStream("(points cellSet)")()
+    IStringStream("(points cellSet)")()
 );
 
 
@@ -41,7 +41,7 @@ template<class Type>
 const Foam::wordList Foam::TimeActivatedExplicitSource<Type>::
 volumeModeTypeNames_
 (
-	IStringStream("(absolute specific)")()
+    IStringStream("(absolute specific)")()
 );
 
 
@@ -51,29 +51,23 @@ template<class Type>
 typename Foam::TimeActivatedExplicitSource<Type>::selectionModeType
 Foam::TimeActivatedExplicitSource<Type>::wordToSelectionModeType
 (
-	const word& smtName
+    const word& smtName
 ) const
 {
-	forAll(selectionModeTypeNames_, i)
-	{
-		if (smtName == selectionModeTypeNames_[i])
-		{
-			return selectionModeType(i);
-		}
-	}
+    forAll (selectionModeTypeNames_, i)
+    {
+        if (smtName == selectionModeTypeNames_[i])
+        {
+            return selectionModeType(i);
+        }
+    }
 
-	FatalErrorIn
-	(
-		"TimeActivatedExplicitSource<Type>::selectionModeType"
-		"TimeActivatedExplicitSource<Type>::wordToSelectionModeType"
-		"("
-			"const word&"
-		")"
-	)   << "Unknown selectionMode type " << smtName
-		<< ". Valid selectionMode types are:" << nl << selectionModeTypeNames_
-		<< exit(FatalError);
+    FatalErrorInFunction
+        << "Unknown selectionMode type " << smtName
+        << ". Valid selectionMode types are:" << nl << selectionModeTypeNames_
+        << exit(FatalError);
 
-	return selectionModeType(0);
+    return selectionModeType(0);
 }
 
 
@@ -81,201 +75,234 @@ template<class Type>
 typename Foam::TimeActivatedExplicitSource<Type>::volumeModeType
 Foam::TimeActivatedExplicitSource<Type>::wordToVolumeModeType
 (
-	const word& vmtName
+    const word& vmtName
 ) const
 {
-	forAll(volumeModeTypeNames_, i)
-	{
-		if (vmtName == volumeModeTypeNames_[i])
-		{
-			return volumeModeType(i);
-		}
-	}
+    forAll (volumeModeTypeNames_, i)
+    {
+        if (vmtName == volumeModeTypeNames_[i])
+        {
+            return volumeModeType(i);
+        }
+    }
 
-	FatalErrorIn
-	(
-		"TimeActivatedExplicitSource<Type>::volumeModeType"
-		"TimeActivatedExplicitSource<Type>::wordToVolumeModeType(const word&)"
-	)   << "Unknown volumeMode type " << vmtName
-		<< ". Valid volumeMode types are:" << nl << volumeModeTypeNames_
-		<< exit(FatalError);
+    FatalErrorInFunction
+        << "Unknown volumeMode type " << vmtName
+        << ". Valid volumeMode types are:" << nl << volumeModeTypeNames_
+        << exit(FatalError);
 
-	return volumeModeType(0);
+    return volumeModeType(0);
 }
 
 
 template<class Type>
 Foam::word Foam::TimeActivatedExplicitSource<Type>::selectionModeTypeToWord
 (
-	const selectionModeType& smtType
+    const selectionModeType& smtType
 ) const
 {
-	if (smtType > selectionModeTypeNames_.size())
-	{
-		return "UNKNOWN";
-	}
-	else
-	{
-		return selectionModeTypeNames_[smtType];
-	}
+    if (smtType > selectionModeTypeNames_.size())
+    {
+        return "UNKNOWN";
+    }
+    else
+    {
+        return selectionModeTypeNames_[smtType];
+    }
 }
 
 
 template<class Type>
 Foam::word Foam::TimeActivatedExplicitSource<Type>::volumeModeTypeToWord
 (
-	const volumeModeType& vmtType
+    const volumeModeType& vmtType
 ) const
 {
-	if (vmtType > volumeModeTypeNames_.size())
-	{
-		return "UNKNOWN";
-	}
-	else
-	{
-		return volumeModeTypeNames_[vmtType];
-	}
+    if (vmtType > volumeModeTypeNames_.size())
+    {
+        return "UNKNOWN";
+    }
+    else
+    {
+        return volumeModeTypeNames_[vmtType];
+    }
 }
 
 
 template<class Type>
 void Foam::TimeActivatedExplicitSource<Type>::setSelection
 (
-	const dictionary& dict
+    const dictionary& dict
 )
 {
-	switch (selectionMode_)
-	{
-		case smPoints:
-		{
-			dict.lookup("points") >> points_;
-			break;
-		}
-		case smCellSet:
-		{
-			dict.lookup("cellSet") >> cellSetName_;
-			break;
-		}
-		default:
-		{
-			FatalErrorIn
-			(
-				"TimeActivatedExplicitSource::setSelection(const dictionary&)"
-			)   << "Unknown selectionMode "
-				<< selectionModeTypeNames_[selectionMode_]
-				<< ". Valid selectionMode types are" << selectionModeTypeNames_
-				<< exit(FatalError);
-		}
-	}
+    switch (selectionMode_)
+    {
+        case smPoints:
+        {
+            dict.lookup("points") >> points_;
+            break;
+        }
+        case smCellSet:
+        {
+            dict.lookup("cellSet") >> cellSetName_;
+            break;
+        }
+        default:
+        {
+            FatalErrorInFunction
+                << "Unknown selectionMode "
+                << selectionModeTypeNames_[selectionMode_]
+                << ". Valid selectionMode types are" << selectionModeTypeNames_
+                << exit(FatalError);
+        }
+    }
 }
 
 
 template<class Type>
 void Foam::TimeActivatedExplicitSource<Type>::setFieldData
 (
-	const dictionary& dict,
-	const wordList& fieldNames
+    const dictionary& dict,
+    const wordList& fieldNames
 )
 {
-	dict.lookup("fieldData") >> fieldData_;
-	labelList localFieldIds(fieldData_.size(), -1);
-	forAll(fieldNames, i)
-	{
-		forAll(fieldData_, j)
-		{
-			const word& fdName = fieldData_[j].first();
-			if (fdName == fieldNames[i])
-			{
-				fieldIds_[i] = j;
-				localFieldIds[j] = i;
-				break;
-			}
-		}
-	}
-	forAll(localFieldIds, i)
-	{
-		if (localFieldIds[i] < 0)
-		{
-			FatalErrorIn
-			(
-				"TimeActivatedExplicitSource<Type>::setFieldData"
-				"("
-					"const dictionary&, "
-					"const wordList&"
-				")"
-			)   << "Field " << fieldData_[i].first() << " not found in "
-				<< "field list. Available fields are: " << nl << fieldNames
-				<< exit(FatalError);
-		}
-	}
+    dict.lookup("fieldData") >> fieldData_;
+    labelList localFieldIds(fieldData_.size(), -1);
+    forAll (fieldNames, i)
+    {
+        forAll (fieldData_, j)
+        {
+            const word& fdName = fieldData_[j].first();
+            if (fdName == fieldNames[i])
+            {
+                fieldIds_[i] = j;
+                localFieldIds[j] = i;
+                break;
+            }
+        }
+    }
+
+    forAll (localFieldIds, i)
+    {
+        if (localFieldIds[i] < 0)
+        {
+            FatalErrorInFunction
+                << "Field " << fieldData_[i].first() << " not found in "
+                << "field list. Available fields are: " << nl << fieldNames
+                << exit(FatalError);
+        }
+    }
 }
 
 
 template<class Type>
-void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
+void Foam::TimeActivatedExplicitSource<Type>::setLimitData
+(
+    const dictionary& dict,
+    const wordList& fieldNames
+)
 {
-	Info<< incrIndent << indent << "Source: " << name_ << endl;
-	switch (selectionMode_)
-	{
-		case smPoints:
-		{
-			Info<< indent << "- selecting cells using points" << endl;
+    if (!dict.found("limitData"))
+    {
+        // No limit data found
+        return;
+    }
 
-			labelHashSet cellOwners;
-			forAll(points_, i)
-			{
-				label cellI = mesh_.findCell(points_[i]);
-				if (cellI >= 0)
-				{
-					cellOwners.insert(cellI);
-				}
+    dict.lookup("limitData") >> limitData_;
+    labelList localFieldIds(fieldData_.size(), -1);
+    forAll (fieldNames, i)
+    {
+        forAll (limitData_, j)
+        {
+            const word& fdName = limitData_[j].first();
+            if (fdName == fieldNames[i])
+            {
+                fieldIds_[i] = j;
+                localFieldIds[j] = i;
+                break;
+            }
+        }
+    }
 
-				label globalCellI = returnReduce(cellI, maxOp<label>());
-				if (globalCellI < 0)
-				{
-					WarningIn("TimeActivatedExplicitSource<Type>::setCellIds()")
-						<< "Unable to find owner cell for point " << points_[i]
-						<< endl;
-				}
-			}
+    forAll (localFieldIds, i)
+    {
+        if (localFieldIds[i] < 0)
+        {
+            FatalErrorInFunction
+                << "Field " << limitData_[i].first() << " not found in "
+                << "field list. Available fields are: " << nl << fieldNames
+                << exit(FatalError);
+        }
+    }
+}
 
-			cellsPtr_.reset(new cellSet(mesh_, "points", cellOwners));
 
-			break;
-		}
-		case smCellSet:
-		{
-			Info<< indent << "- selecting cells using cellSet "
-				<< cellSetName_ << endl;
-			cellsPtr_.reset(new cellSet(mesh_, cellSetName_));
+template<class Type>
+void Foam::TimeActivatedExplicitSource<Type>::setCellSet() const
+{
+    Info<< incrIndent << indent << "Source: " << name_ << endl;
 
-			break;
-		}
-		default:
-		{
-			FatalErrorIn("TimeActivatedExplicitSource<Type>::setCellIds()")
-				<< "Unknown selectionMode "
-				<< selectionModeTypeNames_[selectionMode_]
-				<< ". Valid selectionMode types are" << selectionModeTypeNames_
-				<< exit(FatalError);
-		}
-	}
+    switch (selectionMode_)
+    {
+        case smPoints:
+        {
+            Info<< indent << "- selecting cells using points" << endl;
 
-	const cellSet& cSet = cellsPtr_();
+            labelHashSet cellOwners;
+            forAll (points_, i)
+            {
+                label cellI = mesh_.findCell(points_[i]);
+                if (cellI >= 0)
+                {
+                    cellOwners.insert(cellI);
+                }
 
-	// Set volume normalisation
-	V_ = scalarField(cSet.size(), 1.0);
-	if (volumeMode_ == vmAbsolute)
-	{
-		label i = 0;
-		forAllConstIter(cellSet, cSet, iter)
-		{
-			V_[i++] = mesh_.V()[iter.key()];
-		}
-	}
+                label globalCellI = returnReduce(cellI, maxOp<label>());
+                if (globalCellI < 0)
+                {
+                    WarningInFunction
+                        << "Unable to find owner cell for point " << points_[i]
+                        << endl;
+                }
+            }
 
-	Info<< indent << "- selected " << returnReduce(cSet.size(), sumOp<label>())
-		<< " cell(s)" << nl << decrIndent << endl;
+            cellsPtr_.reset(new cellSet(mesh_, "points", cellOwners));
+
+            break;
+        }
+        case smCellSet:
+        {
+            Info<< indent << "- selecting cells using cellSet "
+                << cellSetName_ << endl;
+            cellsPtr_.reset(new cellSet(mesh_, cellSetName_));
+
+            break;
+        }
+        default:
+        {
+            FatalErrorInFunction
+                << "Unknown selectionMode "
+                << selectionModeTypeNames_[selectionMode_]
+                << ". Valid selectionMode types are" << selectionModeTypeNames_
+                << exit(FatalError);
+        }
+    }
+
+    const cellSet& cSet = cellsPtr_();
+
+    // Set volume normalisation
+    V_ = scalarField(cSet.size(), 1.0);
+    if (volumeMode_ == vmAbsolute)
+    {
+        label i = 0;
+        forAllConstIter(cellSet, cSet, iter)
+        {
+            V_[i++] = mesh_.V()[iter.key()];
+        }
+    }
+
+    Info<< indent << "- selected " << returnReduce(cSet.size(), sumOp<label>())
+        << " cell(s)" << nl << decrIndent << endl;
 }
 
 
@@ -284,75 +311,126 @@ void Foam::TimeActivatedExplicitSource<Type>::setCellSet()
 template<class Type>
 Foam::TimeActivatedExplicitSource<Type>::TimeActivatedExplicitSource
 (
-	const word& name,
-	const dictionary& dict,
-	const fvMesh& mesh,
-	const wordList& fieldNames
+    const word& name,
+    const dictionary& dict,
+    const fvMesh& mesh,
+    const wordList& fieldNames
 )
 :
-	name_(name),
-	mesh_(mesh),
-	active_(dict.lookup("active")),
-	timeStart_(readScalar(dict.lookup("timeStart"))),
-	duration_(readScalar(dict.lookup("duration"))),
-	volumeMode_(wordToVolumeModeType(dict.lookup("volumeMode"))),
-	selectionMode_(wordToSelectionModeType(dict.lookup("selectionMode"))),
-	points_(),
-	cellSetName_("none"),
-	V_(),
-	cellsPtr_(),
-	fieldData_(),
-	fieldIds_(fieldNames.size(), -1)
+    name_(name),
+    mesh_(mesh),
+    active_(dict.lookup("active")),
+    timeStart_(readScalar(dict.lookup("timeStart"))),
+    duration_(readScalar(dict.lookup("duration"))),
+    volumeMode_(wordToVolumeModeType(dict.lookup("volumeMode"))),
+    selectionMode_(wordToSelectionModeType(dict.lookup("selectionMode"))),
+    points_(),
+    cellSetName_("none"),
+    V_(),
+    cellsPtr_(),
+    fieldData_(),
+    limitData_(),
+    fieldIds_(fieldNames.size(), -1)
 {
-	setSelection(dict);
+    setSelection(dict);
 
-	if (fieldNames.size() == 1)
-	{
-		fieldData_.setSize(1);
-		fieldData_[0].first() = fieldNames[0];
-		dict.lookup("fieldData") >> fieldData_[0].second();
-		fieldIds_[0] = 0;
-	}
-	else
-	{
-		setFieldData(dict, fieldNames);
-	}
+    if (fieldNames.size() == 1)
+    {
+        fieldData_.setSize(1);
+        fieldData_[0].first() = fieldNames[0];
+        dict.lookup("fieldData") >> fieldData_[0].second();
+        fieldIds_[0] = 0;
 
-	setCellSet();
+        if (dict.found("limitData"))
+        {
+            limitData_.setSize(1);
+            limitData_[0].first() = fieldNames[0];
+            dict.lookup("limitData") >> limitData_[0].second();
+        }
+    }
+    else
+    {
+        setFieldData(dict, fieldNames);
+        setLimitData(dict, fieldNames);
+    }
+
+    setCellSet();
 }
 
 
 template<class Type>
 void Foam::TimeActivatedExplicitSource<Type>::addToField
 (
-	DimensionedField<Type, volMesh>& Su,
-	const label fieldI
-)
+    DimensionedField<Type, volMesh>& Su,
+    const label fieldI
+) const
 {
-	const label fid = fieldIds_[fieldI];
+    const label fid = fieldIds_[fieldI];
 
-	if
-	(
-		active_
-	 && (fid >= 0)
-	 && (mesh_.time().value() >= timeStart_)
-	 && (mesh_.time().value() <= timeEnd())
-	)
-	{
-		// Update the cell set if the mesh is changing
-		if (mesh_.changing())
-		{
-			setCellSet();
-		}
+    if
+    (
+        active_
+     && (fid >= 0)
+     && (mesh_.time().value() >= timeStart_)
+     && (mesh_.time().value() <= timeEnd())
+    )
+    {
+        // Update the cell set if the mesh is changing
+        if (mesh_.changing())
+        {
+            setCellSet();
+        }
 
-		const cellSet& cSet = cellsPtr_();
+        const cellSet& cSet = cellsPtr_();
 
-		label i = 0;
-		forAllConstIter(cellSet, cSet, iter)
-		{
-			Su[iter.key()] = fieldData_[fid].second()/V_[i++];
-		}
-	}
+        label i = 0;
+        forAllConstIter (cellSet, cSet, iter)
+        {
+            Su[iter.key()] = fieldData_[fid].second()/V_[i++];
+        }
+    }
+}
+
+
+template<class Type>
+void Foam::TimeActivatedExplicitSource<Type>::limitField
+(
+    GeometricField<Type, fvPatchField, volMesh>& psi,
+    const label fieldI
+) const
+{
+    const label fid = fieldIds_[fieldI];
+
+    if (!limitData_.empty())
+    {
+        Field<Type>& psiIn = psi.internalField();
+
+        if
+        (
+            active_
+         && (fid >= 0)
+         && (mesh_.time().value() >= timeStart_)
+         && (mesh_.time().value() <= timeEnd())
+        )
+        {
+            // Update the cell set if the mesh is changing
+            if (mesh_.changing())
+            {
+                setCellSet();
+            }
+
+            const cellSet& cSet = cellsPtr_();
+
+            Info<< "Limiting field " << psi.name() << " to "
+                << limitData_[fid].second() << endl;
+
+            forAllConstIter (cellSet, cSet, iter)
+            {
+                psiIn[iter.key()] =
+                    min(psiIn[iter.key()], limitData_[fid].second());
+            }
+        }
+    }
 }
 
 

@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::simpleMatrix
+    Foam::simpleMatrix
 
 Description
-	A simple square matrix solver with scalar coefficients.
-	Simple dense matrix class with direct solvers.
+    A simple square matrix solver with scalar coefficients.
+    Simple dense matrix class with direct solvers.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	simpleMatrix.C
+    simpleMatrix.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -54,103 +54,106 @@ class simpleMatrix;
 template<class Type>
 simpleMatrix<Type> operator+
 (
-	const simpleMatrix<Type>&,
-	const simpleMatrix<Type>&
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
 );
 
 template<class Type>
 simpleMatrix<Type> operator-
 (
-	const simpleMatrix<Type>&,
-	const simpleMatrix<Type>&
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
 );
 
 template<class Type>
 simpleMatrix<Type> operator*
 (
-	const scalar,
-	const simpleMatrix<Type>&
+    const scalar,
+    const simpleMatrix<Type>&
 );
 
 template<class Type>
 Ostream& operator<<
 (
-	Ostream&,
-	const simpleMatrix<Type>&
+    Ostream&,
+    const simpleMatrix<Type>&
 );
 
 
+/*---------------------------------------------------------------------------*\
+                           Class simpleMatrix Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class simpleMatrix
 :
-	public scalarSquareMatrix
+    public scalarSquareMatrix
 {
-	// Private data
+    // Private data
 
-		Field<Type> source_;
+        Field<Type> source_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct given size
-		//  Note: this does not initialise the coefficients or the source.
-		simpleMatrix(const label);
+        //- Construct given size
+        //  Note: this does not initialise the coefficients or the source.
+        simpleMatrix(const label);
 
-		//- Construct given size and initial values for the
-		//  coefficients and source
-		simpleMatrix(const label, const scalar, const Type&);
+        //- Construct given size and initial values for the
+        //  coefficients and source
+        simpleMatrix(const label, const scalar, const Type&);
 
-		//- Construct from components
-		simpleMatrix(const scalarSquareMatrix&, const Field<Type>&);
+        //- Construct from components
+        simpleMatrix(const scalarSquareMatrix&, const Field<Type>&);
 
-		//- Construct from Istream
-		simpleMatrix(Istream&);
+        //- Construct from Istream
+        simpleMatrix(Istream&);
 
-		//- Construct as copy
-		simpleMatrix(const simpleMatrix<Type>&);
-
-
-	// Member Functions
-
-		// Access
-
-			//- Return access to the source
-			Field<Type>& source()
-			{
-				return source_;
-			}
-
-			//- Return const-access to the source
-			const Field<Type>& source() const
-			{
-				return source_;
-			}
+        //- Construct as copy
+        simpleMatrix(const simpleMatrix<Type>&);
 
 
-		//- Solve the matrix using Gaussian elimination with pivoting
-		//  and return the solution
-		Field<Type> solve() const;
+    // Member Functions
 
-		//- Solve the matrix using LU decomposition with pivoting
-		//  and return the solution
-		Field<Type> LUsolve() const;
+        // Access
+
+            //- Return access to the source
+            Field<Type>& source()
+            {
+                return source_;
+            }
+
+            //- Return const-access to the source
+            const Field<Type>& source() const
+            {
+                return source_;
+            }
 
 
-	// Member Operators
+        //- Solve the matrix using Gaussian elimination with pivoting
+        //  and return the solution
+        Field<Type> solve() const;
 
-		void operator=(const simpleMatrix<Type>&);
+        //- Solve the matrix using LU decomposition with pivoting
+        //  and return the solution
+        Field<Type> LUsolve() const;
 
 
-	// Ostream Operator
+    // Member Operators
 
-		friend Ostream& operator<< <Type>
-		(
-			Ostream&,
-			const simpleMatrix<Type>&
-		);
+        void operator=(const simpleMatrix<Type>&);
+
+
+    // Ostream Operator
+
+        friend Ostream& operator<< <Type>
+        (
+            Ostream&,
+            const simpleMatrix<Type>&
+        );
 };
 
 
@@ -159,22 +162,22 @@ public:
 template<class Type>
 simpleMatrix<Type> operator+
 (
-	const simpleMatrix<Type>&,
-	const simpleMatrix<Type>&
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
 );
 
 template<class Type>
 simpleMatrix<Type> operator-
 (
-	const simpleMatrix<Type>&,
-	const simpleMatrix<Type>&
+    const simpleMatrix<Type>&,
+    const simpleMatrix<Type>&
 );
 
 template<class Type>
 simpleMatrix<Type> operator*
 (
-	const scalar,
-	const simpleMatrix<Type>&
+    const scalar,
+    const simpleMatrix<Type>&
 );
 
 
@@ -185,7 +188,7 @@ simpleMatrix<Type> operator*
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "simpleMatrix.C"
+#   include "simpleMatrix.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

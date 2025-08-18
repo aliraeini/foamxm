@@ -1,57 +1,57 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	RBFInterpolation
+    RBFInterpolation
 
 Description
-	Radial basis function interpolation class
+    Radial basis function interpolation class
 
 Description
-	Interpolation class which uses Radial Basis Functions to interpolate
-	field from given data points to arbitrary set of points.
+    Interpolation class which uses Radial Basis Functions to interpolate
+    field from given data points to arbitrary set of points.
 
-	The coefficient vectors, alpha and beta are determined by solving
-	the system:
+    The coefficient vectors, alpha and beta are determined by solving
+    the system:
 
-	| db | = | Mbb Pb | | alpha |
-	| 0  |   | Pb  0  | |  beta |
+    | db | = | Mbb Pb | | alpha |
+    | 0  |   | Pb  0  | |  beta |
 
-	where db are the given field values at data carrier points.
-	Mbb the boundary RBF correlation matrix (NbxNb), containing RBF evaluations
-	at the boundary nodes, and Pb some linear polynomial matrix (Nbx4).
+    where db are the given field values at data carrier points.
+    Mbb the boundary RBF correlation matrix (NbxNb), containing RBF evaluations
+    at the boundary nodes, and Pb some linear polynomial matrix (Nbx4).
 
-	In cases where far field data is not of interest, a cutoff function
-	is used to eliminate unnecessary data points in the far field
+    In cases where far field data is not of interest, a cutoff function
+    is used to eliminate unnecessary data points in the far field
 
 Author
-	Frank Bos, TU Delft.  All rights reserved.
-	Dubravko Matijasevic, FSB Zagreb.
-	Reorganisation by Hrvoje Jasak, Wikki Ltd.
+    Frank Bos, TU Delft.  All rights reserved.
+    Dubravko Matijasevic, FSB Zagreb.
+    Reorganisation by Hrvoje Jasak, Wikki Ltd.
 
 SourceFiles
-	RBFInterpolation.C
-	RBFInterpolationTemplates.C
+    RBFInterpolation.C
+    RBFInterpolationTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -69,93 +69,96 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class RBFInterpolation Declaration
+\*---------------------------------------------------------------------------*/
 
 class RBFInterpolation
 {
-	// Private data
+    // Private data
 
-		//- Reference to control points
-		const vectorField& controlPoints_;
+        //- Reference to control points
+        const vectorField& controlPoints_;
 
-		//- Reference to all points
-		const vectorField& dataPoints_;
+        //- Reference to all points
+        const vectorField& dataPoints_;
 
-		//- RBF function
-		autoPtr<RBFFunction> RBF_;
+        //- RBF function
+        autoPtr<RBFFunction> RBF_;
 
-		//- Interpolation matrix
-		mutable scalarSquareMatrix* BPtr_;
+        //- Interpolation matrix
+        mutable scalarSquareMatrix* BPtr_;
 
-		//- Focal point for cut-off radii
-		point focalPoint_;
+        //- Focal point for cut-off radii
+        point focalPoint_;
 
-		//- Inner cut-off radius
-		scalar innerRadius_;
+        //- Inner cut-off radius
+        scalar innerRadius_;
 
-		//- Outer cut-off radius
-		scalar outerRadius_;
+        //- Outer cut-off radius
+        scalar outerRadius_;
 
-		//- Add polynomials to RBF matrix
-		Switch polynomials_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise assignment
-		void operator=(const RBFInterpolation&);
+        //- Add polynomials to RBF matrix
+        Switch polynomials_;
 
 
-		//- Return interpolation matrix
-		const scalarSquareMatrix& B() const;
+    // Private Member Functions
 
-		//- Calculate interpolation matrix
-		void calcB() const;
+        //- Disallow default bitwise assignment
+        void operator=(const RBFInterpolation&);
 
-		//- Clear out
-		void clearOut();
+
+        //- Return interpolation matrix
+        const scalarSquareMatrix& B() const;
+
+        //- Calculate interpolation matrix
+        void calcB() const;
+
+        //- Clear out
+        void clearOut();
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		RBFInterpolation
-		(
-			const dictionary& dict,
-			const vectorField& controlPoints,
-			const vectorField& dataPoints
-		);
+        //- Construct from components
+        RBFInterpolation
+        (
+            const dictionary& dict,
+            const vectorField& controlPoints,
+            const vectorField& dataPoints
+        );
 
-		//- Construct as copy
-		RBFInterpolation(const RBFInterpolation&);
-
-
-	// Destructor
-
-		~RBFInterpolation();
+        //- Construct as copy
+        RBFInterpolation(const RBFInterpolation&);
 
 
-	// Member Functions
+    // Destructor
 
-		//- Return reference to control points
-		const vectorField& controlPoints() const
-		{
-			return controlPoints_;
-		}
+        ~RBFInterpolation();
 
-		//- Reference to all points
-		const vectorField& dataPoints() const
-		{
-			return dataPoints_;
-		}
 
-		//- Interpolate
-		template<class Type>
-		tmp<Field<Type> > interpolate(const Field<Type>& ctrlField) const;
+    // Member Functions
 
-		//- Move points
-		void movePoints();
+        //- Return reference to control points
+        const vectorField& controlPoints() const
+        {
+            return controlPoints_;
+        }
+
+        //- Reference to all points
+        const vectorField& dataPoints() const
+        {
+            return dataPoints_;
+        }
+
+        //- Interpolate
+        template<class Type>
+        tmp<Field<Type> > interpolate(const Field<Type>& ctrlField) const;
+
+        //- Move points
+        void movePoints();
 };
 
 
@@ -166,7 +169,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "RBFInterpolationTemplates.C"
+#   include "RBFInterpolationTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	SegregatedSolver
+    SegregatedSolver
 
 Description
-	Segregated solver for block matrices.  Segregation decouples block
-	coefficients and calls a scalar solver for each component separately.
-	Cross-component coupling is lagged in rhs.
+    Segregated solver for block matrices.  Segregation decouples block
+    coefficients and calls a scalar solver for each component separately.
+    Cross-component coupling is lagged in rhs.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	SegregatedSolver.C
+    SegregatedSolver.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,67 +48,69 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class SegregatedSolver Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class SegregatedSolver
 :
-	public BlockLduSolver<Type>
+    public BlockLduSolver<Type>
 {
-	// Private data
+    // Private data
 
-		//- Scalar x
-		scalarField scalarX_;
+        //- Scalar x
+        mutable scalarField scalarX_;
 
-		//- Scalar matrix
-		blockScalarMatrix scalarMatrix_;
+        //- Scalar matrix
+        mutable blockScalarMatrix scalarMatrix_;
 
-		//- Scalar b
-		scalarField scalarB_;
+        //- Scalar b
+        mutable scalarField scalarB_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		SegregatedSolver(const SegregatedSolver<Type>&);
+        //- Disallow default bitwise copy construct
+        SegregatedSolver(const SegregatedSolver<Type>&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const SegregatedSolver<Type>&);
+        //- Disallow default bitwise assignment
+        void operator=(const SegregatedSolver<Type>&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("Segregated");
+    //- Runtime type information
+    TypeName("Segregated");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from matrix components and solver data stream
-		SegregatedSolver
-		(
-			const word& fieldName,
-			const BlockLduMatrix<Type>& matrix,
-			const dictionary& dict
-		);
-
-
-		//- Destructor
-		virtual ~SegregatedSolver()
-		{}
+        //- Construct from matrix components and solver data stream
+        SegregatedSolver
+        (
+            const word& fieldName,
+            const BlockLduMatrix<Type>& matrix,
+            const dictionary& dict
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~SegregatedSolver() = default;
 
-		//- Solve the matrix with this solver
-		virtual BlockSolverPerformance<Type> solve
-		(
-			Field<Type>& x,
-			const Field<Type>& b
-		);
 
-		//- Re-initialise solver after matrix coefficient update
-		virtual void initMatrix()
-		{}
+    // Member Functions
+
+        //- Solve the matrix with this solver
+        virtual BlockSolverPerformance<Type> solve
+        (
+            Field<Type>& x,
+            const Field<Type>& b
+        ) const;
+
+        //- Re-initialise solver after matrix coefficient update
+        virtual void initMatrix()
+        {}
 };
 
 
@@ -119,7 +121,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "SegregatedSolver.C"
+#   include "SegregatedSolver.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

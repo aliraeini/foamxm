@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,7 +32,7 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(alphaContactAngleFvPatchScalarField, 0);
+    defineTypeNameAndDebug(alphaContactAngleFvPatchScalarField, 0);
 }
 
 
@@ -40,55 +40,55 @@ namespace Foam
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-	const fvPatch& p,
-	const DimensionedField<scalar, volMesh>& iF
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF
 )
 :
-	zeroGradientFvPatchScalarField(p, iF)
+    zeroGradientFvPatchScalarField(p, iF)
 {}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-	const alphaContactAngleFvPatchScalarField& gcpsf,
-	const fvPatch& p,
-	const DimensionedField<scalar, volMesh>& iF,
-	const fvPatchFieldMapper& mapper
+    const alphaContactAngleFvPatchScalarField& gcpsf,
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
 )
 :
-	zeroGradientFvPatchScalarField(gcpsf, p, iF, mapper)
+    zeroGradientFvPatchScalarField(gcpsf, p, iF, mapper)
 {}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-	const fvPatch& p,
-	const DimensionedField<scalar, volMesh>& iF,
-	const dictionary& dict
+    const fvPatch& p,
+    const DimensionedField<scalar, volMesh>& iF,
+    const dictionary& dict
 )
 :
-	zeroGradientFvPatchScalarField(p, iF)
+    zeroGradientFvPatchScalarField(p, iF)
 {
-	evaluate();
+    evaluate();
 }
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-	const alphaContactAngleFvPatchScalarField& gcpsf
+    const alphaContactAngleFvPatchScalarField& gcpsf
 )
 :
-	zeroGradientFvPatchScalarField(gcpsf)
+    zeroGradientFvPatchScalarField(gcpsf)
 {}
 
 
 Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
 (
-	const alphaContactAngleFvPatchScalarField& gcpsf,
-	const DimensionedField<scalar, volMesh>& iF
+    const alphaContactAngleFvPatchScalarField& gcpsf,
+    const DimensionedField<scalar, volMesh>& iF
 )
 :
-	zeroGradientFvPatchScalarField(gcpsf, iF)
+    zeroGradientFvPatchScalarField(gcpsf, iF)
 {}
 
 

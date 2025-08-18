@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::Histogram
+    Foam::Histogram
 
 Description
-	Calculates the counts per bin of a list.
+    Calculates the counts per bin of a list.
 
 SourceFiles
-	Histogram.C
+    Histogram.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,71 +43,74 @@ namespace Foam
 {
 
 
+/*---------------------------------------------------------------------------*\
+                          Class Histogram Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class List>
 class Histogram
 {
-	// Private data
+    // Private data
 
-		//- Counts per bin
-		labelList counts_;
+        //- Counts per bin
+        labelList counts_;
 
-		//- Number of <= lowest bin
-		label nLow_;
+        //- Number of <= lowest bin
+        label nLow_;
 
-		//- Number of > highest bin
-		label nHigh_;
+        //- Number of > highest bin
+        label nHigh_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		void count(const List& bins, const List& l);
+        void count(const List& bins, const List& l);
 
-		//- Disallow default bitwise copy construct
-		Histogram(const Histogram&);
+        //- Disallow default bitwise copy construct
+        Histogram(const Histogram&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const Histogram&);
+        //- Disallow default bitwise assignment
+        void operator=(const Histogram&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct given bin values and input list
-		Histogram(const List& bins, const List& l);
+        //- Construct given bin values and input list
+        Histogram(const List& bins, const List& l);
 
-		//- Construct given min, max, number of bins and input list
-		Histogram
-		(
-			const typename List::const_reference min,
-			const typename List::const_reference max,
-			const label nBins,
-			const List& l
-		);
+        //- Construct given min, max, number of bins and input list
+        Histogram
+        (
+            const typename List::const_reference min,
+            const typename List::const_reference max,
+            const label nBins,
+            const List& l
+        );
 
 
-		// Access
+        // Access
 
-			//- Return the counts per bin
-			inline const labelList& counts() const
-			{
-				return counts_;
-			}
+            //- Return the counts per bin
+            inline const labelList& counts() const
+            {
+                return counts_;
+            }
 
-			//- Return the number of elements <= bins[0]
-			//  (so inclusive lowest bin value)
-			inline label nLow() const
-			{
-				return nLow_;
-			}
+            //- Return the number of elements <= bins[0]
+            //  (so inclusive lowest bin value)
+            inline label nLow() const
+            {
+                return nLow_;
+            }
 
-			//- Return the number of elements > bins[bins.size()-1]
-			//  (so exclusive highest bin value)
-			inline label nHigh() const
-			{
-				return nHigh_;
-			}
+            //- Return the number of elements > bins[bins.size()-1]
+            //  (so exclusive highest bin value)
+            inline label nHigh() const
+            {
+                return nHigh_;
+            }
 };
 
 
@@ -122,7 +125,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "Histogram.C"
+#   include "Histogram.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

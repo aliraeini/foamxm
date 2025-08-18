@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Specialisation of Field\<T\> for scalar.
+    Specialisation of Field\<T\> for scalar.
 
 \*---------------------------------------------------------------------------*/
 
@@ -41,48 +41,48 @@ namespace Foam
 template<>
 tmp<scalarField> scalarField::component(const direction) const
 {
-	return *this;
+    return *this;
 }
 
 void component(scalarField& sf, const UList<scalar>& f, const direction)
 {
-	sf = f;
+    sf = f;
 }
 
 template<>
 void scalarField::replace(const direction, const UList<scalar>& sf)
 {
-	*this = sf;
+    *this = sf;
 }
 
 template<>
 void scalarField::replace(const direction, const scalar& s)
 {
-	*this = s;
+    *this = s;
 }
 
 
 void stabilise(scalarField& res, const UList<scalar>& sf, const scalar s)
 {
-	TFOR_ALL_F_OP_FUNC_S_F
-	(
-		scalar, res, =, ::Foam::stabilise, scalar, s, scalar, sf
-	)
+    TFOR_ALL_F_OP_FUNC_S_F
+    (
+        scalar, res, =, ::Foam::stabilise, scalar, s, scalar, sf
+    )
 }
 
 tmp<scalarField> stabilise(const UList<scalar>& sf, const scalar s)
 {
-	tmp<scalarField> tRes(new scalarField(sf.size()));
-	stabilise(tRes(), sf, s);
-	return tRes;
+    tmp<scalarField> tRes(new scalarField(sf.size()));
+    stabilise(tRes.ref(), sf, s);
+    return tRes;
 }
 
 tmp<scalarField> stabilise(const tmp<scalarField>& tsf, const scalar s)
 {
-	tmp<scalarField> tRes = reuseTmp<scalar, scalar>::New(tsf);
-	stabilise(tRes(), tsf(), s);
-	reuseTmp<scalar, scalar>::clear(tsf);
-	return tRes;
+    tmp<scalarField> tRes = reuseTmp<scalar, scalar>::New(tsf);
+    stabilise(tRes.ref(), tsf(), s);
+    tsf.clear();
+    return tRes;
 }
 
 
@@ -143,22 +143,22 @@ UNARY_FUNCTION(scalar, scalar, y1)
 #define BesselFunc(func)                                                      \
 void func(scalarField& res, const int n, const UList<scalar>& sf)             \
 {                                                                             \
-	TFOR_ALL_F_OP_FUNC_S_F(scalar, res, =, ::Foam::func, int, n, scalar, sf)  \
+    TFOR_ALL_F_OP_FUNC_S_F(scalar, res, =, ::Foam::func, int, n, scalar, sf)  \
 }                                                                             \
-					                                                          \
+                                                                              \
 tmp<scalarField> func(const int n, const UList<scalar>& sf)                   \
 {                                                                             \
-	tmp<scalarField> tRes(new scalarField(sf.size()));                        \
-	func(tRes(), n, sf);                                                      \
-	return tRes;                                                              \
+    tmp<scalarField> tRes(new scalarField(sf.size()));                        \
+    func(tRes.ref(), n, sf);                                                  \
+    return tRes;                                                              \
 }                                                                             \
-					                                                          \
+                                                                              \
 tmp<scalarField> func(const int n, const tmp<scalarField>& tsf)               \
 {                                                                             \
-	tmp<scalarField> tRes = reuseTmp<scalar, scalar>::New(tsf);               \
-	func(tRes(), n, tsf());                                                   \
-	reuseTmp<scalar, scalar>::clear(tsf);                                     \
-	return tRes;                                                              \
+    tmp<scalarField> tRes = reuseTmp<scalar, scalar>::New(tsf);               \
+    func(tRes.ref(), n, tsf());                                               \
+    tsf.clear();                                                              \
+    return tRes;                                                              \
 }
 
 BesselFunc(jn)

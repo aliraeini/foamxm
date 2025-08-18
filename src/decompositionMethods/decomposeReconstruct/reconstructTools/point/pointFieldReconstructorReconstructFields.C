@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ void Foam::pointFieldReconstructor::reconstructField
     Field<Type>& iField = reconField.internalField();
 
     typename GeometricField<Type, pointPatchField, pointMesh>::
-        Boundary& bouField = reconField.boundaryField();
+        GeometricBoundaryField& bouField = reconField.boundaryField();
 
     forAll (procMeshes_, procI)
     {
@@ -206,7 +206,7 @@ Foam::pointFieldReconstructor::reconstructField
     // Reconstruct field
     reconstructField
     (
-        treconField(),
+        treconField.ref(),
         procFields
     );
 

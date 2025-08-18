@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fv::gaussDivScheme
+    Foam::fv::gaussDivScheme
 
 Description
-	Basic second-order div using face-gradients and Gauss' theorem.
+    Basic second-order div using face-gradients and Gauss' theorem.
 
 SourceFiles
-	gaussDivScheme.C
+    gaussDivScheme.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,71 +47,78 @@ namespace Foam
 namespace fv
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class gaussDivScheme Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class gaussDivScheme
 :
-	public fv::divScheme<Type>
+    public fv::divScheme<Type>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		gaussDivScheme(const gaussDivScheme&);
+        //- Disallow default bitwise copy construct
+        gaussDivScheme(const gaussDivScheme&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const gaussDivScheme&);
+        //- Disallow default bitwise assignment
+        void operator=(const gaussDivScheme&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("Gauss");
+    //- Runtime type information
+    TypeName("Gauss");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		gaussDivScheme(const fvMesh& mesh)
-		:
-			divScheme<Type>(mesh)
-		{}
+        //- Construct null
+        gaussDivScheme(const fvMesh& mesh)
+        :
+            divScheme<Type>(mesh)
+        {}
 
-		//- Construct from Istream
-		gaussDivScheme(const fvMesh& mesh, Istream& is)
-		:
-			divScheme<Type>(mesh, is)
-		{}
+        //- Construct from Istream
+        gaussDivScheme(const fvMesh& mesh, Istream& is)
+        :
+            divScheme<Type>(mesh, is)
+        {}
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~gaussDivScheme() = default;
 
-		tmp
-		<
-			GeometricField
-			<typename innerProduct<vector, Type>::type, fvPatchField, volMesh>
-		> fvcDiv
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
 
-		//- Return the BlockLduSystem corresponding to the implicit div
-		// discretization. For block coupled system.
-		tmp
-		<
-			BlockLduSystem<vector, typename innerProduct<vector, Type>::type>
-		> fvmUDiv
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) const;
+    // Member Functions
 
-		tmp
-		<
-			BlockLduSystem<vector, typename innerProduct<vector, Type>::type>
-		> fvmUDiv
-		(
-			const surfaceScalarField& flux,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) const;
+        virtual tmp
+        <
+            GeometricField
+            <typename innerProduct<vector, Type>::type, fvPatchField, volMesh>
+        > fvcDiv
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
+
+        //- Return the BlockLduSystem corresponding to the implicit div
+        // discretization. For block coupled system.
+        virtual tmp
+        <
+            BlockLduSystem<vector, typename innerProduct<vector, Type>::type>
+        > fvmUDiv
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
+
+        virtual tmp
+        <
+            BlockLduSystem<vector, typename innerProduct<vector, Type>::type>
+        > fvmUDiv
+        (
+            const surfaceScalarField& flux,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 };
 
 
@@ -126,7 +133,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "gaussDivScheme.C"
+#   include "gaussDivScheme.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

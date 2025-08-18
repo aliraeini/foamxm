@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	slidingInterface
+    slidingInterface
 
 Description
-	Couple sliding interface
+    Couple sliding interface
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,8 +50,8 @@ Author
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::edgeCoPlanarTol_
 (
-	"slidingEdgeCoPlanarTol",
-	0.8
+    "slidingEdgeCoPlanarTol",
+    0.8
 );
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
@@ -61,7 +61,7 @@ Foam::slidingInterface::edgeCoPlanarTol_
 // x - reversal of direction in edge-to-face interaction detection
 // + - complete edge-to-face interaction detection
 // z - incomplete edge-to-face interaction detection.  This may be OK for edges
-//	 crossing from one to the other side of multiply connected master patch
+//     crossing from one to the other side of multiply connected master patch
 
 // e - adding a point on edge
 // f - adding a point on face
@@ -76,928 +76,928 @@ Foam::slidingInterface::edgeCoPlanarTol_
 
 void Foam::slidingInterface::coupleInterface(polyTopoChange& ref) const
 {
-	if (debug)
-	{
-		Pout<< "void slidingInterface::coupleInterface"
-			<< "(polyTopoChange& ref) : "
-			<< "Coupling sliding interface " << name() << endl;
-	}
-
-	const polyMesh& mesh = topoChanger().mesh();
-
-	const pointField& points = mesh.allPoints();
-	const faceList& faces = mesh.faces();
-
-	const labelList& own = mesh.faceOwner();
-	const labelList& nei = mesh.faceNeighbour();
-	const faceZoneMesh& faceZones = mesh.faceZones();
-
-	// Note: master and slave patch will give already oriented faces from the
-	// face zone.  They are flipped to correct orientation by the zone
-	// functionality.  Therefore, the flip will simply be a true or false,
-	// depending on what should be done with the face, rather than
-	// reversing the existing face zone flip
-	// HJ, 24/Oct/2007
-
-	const primitiveFacePatch& masterPatch =
-		faceZones[masterFaceZoneID_.index()]();
-
-	const labelList& masterPatchAddr = faceZones[masterFaceZoneID_.index()];
-
-	const primitiveFacePatch& slavePatch =
-		faceZones[slaveFaceZoneID_.index()]();
-
-	const labelList& slavePatchAddr = faceZones[slaveFaceZoneID_.index()];
-
-	const edgeList& masterEdges = masterPatch.edges();
-	const labelListList& masterPointEdges = masterPatch.pointEdges();
-	const labelList& masterMeshPoints = masterPatch.meshPoints();
-	const pointField& masterLocalPoints = masterPatch.localPoints();
-	const labelListList& masterFaceFaces = masterPatch.faceFaces();
-	const labelListList& masterFaceEdges = masterPatch.faceEdges();
-	const Map<label>& masterMeshPointMap = masterPatch.meshPointMap();
-
-	const edgeList& slaveEdges = slavePatch.edges();
-	const labelListList& slavePointEdges = slavePatch.pointEdges();
-	const labelList& slaveMeshPoints = slavePatch.meshPoints();
-	const pointField& slaveLocalPoints = slavePatch.localPoints();
-	const Map<label>& slaveMeshPointMap = slavePatch.meshPointMap();
-	const vectorField& slavePointNormals = slavePatch.pointNormals();
-
-	// Collect projection addressing
-	if
-	(
-		!(
-			slavePointPointHitsPtr_
-		 && slavePointEdgeHitsPtr_
-		 && slavePointFaceHitsPtr_
-		 && masterPointEdgeHitsPtr_
-		)
-	)
-	{
-		FatalErrorIn
-		(
-			"void slidingInterface::coupleInterface("
-			"polyTopoChange& ref) const"
-		)   << "Point projection addressing not available."
-			<< abort(FatalError);
-	}
-
-	const labelList& slavePointPointHits = *slavePointPointHitsPtr_;
-	const labelList& slavePointEdgeHits = *slavePointEdgeHitsPtr_;
-	const List<objectHit>& slavePointFaceHits = *slavePointFaceHitsPtr_;
-	const labelList& masterPointEdgeHits = *masterPointEdgeHitsPtr_;
-	const pointField& projectedSlavePoints = *projectedSlavePointsPtr_;
-
-	// Create enriched patch
-	enrichedPatch cutPatch
-	(
-		masterPatch,
-		slavePatch,
-		slavePointPointHits,
-		slavePointEdgeHits,
-		slavePointFaceHits
-	);
-
-	// Get reference to list of added point for the enriched patch.
-	// This will be used for point addition
-	Map<point>& pointMap = cutPatch.pointMap();
-
-	// Get reference to the list of merged points
-	Map<label>& pointMergeMap = cutPatch.pointMergeMap();
-
-	// Create mapping for every merged point of the slave patch
-	forAll (slavePointPointHits, pointI)
-	{
-		if (slavePointPointHits[pointI] >= 0)
-		{
-//			 Pout<< "Inserting point merge pair: " << slaveMeshPoints[pointI]
-//				 << " : " << masterMeshPoints[slavePointPointHits[pointI]]
-//				 << endl;
-			pointMergeMap.insert
-			(
-				slaveMeshPoints[pointI],
-				masterMeshPoints[slavePointPointHits[pointI]]
-			);
-		}
-	}
-
-	// Collect the list of used edges for every slave edge
-
-	List<labelHashSet> usedMasterEdges(slaveEdges.size());
-
-	// Collect of slave point hits
-	forAll (slavePointPointHits, pointI)
-	{
-		// For point hits, add all point-edges from master side to all point
-		const labelList& curSlaveEdges = slavePointEdges[pointI];
-
-		if (slavePointPointHits[pointI] > -1)
-		{
-			const labelList& curMasterEdges =
-				masterPointEdges[slavePointPointHits[pointI]];
-
-			// Mark all current master edges as used for all the current slave
-			// edges
-			forAll (curSlaveEdges, slaveEdgeI)
-			{
-				labelHashSet& sm = usedMasterEdges[curSlaveEdges[slaveEdgeI]];
-
-				forAll (curMasterEdges, masterEdgeI)
-				{
-					sm.insert(curMasterEdges[masterEdgeI]);
-				}
-			}
-		}
-		else if (slavePointEdgeHits[pointI] > -1)
-		{
-			// For edge hits, add the master edge
-			forAll (curSlaveEdges, slaveEdgeI)
-			{
-				usedMasterEdges[curSlaveEdges[slaveEdgeI]].insert
-				(
-					slavePointEdgeHits[pointI]
-				);
-			}
-		}
-	}
-
-	// Collect off master point hits
-	// For every master point that has hit an edge, add all edges coming from
-	// that point to the slave edge that has been hit
-	forAll (masterPointEdgeHits, masterPointI)
-	{
-		if (masterPointEdgeHits[masterPointI] > -1)
-		{
-			const labelList& curMasterEdges = masterPointEdges[masterPointI];
-
-			labelHashSet& sm =
-				usedMasterEdges[masterPointEdgeHits[masterPointI]];
-
-			forAll (curMasterEdges, masterEdgeI)
-			{
-				sm.insert(curMasterEdges[masterEdgeI]);
-			}
-		}
-	}
-
-//	 Pout << "used edges: " << endl;
-//	 forAll (usedMasterEdges, edgeI)
-//	 {
-//		 Pout<< "edge: " << edgeI << " used: "
-//			 << usedMasterEdges[edgeI].toc() << endl;
-//	 }
-
-	// For every master and slave edge make a list of points to be added into
-	// that edge.
-	List<dynamicLabelList > pointsIntoMasterEdges(masterEdges.size());
-	List<dynamicLabelList > pointsIntoSlaveEdges(slaveEdges.size());
-
-	// Add all points from the slave patch that have hit the edge
-	forAll (slavePointEdgeHits, pointI)
-	{
-		if (slavePointEdgeHits[pointI] > -1)
-		{
-			// Create a new point on the master edge
-
-			point edgeCutPoint =
-				masterEdges[slavePointEdgeHits[pointI]].line
-				(
-					masterLocalPoints
-				).nearestDist(projectedSlavePoints[pointI]).hitPoint();
-
-			label newPoint =
-				ref.setAction
-				(
-					polyAddPoint
-					(
-						edgeCutPoint,			 // point
-						slaveMeshPoints[pointI],  // master point
-						cutPointZoneID_.index(),  // zone for point
-						true					  // supports a cell
-					)
-				);
-//			 Pout<< "Inserting merge pair off edge: "
-//				 << slaveMeshPoints[pointI] << " "
-//				 << newPoint << " cut point: " << edgeCutPoint
-//				 << " orig: " << slaveLocalPoints[pointI]
-//				 << " proj: " << projectedSlavePoints[pointI]
-//				 << " master point: " << slaveMeshPoints[pointI] << endl;
-
-			// Add the new edge point into the merge map
-			pointMergeMap.insert(slaveMeshPoints[pointI], newPoint);
-
-			pointsIntoMasterEdges[slavePointEdgeHits[pointI]].append
-			(
-				newPoint
-			);
-
-			// Add the point into the enriched patch map
-			pointMap.insert
-			(
-				newPoint,
-				edgeCutPoint
-			);
-
-			if (debug)
-			{
-				Pout<< "e";
-//				 Pout<< newPoint << " = " << edgeCutPoint << endl;
-			}
-		}
-	}
-
-	if (debug)
-	{
-		Pout<< endl;
-	}
-
-	// Add all points from the slave patch that have hit a face
-	forAll (slavePointFaceHits, pointI)
-	{
-		if
-		(
-			slavePointPointHits[pointI] < 0
-		 && slavePointEdgeHits[pointI] < 0
-		 && slavePointFaceHits[pointI].hit()
-		)
-		{
-			label newPoint =
-				ref.setAction
-				(
-					polyAddPoint
-					(
-						projectedSlavePoints[pointI],   // point
-						slaveMeshPoints[pointI],		// master point
-						cutPointZoneID_.index(),		// zone for point
-						true							// supports a cell
-					)
-				);
-//			 Pout<< "Inserting merge pair off face: "
-//				 << slaveMeshPoints[pointI] << " " << newPoint
-//				 << " orig: " << slaveLocalPoints[pointI]
-//				 << " at " << projectedSlavePoints[pointI]
-//				 << " master point: " << slaveMeshPoints[pointI] << endl;
-
-			// Add the new edge point into the merge map
-			pointMergeMap.insert(slaveMeshPoints[pointI], newPoint);
-
-			// Add the point into the enriched patch map
-			pointMap.insert
-			(
-				newPoint,
-				projectedSlavePoints[pointI]
-			);
-
-			if (debug)
-			{
-				Pout<< "f";
-//				 Pout<< newPoint << " = "
-//					 << projectedSlavePoints[pointI] << endl;
-			}
-		}
-	}
-
-	forAll (masterPointEdgeHits, pointI)
-	{
-		if (masterPointEdgeHits[pointI] > -1)
-		{
-			pointsIntoSlaveEdges[masterPointEdgeHits[pointI]].append
-			(
-				masterMeshPoints[pointI]
-			);
-		}
-	}
-
-	// Cut all slave edges.
-	// Collect all master edges the slave edge interacts with.  Skip
-	// all the edges already marked as used.  For every unused edge,
-	// calculate the cut and insert the new point into the master and
-	// slave edge.
-	// For the edge selection algorithm, see, comment in
-	// slidingInterfaceProjectPoints.C.
-	// Edge cutting algoritm:
-	// As the master patch defines the cutting surface, the newly
-	// inserted point needs to be on the master edge.  Also, in 3-D
-	// the pair of edges generally misses each other rather than
-	// intersect.  Therefore, the intersection is calculated using the
-	// plane the slave edge defines during projection.  The plane is
-	// defined by the centrepoint of the edge in the original
-	// configuration and the projected end points.  In case of flat
-	// geometries (when the three points are colinear), the plane is
-	// defined by the two projected end-points and the slave edge
-	// normal used as the in-plane vector.  When the intersection
-	// point is created, it is added as a new point for both the
-	// master and the slave edge.
-	// In order to be able to re-create the points on edges in mesh
-	// motion without the topology change, the edge pair used to
-	// create the cut point needs to be recorded in
-	// cutPointEdgePairMap
-
-	// Note.  "Processing slave edges" code is repeated twice in the
-	// sliding intergace coupling in order to allow the point
-	// projection to be done separately from the actual cutting.
-	// Please change consistently with slidingInterfaceProjectPoints.C
-	// HJ, 23/Oct/2003
-	if (debug)
-	{
-		Pout << "Processing slave edges " << endl;
-	}
-
-	if (!cutPointEdgePairMapPtr_)
-	{
-		FatalErrorIn
-		(
-			"void slidingInterface::coupleInterface("
-			"polyTopoChange& ref) const"
-		)   << "Cut point edge pair map pointer not set."
-			<< abort(FatalError);
-	}
-
-	Map<Pair<edge> >& addToCpepm = *cutPointEdgePairMapPtr_;
-
-	// Clear the old map
-	addToCpepm.clear();
-
-	// Create a map of faces the edge can interact with
-	labelHashSet curFaceMap
-	(
-		nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
-	);
-
-	labelHashSet addedFaces(2*primitiveMesh::edgesPerFace_);
-
-	forAll (slaveEdges, edgeI)
-	{
-		const edge& curEdge = slaveEdges[edgeI];
-
-		if
-		(
-			slavePointFaceHits[curEdge.start()].hit()
-		 || slavePointFaceHits[curEdge.end()].hit()
-		)
-		{
-			labelHashSet& curUme = usedMasterEdges[edgeI];
-//			 Pout<< "Doing edge " << edgeI << " curEdge: " << curEdge
-//				 << " curUme: " << curUme << endl;
-			// Clear the maps
-			curFaceMap.clear();
-			addedFaces.clear();
-
-			// Grab the faces for start and end points.
-			const label startFace =
-				slavePointFaceHits[curEdge.start()].hitObject();
-			const label endFace =
-				slavePointFaceHits[curEdge.end()].hitObject();
-//			 Pout<< "startFace: " << slavePointFaceHits[curEdge.start()]
-//				 << " endFace: " << slavePointFaceHits[curEdge.end()]
-//				 << endl;
-			// Insert the start face into the list
-			curFaceMap.insert(startFace);
-			addedFaces.insert(startFace);
-//			 Pout << "curFaceMap: " << curFaceMap.toc() << endl;
-			label nSweeps = 0;
-			bool completed = false;
-
-			while (nSweeps < edgeFaceEscapeLimit_)
-			{
-				nSweeps++;
-
-				if (addedFaces.found(endFace))
-				{
-					completed = true;
-				}
-
-				// Add all face neighbours of face in the map
-				const labelList cf = addedFaces.toc();
-				addedFaces.clear();
-
-				forAll (cf, cfI)
-				{
-					const labelList& curNbrs = masterFaceFaces[cf[cfI]];
-
-					forAll (curNbrs, nbrI)
-					{
-						if (!curFaceMap.found(curNbrs[nbrI]))
-						{
-							curFaceMap.insert(curNbrs[nbrI]);
-							addedFaces.insert(curNbrs[nbrI]);
-						}
-					}
-				}
-
-				if (completed) break;
-
-				if (debug)
-				{
-					Pout << ".";
-				}
-			}
-
-			if (!completed)
-			{
-				if (debug)
-				{
-					Pout << "x";
-				}
-
-				// It is impossible to reach the end from the start, probably
-				// due to disconnected domain.  Do search in opposite direction
-
-				label nReverseSweeps = 0;
-
-				addedFaces.clear();
-				addedFaces.insert(endFace);
-
-				while (nReverseSweeps < edgeFaceEscapeLimit_)
-				{
-					nReverseSweeps++;
-
-					if (addedFaces.found(startFace))
-					{
-						completed = true;
-					}
-
-					// Add all face neighbours of face in the map
-					const labelList cf = addedFaces.toc();
-					addedFaces.clear();
-
-					forAll (cf, cfI)
-					{
-						const labelList& curNbrs = masterFaceFaces[cf[cfI]];
-
-						forAll (curNbrs, nbrI)
-						{
-							if (!curFaceMap.found(curNbrs[nbrI]))
-							{
-								curFaceMap.insert(curNbrs[nbrI]);
-								addedFaces.insert(curNbrs[nbrI]);
-							}
-						}
-					}
-
-					if (completed) break;
-
-					if (debug)
-					{
-						Pout << ".";
-					}
-				}
-			}
-
-			if (completed)
-			{
-				if (debug)
-				{
-					Pout << "+ ";
-				}
-			}
-			else
-			{
-				if (debug)
-				{
-					Pout << "z ";
-				}
-			}
-
-			// Collect the edges
-
-			// Create a map of edges the edge can interact with
-			labelHashSet curMasterEdgesMap
-			(
-				nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
-			);
-
-			const labelList curFaces = curFaceMap.toc();
-//			 Pout << "curFaces: " << curFaces << endl;
-			forAll (curFaces, faceI)
-			{
-//				 Pout<< "face: " << curFaces[faceI] << " "
-//					 << masterPatch[curFaces[faceI]]
-//					 << " local: "
-//					 << masterPatch.localFaces()[curFaces[faceI]]
-//					 << endl;
-				const labelList& me = masterFaceEdges[curFaces[faceI]];
-
-				forAll (me, meI)
-				{
-					curMasterEdgesMap.insert(me[meI]);
-				}
-			}
-
-			const labelList curMasterEdges = curMasterEdgesMap.toc();
-
-			// For all master edges to intersect, skip the ones
-			// already used and cut the rest with a cutting plane.  If
-			// the intersection point, falls inside of both edges, it
-			// is valid.
-
-			// Note: The edge cutting code is repeated in
-			// slidingInterface::modifyMotionPoints.  This is done for
-			// efficiency reasons and avoids multiple creation of cutting
-			// planes.  Please update both simultaneously.  HJ, 28/Jul/2003
-
-			const point& a = projectedSlavePoints[curEdge.start()];
-			const point& b = projectedSlavePoints[curEdge.end()];
-
-			point c =
-				0.5*
-				(
-					slaveLocalPoints[curEdge.start()]
-				  + slavePointNormals[curEdge.start()] // Add start normal
-				  + slaveLocalPoints[curEdge.end()]
-				  + slavePointNormals[curEdge.end()] // Add end normal
-				);
-
-			// Create the plane
-			plane cutPlane(a, b, c);
-//			 Pout << "a: " << a << " b: " << b << " c: " << c << " plane: " << cutPlane << endl;
-
-			linePointRef curSlaveLine = curEdge.line(projectedSlavePoints);
-			const scalar curSlaveLineMag = curSlaveLine.mag();
-//			 Pout << "curSlaveLine: " << curSlaveLine << endl;
-			forAll (curMasterEdges, masterEdgeI)
-			{
-				if (!curUme.found(curMasterEdges[masterEdgeI]))
-				{
-					// New edge
-					if (debug)
-					{
-						Pout << "n";
-					}
-
-					const label cmeIndex = curMasterEdges[masterEdgeI];
-					const edge& cme = masterEdges[cmeIndex];
-//					 Pout<< "Edge " << cmeIndex << " cme: " << cme << " line: " << cme.line(masterLocalPoints) << endl;
-					scalar cutOnMaster =
-						cutPlane.lineIntersect
-						(
-							cme.line(masterLocalPoints)
-						);
-
-					if
-					(
-						cutOnMaster > edgeEndCutoffTol_()
-					 && cutOnMaster < 1.0 - edgeEndCutoffTol_()
-					)
-					{
-						// Master is cut, check the slave
-						point masterCutPoint =
-							masterLocalPoints[cme.start()]
-						  + cutOnMaster*cme.vec(masterLocalPoints);
-
-						pointHit slaveCut =
-							curSlaveLine.nearestDist(masterCutPoint);
-
-						if (slaveCut.hit())
-						{
-							// Strict checking of slave cut to avoid capturing
-							// end points.  HJ, 15/Oct/2004
-							scalar cutOnSlave =
-								(
-									(
-										slaveCut.hitPoint()
-									  - curSlaveLine.start()
-									) & curSlaveLine.vec()
-								)/sqr(curSlaveLineMag);
-
-							// Calculate merge tolerance from the
-							// target edge length
-							scalar mergeTol =
-								edgeCoPlanarTol_()*mag(b - a);
-//							 Pout<< "cutOnMaster: " << cutOnMaster
-//								 << " masterCutPoint: " << masterCutPoint
-//								 << " slaveCutPoint: " << slaveCut.hitPoint()
-//								 << " slaveCut.distance(): "
-//								 << slaveCut.distance()
-//								 << " slave length: " << mag(b - a)
-//								 << " mergeTol: " << mergeTol
-//								 << " 1: " << mag(b - a)
-//								 << " 2: " << cme.line(masterLocalPoints).mag()
-//								 << endl;
-							if
-							(
-								cutOnSlave > edgeEndCutoffTol_()
-							 && cutOnSlave < 1.0 - edgeEndCutoffTol_()
-							 && slaveCut.distance() < mergeTol
-							)
-							{
-								// Cut both master and slave.  Add point
-								// to edge points The point is nominally
-								// added from the start of the master edge
-								// and added to the cut point zone
-								label newPoint =
-									ref.setAction
-									(
-										polyAddPoint
-										(
-											masterCutPoint,		   // point
-											masterMeshPoints[cme.start()],// m p
-											cutPointZoneID_.index(),  // zone
-											true					  // active
-										)
-									);
-//								 Pout << "Inserting point: " << newPoint
-//									 << " as edge to edge intersection.  "
-//									 << "Slave edge: " << edgeI << " "
-//									 << curEdge << " master edge: "
-//									 << cmeIndex << " " << cme
-//									 << " at " << masterCutPoint
-//									 << " master point: "
-//									 << masterMeshPoints[cme.start()] << endl;
-
-								pointsIntoSlaveEdges[edgeI].append(newPoint);
-								pointsIntoMasterEdges[cmeIndex].append(newPoint);
-
-								// Add the point into the enriched patch map
-								pointMap.insert
-								(
-									newPoint,
-									masterCutPoint
-								);
-
-								// Record which two edges intersect to
-								// create cut point
-								addToCpepm.insert
-								(
-									newPoint,	// Cut point index
-									Pair<edge>
-									(
-										edge
-										(
-											masterMeshPoints[cme.start()],
-											masterMeshPoints[cme.end()]
-										),	// Master edge
-										edge
-										(
-											slaveMeshPoints[curEdge.start()],
-											slaveMeshPoints[curEdge.end()]
-										)// Slave edge
-									)
-								);
-
-								if (debug)
-								{
-									Pout<< " " << newPoint << " = "
-										<< masterCutPoint << " ";
-								}
-							}
-							else
-							{
-								if (debug)
-								{
-									// Intersection exists but it is too far
-									Pout << "t";
-								}
-							}
-						}
-						else
-						{
-							if (debug)
-							{
-								// Missed slave edge
-								Pout << "x";
-							}
-						}
-					}
-					else
-					{
-						if (debug)
-						{
-							// Missed master edge
-							Pout << "-";
-						}
-					}
-				}
-				else
-				{
-					if (debug)
-					{
-						Pout << "u";
-					}
-				}
-			}
-
-			if (debug)
-			{
-				Pout << endl;
-			}
-		} // End if both ends missing
-	} // End for all slave edges
-
-//	 Pout << "pointsIntoMasterEdges: " << pointsIntoMasterEdges << endl;
-//	 Pout << "pointsIntoSlaveEdges: " << pointsIntoSlaveEdges << endl;
-
-	// Re-pack the points into edges lists
-	labelListList pime(pointsIntoMasterEdges.size());
-
-	forAll (pointsIntoMasterEdges, i)
-	{
-		pime[i].transfer(pointsIntoMasterEdges[i].shrink());
-	}
-
-	labelListList pise(pointsIntoSlaveEdges.size());
-
-	forAll (pointsIntoSlaveEdges, i)
-	{
-		pise[i].transfer(pointsIntoSlaveEdges[i].shrink());
-	}
-
-	// Prepare the enriched faces
-	cutPatch.completePointMap();
-
-	cutPatch.calcEnrichedFaces
-	(
-		pime,
-		pise,
-		projectedSlavePoints
-	);
-
-	if (debug > 1)
-	{
-		Info<< "Writing VTK file for enriched faces"
-			<< endl;
-
-		fileName fvPath(mesh.time().path()/"VTK");
-
-		standAlonePatch::writeVTK
-		(
-			fvPath/fileName(slaveFaceZoneID_.name() + "EnrichedPatch"),
-			cutPatch.localFaces(),
-			cutPatch.localPoints()
-		);
-	}
-
-	const faceList& cutFaces = cutPatch.cutFaces();
-	const labelList& cutFaceMaster = cutPatch.cutFaceMaster();
-	const labelList& cutFaceSlave = cutPatch.cutFaceSlave();
-
-	const labelList& masterFc = masterFaceCells();
-	const labelList& slaveFc = slaveFaceCells();
-
-	if (debug > 1)
-	{
-		Info<< "Writing VTK file for cut faces"
-			<< endl;
-
-		fileName fvPath(mesh.time().path()/"VTK");
-
-		standAlonePatch::writeVTK
-		(
-			fvPath/fileName(slaveFaceZoneID_.name() + "CutFacesPatch"),
-			cutPatch.localCutFaces(),
-			cutPatch.localPoints()
-		);
-	}
-
-	// Couple the interface
-
-	// Algorithm:
-	// 1) Go through the cut faces and check if the cut face is the same as the
-	//	defining master or slave.  If so, modify the appropriate
-	//	face and mark the other for relegation into the face zone.
-	// 2) If different, mark both sides for relegation and insert the new face
-
-
-	boolList orphanedMaster(masterPatch.size(), false);
-	boolList orphanedSlave(slavePatch.size(), false);
-
-	forAll (cutFaces, faceI)
-	{
-		const face& curCutFace = cutFaces[faceI];
-		const label curMaster = cutFaceMaster[faceI];
-		const label curSlave = cutFaceSlave[faceI];
-
-//		 Pout<< "Doing insertion of face " << curCutFace << " " << faceI << ": ";
-
-		// Check if the face has changed topologically
-		bool insertedFace = false;
-
-		if (curMaster >= 0)
-		{
-			// Face has got a master
-			if (curCutFace == masterPatch[curMaster])
-			{
-				// Face is equal to master.  Modify master face.
-//				 Pout << "Face is equal to master and is ";
-
-				// If the face has got both master and slave, it is an
-				// internal face; othewise it's a patch face in the
-				// master patch.  Keep it in the master face zone.
-
-				if (curSlave >= 0)
-				{
-//					 Pout << "internal ";
-					if (masterFc[curMaster] < slaveFc[curSlave])
-					{
-						// Cut face should point into slave.
-						// Be careful about flips in zone!
-//						 Pout << "without flip" << endl;
-						ref.setAction
-						(
-							polyModifyFace
-							(
-								curCutFace,				  // new face
-								masterPatchAddr[curMaster],  // master face id
-								masterFc[curMaster],		 // owner
-								slaveFc[curSlave],		   // neighbour
-								false,					   // flux flip
-								-1,						  // patch ID
-								false,					   // remove from zone
-								masterFaceZoneID_.index(),   // zone ID
-								// Bug fix: HJ, 24/Oct/2007
-								false						// zone flip
-							)
-						);
-//						 Pout << "modifying master face. Old master: " << masterPatch[curMaster] << " new face: " << curCutFace.reverseFace() << " own: " << masterFc[curMaster] << " nei: " << slaveFc[curSlave] << endl;
-					}
-					else
-					{
-						// Cut face should point into master.  Flip required.
-						// Be careful about flips in zone!
-//						 Pout << "flipped" << endl;
-						ref.setAction
-						(
-							polyModifyFace
-							(
-								curCutFace.reverseFace(),	// new face
-								masterPatchAddr[curMaster],  // master face id
-								slaveFc[curSlave],		   // owner
-								masterFc[curMaster],		 // neighbour
-								true,						// flux flip
-								-1,						  // patch ID
-								false,					   // remove from zone
-								masterFaceZoneID_.index(),   // zone ID
-								// Bug fix: HJ, 24/Oct/2007
-								true						 // zone flip
-							)
-						);
-					}
-
-					// Orphan the slave
-					orphanedSlave[curSlave] = true;
-				}
-				else
-				{
-					ref.setAction
-					(
-						polyModifyFace
-						(
-							curCutFace,				  // new face
-							masterPatchAddr[curMaster],  // master face index
-							masterFc[curMaster],		 // owner
-							-1,						  // neighbour
-							false,					   // flux flip
-							masterPatchID_.index(),	  // patch ID
-							false,					   // remove from zone
-							masterFaceZoneID_.index(),   // zone ID
-							// Bug fix: HJ, 24/Oct/2007
-							false						// zone flip
-						)
-					);
-				}
-
-				insertedFace = true;
-			}
-		}
-		else if (curSlave >= 0)
-		{
-			// Face has got a slave
-
-			// Renumber the slave face into merged labels
-			face rsf(slavePatch[curSlave]);
-
-			forAll (rsf, i)
-			{
-				Map<label>::const_iterator mpIter = pointMergeMap.find(rsf[i]);
-
-				if (mpIter != pointMergeMap.end())
-				{
-					rsf[i] = mpIter();
-				}
-			}
-
-			if (curCutFace == rsf)
-			{
-				// Face is equal to slave.  Modify slave face.
-//				 Pout << "Face is equal to slave and is ";
-
-				if (curMaster >= 0)
-				{
-//					 Pout << "regular internal" << endl;
-					if (masterFc[curMaster] < slaveFc[curSlave])
-					{
-						ref.setAction
-						(
-							polyModifyFace
-							(
-								curCutFace,				  // new face
-								slavePatchAddr[curSlave],	// master face id
-								masterFc[curMaster],		 // owner
-								slaveFc[curSlave],		   // neighbour
-								true,						// flux flip
-								-1,						  // patch ID
-								false,					   // remove from zone
+    if (debug)
+    {
+        Pout<< "void slidingInterface::coupleInterface"
+            << "(polyTopoChange& ref) : "
+            << "Coupling sliding interface " << name() << endl;
+    }
+
+    const polyMesh& mesh = topoChanger().mesh();
+
+    const pointField& points = mesh.allPoints();
+    const faceList& faces = mesh.faces();
+
+    const labelList& own = mesh.faceOwner();
+    const labelList& nei = mesh.faceNeighbour();
+    const faceZoneMesh& faceZones = mesh.faceZones();
+
+    // Note: master and slave patch will give already oriented faces from the
+    // face zone.  They are flipped to correct orientation by the zone
+    // functionality.  Therefore, the flip will simply be a true or false,
+    // depending on what should be done with the face, rather than
+    // reversing the existing face zone flip
+    // HJ, 24/Oct/2007
+
+    const primitiveFacePatch& masterPatch =
+        faceZones[masterFaceZoneID_.index()]();
+
+    const labelList& masterPatchAddr = faceZones[masterFaceZoneID_.index()];
+
+    const primitiveFacePatch& slavePatch =
+        faceZones[slaveFaceZoneID_.index()]();
+
+    const labelList& slavePatchAddr = faceZones[slaveFaceZoneID_.index()];
+
+    const edgeList& masterEdges = masterPatch.edges();
+    const labelListList& masterPointEdges = masterPatch.pointEdges();
+    const labelList& masterMeshPoints = masterPatch.meshPoints();
+    const pointField& masterLocalPoints = masterPatch.localPoints();
+    const labelListList& masterFaceFaces = masterPatch.faceFaces();
+    const labelListList& masterFaceEdges = masterPatch.faceEdges();
+    const Map<label>& masterMeshPointMap = masterPatch.meshPointMap();
+
+    const edgeList& slaveEdges = slavePatch.edges();
+    const labelListList& slavePointEdges = slavePatch.pointEdges();
+    const labelList& slaveMeshPoints = slavePatch.meshPoints();
+    const pointField& slaveLocalPoints = slavePatch.localPoints();
+    const Map<label>& slaveMeshPointMap = slavePatch.meshPointMap();
+    const vectorField& slavePointNormals = slavePatch.pointNormals();
+
+    // Collect projection addressing
+    if
+    (
+        !(
+            slavePointPointHitsPtr_
+         && slavePointEdgeHitsPtr_
+         && slavePointFaceHitsPtr_
+         && masterPointEdgeHitsPtr_
+        )
+    )
+    {
+        FatalErrorIn
+        (
+            "void slidingInterface::coupleInterface("
+            "polyTopoChange& ref) const"
+        )   << "Point projection addressing not available."
+            << abort(FatalError);
+    }
+
+    const labelList& slavePointPointHits = *slavePointPointHitsPtr_;
+    const labelList& slavePointEdgeHits = *slavePointEdgeHitsPtr_;
+    const List<objectHit>& slavePointFaceHits = *slavePointFaceHitsPtr_;
+    const labelList& masterPointEdgeHits = *masterPointEdgeHitsPtr_;
+    const pointField& projectedSlavePoints = *projectedSlavePointsPtr_;
+
+    // Create enriched patch
+    enrichedPatch cutPatch
+    (
+        masterPatch,
+        slavePatch,
+        slavePointPointHits,
+        slavePointEdgeHits,
+        slavePointFaceHits
+    );
+
+    // Get reference to list of added point for the enriched patch.
+    // This will be used for point addition
+    Map<point>& pointMap = cutPatch.pointMap();
+
+    // Get reference to the list of merged points
+    Map<label>& pointMergeMap = cutPatch.pointMergeMap();
+
+    // Create mapping for every merged point of the slave patch
+    forAll (slavePointPointHits, pointI)
+    {
+        if (slavePointPointHits[pointI] >= 0)
+        {
+//             Pout<< "Inserting point merge pair: " << slaveMeshPoints[pointI]
+//                 << " : " << masterMeshPoints[slavePointPointHits[pointI]]
+//                 << endl;
+            pointMergeMap.insert
+            (
+                slaveMeshPoints[pointI],
+                masterMeshPoints[slavePointPointHits[pointI]]
+            );
+        }
+    }
+
+    // Collect the list of used edges for every slave edge
+
+    List<labelHashSet> usedMasterEdges(slaveEdges.size());
+
+    // Collect of slave point hits
+    forAll (slavePointPointHits, pointI)
+    {
+        // For point hits, add all point-edges from master side to all point
+        const labelList& curSlaveEdges = slavePointEdges[pointI];
+
+        if (slavePointPointHits[pointI] > -1)
+        {
+            const labelList& curMasterEdges =
+                masterPointEdges[slavePointPointHits[pointI]];
+
+            // Mark all current master edges as used for all the current slave
+            // edges
+            forAll (curSlaveEdges, slaveEdgeI)
+            {
+                labelHashSet& sm = usedMasterEdges[curSlaveEdges[slaveEdgeI]];
+
+                forAll (curMasterEdges, masterEdgeI)
+                {
+                    sm.insert(curMasterEdges[masterEdgeI]);
+                }
+            }
+        }
+        else if (slavePointEdgeHits[pointI] > -1)
+        {
+            // For edge hits, add the master edge
+            forAll (curSlaveEdges, slaveEdgeI)
+            {
+                usedMasterEdges[curSlaveEdges[slaveEdgeI]].insert
+                (
+                    slavePointEdgeHits[pointI]
+                );
+            }
+        }
+    }
+
+    // Collect off master point hits
+    // For every master point that has hit an edge, add all edges coming from
+    // that point to the slave edge that has been hit
+    forAll (masterPointEdgeHits, masterPointI)
+    {
+        if (masterPointEdgeHits[masterPointI] > -1)
+        {
+            const labelList& curMasterEdges = masterPointEdges[masterPointI];
+
+            labelHashSet& sm =
+                usedMasterEdges[masterPointEdgeHits[masterPointI]];
+
+            forAll (curMasterEdges, masterEdgeI)
+            {
+                sm.insert(curMasterEdges[masterEdgeI]);
+            }
+        }
+    }
+
+//     Pout << "used edges: " << endl;
+//     forAll (usedMasterEdges, edgeI)
+//     {
+//         Pout<< "edge: " << edgeI << " used: "
+//             << usedMasterEdges[edgeI].toc() << endl;
+//     }
+
+    // For every master and slave edge make a list of points to be added into
+    // that edge.
+    List<dynamicLabelList > pointsIntoMasterEdges(masterEdges.size());
+    List<dynamicLabelList > pointsIntoSlaveEdges(slaveEdges.size());
+
+    // Add all points from the slave patch that have hit the edge
+    forAll (slavePointEdgeHits, pointI)
+    {
+        if (slavePointEdgeHits[pointI] > -1)
+        {
+            // Create a new point on the master edge
+
+            point edgeCutPoint =
+                masterEdges[slavePointEdgeHits[pointI]].line
+                (
+                    masterLocalPoints
+                ).nearestDist(projectedSlavePoints[pointI]).hitPoint();
+
+            label newPoint =
+                ref.setAction
+                (
+                    polyAddPoint
+                    (
+                        edgeCutPoint,             // point
+                        slaveMeshPoints[pointI],  // master point
+                        cutPointZoneID_.index(),  // zone for point
+                        true                      // supports a cell
+                    )
+                );
+//             Pout<< "Inserting merge pair off edge: "
+//                 << slaveMeshPoints[pointI] << " "
+//                 << newPoint << " cut point: " << edgeCutPoint
+//                 << " orig: " << slaveLocalPoints[pointI]
+//                 << " proj: " << projectedSlavePoints[pointI]
+//                 << " master point: " << slaveMeshPoints[pointI] << endl;
+
+            // Add the new edge point into the merge map
+            pointMergeMap.insert(slaveMeshPoints[pointI], newPoint);
+
+            pointsIntoMasterEdges[slavePointEdgeHits[pointI]].append
+            (
+                newPoint
+            );
+
+            // Add the point into the enriched patch map
+            pointMap.insert
+            (
+                newPoint,
+                edgeCutPoint
+            );
+
+            if (debug)
+            {
+                Pout<< "e";
+//                 Pout<< newPoint << " = " << edgeCutPoint << endl;
+            }
+        }
+    }
+
+    if (debug)
+    {
+        Pout<< endl;
+    }
+
+    // Add all points from the slave patch that have hit a face
+    forAll (slavePointFaceHits, pointI)
+    {
+        if
+        (
+            slavePointPointHits[pointI] < 0
+         && slavePointEdgeHits[pointI] < 0
+         && slavePointFaceHits[pointI].hit()
+        )
+        {
+            label newPoint =
+                ref.setAction
+                (
+                    polyAddPoint
+                    (
+                        projectedSlavePoints[pointI],   // point
+                        slaveMeshPoints[pointI],        // master point
+                        cutPointZoneID_.index(),        // zone for point
+                        true                            // supports a cell
+                    )
+                );
+//             Pout<< "Inserting merge pair off face: "
+//                 << slaveMeshPoints[pointI] << " " << newPoint
+//                 << " orig: " << slaveLocalPoints[pointI]
+//                 << " at " << projectedSlavePoints[pointI]
+//                 << " master point: " << slaveMeshPoints[pointI] << endl;
+
+            // Add the new edge point into the merge map
+            pointMergeMap.insert(slaveMeshPoints[pointI], newPoint);
+
+            // Add the point into the enriched patch map
+            pointMap.insert
+            (
+                newPoint,
+                projectedSlavePoints[pointI]
+            );
+
+            if (debug)
+            {
+                Pout<< "f";
+//                 Pout<< newPoint << " = "
+//                     << projectedSlavePoints[pointI] << endl;
+            }
+        }
+    }
+
+    forAll (masterPointEdgeHits, pointI)
+    {
+        if (masterPointEdgeHits[pointI] > -1)
+        {
+            pointsIntoSlaveEdges[masterPointEdgeHits[pointI]].append
+            (
+                masterMeshPoints[pointI]
+            );
+        }
+    }
+
+    // Cut all slave edges.
+    // Collect all master edges the slave edge interacts with.  Skip
+    // all the edges already marked as used.  For every unused edge,
+    // calculate the cut and insert the new point into the master and
+    // slave edge.
+    // For the edge selection algorithm, see, comment in
+    // slidingInterfaceProjectPoints.C.
+    // Edge cutting algoritm:
+    // As the master patch defines the cutting surface, the newly
+    // inserted point needs to be on the master edge.  Also, in 3-D
+    // the pair of edges generally misses each other rather than
+    // intersect.  Therefore, the intersection is calculated using the
+    // plane the slave edge defines during projection.  The plane is
+    // defined by the centrepoint of the edge in the original
+    // configuration and the projected end points.  In case of flat
+    // geometries (when the three points are colinear), the plane is
+    // defined by the two projected end-points and the slave edge
+    // normal used as the in-plane vector.  When the intersection
+    // point is created, it is added as a new point for both the
+    // master and the slave edge.
+    // In order to be able to re-create the points on edges in mesh
+    // motion without the topology change, the edge pair used to
+    // create the cut point needs to be recorded in
+    // cutPointEdgePairMap
+
+    // Note.  "Processing slave edges" code is repeated twice in the
+    // sliding intergace coupling in order to allow the point
+    // projection to be done separately from the actual cutting.
+    // Please change consistently with slidingInterfaceProjectPoints.C
+    // HJ, 23/Oct/2003
+    if (debug)
+    {
+        Pout << "Processing slave edges " << endl;
+    }
+
+    if (!cutPointEdgePairMapPtr_)
+    {
+        FatalErrorIn
+        (
+            "void slidingInterface::coupleInterface("
+            "polyTopoChange& ref) const"
+        )   << "Cut point edge pair map pointer not set."
+            << abort(FatalError);
+    }
+
+    Map<Pair<edge> >& addToCpepm = *cutPointEdgePairMapPtr_;
+
+    // Clear the old map
+    addToCpepm.clear();
+
+    // Create a map of faces the edge can interact with
+    labelHashSet curFaceMap
+    (
+        nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
+    );
+
+    labelHashSet addedFaces(2*primitiveMesh::edgesPerFace_);
+
+    forAll (slaveEdges, edgeI)
+    {
+        const edge& curEdge = slaveEdges[edgeI];
+
+        if
+        (
+            slavePointFaceHits[curEdge.start()].hit()
+         || slavePointFaceHits[curEdge.end()].hit()
+        )
+        {
+            labelHashSet& curUme = usedMasterEdges[edgeI];
+//             Pout<< "Doing edge " << edgeI << " curEdge: " << curEdge
+//                 << " curUme: " << curUme << endl;
+            // Clear the maps
+            curFaceMap.clear();
+            addedFaces.clear();
+
+            // Grab the faces for start and end points.
+            const label startFace =
+                slavePointFaceHits[curEdge.start()].hitObject();
+            const label endFace =
+                slavePointFaceHits[curEdge.end()].hitObject();
+//             Pout<< "startFace: " << slavePointFaceHits[curEdge.start()]
+//                 << " endFace: " << slavePointFaceHits[curEdge.end()]
+//                 << endl;
+            // Insert the start face into the list
+            curFaceMap.insert(startFace);
+            addedFaces.insert(startFace);
+//             Pout << "curFaceMap: " << curFaceMap.toc() << endl;
+            label nSweeps = 0;
+            bool completed = false;
+
+            while (nSweeps < edgeFaceEscapeLimit_)
+            {
+                nSweeps++;
+
+                if (addedFaces.found(endFace))
+                {
+                    completed = true;
+                }
+
+                // Add all face neighbours of face in the map
+                const labelList cf = addedFaces.toc();
+                addedFaces.clear();
+
+                forAll (cf, cfI)
+                {
+                    const labelList& curNbrs = masterFaceFaces[cf[cfI]];
+
+                    forAll (curNbrs, nbrI)
+                    {
+                        if (!curFaceMap.found(curNbrs[nbrI]))
+                        {
+                            curFaceMap.insert(curNbrs[nbrI]);
+                            addedFaces.insert(curNbrs[nbrI]);
+                        }
+                    }
+                }
+
+                if (completed) break;
+
+                if (debug)
+                {
+                    Pout << ".";
+                }
+            }
+
+            if (!completed)
+            {
+                if (debug)
+                {
+                    Pout << "x";
+                }
+
+                // It is impossible to reach the end from the start, probably
+                // due to disconnected domain.  Do search in opposite direction
+
+                label nReverseSweeps = 0;
+
+                addedFaces.clear();
+                addedFaces.insert(endFace);
+
+                while (nReverseSweeps < edgeFaceEscapeLimit_)
+                {
+                    nReverseSweeps++;
+
+                    if (addedFaces.found(startFace))
+                    {
+                        completed = true;
+                    }
+
+                    // Add all face neighbours of face in the map
+                    const labelList cf = addedFaces.toc();
+                    addedFaces.clear();
+
+                    forAll (cf, cfI)
+                    {
+                        const labelList& curNbrs = masterFaceFaces[cf[cfI]];
+
+                        forAll (curNbrs, nbrI)
+                        {
+                            if (!curFaceMap.found(curNbrs[nbrI]))
+                            {
+                                curFaceMap.insert(curNbrs[nbrI]);
+                                addedFaces.insert(curNbrs[nbrI]);
+                            }
+                        }
+                    }
+
+                    if (completed) break;
+
+                    if (debug)
+                    {
+                        Pout << ".";
+                    }
+                }
+            }
+
+            if (completed)
+            {
+                if (debug)
+                {
+                    Pout << "+ ";
+                }
+            }
+            else
+            {
+                if (debug)
+                {
+                    Pout << "z ";
+                }
+            }
+
+            // Collect the edges
+
+            // Create a map of edges the edge can interact with
+            labelHashSet curMasterEdgesMap
+            (
+                nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
+            );
+
+            const labelList curFaces = curFaceMap.toc();
+//             Pout << "curFaces: " << curFaces << endl;
+            forAll (curFaces, faceI)
+            {
+//                 Pout<< "face: " << curFaces[faceI] << " "
+//                     << masterPatch[curFaces[faceI]]
+//                     << " local: "
+//                     << masterPatch.localFaces()[curFaces[faceI]]
+//                     << endl;
+                const labelList& me = masterFaceEdges[curFaces[faceI]];
+
+                forAll (me, meI)
+                {
+                    curMasterEdgesMap.insert(me[meI]);
+                }
+            }
+
+            const labelList curMasterEdges = curMasterEdgesMap.toc();
+
+            // For all master edges to intersect, skip the ones
+            // already used and cut the rest with a cutting plane.  If
+            // the intersection point, falls inside of both edges, it
+            // is valid.
+
+            // Note: The edge cutting code is repeated in
+            // slidingInterface::modifyMotionPoints.  This is done for
+            // efficiency reasons and avoids multiple creation of cutting
+            // planes.  Please update both simultaneously.  HJ, 28/Jul/2003
+
+            const point& a = projectedSlavePoints[curEdge.start()];
+            const point& b = projectedSlavePoints[curEdge.end()];
+
+            point c =
+                0.5*
+                (
+                    slaveLocalPoints[curEdge.start()]
+                  + slavePointNormals[curEdge.start()] // Add start normal
+                  + slaveLocalPoints[curEdge.end()]
+                  + slavePointNormals[curEdge.end()] // Add end normal
+                );
+
+            // Create the plane
+            plane cutPlane(a, b, c);
+//             Pout << "a: " << a << " b: " << b << " c: " << c << " plane: " << cutPlane << endl;
+
+            linePointRef curSlaveLine = curEdge.line(projectedSlavePoints);
+            const scalar curSlaveLineMag = curSlaveLine.mag();
+//             Pout << "curSlaveLine: " << curSlaveLine << endl;
+            forAll (curMasterEdges, masterEdgeI)
+            {
+                if (!curUme.found(curMasterEdges[masterEdgeI]))
+                {
+                    // New edge
+                    if (debug)
+                    {
+                        Pout << "n";
+                    }
+
+                    const label cmeIndex = curMasterEdges[masterEdgeI];
+                    const edge& cme = masterEdges[cmeIndex];
+//                     Pout<< "Edge " << cmeIndex << " cme: " << cme << " line: " << cme.line(masterLocalPoints) << endl;
+                    scalar cutOnMaster =
+                        cutPlane.lineIntersect
+                        (
+                            cme.line(masterLocalPoints)
+                        );
+
+                    if
+                    (
+                        cutOnMaster > edgeEndCutoffTol_()
+                     && cutOnMaster < 1.0 - edgeEndCutoffTol_()
+                    )
+                    {
+                        // Master is cut, check the slave
+                        point masterCutPoint =
+                            masterLocalPoints[cme.start()]
+                          + cutOnMaster*cme.vec(masterLocalPoints);
+
+                        pointHit slaveCut =
+                            curSlaveLine.nearestDist(masterCutPoint);
+
+                        if (slaveCut.hit())
+                        {
+                            // Strict checking of slave cut to avoid capturing
+                            // end points.  HJ, 15/Oct/2004
+                            scalar cutOnSlave =
+                                (
+                                    (
+                                        slaveCut.hitPoint()
+                                      - curSlaveLine.start()
+                                    ) & curSlaveLine.vec()
+                                )/sqr(curSlaveLineMag);
+
+                            // Calculate merge tolerance from the
+                            // target edge length
+                            scalar mergeTol =
+                                edgeCoPlanarTol_()*mag(b - a);
+//                             Pout<< "cutOnMaster: " << cutOnMaster
+//                                 << " masterCutPoint: " << masterCutPoint
+//                                 << " slaveCutPoint: " << slaveCut.hitPoint()
+//                                 << " slaveCut.distance(): "
+//                                 << slaveCut.distance()
+//                                 << " slave length: " << mag(b - a)
+//                                 << " mergeTol: " << mergeTol
+//                                 << " 1: " << mag(b - a)
+//                                 << " 2: " << cme.line(masterLocalPoints).mag()
+//                                 << endl;
+                            if
+                            (
+                                cutOnSlave > edgeEndCutoffTol_()
+                             && cutOnSlave < 1.0 - edgeEndCutoffTol_()
+                             && slaveCut.distance() < mergeTol
+                            )
+                            {
+                                // Cut both master and slave.  Add point
+                                // to edge points The point is nominally
+                                // added from the start of the master edge
+                                // and added to the cut point zone
+                                label newPoint =
+                                    ref.setAction
+                                    (
+                                        polyAddPoint
+                                        (
+                                            masterCutPoint,           // point
+                                            masterMeshPoints[cme.start()],// m p
+                                            cutPointZoneID_.index(),  // zone
+                                            true                      // active
+                                        )
+                                    );
+//                                 Pout << "Inserting point: " << newPoint
+//                                     << " as edge to edge intersection.  "
+//                                     << "Slave edge: " << edgeI << " "
+//                                     << curEdge << " master edge: "
+//                                     << cmeIndex << " " << cme
+//                                     << " at " << masterCutPoint
+//                                     << " master point: "
+//                                     << masterMeshPoints[cme.start()] << endl;
+
+                                pointsIntoSlaveEdges[edgeI].append(newPoint);
+                                pointsIntoMasterEdges[cmeIndex].append(newPoint);
+
+                                // Add the point into the enriched patch map
+                                pointMap.insert
+                                (
+                                    newPoint,
+                                    masterCutPoint
+                                );
+
+                                // Record which two edges intersect to
+                                // create cut point
+                                addToCpepm.insert
+                                (
+                                    newPoint,    // Cut point index
+                                    Pair<edge>
+                                    (
+                                        edge
+                                        (
+                                            masterMeshPoints[cme.start()],
+                                            masterMeshPoints[cme.end()]
+                                        ),    // Master edge
+                                        edge
+                                        (
+                                            slaveMeshPoints[curEdge.start()],
+                                            slaveMeshPoints[curEdge.end()]
+                                        )// Slave edge
+                                    )
+                                );
+
+                                if (debug)
+                                {
+                                    Pout<< " " << newPoint << " = "
+                                        << masterCutPoint << " ";
+                                }
+                            }
+                            else
+                            {
+                                if (debug)
+                                {
+                                    // Intersection exists but it is too far
+                                    Pout << "t";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (debug)
+                            {
+                                // Missed slave edge
+                                Pout << "x";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (debug)
+                        {
+                            // Missed master edge
+                            Pout << "-";
+                        }
+                    }
+                }
+                else
+                {
+                    if (debug)
+                    {
+                        Pout << "u";
+                    }
+                }
+            }
+
+            if (debug)
+            {
+                Pout << endl;
+            }
+        } // End if both ends missing
+    } // End for all slave edges
+
+//     Pout << "pointsIntoMasterEdges: " << pointsIntoMasterEdges << endl;
+//     Pout << "pointsIntoSlaveEdges: " << pointsIntoSlaveEdges << endl;
+
+    // Re-pack the points into edges lists
+    labelListList pime(pointsIntoMasterEdges.size());
+
+    forAll (pointsIntoMasterEdges, i)
+    {
+        pime[i].transfer(pointsIntoMasterEdges[i].shrink());
+    }
+
+    labelListList pise(pointsIntoSlaveEdges.size());
+
+    forAll (pointsIntoSlaveEdges, i)
+    {
+        pise[i].transfer(pointsIntoSlaveEdges[i].shrink());
+    }
+
+    // Prepare the enriched faces
+    cutPatch.completePointMap();
+
+    cutPatch.calcEnrichedFaces
+    (
+        pime,
+        pise,
+        projectedSlavePoints
+    );
+
+    if (debug > 1)
+    {
+        Info<< "Writing VTK file for enriched faces"
+            << endl;
+
+        fileName fvPath(mesh.time().path()/"VTK");
+
+        standAlonePatch::writeVTK
+        (
+            fvPath/fileName(slaveFaceZoneID_.name() + "EnrichedPatch"),
+            cutPatch.localFaces(),
+            cutPatch.localPoints()
+        );
+    }
+
+    const faceList& cutFaces = cutPatch.cutFaces();
+    const labelList& cutFaceMaster = cutPatch.cutFaceMaster();
+    const labelList& cutFaceSlave = cutPatch.cutFaceSlave();
+
+    const labelList& masterFc = masterFaceCells();
+    const labelList& slaveFc = slaveFaceCells();
+
+    if (debug > 1)
+    {
+        Info<< "Writing VTK file for cut faces"
+            << endl;
+
+        fileName fvPath(mesh.time().path()/"VTK");
+
+        standAlonePatch::writeVTK
+        (
+            fvPath/fileName(slaveFaceZoneID_.name() + "CutFacesPatch"),
+            cutPatch.localCutFaces(),
+            cutPatch.localPoints()
+        );
+    }
+
+    // Couple the interface
+
+    // Algorithm:
+    // 1) Go through the cut faces and check if the cut face is the same as the
+    //    defining master or slave.  If so, modify the appropriate
+    //    face and mark the other for relegation into the face zone.
+    // 2) If different, mark both sides for relegation and insert the new face
+
+
+    boolList orphanedMaster(masterPatch.size(), false);
+    boolList orphanedSlave(slavePatch.size(), false);
+
+    forAll (cutFaces, faceI)
+    {
+        const face& curCutFace = cutFaces[faceI];
+        const label curMaster = cutFaceMaster[faceI];
+        const label curSlave = cutFaceSlave[faceI];
+
+//         Pout<< "Doing insertion of face " << curCutFace << " " << faceI << ": ";
+
+        // Check if the face has changed topologically
+        bool insertedFace = false;
+
+        if (curMaster >= 0)
+        {
+            // Face has got a master
+            if (curCutFace == masterPatch[curMaster])
+            {
+                // Face is equal to master.  Modify master face.
+//                 Pout << "Face is equal to master and is ";
+
+                // If the face has got both master and slave, it is an
+                // internal face; othewise it's a patch face in the
+                // master patch.  Keep it in the master face zone.
+
+                if (curSlave >= 0)
+                {
+//                     Pout << "internal ";
+                    if (masterFc[curMaster] < slaveFc[curSlave])
+                    {
+                        // Cut face should point into slave.
+                        // Be careful about flips in zone!
+//                         Pout << "without flip" << endl;
+                        ref.setAction
+                        (
+                            polyModifyFace
+                            (
+                                curCutFace,                  // new face
+                                masterPatchAddr[curMaster],  // master face id
+                                masterFc[curMaster],         // owner
+                                slaveFc[curSlave],           // neighbour
+                                false,                       // flux flip
+                                -1,                          // patch ID
+                                false,                       // remove from zone
+                                masterFaceZoneID_.index(),   // zone ID
+                                // Bug fix: HJ, 24/Oct/2007
+                                false                        // zone flip
+                            )
+                        );
+//                         Pout << "modifying master face. Old master: " << masterPatch[curMaster] << " new face: " << curCutFace.reverseFace() << " own: " << masterFc[curMaster] << " nei: " << slaveFc[curSlave] << endl;
+                    }
+                    else
+                    {
+                        // Cut face should point into master.  Flip required.
+                        // Be careful about flips in zone!
+//                         Pout << "flipped" << endl;
+                        ref.setAction
+                        (
+                            polyModifyFace
+                            (
+                                curCutFace.reverseFace(),    // new face
+                                masterPatchAddr[curMaster],  // master face id
+                                slaveFc[curSlave],           // owner
+                                masterFc[curMaster],         // neighbour
+                                true,                        // flux flip
+                                -1,                          // patch ID
+                                false,                       // remove from zone
+                                masterFaceZoneID_.index(),   // zone ID
+                                // Bug fix: HJ, 24/Oct/2007
+                                true                         // zone flip
+                            )
+                        );
+                    }
+
+                    // Orphan the slave
+                    orphanedSlave[curSlave] = true;
+                }
+                else
+                {
+                    ref.setAction
+                    (
+                        polyModifyFace
+                        (
+                            curCutFace,                  // new face
+                            masterPatchAddr[curMaster],  // master face index
+                            masterFc[curMaster],         // owner
+                            -1,                          // neighbour
+                            false,                       // flux flip
+                            masterPatchID_.index(),      // patch ID
+                            false,                       // remove from zone
+                            masterFaceZoneID_.index(),   // zone ID
+                            // Bug fix: HJ, 24/Oct/2007
+                            false                        // zone flip
+                        )
+                    );
+                }
+
+                insertedFace = true;
+            }
+        }
+        else if (curSlave >= 0)
+        {
+            // Face has got a slave
+
+            // Renumber the slave face into merged labels
+            face rsf(slavePatch[curSlave]);
+
+            forAll (rsf, i)
+            {
+                Map<label>::const_iterator mpIter = pointMergeMap.find(rsf[i]);
+
+                if (mpIter != pointMergeMap.end())
+                {
+                    rsf[i] = mpIter();
+                }
+            }
+
+            if (curCutFace == rsf)
+            {
+                // Face is equal to slave.  Modify slave face.
+//                 Pout << "Face is equal to slave and is ";
+
+                if (curMaster >= 0)
+                {
+//                     Pout << "regular internal" << endl;
+                    if (masterFc[curMaster] < slaveFc[curSlave])
+                    {
+                        ref.setAction
+                        (
+                            polyModifyFace
+                            (
+                                curCutFace,                  // new face
+                                slavePatchAddr[curSlave],    // master face id
+                                masterFc[curMaster],         // owner
+                                slaveFc[curSlave],           // neighbour
+                                true,                        // flux flip
+                                -1,                          // patch ID
+                                false,                       // remove from zone
                                 slaveFaceZoneID_.index(),    // zone ID
                                 // Bug fix: HJ, 24/Oct/2007
                                 true                         // zone flip

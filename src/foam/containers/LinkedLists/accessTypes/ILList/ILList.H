@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::ILList
+    Foam::ILList
 
 Description
-	Template class for intrusive linked lists.
+    Template class for intrusive linked lists.
 
 SourceFiles
-	ILList.C
-	ILListIO.C
+    ILList.C
+    ILListIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -53,88 +53,91 @@ template<class LListBase, class T> class ILList;
 
 template<class LListBase, class T> Istream& operator>>
 (
-	Istream&,
-	ILList<LListBase, T>&
+    Istream&,
+    ILList<LListBase, T>&
 );
 
 
+/*---------------------------------------------------------------------------*\
+                           Class ILList Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class LListBase, class T>
 class ILList
 :
-	public UILList<LListBase, T>
+    public UILList<LListBase, T>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read from Istream using given Istream constructor class
-		template<class INew>
-		void read(Istream&, const INew&);
+        //- Read from Istream using given Istream constructor class
+        template<class INew>
+        void read(Istream&, const INew&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Null construct
-		ILList()
-		{}
+        //- Null construct
+        ILList()
+        {}
 
-		//- Construct given initial T
-		ILList(T* a)
-		:
-			UILList<LListBase, T>(a)
-		{}
+        //- Construct given initial T
+        ILList(T* a)
+        :
+            UILList<LListBase, T>(a)
+        {}
 
-		//- Construct from Istream
-		ILList(Istream&);
+        //- Construct from Istream
+        ILList(Istream&);
 
-		//- Construct as copy
-		ILList(const ILList<LListBase, T>&);
+        //- Construct as copy
+        ILList(const ILList<LListBase, T>&);
 
-		//- Copy constructor with additional argument for clone
-		template<class CloneArg>
-		ILList(const ILList<LListBase, T>& lst, const CloneArg& cloneArg);
+        //- Copy constructor with additional argument for clone
+        template<class CloneArg>
+        ILList(const ILList<LListBase, T>& lst, const CloneArg& cloneArg);
 
-		//- Construct from Istream using given Istream constructor class
-		template<class INew>
-		ILList(Istream&, const INew&);
-
-
-	//- Destructor
-	~ILList();
+        //- Construct from Istream using given Istream constructor class
+        template<class INew>
+        ILList(Istream&, const INew&);
 
 
-	// Member Functions
-
-		// Edit
-
-			//- Remove the head element specified from the list and delete it
-			bool eraseHead();
-
-			//- Remove the specified element from the list and delete it
-			bool erase(T* p);
-
-			//- Clear the contents of the list
-			void clear();
-
-			//- Transfer the contents of the argument into this List
-			//  and annul the argument list.
-			void transfer(ILList<LListBase, T>&);
+    //- Destructor
+    ~ILList();
 
 
-	// Member operators
+    // Member Functions
 
-		void operator=(const ILList<LListBase, T>&);
+        // Edit
+
+            //- Remove the head element specified from the list and delete it
+            bool eraseHead();
+
+            //- Remove the specified element from the list and delete it
+            bool erase(T* p);
+
+            //- Clear the contents of the list
+            void clear();
+
+            //- Transfer the contents of the argument into this List
+            //  and annul the argument list.
+            void transfer(ILList<LListBase, T>&);
 
 
-	// Istream operator
+    // Member operators
 
-		//- Read List from Istream, discarding contents of existing List.
-		friend Istream& operator>> <LListBase, T>
-		(
-			Istream&,
-			ILList<LListBase, T>&
-		);
+        void operator=(const ILList<LListBase, T>&);
+
+
+    // Istream operator
+
+        //- Read List from Istream, discarding contents of existing List.
+        friend Istream& operator>> <LListBase, T>
+        (
+            Istream&,
+            ILList<LListBase, T>&
+        );
 };
 
 
@@ -145,7 +148,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "ILList.C"
+#   include "ILList.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

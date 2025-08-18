@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,20 +32,20 @@ License
 // Null constructor
 inline Foam::refinementData::refinementData()
 :
-	refinementCount_(-1),
-	count_(-1)
+    refinementCount_(-1),
+    count_(-1)
 {}
 
 
 // Construct from components
 inline Foam::refinementData::refinementData
 (
-	const label refinementCount,
-	const label count
+    const label refinementCount,
+    const label count
 )
 :
-	refinementCount_(refinementCount),
-	count_(count)
+    refinementCount_(refinementCount),
+    count_(count)
 {}
 
 
@@ -53,29 +53,29 @@ inline Foam::refinementData::refinementData
 
 inline bool Foam::refinementData::valid() const
 {
-	return count_ != -1;
+    return count_ != -1;
 }
 
 
 // No geometric data so never any problem on cyclics
 inline bool Foam::refinementData::sameGeometry
 (
-	const polyMesh&,
-	const refinementData&,
-	const scalar
+    const polyMesh&,
+    const refinementData&,
+    const scalar
 ) const
 {
-	return true;
+    return true;
 }
 
 
 // No geometric data.
 inline void Foam::refinementData::leaveDomain
 (
-	const polyMesh&,
-	const polyPatch& patch,
-	const label patchFaceI,
-	const point& faceCentre
+    const polyMesh&,
+    const polyPatch& patch,
+    const label patchFaceI,
+    const point& faceCentre
 )
 {}
 
@@ -83,8 +83,8 @@ inline void Foam::refinementData::leaveDomain
 // No geometric data.
 inline void Foam::refinementData::transform
 (
-	const polyMesh&,
-	const tensor& rotTensor
+    const polyMesh&,
+    const tensor& rotTensor
 )
 {}
 
@@ -92,10 +92,10 @@ inline void Foam::refinementData::transform
 // No geometric data.
 inline void Foam::refinementData::enterDomain
 (
-	const polyMesh&,
-	const polyPatch& patch,
-	const label patchFaceI,
-	const point& faceCentre
+    const polyMesh&,
+    const polyPatch& patch,
+    const label patchFaceI,
+    const point& faceCentre
 )
 {}
 
@@ -103,125 +103,125 @@ inline void Foam::refinementData::enterDomain
 // Update cell with neighbouring face information
 inline bool Foam::refinementData::updateCell
 (
-	const polyMesh&,
-	const label thisCellI,
-	const label neighbourFaceI,
-	const refinementData& neighbourInfo,
-	const scalar tol
+    const polyMesh&,
+    const label thisCellI,
+    const label neighbourFaceI,
+    const refinementData& neighbourInfo,
+    const scalar tol
 )
 {
-	if (!valid())
-	{
-		FatalErrorIn("refinementData::updateCell") << "problem"
-			<< abort(FatalError);
-		return false;
-	}
+    if (!valid())
+    {
+        FatalErrorIn("refinementData::updateCell") << "problem"
+            << abort(FatalError);
+        return false;
+    }
 
 
-	// Check if more than 2:1 ratio. This is when I am not refined but neighbour
-	// is and neighbour already had higher cell level.
-	if
-	(
-		neighbourInfo.isRefined()
-	&& !isRefined()
-	&&  neighbourInfo.refinementCount() > refinementCount()
-	)
-	{
-		count_ = refinementCount();
-		return true;
-	}
+    // Check if more than 2:1 ratio. This is when I am not refined but neighbour
+    // is and neighbour already had higher cell level.
+    if
+    (
+        neighbourInfo.isRefined()
+    && !isRefined()
+    &&  neighbourInfo.refinementCount() > refinementCount()
+    )
+    {
+        count_ = refinementCount();
+        return true;
+    }
 
 
 
-	// Count from neighbour face by the time it reaches the current cell.
-	label transportedFaceCount;
+    // Count from neighbour face by the time it reaches the current cell.
+    label transportedFaceCount;
 
-	if (neighbourInfo.isRefined())
-	{
-		// refined so passes through two cells.
-		transportedFaceCount = max(0, neighbourInfo.count()-2);
-	}
-	else
-	{
-		// unrefined.
-		transportedFaceCount = max(0, neighbourInfo.count()-1);
-	}
+    if (neighbourInfo.isRefined())
+    {
+        // refined so passes through two cells.
+        transportedFaceCount = max(0, neighbourInfo.count()-2);
+    }
+    else
+    {
+        // unrefined.
+        transportedFaceCount = max(0, neighbourInfo.count()-1);
+    }
 
-	if (count_ >= transportedFaceCount)
-	{
-		return false;
-	}
-	else
-	{
-		count_ = transportedFaceCount;
+    if (count_ >= transportedFaceCount)
+    {
+        return false;
+    }
+    else
+    {
+        count_ = transportedFaceCount;
 
-		return true;
-	}
+        return true;
+    }
 }
 
 
 // Update face with neighbouring cell information
 inline bool Foam::refinementData::updateFace
 (
-	const polyMesh&,
-	const label thisFaceI,
-	const label neighbourCellI,
-	const refinementData& neighbourInfo,
-	const scalar tol
+    const polyMesh&,
+    const label thisFaceI,
+    const label neighbourCellI,
+    const refinementData& neighbourInfo,
+    const scalar tol
 )
 {
-	// From cell to its faces.
-	if (!valid())
-	{
-		refinementCount_ = neighbourInfo.refinementCount();
-		count_ = neighbourInfo.count();
+    // From cell to its faces.
+    if (!valid())
+    {
+        refinementCount_ = neighbourInfo.refinementCount();
+        count_ = neighbourInfo.count();
 
-		return true;
-	}
+        return true;
+    }
 
-	if (count_ >= neighbourInfo.count())
-	{
-		return false;
-	}
-	else
-	{
-		refinementCount_ = neighbourInfo.refinementCount();
-		count_ = neighbourInfo.count();
+    if (count_ >= neighbourInfo.count())
+    {
+        return false;
+    }
+    else
+    {
+        refinementCount_ = neighbourInfo.refinementCount();
+        count_ = neighbourInfo.count();
 
-		return true;
-	}
+        return true;
+    }
 }
 
 
 // Update face with coupled face information
 inline bool Foam::refinementData::updateFace
 (
-	const polyMesh&,
-	const label thisFaceI,
-	const refinementData& neighbourInfo,
-	const scalar tol
+    const polyMesh&,
+    const label thisFaceI,
+    const refinementData& neighbourInfo,
+    const scalar tol
 )
 {
-	// From face to face (e.g. coupled faces)
-	if (!valid())
-	{
-		refinementCount_ = neighbourInfo.refinementCount();
-		count_ = neighbourInfo.count();
+    // From face to face (e.g. coupled faces)
+    if (!valid())
+    {
+        refinementCount_ = neighbourInfo.refinementCount();
+        count_ = neighbourInfo.count();
 
-		return true;
-	}
+        return true;
+    }
 
-	if (count_ >= neighbourInfo.count())
-	{
-		return false;
-	}
-	else
-	{
-		refinementCount_ = neighbourInfo.refinementCount();
-		count_ = neighbourInfo.count();
+    if (count_ >= neighbourInfo.count())
+    {
+        return false;
+    }
+    else
+    {
+        refinementCount_ = neighbourInfo.refinementCount();
+        count_ = neighbourInfo.count();
 
-		return true;
-	}
+        return true;
+    }
 }
 
 
@@ -230,14 +230,14 @@ inline bool Foam::refinementData::updateFace
 inline bool Foam::refinementData::operator==(const Foam::refinementData& rhs)
  const
 {
-	return count() == rhs.count() && refinementCount() == rhs.refinementCount();
+    return count() == rhs.count() && refinementCount() == rhs.refinementCount();
 }
 
 
 inline bool Foam::refinementData::operator!=(const Foam::refinementData& rhs)
  const
 {
-	return !(*this == rhs);
+    return !(*this == rhs);
 }
 
 

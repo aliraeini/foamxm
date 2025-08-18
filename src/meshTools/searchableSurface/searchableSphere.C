@@ -1,29 +1,30 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
 #include "searchableSphere.H"
+#include "volumeType.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -41,82 +42,82 @@ addToRunTimeSelectionTable(searchableSurface, searchableSphere, dict);
 
 Foam::pointIndexHit Foam::searchableSphere::findNearest
 (
-	const point& sample,
-	const scalar nearestDistSqr
+    const point& sample,
+    const scalar nearestDistSqr
 ) const
 {
-	pointIndexHit info(false, sample, -1);
+    pointIndexHit info(false, sample, -1);
 
-	const vector n(sample-centre_);
-	scalar magN = mag(n);
+    const vector n(sample-centre_);
+    scalar magN = mag(n);
 
-	if (nearestDistSqr > sqr(magN-radius_))
-	{
-		if (magN < ROOTVSMALL)
-		{
-			info.rawPoint() = centre_ + vector(1,0,0)/magN*radius_;
-		}
-		else
-		{
-			info.rawPoint() = centre_ + n/magN*radius_;
-		}
-		info.setHit();
-		info.setIndex(0);
-	}
+    if (nearestDistSqr > sqr(magN-radius_))
+    {
+        if (magN < ROOTVSMALL)
+        {
+            info.rawPoint() = centre_ + vector(1,0,0)/magN*radius_;
+        }
+        else
+        {
+            info.rawPoint() = centre_ + n/magN*radius_;
+        }
+        info.setHit();
+        info.setIndex(0);
+    }
 
-	return info;
+    return info;
 }
 
 
 // From Graphics Gems - intersection of sphere with ray
 void Foam::searchableSphere::findLineAll
 (
-	const point& start,
-	const point& end,
-	pointIndexHit& near,
-	pointIndexHit& far
+    const point& start,
+    const point& end,
+    pointIndexHit& near,
+    pointIndexHit& far
 ) const
 {
-	near.setMiss();
-	far.setMiss();
+    near.setMiss();
+    far.setMiss();
 
-	vector dir(end-start);
-	scalar magSqrDir = magSqr(dir);
+    vector dir(end-start);
+    scalar magSqrDir = magSqr(dir);
 
-	if (magSqrDir > ROOTVSMALL)
-	{
-		const vector toCentre(centre_-start);
-		scalar magSqrToCentre = magSqr(toCentre);
+    if (magSqrDir > ROOTVSMALL)
+    {
+        const vector toCentre(centre_-start);
+        scalar magSqrToCentre = magSqr(toCentre);
 
-		dir /= Foam::sqrt(magSqrDir);
+        dir /= Foam::sqrt(magSqrDir);
 
-		scalar v = (toCentre & dir);
+        scalar v = (toCentre & dir);
 
-		scalar disc = sqr(radius_) - (magSqrToCentre - sqr(v));
+        scalar disc = sqr(radius_) - (magSqrToCentre - sqr(v));
 
-		if (disc >= 0)
-		{
-			scalar d = Foam::sqrt(disc);
+        if (disc >= 0)
+        {
+            scalar d = Foam::sqrt(disc);
 
-			scalar nearParam = v-d;
+            scalar nearParam = v-d;
 
-			if (nearParam >= 0 && sqr(nearParam) <= magSqrDir)
-			{
-				near.setHit();
-				near.setPoint(start + nearParam*dir);
-				near.setIndex(0);
-			}
+            if (nearParam >= 0 && sqr(nearParam) <= magSqrDir)
+            {
+                near.setHit();
+                near.setPoint(start + nearParam*dir);
+                near.setIndex(0);
+            }
 
-			scalar farParam = v+d;
+            scalar farParam = v+d;
 
-			if (farParam >= 0 && sqr(farParam) <= magSqrDir)
-			{
-				far.setHit();
-				far.setPoint(start + farParam*dir);
-				far.setIndex(0);
-			}
-		}
-	}
+            if (farParam >= 0 && sqr(farParam) <= magSqrDir)
+            {
+                far.setHit();
+                far.setPoint(start + farParam*dir);
+                far.setIndex(0);
+            }
+        }
+    }
 }
 
 
@@ -124,26 +125,32 @@ void Foam::searchableSphere::findLineAll
 
 Foam::searchableSphere::searchableSphere
 (
-	const IOobject& io,
-	const point& centre,
-	const scalar radius
+    const IOobject& io,
+    const point& centre,
+    const scalar radius
 )
 :
-	searchableSurface(io),
-	centre_(centre),
-	radius_(radius)
-{}
+    searchableSurface(io),
+    centre_(centre),
+    radius_(radius)
+{
+    bounds() = boundBox
+    (
+        centre_ - radius_*vector::one,
+        centre_ + radius_*vector::one
+    );
+}
 
 
 Foam::searchableSphere::searchableSphere
 (
-	const IOobject& io,
-	const dictionary& dict
+    const IOobject& io,
+    const dictionary& dict
 )
 :
-	searchableSurface(io),
-	centre_(dict.lookup("centre")),
-	radius_(readScalar(dict.lookup("radius")))
+    searchableSurface(io),
+    centre_(dict.lookup("centre")),
+    radius_(readScalar(dict.lookup("radius")))
 {}
 
 
@@ -157,180 +164,180 @@ Foam::searchableSphere::~searchableSphere()
 
 const Foam::wordList& Foam::searchableSphere::regions() const
 {
-	if (regions_.empty())
-	{
-		regions_.setSize(1);
-		regions_[0] = "region0";
-	}
-	return regions_;
+    if (regions_.empty())
+    {
+        regions_.setSize(1);
+        regions_[0] = "region0";
+    }
+    return regions_;
 }
 
 
 
 void Foam::searchableSphere::findNearest
 (
-	const pointField& samples,
-	const scalarField& nearestDistSqr,
-	List<pointIndexHit>& info
+    const pointField& samples,
+    const scalarField& nearestDistSqr,
+    List<pointIndexHit>& info
 ) const
 {
-	info.setSize(samples.size());
+    info.setSize(samples.size());
 
-	forAll(samples, i)
-	{
-		info[i] = findNearest(samples[i], nearestDistSqr[i]);
-	}
+    forAll(samples, i)
+    {
+        info[i] = findNearest(samples[i], nearestDistSqr[i]);
+    }
 }
 
 
 void Foam::searchableSphere::findLine
 (
-	const pointField& start,
-	const pointField& end,
-	List<pointIndexHit>& info
+    const pointField& start,
+    const pointField& end,
+    List<pointIndexHit>& info
 ) const
 {
-	info.setSize(start.size());
+    info.setSize(start.size());
 
-	pointIndexHit b;
+    pointIndexHit b;
 
-	forAll(start, i)
-	{
-		// Pick nearest intersection. If none intersected take second one.
-		findLineAll(start[i], end[i], info[i], b);
-		if (!info[i].hit() && b.hit())
-		{
-			info[i] = b;
-		}
-	}
+    forAll(start, i)
+    {
+        // Pick nearest intersection. If none intersected take second one.
+        findLineAll(start[i], end[i], info[i], b);
+        if (!info[i].hit() && b.hit())
+        {
+            info[i] = b;
+        }
+    }
 }
 
 
 void Foam::searchableSphere::findLineAny
 (
-	const pointField& start,
-	const pointField& end,
-	List<pointIndexHit>& info
+    const pointField& start,
+    const pointField& end,
+    List<pointIndexHit>& info
 ) const
 {
-	info.setSize(start.size());
+    info.setSize(start.size());
 
-	pointIndexHit b;
+    pointIndexHit b;
 
-	forAll(start, i)
-	{
-		// Discard far intersection
-		findLineAll(start[i], end[i], info[i], b);
-		if (!info[i].hit() && b.hit())
-		{
-			info[i] = b;
-		}
-	}
+    forAll(start, i)
+    {
+        // Discard far intersection
+        findLineAll(start[i], end[i], info[i], b);
+        if (!info[i].hit() && b.hit())
+        {
+            info[i] = b;
+        }
+    }
 }
 
 
 void Foam::searchableSphere::findLineAll
 (
-	const pointField& start,
-	const pointField& end,
-	List<List<pointIndexHit> >& info
+    const pointField& start,
+    const pointField& end,
+    List<List<pointIndexHit> >& info
 ) const
 {
-	info.setSize(start.size());
+    info.setSize(start.size());
 
-	forAll(start, i)
-	{
-		pointIndexHit near, far;
-		findLineAll(start[i], end[i], near, far);
+    forAll(start, i)
+    {
+        pointIndexHit near, far;
+        findLineAll(start[i], end[i], near, far);
 
-		if (near.hit())
-		{
-			if (far.hit())
-			{
-				info[i].setSize(2);
-				info[i][0] = near;
-				info[i][1] = far;
-			}
-			else
-			{
-				info[i].setSize(1);
-				info[i][0] = near;
-			}
-		}
-		else
-		{
-			if (far.hit())
-			{
-				info[i].setSize(1);
-				info[i][0] = far;
-			}
-			else
-			{
-				info[i].clear();
-			}
-		}
-	}
+        if (near.hit())
+        {
+            if (far.hit())
+            {
+                info[i].setSize(2);
+                info[i][0] = near;
+                info[i][1] = far;
+            }
+            else
+            {
+                info[i].setSize(1);
+                info[i][0] = near;
+            }
+        }
+        else
+        {
+            if (far.hit())
+            {
+                info[i].setSize(1);
+                info[i][0] = far;
+            }
+            else
+            {
+                info[i].clear();
+            }
+        }
+    }
 }
 
 
 void Foam::searchableSphere::getRegion
 (
-	const List<pointIndexHit>& info,
-	labelList& region
+    const List<pointIndexHit>& info,
+    labelList& region
 ) const
 {
-	region.setSize(info.size());
-	region = 0;
+    region.setSize(info.size());
+    region = 0;
 }
 
 
 void Foam::searchableSphere::getNormal
 (
-	const List<pointIndexHit>& info,
-	vectorField& normal
+    const List<pointIndexHit>& info,
+    vectorField& normal
 ) const
 {
-	normal.setSize(info.size());
-	normal = vector::zero;
+    normal.setSize(info.size());
+    normal = vector::zero;
 
-	forAll(info, i)
-	{
-		if (info[i].hit())
-		{
-			normal[i] = info[i].hitPoint() - centre_;
+    forAll(info, i)
+    {
+        if (info[i].hit())
+        {
+            normal[i] = info[i].hitPoint() - centre_;
 
-			normal[i] /= mag(normal[i])+VSMALL;
-		}
-		else
-		{
-			// Set to what?
-		}
-	}
+            normal[i] /= mag(normal[i])+VSMALL;
+        }
+        else
+        {
+            // Set to what?
+        }
+    }
 }
 
 
 void Foam::searchableSphere::getVolumeType
 (
-	const pointField& points,
-	List<volumeType>& volType
+    const pointField& points,
+    List<volumeType>& volType
 ) const
 {
-	volType.setSize(points.size());
-	volType = INSIDE;
+    volType.setSize(points.size());
+    volType = volumeType::INSIDE;
 
-	forAll(points, pointI)
-	{
-		const point& pt = points[pointI];
+    forAll(points, pointI)
+    {
+        const point& pt = points[pointI];
 
-		if (magSqr(pt - centre_) <= sqr(radius_))
-		{
-			volType[pointI] = INSIDE;
-		}
-		else
-		{
-			volType[pointI] = OUTSIDE;
-		}
-	}
+        if (magSqr(pt - centre_) <= sqr(radius_))
+        {
+            volType[pointI] = volumeType::INSIDE;
+        }
+        else
+        {
+            volType[pointI] = volumeType::OUTSIDE;
+        }
+    }
 }
 
 

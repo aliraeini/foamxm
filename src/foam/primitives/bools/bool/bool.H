@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Primitive
-	bool
+    bool
 
 Description
-	System bool
+    System bool
 
 SourceFiles
-	boolIO.C
+    boolIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -64,54 +64,54 @@ namespace Foam
 template<>
 class pTraits<bool>
 {
-	bool p_;
+    bool p_;
 
 public:
 
-	//- Component type
-	typedef bool cmptType;
+    //- Component type
+    typedef bool cmptType;
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			dim = 3,         // Dimensionality of space
-			rank = 0,        // Rank of bool is 0
-			nComponents = 1  // Number of components in bool is 1
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
-		static const char* componentNames[];
-		static const bool zero;
-		static const bool one;
+        enum
+        {
+            dim = 3,         // Dimensionality of space
+            rank = 0,        // Rank of bool is 0
+            nComponents = 1  // Number of components in bool is 1
+        };
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct from bool
-		pTraits(const bool b)
-		{
-			p_ = b;
-		}
-
-		//- Construct from Istream
-		pTraits(Istream&);
+        static const char* const typeName;
+        static const char* componentNames[];
+        static const bool zero;
+        static const bool one;
 
 
-	// Member Functions
+    // Constructors
 
-		operator bool() const
-		{
-			return p_;
-		}
+        //- Construct from bool
+        pTraits(const bool b)
+        {
+            p_ = b;
+        }
 
-		operator bool&()
-		{
-			return p_;
-		}
+        //- Construct from Istream
+        pTraits(Istream&);
+
+
+    // Member Functions
+
+        operator bool() const
+        {
+            return p_;
+        }
+
+        operator bool&()
+        {
+            return p_;
+        }
 };
 
 

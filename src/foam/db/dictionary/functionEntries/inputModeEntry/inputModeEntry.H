@@ -1,48 +1,48 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::functionEntries::inputModeEntry
+    Foam::functionEntries::inputModeEntry
 
 Description
-	Specify the input mode when reading dictionaries, expects
-	a single word to follow.
+    Specify the input mode when reading dictionaries, expects
+    a single word to follow.
 
-	An example of \c \#inputMode directive:
-	\verbatim
-		#inputMode merge
-	\endverbatim
+    An example of \c \#inputMode directive:
+    \verbatim
+        #inputMode merge
+    \endverbatim
 
-	The possible input modes:
-	\param merge      merge sub-dictionaries when possible
-	\param overwrite  keep last entry and silently remove previous ones
-	\param protect    keep initial entry and silently ignore subsequent ones
-	\param warn       keep initial entry and warn about subsequent ones
-	\param error      issue a FatalError for duplicate entries
-	\param default    currently identical to merge
+    The possible input modes:
+    \param merge      merge sub-dictionaries when possible
+    \param overwrite  keep last entry and silently remove previous ones
+    \param protect    keep initial entry and silently ignore subsequent ones
+    \param warn       keep initial entry and warn about subsequent ones
+    \param error      issue a FatalError for duplicate entries
+    \param default    currently identical to merge
 
 SourceFiles
-	inputModeEntry.C
+    inputModeEntry.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,62 +58,65 @@ namespace Foam
 namespace functionEntries
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class inputModeEntry Declaration
+\*---------------------------------------------------------------------------*/
 
 class inputModeEntry
 :
-	public functionEntry
+    public functionEntry
 {
-		//- The input mode options
-		enum inputMode
-		{
-			MERGE,
-			OVERWRITE,
-			PROTECT,
-			WARN,
-			ERROR
-		};
+        //- The input mode options
+        enum inputMode
+        {
+            MERGE,
+            OVERWRITE,
+            PROTECT,
+            WARN,
+            ERROR
+        };
 
-		//- The current input mode
-		static inputMode mode_;
+        //- The current input mode
+        static inputMode mode_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read the mode as a word and set enum appropriately
-		static void setMode(Istream&);
+        //- Read the mode as a word and set enum appropriately
+        static void setMode(Istream&);
 
-		//- Disallow default bitwise copy construct
-		inputModeEntry(const inputModeEntry&);
+        //- Disallow default bitwise copy construct
+        inputModeEntry(const inputModeEntry&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const inputModeEntry&);
+        //- Disallow default bitwise assignment
+        void operator=(const inputModeEntry&);
 
 
 public:
 
-	//- Runtime type information
-	ClassName("inputMode");
+    //- Runtime type information
+    ClassName("inputMode");
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Execute the functionEntry in a sub-dict context
-		static bool execute(dictionary& parentDict, Istream&);
+        //- Execute the functionEntry in a sub-dict context
+        static bool execute(dictionary& parentDict, Istream&);
 
-		//- Reset the inputMode to %default (ie, %merge)
-		static void clear();
+        //- Reset the inputMode to %default (ie, %merge)
+        static void clear();
 
-		//- Return true if the inputMode is %merge
-		static bool merge();
+        //- Return true if the inputMode is %merge
+        static bool merge();
 
-		//- Return true if the inputMode is %overwrite
-		static bool overwrite();
+        //- Return true if the inputMode is %overwrite
+        static bool overwrite();
 
-		//- Return true if the inputMode is %protect
-		static bool protect();
+        //- Return true if the inputMode is %protect
+        static bool protect();
 
-		//- Return true if the inputMode is %error
-		static bool error();
+        //- Return true if the inputMode is %error
+        static bool error();
 };
 
 

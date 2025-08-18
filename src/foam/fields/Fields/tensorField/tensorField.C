@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,77 +55,77 @@ UNARY_FUNCTION(tensor, tensor, hinv)
 // HJ, 24/Oct/2009
 void inv(Field<tensor>& tf, const UList<tensor>& tf1)
 {
-	if (tf.empty())
-	{
-		return;
-	}
+    if (tf.empty())
+    {
+        return;
+    }
 
-	scalar scale = magSqr(tf1[0]);
+    scalar scale = magSqr(tf1[0]);
 
-	// Fixed terrible hack.  HJ, 20/Jan/2011
-	boolList removeCmpts(3);
-	removeCmpts[0] = magSqr(tf1[0].xx())/scale < SMALL;
-	removeCmpts[1] = magSqr(tf1[0].yy())/scale < SMALL;
-	removeCmpts[2] = magSqr(tf1[0].zz())/scale < SMALL;
+    // Fixed terrible hack.  HJ, 20/Jan/2011
+    boolList removeCmpts(3);
+    removeCmpts[0] = magSqr(tf1[0].xx())/scale < SMALL;
+    removeCmpts[1] = magSqr(tf1[0].yy())/scale < SMALL;
+    removeCmpts[2] = magSqr(tf1[0].zz())/scale < SMALL;
 
 
-	if (removeCmpts[0] || removeCmpts[1] || removeCmpts[2])
-	{
-		tensorField tf1Plus(tf1);
+    if (removeCmpts[0] || removeCmpts[1] || removeCmpts[2])
+    {
+        tensorField tf1Plus(tf1);
 
-		if (removeCmpts[0])
-		{
-			tf1Plus += tensor(1,0,0,0,0,0,0,0,0);
-		}
+        if (removeCmpts[0])
+        {
+            tf1Plus += tensor(1,0,0,0,0,0,0,0,0);
+        }
 
-		if (removeCmpts[1])
-		{
-			tf1Plus += tensor(0,0,0,0,1,0,0,0,0);
-		}
+        if (removeCmpts[1])
+        {
+            tf1Plus += tensor(0,0,0,0,1,0,0,0,0);
+        }
 
-		if (removeCmpts[2])
-		{
-			tf1Plus += tensor(0,0,0,0,0,0,0,0,1);
-		}
+        if (removeCmpts[2])
+        {
+            tf1Plus += tensor(0,0,0,0,0,0,0,0,1);
+        }
 
-		TFOR_ALL_F_OP_FUNC_F(tensor, tf, =, inv, tensor, tf1Plus)
+        TFOR_ALL_F_OP_FUNC_F(tensor, tf, =, inv, tensor, tf1Plus)
 
-		if (removeCmpts[0])
-		{
-			tf -= tensor(1,0,0,0,0,0,0,0,0);
-		}
+        if (removeCmpts[0])
+        {
+            tf -= tensor(1,0,0,0,0,0,0,0,0);
+        }
 
-		if (removeCmpts[1])
-		{
-			tf -= tensor(0,0,0,0,1,0,0,0,0);
-		}
+        if (removeCmpts[1])
+        {
+            tf -= tensor(0,0,0,0,1,0,0,0,0);
+        }
 
-		if (removeCmpts[2])
-		{
-			tf -= tensor(0,0,0,0,0,0,0,0,1);
-		}
-	}
-	else
-	{
-		TFOR_ALL_F_OP_FUNC_F(tensor, tf, =, inv, tensor, tf1)
-	}
+        if (removeCmpts[2])
+        {
+            tf -= tensor(0,0,0,0,0,0,0,0,1);
+        }
+    }
+    else
+    {
+        TFOR_ALL_F_OP_FUNC_F(tensor, tf, =, inv, tensor, tf1)
+    }
 }
 
 
 tmp<tensorField> inv(const UList<tensor>& tf)
 {
-	tmp<tensorField> result(new tensorField(tf.size()));
-	inv(result(), tf);
-	return result;
+    tmp<tensorField> tresult(new tensorField(tf.size()));
+    inv(tresult.ref(), tf);
+    return tresult;
 }
 
 
 tmp<tensorField> inv(const tmp<tensorField>& tf)
 {
-	tmp<tensorField> tRes = reuseTmp<tensor, tensor>::New(tf);
-	inv(tRes(), tf());
-	reuseTmp<tensor, tensor>::clear(tf);
-	return tRes;
+    tmp<tensorField> tRes = reuseTmp<tensor, tensor>::New(tf);
+    inv(tRes.ref(), tf());
+    tf.clear();
+    return tRes;
 }
 
 
@@ -139,24 +139,24 @@ UNARY_FUNCTION(tensor, symmTensor, eigenVectors)
 template<>
 tmp<Field<tensor> > transformFieldMask<tensor>
 (
-	const symmTensorField& stf
+    const symmTensorField& stf
 )
 {
-	tmp<tensorField> tRes(new tensorField(stf.size()));
-	tensorField& res = tRes();
-	TFOR_ALL_F_OP_F(tensor, res, =, symmTensor, stf)
-	return tRes;
+    tmp<tensorField> tRes(new tensorField(stf.size()));
+    tensorField& res = tRes.ref();
+    TFOR_ALL_F_OP_F(tensor, res, =, symmTensor, stf)
+    return tRes;
 }
 
 template<>
 tmp<Field<tensor> > transformFieldMask<tensor>
 (
-	const tmp<symmTensorField>& tstf
+    const tmp<symmTensorField>& tstf
 )
 {
-	tmp<Field<tensor> > ret = transformFieldMask<tensor>(tstf());
-	tstf.clear();
-	return ret;
+    tmp<Field<tensor> > ret = transformFieldMask<tensor>(tstf());
+    tstf.clear();
+    return ret;
 }
 
 

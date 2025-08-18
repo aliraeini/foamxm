@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::pointHitSort
+    Foam::pointHitSort
 
 Description
-	Container for sorting intersections
+    Container for sorting intersections
 
 SourceFiles
 
@@ -44,59 +44,62 @@ namespace Foam
 
 // Forward declaration of classes
 
+/*---------------------------------------------------------------------------*\
+                           Class pointHitSort Declaration
+\*---------------------------------------------------------------------------*/
 
 class pointHitSort
 {
-	// Private data
+    // Private data
 
-		//- intersection
-		pointHit inter_;
+        //- intersection
+        pointHit inter_;
 
-		//- original index
-		label index_;
+        //- original index
+        label index_;
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		pointHitSort()
-		:
-			inter_(false, vector::zero, GREAT),
-			index_(-1)
-		{}
+        //- Construct null
+        pointHitSort()
+        :
+            inter_(false, vector::zero, GREAT),
+            index_(-1)
+        {}
 
-		//- Construct from intersection, index
-		pointHitSort(const pointHit& inter, const label index)
-		:
-			inter_(inter),
-			index_(index)
-		{}
+        //- Construct from intersection, index
+        pointHitSort(const pointHit& inter, const label index)
+        :
+            inter_(inter),
+            index_(index)
+        {}
 
 
-	// Member Functions
+    // Member Functions
 
-		const pointHit& inter() const
-		{
-			return inter_;
-		}
+        const pointHit& inter() const
+        {
+            return inter_;
+        }
 
-		label index() const
-		{
-			return index_;
-		}
+        label index() const
+        {
+            return index_;
+        }
 
-	// Member Operators
+    // Member Operators
 
-		bool operator==(const pointHitSort& rhs) const
-		{
-			return inter_.distance() == rhs.inter().distance();
-		}
+        bool operator==(const pointHitSort& rhs) const
+        {
+            return inter_.distance() == rhs.inter().distance();
+        }
 
-		bool operator>(const pointHitSort& rhs) const
-		{
-			return inter_.distance() > rhs.inter().distance();
-		}
+        bool operator>(const pointHitSort& rhs) const
+        {
+            return inter_.distance() > rhs.inter().distance();
+        }
 
 };
 

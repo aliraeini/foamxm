@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,60 +35,60 @@ namespace Foam
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::PointPatchField
 (
-	const PointPatch& p,
-	const DimensionedField<Type, Mesh>& iF
+    const PointPatch& p,
+    const DimensionedField<Type, Mesh>& iF
 )
 :
-	patch_(p),
-	internalField_(iF),
-	updated_(false)
+    patch_(p),
+    internalField_(iF),
+    updated_(false)
 {}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::PointPatchField
 (
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf
 )
 :
-	patch_(ptf.patch_),
-	internalField_(ptf.internalField_),
-	updated_(false)
+    patch_(ptf.patch_),
+    internalField_(ptf.internalField_),
+    updated_(false)
 {}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::PointPatchField
 (
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf,
-	const DimensionedField<Type, Mesh>& iF
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf,
+    const DimensionedField<Type, Mesh>& iF
 )
 :
-	patch_(ptf.patch_),
-	internalField_(iF),
-	updated_(false)
+    patch_(ptf.patch_),
+    internalField_(iF),
+    updated_(false)
 {}
 
 
@@ -97,54 +97,54 @@ PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::PointPatchField
 // Return objectRegistry
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 const objectRegistry&
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::db() const
 {
-	//HR 12.3.10: Lookup fields from the field DB rather than the mesh
-	return internalField_.db();
+    //HR 12.3.10: Lookup fields from the field DB rather than the mesh
+    return internalField_.db();
 }
 
 
 // Write
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 void
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 write
 (
-	Ostream& os
+    Ostream& os
 ) const
 {
-	os.writeKeyword("type") << type() << token::END_STATEMENT << nl;
+    os.writeKeyword("type") << type() << token::END_STATEMENT << nl;
 }
 
 
 // Return field created from appropriate internal field values
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 tmp<Field<Type> >
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 patchInternalField() const
 {
-	return patchInternalField(internalField());
+    return patchInternalField(internalField());
 }
 
 
@@ -152,218 +152,195 @@ patchInternalField() const
 // given the internal field
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 template<class Type1>
 tmp<Field<Type1> >
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 patchInternalField
 (
-	const Field<Type1>& iF
+    const Field<Type1>& iF
 ) const
 {
-	// Check size
-	if (iF.size() != internalField().size())
-	{
-		FatalErrorIn
-		(
-			"tmp<Field<Type1> > PointPatchField<PatchField, PointPatch, "
-			"Type>::"
-			"patchInternalField(const Field<Type1>& iF) const"
-		)   << "given internal field does not correspond to the mesh. "
-			<< "Field size: " << iF.size()
-			<< " mesh size: " << internalField().size()
-			<< abort(FatalError);
-	}
+    // Check size
+    if (iF.size() != internalField().size())
+    {
+        FatalErrorInFunction
+            << "given internal field does not correspond to the mesh. "
+            << "Field size: " << iF.size()
+            << " mesh size: " << internalField().size()
+            << abort(FatalError);
+    }
 
-	// get addressing
-	const labelList& meshPoints = patch().meshPoints();
+    // get addressing
+    const labelList& meshPoints = patch().meshPoints();
 
-	tmp<Field<Type1> > tvalues(new Field<Type1>(meshPoints.size()));
-	Field<Type1>& values = tvalues();
+    tmp<Field<Type1> > tvalues(new Field<Type1>(meshPoints.size()));
+    Field<Type1>& values = tvalues.ref();
 
-	forAll (meshPoints, pointI)
-	{
-		values[pointI] = iF[meshPoints[pointI]];
-	}
+    forAll (meshPoints, pointI)
+    {
+        values[pointI] = iF[meshPoints[pointI]];
+    }
 
-	return tvalues;
+    return tvalues;
 }
 
 
 // Does this patchField correspond to a pointTypeField
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 bool PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 isPointField() const
 {
-	return
-		internalField().size()
-	 == patch().boundaryMesh().mesh().nPoints();
+    return
+        internalField().size()
+     == patch().boundaryMesh().mesh().nPoints();
 }
 
 // Does this patchField correspond to a pointTypeField
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 void PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 checkPointField() const
 {
-	if (!isPointField())
-	{
-		FatalErrorIn
-		(
-			"void PointPatchField<PatchField, Mesh, PointPatch, "
-			"MatrixType, Type>::checkPointField() const"
-		)   << "This " << type() << " patchField"
-			<< " is not part of a pointTypeField which may cause "
-			<< "undefined behaviour from the evaluate and other functions"
-			<< abort(FatalError);
-	}
+    if (!isPointField())
+    {
+        FatalErrorInFunction
+            << "This " << type() << " patchField"
+            << " is not part of a pointTypeField which may cause "
+            << "undefined behaviour from the evaluate and other functions"
+            << abort(FatalError);
+    }
 }
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 template<class Type1>
 void PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 addToInternalField
 (
-	Field<Type1>& iF,
-	const Field<Type1>& pF
+    Field<Type1>& iF,
+    const Field<Type1>& pF
 ) const
 {
-	// Check size
-	if (iF.size() != internalField().size())
-	{
-		FatalErrorIn
-		(
-			"void PointPatchField<PatchField, Mesh, PointPatch, "
-			"MatrixType, Type>::addToInternalField("
-			"Field<Type1>& iF, const Field<Type1>& iF) const"
-		)   << "given internal field does not correspond to the mesh. "
-			<< "Field size: " << iF.size()
-			<< " mesh size: " << internalField().size()
-			<< abort(FatalError);
-	}
+    // Check size
+    if (iF.size() != internalField().size())
+    {
+        FatalErrorInFunction
+            << "given internal field does not correspond to the mesh. "
+            << "Field size: " << iF.size()
+            << " mesh size: " << internalField().size()
+            << abort(FatalError);
+    }
 
-	if (pF.size() != size())
-	{
-		FatalErrorIn
-		(
-			"void PointPatchField<PatchField, Mesh, PointPatch, "
-			"MatrixType, Type>::addToInternalField("
-			"Field<Type1>& iF, const Field<Type1>& iF) const"
-		)   << "given patch field does not correspond to the mesh. "
-			<< "Field size: " << pF.size()
-			<< " mesh size: " << size()
-			<< abort(FatalError);
-	}
+    if (pF.size() != size())
+    {
+        FatalErrorInFunction
+            << "given patch field does not correspond to the mesh. "
+            << "Field size: " << pF.size()
+            << " mesh size: " << size()
+            << abort(FatalError);
+    }
 
-	// Get the addressing
-	const labelList& mp = patch().meshPoints();
+    // Get the addressing
+    const labelList& mp = patch().meshPoints();
 
-	forAll (mp, pointI)
-	{
-		iF[mp[pointI]] += pF[pointI];
-	}
+    forAll (mp, pointI)
+    {
+        iF[mp[pointI]] += pF[pointI];
+    }
 }
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 template<class Type1>
 void PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::
 setInInternalField
 (
-	Field<Type1>& iF,
-	const Field<Type1>& pF
+    Field<Type1>& iF,
+    const Field<Type1>& pF
 ) const
 {
-	// Check size
-	if (iF.size() != internalField().size())
-	{
-		FatalErrorIn
-		(
-			"void PointPatchField<PatchField, Mesh, PointPatch, "
-			"MatrixType, Type>::setInInternalField("
-			"Field<Type1>& iF, const Field<Type1>& iF) const"
-		)   << "given internal field does not correspond to the mesh. "
-			<< "Field size: " << iF.size()
-			<< " mesh size: " << internalField().size()
-			<< abort(FatalError);
-	}
+    // Check size
+    if (iF.size() != internalField().size())
+    {
+        FatalErrorInFunction
+            << "given internal field does not correspond to the mesh. "
+            << "Field size: " << iF.size()
+            << " mesh size: " << internalField().size()
+            << abort(FatalError);
+    }
 
-	if (pF.size() != size())
-	{
-		FatalErrorIn
-		(
-			"void PointPatchField<PatchField, Mesh, PointPatch, "
-			"MatrixType, Type>::setInInternalField("
-			"Field<Type1>& iF, const Field<Type1>& iF) const"
-		)   << "given patch field does not correspond to the mesh. "
-			<< "Field size: " << pF.size()
-			<< " mesh size: " << size()
-			<< abort(FatalError);
-	}
+    if (pF.size() != size())
+    {
+        FatalErrorInFunction
+            << "given patch field does not correspond to the mesh. "
+            << "Field size: " << pF.size()
+            << " mesh size: " << size()
+            << abort(FatalError);
+    }
 
-	// Get the addressing
-	const labelList& mp = patch().meshPoints();
+    // Get the addressing
+    const labelList& mp = patch().meshPoints();
 
-	forAll (mp, pointI)
-	{
-		iF[mp[pointI]] = pF[pointI];
-	}
+    forAll (mp, pointI)
+    {
+        iF[mp[pointI]] = pF[pointI];
+    }
 }
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 void
 PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::evaluate
 (
-	const Pstream::commsTypes commsType
+    const Pstream::commsTypes commsType
 )
 {
-	if (!updated_)
-	{
-		this->updateCoeffs();
-	}
+    if (!updated_)
+    {
+        this->updateCoeffs();
+    }
 
-	updated_ = false;
+    updated_ = false;
 }
 
 
@@ -371,28 +348,28 @@ PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>::evaluate
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 Ostream& operator<<
 (
-	Ostream& os,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf
+    Ostream& os,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& ptf
 )
 {
-	ptf.write(os);
+    ptf.write(os);
 
-	os.check
-	(
-		"Ostream& operator<<"
-		"(Ostream&, const PointPatchField<PatchField, PointPatch, "
-		"MatrixType, Type>&"
-	);
+    os.check
+    (
+        "Ostream& operator<<"
+        "(Ostream&, const PointPatchField<PatchField, PointPatch, "
+        "MatrixType, Type>&"
+    );
 
-	return os;
+    return os;
 }
 
 
@@ -402,6 +379,6 @@ Ostream& operator<<
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#	 include "newPointPatchField.C"
+#    include "newPointPatchField.C"
 
 // ************************************************************************* //

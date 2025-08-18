@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,47 +31,47 @@ template<class Face>
 Foam::autoPtr< Foam::UnsortedMeshedSurface<Face> >
 Foam::UnsortedMeshedSurface<Face>::New(const fileName& name, const word& ext)
 {
-	if (debug)
-	{
-		Info<< "UnsortedMeshedSurface::New(const fileName&, const word&) : "
-			"constructing UnsortedMeshedSurface"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "UnsortedMeshedSurface::New(const fileName&, const word&) : "
+            "constructing UnsortedMeshedSurface"
+            << endl;
+    }
 
-	typename fileExtensionConstructorTable::iterator cstrIter =
-		fileExtensionConstructorTablePtr_->find(ext);
+    typename fileExtensionConstructorTable::iterator cstrIter =
+        fileExtensionConstructorTablePtr_->find(ext);
 
-	if (cstrIter == fileExtensionConstructorTablePtr_->end())
-	{
-		// no direct reader, use the parent if possible
-		wordHashSet supported = ParentType::readTypes();
-		if (supported.found(ext))
-		{
-			// create indirectly
-			autoPtr<UnsortedMeshedSurface<Face> > surf
-			(
-				new UnsortedMeshedSurface<Face>
-			);
-			surf().transfer(ParentType::New(name, ext)());
+    if (cstrIter == fileExtensionConstructorTablePtr_->end())
+    {
+        // no direct reader, use the parent if possible
+        wordHashSet supported = ParentType::readTypes();
+        if (supported.found(ext))
+        {
+            // create indirectly
+            autoPtr<UnsortedMeshedSurface<Face> > surf
+            (
+                new UnsortedMeshedSurface<Face>
+            );
+            surf().transfer(ParentType::New(name, ext)());
 
-			return surf;
-		}
+            return surf;
+        }
 
-		// nothing left but to issue an error
-		supported += readTypes();
+        // nothing left but to issue an error
+        supported += readTypes();
 
-		FatalErrorIn
-		(
-			"UnsortedMeshedSurface<Face>::New"
-			"(const fileName&, const word&) : "
-			"constructing UnsortedMeshedSurface"
-		)   << "Unknown file extension " << ext << nl << nl
-			<< "Valid types are:" << nl
-			<< supported
-			<< exit(FatalError);
-	}
+        FatalErrorIn
+        (
+            "UnsortedMeshedSurface<Face>::New"
+            "(const fileName&, const word&) : "
+            "constructing UnsortedMeshedSurface"
+        )   << "Unknown file extension " << ext << nl << nl
+            << "Valid types are:" << nl
+            << supported
+            << exit(FatalError);
+    }
 
-	return autoPtr<UnsortedMeshedSurface<Face> >(cstrIter()(name));
+    return autoPtr<UnsortedMeshedSurface<Face> >(cstrIter()(name));
 }
 
 
@@ -79,13 +79,13 @@ template<class Face>
 Foam::autoPtr< Foam::UnsortedMeshedSurface<Face> >
 Foam::UnsortedMeshedSurface<Face>::New(const fileName& name)
 {
-	word ext = name.ext();
-	if (ext == "gz")
-	{
-		ext = name.lessExt().ext();
-	}
+    word ext = name.ext();
+    if (ext == "gz")
+    {
+        ext = name.lessExt().ext();
+    }
 
-	return New(name, ext);
+    return New(name, ext);
 }
 
 

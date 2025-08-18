@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::surfacePatchIOList
+    Foam::surfacePatchIOList
 
 Description
-	IOobject for a surfacePatchList
+    IOobject for a surfacePatchList
 
 SourceFiles
-	surfacePatchIOList.C
+    surfacePatchIOList.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,62 +51,65 @@ class surfacePatchIOList;
 
 Ostream& operator<<(Ostream&, const surfacePatchIOList&);
 
+/*---------------------------------------------------------------------------*\
+                           Class surfacePatchIOList Declaration
+\*---------------------------------------------------------------------------*/
 
 class surfacePatchIOList
 :
-	public surfacePatchList,
-	public regIOobject
+    public surfacePatchList,
+    public regIOobject
 {
-	// Private data
+    // Private data
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		surfacePatchIOList(const surfacePatchIOList&);
+        //- Disallow default bitwise copy construct
+        surfacePatchIOList(const surfacePatchIOList&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const surfacePatchIOList&);
+        //- Disallow default bitwise assignment
+        void operator=(const surfacePatchIOList&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("surfacePatchIOList");
+    //- Runtime type information
+    TypeName("surfacePatchIOList");
 
 
-	// Static data members
+    // Static data members
 
-		//- Static data someStaticData
+        //- Static data someStaticData
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject
-		explicit surfacePatchIOList(const IOobject& io);
+        //- Construct from IOobject
+        explicit surfacePatchIOList(const IOobject& io);
 
-		//- Construct from IOobject
-		surfacePatchIOList(const IOobject& io, const surfacePatchList&);
+        //- Construct from IOobject
+        surfacePatchIOList(const IOobject& io, const surfacePatchList&);
 
-	// Destructor
+    // Destructor
 
-		~surfacePatchIOList();
-
-
-	// Member Functions
-
-		//- writeData member function required by regIOobject
-		bool writeData(Ostream&) const;
+        ~surfacePatchIOList();
 
 
-	// Member Operators
+    // Member Functions
 
-	// Friend Functions
+        //- writeData member function required by regIOobject
+        bool writeData(Ostream&) const;
 
-	// Friend Operators
 
-	// IOstream Operators
+    // Member Operators
 
-		friend Ostream& operator<<(Ostream&, const surfacePatchIOList&);
+    // Friend Functions
+
+    // Friend Operators
+
+    // IOstream Operators
+
+        friend Ostream& operator<<(Ostream&, const surfacePatchIOList&);
 };
 
 

@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::boundaryPatch
+    Foam::boundaryPatch
 
 Description
-	Like polyPatch but without reference to mesh. patchIdentifier::index
-	is not used. Used in boundaryMesh to hold data on patches.
+    Like polyPatch but without reference to mesh. patchIdentifier::index
+    is not used. Used in boundaryMesh to hold data on patches.
 
 SourceFiles
-	boundaryPatch.C
+    boundaryPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,77 +50,79 @@ class boundaryPatch;
 Ostream& operator<<(Ostream&, const boundaryPatch&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class boundaryPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class boundaryPatch
 :
-	public patchIdentifier
+    public patchIdentifier
 {
-	// Private data
+    // Private data
 
-		label size_;
-		label start_;
+        label size_;
+        label start_;
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		boundaryPatch
-		(
-			const word& name,
-			const label index,
-			const label size,
-			const label start,
-			const word& physicalType = word::null
-		);
+        //- Construct from components
+        boundaryPatch
+        (
+            const word& name,
+            const label index,
+            const label size,
+            const label start,
+            const word& physicalType = word::null
+        );
 
-		//- Construct from dictionary
-		boundaryPatch
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index
-		);
+        //- Construct from dictionary
+        boundaryPatch
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index
+        );
 
-		//- Clone
-		autoPtr<boundaryPatch> clone() const;
-
-
-	// Destructor
-
-		~boundaryPatch();
+        //- Clone
+        autoPtr<boundaryPatch> clone() const;
 
 
-	// Member Functions
-
-		label size() const
-		{
-			return size_;
-		}
-
-		label& size()
-		{
-			return size_;
-		}
-
-		label start() const
-		{
-			return start_;
-		}
-
-		label& start()
-		{
-			return start_;
-		}
+    //- Destructor
+    ~boundaryPatch() = default;
 
 
-		//- Write dictionary
-		virtual void write(Ostream&) const;
+    // Member Functions
+
+        label size() const
+        {
+            return size_;
+        }
+
+        label& size()
+        {
+            return size_;
+        }
+
+        label start() const
+        {
+            return start_;
+        }
+
+        label& start()
+        {
+            return start_;
+        }
 
 
-	// Ostream Operator
+        //- Write dictionary
+        virtual void write(Ostream&) const;
 
-		friend Ostream& operator<<(Ostream&, const boundaryPatch&);
+
+    // Ostream Operator
+
+        friend Ostream& operator<<(Ostream&, const boundaryPatch&);
 };
 
 

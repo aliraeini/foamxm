@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::setUpdater
+    Foam::setUpdater
 
 Description
-	Keeps cell/face/vertex sets up-to-date: both the ones loaded and the ones
-	on disk.
+    Keeps cell/face/vertex sets up-to-date: both the ones loaded and the ones
+    on disk.
 
 SourceFiles
-	setUpdater.C
-	setUpdaterTemplates.C
+    setUpdater.C
+    setUpdaterTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,67 +44,70 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class setUpdater Declaration
+\*---------------------------------------------------------------------------*/
 
 class setUpdater
 :
-	public polyMeshModifier
+    public polyMeshModifier
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Updates all sets
-		template<class Type>
-		void updateSets(const mapPolyMesh& morphMap) const;
+        //- Updates all sets
+        template<class Type>
+        void updateSets(const mapPolyMesh& morphMap) const;
 
-		//- Disallow default bitwise copy construct
-		setUpdater(const setUpdater&);
+        //- Disallow default bitwise copy construct
+        setUpdater(const setUpdater&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const setUpdater&);
+        //- Disallow default bitwise assignment
+        void operator=(const setUpdater&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("setUpdater");
+    //- Runtime type information
+    TypeName("setUpdater");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from dictionary
-		setUpdater
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index,
-			const polyTopoChanger& mme
-		);
-
-
-	// Destructor
-
-		virtual ~setUpdater();
+        //- Construct from dictionary
+        setUpdater
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index,
+            const polyTopoChanger& mme
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Check for topology change
-		virtual bool changeTopology() const;
+        virtual ~setUpdater();
 
-		//- Insert the layer addition/removal instructions
-		//  into the topological change
-		virtual void setRefinement(polyTopoChange&) const;
 
-		//- Modify motion points to comply with the topological change
-		virtual void modifyMotionPoints(pointField& motionPoints) const;
+    // Member Functions
 
-		//- Force recalculation of locally stored data on topological change
-		virtual void updateMesh(const mapPolyMesh&);
+        //- Check for topology change
+        virtual bool changeTopology() const;
 
-		//- Write
-		virtual void write(Ostream&) const;
+        //- Insert the layer addition/removal instructions
+        //  into the topological change
+        virtual void setRefinement(polyTopoChange&) const;
 
-		//- Write dictionary
-		virtual void writeDict(Ostream&) const;
+        //- Modify motion points to comply with the topological change
+        virtual void modifyMotionPoints(pointField& motionPoints) const;
+
+        //- Force recalculation of locally stored data on topological change
+        virtual void updateMesh(const mapPolyMesh&);
+
+        //- Write
+        virtual void write(Ostream&) const;
+
+        //- Write dictionary
+        virtual void writeDict(Ostream&) const;
 };
 
 
@@ -115,7 +118,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "setUpdaterTemplates.C"
+#   include "setUpdaterTemplates.C"
 #endif
 
 

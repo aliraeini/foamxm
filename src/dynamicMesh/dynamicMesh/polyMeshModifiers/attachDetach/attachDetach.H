@@ -1,43 +1,43 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::attachDetach
+    Foam::attachDetach
 
 Description
-	Attach/detach boundary mesh modifier.  This modifier takes a set of
-	internal faces and converts them into boundary faces and vice versa
-	based on the given activation switch.
+    Attach/detach boundary mesh modifier.  This modifier takes a set of
+    internal faces and converts them into boundary faces and vice versa
+    based on the given activation switch.
 
-	The patch is oriented using the flip map in the face zone.  The
-	oriented faces are put into the master patch and their mirror
-	images into the slave.
+    The patch is oriented using the flip map in the face zone.  The
+    oriented faces are put into the master patch and their mirror
+    images into the slave.
 
 SourceFiles
-	attachDetach.C
-	attachInterface.C
-	detachInterface.C
-	attachDetachPointMatchMap.C
+    attachDetach.C
+    attachInterface.C
+    detachInterface.C
+    attachDetachPointMatchMap.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -53,181 +53,184 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class attachDetach Declaration
+\*---------------------------------------------------------------------------*/
 
 class attachDetach
 :
-	public polyMeshModifier
+    public polyMeshModifier
 {
-	// Data types
+    // Data types
 
-		//- State of the modifier
-		enum modifierState
-		{
-			UNKNOWN,
-			ATTACHED,
-			DETACHED
-		};
-
-
-	// Private data
-
-		//- Master face zone ID
-		faceZoneID faceZoneID_;
-
-		//- Master patch ID.  Holds faces with original orientation
-		polyPatchID masterPatchID_;
-
-		//- Slave patch ID.  Holds mirrored faces
-		polyPatchID slavePatchID_;
-
-		//- List of trigger times
-		scalarField triggerTimes_;
-
-		//- Use manual trigger
-		Switch manualTrigger_;
-
-		//- Trigger time index
-		mutable label triggerIndex_;
-
-		//- State of the modifier
-		mutable modifierState state_;
-
-		//- Attach/detach trigger
-		mutable bool trigger_;
+        //- State of the modifier
+        enum modifierState
+        {
+            UNKNOWN,
+            ATTACHED,
+            DETACHED
+        };
 
 
-		// Private addressing data.  Created on topology change
+    // Private data
 
-			//- Map of matching points
-			mutable Map<label>* pointMatchMapPtr_;
+        //- Master face zone ID
+        faceZoneID faceZoneID_;
 
+        //- Master patch ID.  Holds faces with original orientation
+        polyPatchID masterPatchID_;
 
-	// Private Member Functions
+        //- Slave patch ID.  Holds mirrored faces
+        polyPatchID slavePatchID_;
 
-		//- Disallow default bitwise copy construct
-		attachDetach(const attachDetach&);
+        //- List of trigger times
+        scalarField triggerTimes_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const attachDetach&);
+        //- Use manual trigger
+        Switch manualTrigger_;
 
-		//- Check validity of construction data
-		void checkDefinition();
+        //- Trigger time index
+        mutable label triggerIndex_;
 
-		// Topological changes
+        //- State of the modifier
+        mutable modifierState state_;
 
-			//- Attach interface
-			void attachInterface(polyTopoChange&) const;
-
-			//- Detach interface
-			void detachInterface(polyTopoChange&) const;
-
-			//- Calculate point match addressing
-			void calcPointMatchMap() const;
-
-			//- Return point match map
-			const Map<label>& pointMatchMap() const;
-
-			//- Clear addressing
-			void clearAddressing() const;
+        //- Attach/detach trigger
+        mutable bool trigger_;
 
 
-	// Static data members
+        // Private addressing data.  Created on topology change
 
-		//- Relative vertex position tolerance
-		static const scalar positionDifference_;
+            //- Map of matching points
+            mutable Map<label>* pointMatchMapPtr_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        attachDetach(const attachDetach&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const attachDetach&);
+
+        //- Check validity of construction data
+        void checkDefinition();
+
+        // Topological changes
+
+            //- Attach interface
+            void attachInterface(polyTopoChange&) const;
+
+            //- Detach interface
+            void detachInterface(polyTopoChange&) const;
+
+            //- Calculate point match addressing
+            void calcPointMatchMap() const;
+
+            //- Return point match map
+            const Map<label>& pointMatchMap() const;
+
+            //- Clear addressing
+            void clearAddressing() const;
+
+
+    // Static data members
+
+        //- Relative vertex position tolerance
+        static const scalar positionDifference_;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("attachDetach");
+    //- Runtime type information
+    TypeName("attachDetach");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		attachDetach
-		(
-			const word& name,
-			const label index,
-			const polyTopoChanger& mme,
-			const word& faceZoneName,
-			const word& masterPatchName,
-			const word& slavePatchName,
-			const scalarField& triggerTimes,
-			const bool manualTrigger = false
-		);
+        //- Construct from components
+        attachDetach
+        (
+            const word& name,
+            const label index,
+            const polyTopoChanger& mme,
+            const word& faceZoneName,
+            const word& masterPatchName,
+            const word& slavePatchName,
+            const scalarField& triggerTimes,
+            const bool manualTrigger = false
+        );
 
-		//- Construct from dictionary
-		attachDetach
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index,
-			const polyTopoChanger& mesh
-		);
-
-	// Destructor
-
-		virtual ~attachDetach();
+        //- Construct from dictionary
+        attachDetach
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index,
+            const polyTopoChanger& mesh
+        );
 
 
-	// Member Functions
-
-		//- Return master patch ID
-		const polyPatchID& masterPatchID() const
-		{
-			return masterPatchID_;
-		}
-
-		//- Return slave patch ID
-		const polyPatchID& slavePatchID() const
-		{
-			return slavePatchID_;
-		}
-
-		//- Is the interface attached?
-		bool attached() const
-		{
-			return state_ == ATTACHED;
-		}
-
-		const Switch& manualTrigger() const
-		{
-			return manualTrigger_;
-		}
-
-		// Manually set attach.  Use only with manual trigger
-		bool setAttach() const;
-
-		// Manually set detach.  Use only with manual trigger
-		bool setDetach() const;
-
-		//- Check for topology change
-		virtual bool changeTopology() const;
-
-		//- Insert the layer addition/removal instructions
-		//  into the topological change
-		virtual void setRefinement(polyTopoChange&) const;
-
-		//- Modify motion points to comply with the topological change
-		virtual void modifyMotionPoints(pointField& motionPoints) const;
-
-		//- Force recalculation of locally stored data on topological change
-		virtual void updateMesh(const mapPolyMesh&);
-
-		//- Get reference to trigger times
-		const scalarField& triggerTimes() const
-		{
-			return triggerTimes_;
-		}
+    //- Destructor
+    virtual ~attachDetach();
 
 
-		//- Write
-		virtual void write(Ostream&) const;
+    // Member Functions
 
-		//- Write dictionary
-		virtual void writeDict(Ostream&) const;
+        //- Return master patch ID
+        const polyPatchID& masterPatchID() const
+        {
+            return masterPatchID_;
+        }
+
+        //- Return slave patch ID
+        const polyPatchID& slavePatchID() const
+        {
+            return slavePatchID_;
+        }
+
+        //- Is the interface attached?
+        bool attached() const
+        {
+            return state_ == ATTACHED;
+        }
+
+        const Switch& manualTrigger() const
+        {
+            return manualTrigger_;
+        }
+
+        // Manually set attach.  Use only with manual trigger
+        bool setAttach() const;
+
+        // Manually set detach.  Use only with manual trigger
+        bool setDetach() const;
+
+        //- Check for topology change
+        virtual bool changeTopology() const;
+
+        //- Insert the layer addition/removal instructions
+        //  into the topological change
+        virtual void setRefinement(polyTopoChange&) const;
+
+        //- Modify motion points to comply with the topological change
+        virtual void modifyMotionPoints(pointField& motionPoints) const;
+
+        //- Force recalculation of locally stored data on topological change
+        virtual void updateMesh(const mapPolyMesh&);
+
+        //- Get reference to trigger times
+        const scalarField& triggerTimes() const
+        {
+            return triggerTimes_;
+        }
+
+
+        //- Write
+        virtual void write(Ostream&) const;
+
+        //- Write dictionary
+        virtual void writeDict(Ostream&) const;
 };
 
 

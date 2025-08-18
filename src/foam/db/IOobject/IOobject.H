@@ -1,76 +1,76 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::IOobject
+    Foam::IOobject
 
 Description
-	IOobject defines the attributes of an object for which implicit
-	objectRegistry management is supported, and provides the infrastructure
-	for performing stream I/O.
+    IOobject defines the attributes of an object for which implicit
+    objectRegistry management is supported, and provides the infrastructure
+    for performing stream I/O.
 
-	An IOobject is constructed with an object name, a class name, an instance
-	path, a reference to a objectRegistry, and parameters determining its
-	storage status.
+    An IOobject is constructed with an object name, a class name, an instance
+    path, a reference to a objectRegistry, and parameters determining its
+    storage status.
 
-	\par Read options
+    \par Read options
 
-	Define what is done on object construction and explicit reads:
-	\param MUST_READ
-		Object must be read from Istream on construction. \n
-		Error if Istream does not exist or can't be read.
-		Does not check timestamp or re-read.
-	\param MUST_READ_IF_MODIFIED
-		Object must be read from Istream on construction. \n
-		Error if Istream does not exist or can't be read. If object is
-		registered its timestamp will be checked every timestep and possibly
-		re-read.
-	\param READ_IF_PRESENT
-		Read object from Istream if Istream exists, otherwise don't. \n
-		Error only if Istream exists but can't be read.
-		Does not check timestamp or re-read.
-	\param READ_IF_PRESENT_IF_MODIFIED
-		Read object from Istream if Istream exists, otherwise don't. \n
-		Error only if Istream exists but can't be read. If object is
-		registered its timestamp will be checked every timestep and possibly
-		re-read.
-	\param NO_READ
-		  Don't read
+    Define what is done on object construction and explicit reads:
+    \param MUST_READ
+        Object must be read from Istream on construction. \n
+        Error if Istream does not exist or can't be read.
+        Does not check timestamp or re-read.
+    \param MUST_READ_IF_MODIFIED
+        Object must be read from Istream on construction. \n
+        Error if Istream does not exist or can't be read. If object is
+        registered its timestamp will be checked every timestep and possibly
+        re-read.
+    \param READ_IF_PRESENT
+        Read object from Istream if Istream exists, otherwise don't. \n
+        Error only if Istream exists but can't be read.
+        Does not check timestamp or re-read.
+    \param READ_IF_PRESENT_IF_MODIFIED
+        Read object from Istream if Istream exists, otherwise don't. \n
+        Error only if Istream exists but can't be read. If object is
+        registered its timestamp will be checked every timestep and possibly
+        re-read.
+    \param NO_READ
+          Don't read
 
-	\par Write options
+    \par Write options
 
-	Define what is done on object destruction and explicit writes:
-	\param AUTO_WRITE
-		Object is written automatically when requested to by the
-		objectRegistry.
-	\param NO_WRITE
-		No automatic write on destruction but can be written explicitly
+    Define what is done on object destruction and explicit writes:
+    \param AUTO_WRITE
+        Object is written automatically when requested to by the
+        objectRegistry.
+    \param NO_WRITE
+        No automatic write on destruction but can be written explicitly
 
 SourceFiles
-	IOobject.C
-	IOobjectReadHeader.C
-	IOobjectWriteHeader.C
-	IOobjectPrint.C
+    IOobject.C
+    IOobjectReadHeader.C
+    IOobjectWriteHeader.C
+    IOobjectPrint.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -90,357 +90,384 @@ namespace Foam
 class Time;
 class objectRegistry;
 
+/*---------------------------------------------------------------------------*\
+                           Class IOobject Declaration
+\*---------------------------------------------------------------------------*/
 
 class IOobject
 {
 
 public:
 
-	// Public data types
+    // Public data types
 
-		//- Enumeration defining the valid states of an IOobject
-		enum objectState
-		{
-			GOOD,
-			BAD
-		};
+        //- Enumeration defining the valid states of an IOobject
+        enum objectState
+        {
+            GOOD,
+            BAD
+        };
 
-		//- Enumeration defining the read options
-		enum readOption
-		{
-			MUST_READ,
-			MUST_READ_IF_MODIFIED,
-			READ_IF_PRESENT,
-			READ_IF_PRESENT_IF_MODIFIED,
-			NO_READ
-		};
+        //- Enumeration defining the read options
+        enum readOption
+        {
+            MUST_READ,
+            MUST_READ_IF_MODIFIED,
+            READ_IF_PRESENT,
+            READ_IF_PRESENT_IF_MODIFIED,
+            NO_READ
+        };
 
-		//- Enumeration defining the write options
-		enum writeOption
-		{
-			AUTO_WRITE = 0,
-			NO_WRITE = 1
-		};
+        //- Enumeration defining the write options
+        enum writeOption
+        {
+            AUTO_WRITE = 0,
+            NO_WRITE = 1
+        };
 
 
 private:
 
-	// Private data
+    // Private data
 
-		//- Name
-		word name_;
+        //- Name
+        word name_;
 
-		//- Class name read from header
-		word headerClassName_;
+        //- Class name read from header
+        word headerClassName_;
 
-		//- Optional note
-		string note_;
+        //- Optional note
+        string note_;
 
-		//- Instance path component
-		fileName instance_;
+        //- Instance path component
+        fileName instance_;
 
-		//- Local path component
-		fileName local_;
+        //- Local path component
+        fileName local_;
 
-		//- objectRegistry reference
-		const objectRegistry& db_;
+        //- objectRegistry reference
+        const objectRegistry& db_;
 
-		//- Read option
-		readOption rOpt_;
+        //- Read option
+        readOption rOpt_;
 
-		//- Write option
-		writeOption wOpt_;
+        //- Write option
+        writeOption wOpt_;
 
-		//- Register object created from this IOobject with registry if true
-		bool registerObject_;
+        //- Register object created from this IOobject with registry if true
+        bool registerObject_;
 
-		//- IOobject state
-		objectState objState_;
+        //- IOobject state
+        objectState objState_;
 
 
 protected:
 
-	// Protected member functions
+    // Protected member functions
 
-		//- Construct and return an IFstream for the object.
-		//  The results is nullptr if the stream construction failed
-		Istream* objectStream();
+        //- Construct and return an IFstream for the object.
+        //  The results is nullptr if the stream construction failed
+        Istream* objectStream();
 
-		//- Construct and return an IFstream for the object given the
-		//  exact file. The results is nullptr if the stream construction failed
-		Istream* objectStream(const fileName&);
+        //- Construct and return an IFstream for the object given the
+        //  exact file. The results is nullptr if the stream construction failed
+        Istream* objectStream(const fileName&);
 
-		//- Set the object state to bad
-		void setBad(const string&);
+        //- Set the object state to bad
+        void setBad(const string&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("IOobject");
+    //- Runtime type information
+    TypeName("IOobject");
+
+    
+    // Static Data
+
+        //- Character for scoping object names (':' or '_')
+        //  Change with caution.
+        static char scopeSeparator;
 
 
-	// Static Member Functions
+    // Static Member Functions
 
-		//- Split path into instance, local, name components
-		//  input               IOobject(instance, local, name)
-		//  -----               ------
-		//  "foo"               ("", "", "foo")
-		//  "foo/bar"           ("foo", "", "bar")
-		//  "/XXX/bar"          ("/XXX", "", "bar")
-		//  "foo/bar/"          ERROR - no name
-		//  "foo/xxx/bar"       ("foo", "xxx", "bar")
-		//  "foo/xxx/yyy/bar"   ("foo", "xxx/yyy", "bar")
-		static bool fileNameComponents
-		(
-			const fileName& path,
-			fileName& instance,
-			fileName& local,
-			word& name
-		);
+        //- Split path into instance, local, name components
+        //  input               IOobject(instance, local, name)
+        //  -----               ------
+        //  "foo"               ("", "", "foo")
+        //  "foo/bar"           ("foo", "", "bar")
+        //  "/XXX/bar"          ("/XXX", "", "bar")
+        //  "foo/bar/"          ERROR - no name
+        //  "foo/xxx/bar"       ("foo", "xxx", "bar")
+        //  "foo/xxx/yyy/bar"   ("foo", "xxx/yyy", "bar")
+        static bool fileNameComponents
+        (
+            const fileName& path,
+            fileName& instance,
+            fileName& local,
+            word& name
+        );
 
-		template<class Name>
-		static inline word groupName(Name name, const word& group);
+        //- Create dot-delimited name.group string
+        //  An empty group is ignored.
+        template<class Name>
+        static inline word groupName(Name name, const word& group);
 
-
-	// Constructors
-
-		//- Construct from name, instance, registry, io options
-		IOobject
-		(
-			const word& name,
-			const Time& registry,
-			readOption r = NO_READ,
-			writeOption w = NO_WRITE
-		);
-
-		//- Construct from name, instance, registry, io options
-		IOobject
-		(
-			const word& name,
-			const fileName& instance,
-			const objectRegistry& registry,
-			readOption r = NO_READ,
-			writeOption w = NO_WRITE,
-			bool registerObject = true
-		);
-
-		//- Construct from name, instance, local, registry, io options
-		IOobject
-		(
-			const word& name,
-			const fileName& instance,
-			const fileName& local,
-			const objectRegistry& registry,
-			readOption r = NO_READ,
-			writeOption w = NO_WRITE,
-			bool registerObject = true
-		);
-
-		//- Construct from path, registry, io options
-		//  Uses fileNameComponents() to split path into components.
-		IOobject
-		(
-			const fileName& path,
-			const objectRegistry& registry,
-			readOption r = NO_READ,
-			writeOption w = NO_WRITE,
-			bool registerObject = true
-		);
-
-		//- Clone
-		Foam::autoPtr<IOobject> clone() const
-		{
-			return autoPtr<IOobject>(new IOobject(*this));
-		}
+        //- Create scope:name or scope_name string
+        //  An empty scope is ignored.
+        static inline word scopedName
+        (
+            const std::string& scope,
+            const word& name
+        );
 
 
-	//- Destructor
-	virtual ~IOobject();
+    // Constructors
+
+        //- Construct from name, instance, registry, io options
+        IOobject
+        (
+            const word& name,
+            const Time& registry,
+            readOption r = NO_READ,
+            writeOption w = NO_WRITE
+        );
+
+        //- Construct from name, instance, registry, io options
+        IOobject
+        (
+            const word& name,
+            const fileName& instance,
+            const objectRegistry& registry,
+            readOption r = NO_READ,
+            writeOption w = NO_WRITE,
+            bool registerObject = true
+        );
+
+        //- Construct from name, instance, local, registry, io options
+        IOobject
+        (
+            const word& name,
+            const fileName& instance,
+            const fileName& local,
+            const objectRegistry& registry,
+            readOption r = NO_READ,
+            writeOption w = NO_WRITE,
+            bool registerObject = true
+        );
+
+        //- Construct from path, registry, io options
+        //  Uses fileNameComponents() to split path into components.
+        IOobject
+        (
+            const fileName& path,
+            const objectRegistry& registry,
+            readOption r = NO_READ,
+            writeOption w = NO_WRITE,
+            bool registerObject = true
+        );
+
+        //- Copy construct
+        IOobject(const IOobject&) = default;
+
+        //- Clone
+        Foam::autoPtr<IOobject> clone() const
+        {
+            return autoPtr<IOobject>(new IOobject(*this));
+        }
 
 
-	// Member Functions
-
-		// General access
-
-			//- Return time
-			const Time& time() const;
-
-			//- Return the local objectRegistry
-			const objectRegistry& db() const;
-
-			//- Return name
-			const word& name() const
-			{
-				return name_;
-			}
-
-			//- Return name of the class name read from header
-			const word& headerClassName() const
-			{
-				return headerClassName_;
-			}
-
-			//- Return non-constant access to the optional note
-			string& note()
-			{
-				return note_;
-			}
-
-			//- Return the optional note
-			const string& note() const
-			{
-				return note_;
-			}
-
-			//- Rename
-			virtual void rename(const word& newName)
-			{
-				name_ = newName;
-			}
-
-			//- Register object created from this IOobject with registry if true
-			bool& registerObject()
-			{
-				return registerObject_;
-			}
-
-			//- Register object created from this IOobject with registry if true
-			bool registerObject() const
-			{
-				return registerObject_;
-			}
+    //- Destructor
+    virtual ~IOobject() = default;
 
 
-		// Read/write options
+    // Member Functions
 
-			readOption readOpt() const
-			{
-				return rOpt_;
-			}
+        // General access
 
-			readOption& readOpt()
-			{
-				return rOpt_;
-			}
+            //- Return time
+            const Time& time() const;
 
-			writeOption writeOpt() const
-			{
-				return wOpt_;
-			}
+            //- Return the local objectRegistry
+            const objectRegistry& db() const;
 
-			writeOption& writeOpt()
-			{
-				return wOpt_;
-			}
+            //- Return name
+            const word& name() const
+            {
+                return name_;
+            }
 
+            //- Return name of the class name read from header
+            const word& headerClassName() const
+            {
+                return headerClassName_;
+            }
 
-		// Path components
+            //- Return non-constant access to the optional note
+            string& note()
+            {
+                return note_;
+            }
 
-			//- Return group (extension part of name)
-			word group() const;
+            //- Return the optional note
+            const string& note() const
+            {
+                return note_;
+            }
 
-			//- Return member (name without the extension)
-			word member() const;
+            //- Rename
+            virtual void rename(const word& newName)
+            {
+                name_ = newName;
+            }
 
-			const fileName& rootPath() const;
+            //- Register object created from this IOobject with registry if true
+            bool& registerObject()
+            {
+                return registerObject_;
+            }
 
-			const fileName& caseName() const;
-
-			const fileName& instance() const
-			{
-				return instance_;
-			}
-
-			fileName& instance()
-			{
-				return instance_;
-			}
-
-			const fileName& local() const
-			{
-				return local_;
-			}
-
-			//- Return complete path
-			fileName path() const;
-
-			//- Return complete path with alternative instance and local
-			fileName path
-			(
-				const word& instance,
-				const fileName& local = fileName::null
-			) const;
-
-			//- Return complete path + object name
-			fileName objectPath() const
-			{
-				return path()/name();
-			}
-
-			//- Return complete path + object name if the file exists
-			//  either in the case/processor or case otherwise null
-			fileName filePath() const;
+            //- Register object created from this IOobject with registry if true
+            bool registerObject() const
+            {
+                return registerObject_;
+            }
 
 
-		// Reading
+        // Read/write options
 
-			//- Read header
-			bool readHeader(Istream&);
+            readOption readOpt() const
+            {
+                return rOpt_;
+            }
 
-			//- Read and check header info
-			bool headerOk();
+            readOption& readOpt()
+            {
+                return rOpt_;
+            }
 
+            writeOption writeOpt() const
+            {
+                return wOpt_;
+            }
 
-		// Writing
-
-			//- Write the standard FOAM file/dictionary banner
-			//  Optionally without -*- C++ -*- editor hint (eg, for logs)
-			template<class Stream>
-			static inline Stream& writeBanner
-			(
-				Stream& os,
-				bool noHint = false,
-				bool noCopyRight = false
-			);
-
-			//- Write the standard file section divider
-			template<class Stream>
-			static inline Stream& writeDivider(Stream& os);
-
-			//- Write the standard end file divider
-			template<class Stream>
-			static inline Stream& writeEndDivider(Stream& os);
-
-			//- Write header
-			bool writeHeader(Ostream&) const;
-
-			//- Write header. Allow override of type
-			bool writeHeader(Ostream&, const word& objectType) const;
+            writeOption& writeOpt()
+            {
+                return wOpt_;
+            }
 
 
-		// Error Handling
+        // Path components
 
-			bool good() const
-			{
-				return objState_ == GOOD;
-			}
+            //- Return group (extension part of name)
+            word group() const;
 
-			bool bad() const
-			{
-				return objState_ == BAD;
-			}
+            //- Return member (name without the extension)
+            word member() const;
+
+            const fileName& rootPath() const;
+
+            const fileName& caseName() const;
+
+            const fileName& instance() const
+            {
+                return instance_;
+            }
+
+            fileName& instance()
+            {
+                return instance_;
+            }
+
+            const fileName& local() const
+            {
+                return local_;
+            }
+
+            //- Return complete path
+            fileName path() const;
+
+            //- Return complete path with alternative instance and local
+            fileName path
+            (
+                const word& instance,
+                const fileName& local = fileName::null
+            ) const;
+
+            //- Return complete path + object name
+            fileName objectPath() const
+            {
+                return path()/name();
+            }
+
+            //- Return complete path + object name if the file exists
+            //  either in the case/processor or case otherwise null
+            fileName filePath() const;
 
 
-		// Info
+        // Reading
 
-			//- Return info proxy.
-			//  Used to print token information to a stream
-			InfoProxy<IOobject> info() const
-			{
-				return *this;
-			}
+            //- Read header
+            bool readHeader(Istream&);
 
+            //- Read and check header info
+            bool headerOk();
+
+
+        // Writing
+
+            //- Write the standard FOAM file/dictionary banner
+            //  Optionally without -*- C++ -*- editor hint (eg, for logs)
+            template<class Stream>
+            static inline Stream& writeBanner
+            (
+                Stream& os,
+                bool noHint = false,
+                bool noCopyRight = false
+            );
+
+            //- Write the standard file section divider
+            template<class Stream>
+            static inline Stream& writeDivider(Stream& os);
+
+            //- Write the standard end file divider
+            template<class Stream>
+            static inline Stream& writeEndDivider(Stream& os);
+
+            //- Write header
+            bool writeHeader(Ostream&) const;
+
+            //- Write header. Allow override of type
+            bool writeHeader(Ostream&, const word& objectType) const;
+
+
+        // Error Handling
+
+            bool good() const
+            {
+                return objState_ == GOOD;
+            }
+
+            bool bad() const
+            {
+                return objState_ == BAD;
+            }
+
+
+        // Info
+
+            //- Return info proxy.
+            //  Used to print token information to a stream
+            InfoProxy<IOobject> info() const
+            {
+                return *this;
+            }
+
+
+    // Member operators
+
+        void operator=(const IOobject&);
 };
 
 
@@ -456,7 +483,7 @@ Ostream& operator<<(Ostream& os, const InfoProxy<IOobject>& ip);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#	include "IOobjectI.H"
+#   include "IOobjectI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

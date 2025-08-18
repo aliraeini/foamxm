@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	pamgPolicy
+    pamgPolicy
 
 Description
-	Pairwise agglomerative AMG policy.  Legacy implementation
+    Pairwise agglomerative AMG policy.  Legacy implementation
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	pamgPolicy.C
+    pamgPolicy.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,92 +47,95 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class pamgPolicy Declaration
+\*---------------------------------------------------------------------------*/
 
 class pamgPolicy
 :
-	public amgPolicy
+    public amgPolicy
 {
-	// Private Data
+    // Private Data
 
-		//- Child array: for each fine equation give coarse cluster index
-		labelField child_;
+        //- Child array: for each fine equation give coarse cluster index
+        labelField child_;
 
-		//- Number of solo cells
-		label nSolo_;
+        //- Number of solo cells
+        label nSolo_;
 
-		//- Number of coarse equations
-		label nCoarseEqns_;
+        //- Number of coarse equations
+        label nCoarseEqns_;
 
-		//- Can a coarse level be constructed?
-		bool coarsen_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		pamgPolicy(const pamgPolicy&);
-
-		//- Disallow default bitwise assignment
-		void operator=(const pamgPolicy&);
-
-		//- Calculate child
-		void calcChild();
+        //- Can a coarse level be constructed?
+        bool coarsen_;
 
 
-	// Private Static Data
+    // Private Member Functions
 
-		//- Diagonal scaling factor
-		static const debug::tolerancesSwitch diagFactor_;
+        //- Disallow default bitwise copy construct
+        pamgPolicy(const pamgPolicy&) = delete;
+
+        //- Disallow default bitwise assignment
+        void operator=(const pamgPolicy&) = delete;
+
+        //- Calculate child
+        void calcChild();
+
+
+    // Private Static Data
+
+        //- Diagonal scaling factor
+        static const debug::tolerancesSwitch diagFactor_;
 
 
 public:
 
-		//- Runtime type information
-		TypeName("PAMG");
+        //- Runtime type information
+        TypeName("PAMG");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from matrix and group size
-		pamgPolicy
-		(
-			const lduMatrix& matrix,
-			const FieldField<Field, scalar>& bouCoeffs,
-			const FieldField<Field, scalar>& intCoeffs,
-			const lduInterfaceFieldPtrsList& interfaceFields,
-			const label groupSize,
-			const label minCoarseEqns
-		);
-
-
-	//- Destructor
-	virtual ~pamgPolicy();
+        //- Construct from matrix and group size
+        pamgPolicy
+        (
+            const lduMatrix& matrix,
+            const FieldField<Field, scalar>& bouCoeffs,
+            const FieldField<Field, scalar>& intCoeffs,
+            const lduInterfaceFieldPtrsList& interfaceFields,
+            const label groupSize,
+            const label minCoarseEqns
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~pamgPolicy() = default;
 
-		//- Can a coarse level be constructed?
-		virtual bool coarsen() const
-		{
-			return coarsen_;
-		}
 
-		//- Restrict matrix
-		virtual autoPtr<amgMatrix> restrictMatrix() const;
+    // Member Functions
 
-		//- Restrict residual
-		virtual void restrictResidual
-		(
-			const scalarField& res,
-			scalarField& coarseRes
-		) const;
+        //- Can a coarse level be constructed?
+        virtual bool coarsen() const
+        {
+            return coarsen_;
+        }
 
-		//- Prolongate correction
-		virtual void prolongateCorrection
-		(
-			scalarField& x,
-			const scalarField& coarseX
-		) const;
+        //- Restrict matrix
+        virtual autoPtr<amgMatrix> restrictMatrix() const;
+
+        //- Restrict residual
+        virtual void restrictResidual
+        (
+            const scalarField& res,
+            scalarField& coarseRes
+        ) const;
+
+        //- Prolongate correction
+        virtual void prolongateCorrection
+        (
+            scalarField& x,
+            const scalarField& coarseX
+        ) const;
 
 };
 

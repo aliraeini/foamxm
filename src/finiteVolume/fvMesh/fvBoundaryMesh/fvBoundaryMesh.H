@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fvBoundaryMesh
+    Foam::fvBoundaryMesh
 
 Description
-	Foam::fvBoundaryMesh
+    Foam::fvBoundaryMesh
 
 SourceFiles
-	fvBoundaryMesh.C
+    fvBoundaryMesh.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,73 +46,76 @@ namespace Foam
 class fvMesh;
 class polyBoundaryMesh;
 
+/*---------------------------------------------------------------------------*\
+                       Class fvBoundaryMesh Declaration
+\*---------------------------------------------------------------------------*/
 
 class fvBoundaryMesh
 :
-	public fvPatchList
+    public fvPatchList
 {
 private:
 
-	// Private data
+    // Private data
 
-		//- Reference to mesh
-		const fvMesh& mesh_;
+        //- Reference to mesh
+        const fvMesh& mesh_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disable default copy construct
-		fvBoundaryMesh(const fvBoundaryMesh&);
+        //- Disable default copy construct
+        fvBoundaryMesh(const fvBoundaryMesh&);
 
-		//- Disallow assignment
-		void operator=(const fvBoundaryMesh&);
+        //- Disallow assignment
+        void operator=(const fvBoundaryMesh&);
 
-		//- Add fvPatches corresponding to the polyBoundaryMesh
-		void addFvPatches();
+        //- Add fvPatches corresponding to the polyBoundaryMesh
+        void addFvPatches();
 
-		//- Reset fvPatches corresponding to the polyBoundaryMesh
-		//  When the mesh is resized, the existing patches may be preserved
-		//  or reset depending on the resetFlag
-		void resetFvPatches(const boolList& resetFvPatchFlag);
+        //- Reset fvPatches corresponding to the polyBoundaryMesh
+        //  When the mesh is resized, the existing patches may be preserved
+        //  or reset depending on the resetFlag
+        void resetFvPatches(const boolList& resetFvPatchFlag);
 
 
 protected:
 
-		//- Update boundary based on new polyBoundaryMesh
-		void readUpdate();
+        //- Update boundary based on new polyBoundaryMesh
+        void readUpdate();
 
 
 public:
 
-	friend class fvMesh;
+    friend class fvMesh;
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from polyBoundaryMesh
-		explicit fvBoundaryMesh(const fvMesh&);
-
-
-	// Destructor - default
+        //- Construct from polyBoundaryMesh
+        explicit fvBoundaryMesh(const fvMesh&);
 
 
-	// Member functions
-
-		// Access
-
-			//- Return the mesh reference
-			const fvMesh& mesh() const
-			{
-				return mesh_;
-			}
-
-			//- Return a list of pointers for each patch
-			//  with only those pointing to interfaces being set
-			lduInterfacePtrsList interfaces() const;
+    // Destructor - default
 
 
-		//- Correct patches after moving points
-		void movePoints();
+    // Member functions
+
+        // Access
+
+            //- Return the mesh reference
+            const fvMesh& mesh() const
+            {
+                return mesh_;
+            }
+
+            //- Return a list of pointers for each patch
+            //  with only those pointing to interfaces being set
+            lduInterfacePtrsList interfaces() const;
+
+
+        //- Correct patches after moving points
+        void movePoints();
 };
 
 

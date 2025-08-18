@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	PrimitiveEntry constructor from Istream and Ostream output operator.
+    PrimitiveEntry constructor from Istream and Ostream output operator.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,162 +33,162 @@ Description
 
 void Foam::primitiveEntry::append
 (
-	const token& currToken,
-	const dictionary& dict,
-	Istream& is
+    const token& currToken,
+    const dictionary& dict,
+    Istream& is
 )
 {
-	if (currToken.isWord())
-	{
-		const word& w = currToken.wordToken();
+    if (currToken.isWord())
+    {
+        const word& w = currToken.wordToken();
 
-		if
-		(
-			disableFunctionEntries
-		 || w.size() == 1
-		 || (
-				!(w[0] == '$' && expandVariable(w, dict))
-			 && !(w[0] == '#' && expandFunction(w, dict, is))
-			)
-		)
-		{
-			newElmt(tokenIndex()++) = currToken;
-		}
-	}
-	else if (currToken.isVariable())
-	{
-		const string& w = currToken.stringToken();
+        if
+        (
+            disableFunctionEntries
+         || w.size() == 1
+         || (
+                !(w[0] == '$' && expandVariable(w, dict))
+             && !(w[0] == '#' && expandFunction(w, dict, is))
+            )
+        )
+        {
+            newElmt(tokenIndex()++) = currToken;
+        }
+    }
+    else if (currToken.isVariable())
+    {
+        const string& w = currToken.stringToken();
 
-		if
-		(
-			disableFunctionEntries
-		 || w.size() <= 3
-		 || !(
-				w[0] == '$'
-			 && w[1] == token::BEGIN_BLOCK
-			 && expandVariable(w, dict)
-			)
-		)
-		{
-			newElmt(tokenIndex()++) = currToken;
-		}
-	}
-	else
-	{
-		newElmt(tokenIndex()++) = currToken;
-	}
+        if
+        (
+            disableFunctionEntries
+         || w.size() <= 3
+         || !(
+                w[0] == '$'
+             && w[1] == token::BEGIN_BLOCK
+             && expandVariable(w, dict)
+            )
+        )
+        {
+            newElmt(tokenIndex()++) = currToken;
+        }
+    }
+    else
+    {
+        newElmt(tokenIndex()++) = currToken;
+    }
 }
 
 
 bool Foam::primitiveEntry::expandFunction
 (
-	const word& keyword,
-	const dictionary& parentDict,
-	Istream& is
+    const word& keyword,
+    const dictionary& parentDict,
+    Istream& is
 )
 {
-	word functionName = keyword(1, keyword.size()-1);
-	return functionEntry::execute(functionName, parentDict, *this, is);
+    word functionName = keyword(1, keyword.size()-1);
+    return functionEntry::execute(functionName, parentDict, *this, is);
 }
 
 
 bool Foam::primitiveEntry::read(const dictionary& dict, Istream& is)
 {
-	is.fatalCheck
-	(
-		"primitiveEntry::readData(const dictionary&, Istream&)"
-	);
+    is.fatalCheck
+    (
+        "primitiveEntry::readData(const dictionary&, Istream&)"
+    );
 
-	label blockCount = 0;
-	token currToken;
+    label blockCount = 0;
+    token currToken;
 
-	if
-	(
-		!is.read(currToken).bad()
-	 && currToken.good()
-	 && currToken != token::END_STATEMENT
-	)
-	{
-		append(currToken, dict, is);
+    if
+    (
+        !is.read(currToken).bad()
+     && currToken.good()
+     && currToken != token::END_STATEMENT
+    )
+    {
+        append(currToken, dict, is);
 
-		if
-		(
-			currToken == token::BEGIN_BLOCK
-		 || currToken == token::BEGIN_LIST
-		)
-		{
-			blockCount++;
-		}
+        if
+        (
+            currToken == token::BEGIN_BLOCK
+         || currToken == token::BEGIN_LIST
+        )
+        {
+            blockCount++;
+        }
 
-		while
-		(
-			!is.read(currToken).bad()
-		 && currToken.good()
-		 && !(currToken == token::END_STATEMENT && blockCount == 0)
-		)
-		{
-			if
-			(
-				currToken == token::BEGIN_BLOCK
-			 || currToken == token::BEGIN_LIST
-			)
-			{
-				blockCount++;
-			}
-			else if
-			(
-				currToken == token::END_BLOCK
-			 || currToken == token::END_LIST
-			)
-			{
-				blockCount--;
-			}
+        while
+        (
+            !is.read(currToken).bad()
+         && currToken.good()
+         && !(currToken == token::END_STATEMENT && blockCount == 0)
+        )
+        {
+            if
+            (
+                currToken == token::BEGIN_BLOCK
+             || currToken == token::BEGIN_LIST
+            )
+            {
+                blockCount++;
+            }
+            else if
+            (
+                currToken == token::END_BLOCK
+             || currToken == token::END_LIST
+            )
+            {
+                blockCount--;
+            }
 
-			append(currToken, dict, is);
-		}
-	}
+            append(currToken, dict, is);
+        }
+    }
 
-	is.fatalCheck
-	(
-		"primitiveEntry::readData(const dictionary&, Istream&)"
-	);
+    is.fatalCheck
+    (
+        "primitiveEntry::readData(const dictionary&, Istream&)"
+    );
 
-	if (currToken.good())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    if (currToken.good())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
 void Foam::primitiveEntry::readEntry(const dictionary& dict, Istream& is)
 {
-	label keywordLineNumber = is.lineNumber();
-	tokenIndex() = 0;
+    label keywordLineNumber = is.lineNumber();
+    tokenIndex() = 0;
 
-	if (read(dict, is))
-	{
-		setSize(tokenIndex());
-		tokenIndex() = 0;
-	}
-	else
-	{
-		std::ostringstream os;
-		os  << "ill defined primitiveEntry starting at keyword '"
-			<< keyword() << '\''
-			<< " on line " << keywordLineNumber
-			<< " and ending at line " << is.lineNumber();
+    if (read(dict, is))
+    {
+        setSize(tokenIndex());
+        tokenIndex() = 0;
+    }
+    else
+    {
+        std::ostringstream os;
+        os  << "ill defined primitiveEntry starting at keyword '"
+            << keyword() << '\''
+            << " on line " << keywordLineNumber
+            << " and ending at line " << is.lineNumber();
 
-		SafeFatalIOErrorIn
-		(
-			"primitiveEntry::readEntry(const dictionary&, Istream&)",
-			is,
-			os.str()
-		);
-	}
+        SafeFatalIOErrorIn
+        (
+            "primitiveEntry::readEntry(const dictionary&, Istream&)",
+            is,
+            os.str()
+        );
+    }
 }
 
 
@@ -196,36 +196,36 @@ void Foam::primitiveEntry::readEntry(const dictionary& dict, Istream& is)
 
 Foam::primitiveEntry::primitiveEntry
 (
-	const keyType& key,
-	const dictionary& dict,
-	Istream& is
+    const keyType& key,
+    const dictionary& dict,
+    Istream& is
 )
 :
-	entry(key),
-	ITstream
-	(
-		is.name() + "::" + key,
-		tokenList(10),
-		is.format(),
-		is.version()
-	)
+    entry(key),
+    ITstream
+    (
+        is.name() + "::" + key,
+        tokenList(10),
+        is.format(),
+        is.version()
+    )
 {
-	readEntry(dict, is);
+    readEntry(dict, is);
 }
 
 
 Foam::primitiveEntry::primitiveEntry(const keyType& key, Istream& is)
 :
-	entry(key),
-	ITstream
-	(
-		is.name() + "::" + key,
-		tokenList(10),
-		is.format(),
-		is.version()
-	)
+    entry(key),
+    ITstream
+    (
+        is.name() + "::" + key,
+        tokenList(10),
+        is.format(),
+        is.version()
+    )
 {
-	readEntry(dictionary::null, is);
+    readEntry(dictionary::null, is);
 }
 
 
@@ -233,41 +233,41 @@ Foam::primitiveEntry::primitiveEntry(const keyType& key, Istream& is)
 
 void Foam::primitiveEntry::write(Ostream& os, const bool contentsOnly) const
 {
-	if (!contentsOnly)
-	{
-		os.writeKeyword(keyword());
-	}
+    if (!contentsOnly)
+    {
+        os.writeKeyword(keyword());
+    }
 
-	for (label i=0; i<size(); ++i)
-	{
-		const token& t = operator[](i);
-		if (t.type() == token::VERBATIMSTRING)
-		{
-			// Bypass token output operator to avoid losing verbatimness.
-			// Handle in Ostreams themselves
-			os.write(t);
-		}
-		else
-		{
-			os  << t;
-		}
+    for (label i=0; i<size(); ++i)
+    {
+        const token& t = operator[](i);
+        if (t.type() == token::VERBATIMSTRING)
+        {
+            // Bypass token output operator to avoid losing verbatimness.
+            // Handle in Ostreams themselves
+            os.write(t);
+        }
+        else
+        {
+            os  << t;
+        }
 
-		if (i < size()-1)
-		{
-			os  << token::SPACE;
-		}
-	}
+        if (i < size()-1)
+        {
+            os  << token::SPACE;
+        }
+    }
 
-	if (!contentsOnly)
-	{
-		os  << token::END_STATEMENT << endl;
-	}
+    if (!contentsOnly)
+    {
+        os  << token::END_STATEMENT << endl;
+    }
 }
 
 
 void Foam::primitiveEntry::write(Ostream& os) const
 {
-	this->write(os, false);
+    this->write(os, false);
 }
 
 
@@ -276,31 +276,31 @@ void Foam::primitiveEntry::write(Ostream& os) const
 template<>
 Foam::Ostream& Foam::operator<<
 (
-	Ostream& os,
-	const InfoProxy<primitiveEntry>& ip
+    Ostream& os,
+    const InfoProxy<primitiveEntry>& ip
 )
 {
-	const primitiveEntry& e = ip.t_;
+    const primitiveEntry& e = ip.t_;
 
-	e.print(os);
+    e.print(os);
 
-	const label nPrintTokens = 10;
+    const label nPrintTokens = 10;
 
-	os  << "    primitiveEntry '" << e.keyword() << "' comprises ";
+    os  << "    primitiveEntry '" << e.keyword() << "' comprises ";
 
-	for (label i=0; i<min(e.size(), nPrintTokens); i++)
-	{
-		os  << nl << "        " << e[i].info();
-	}
+    for (label i=0; i<min(e.size(), nPrintTokens); i++)
+    {
+        os  << nl << "        " << e[i].info();
+    }
 
-	if (e.size() > nPrintTokens)
-	{
-		os  << " ...";
-	}
+    if (e.size() > nPrintTokens)
+    {
+        os  << " ...";
+    }
 
-	os  << endl;
+    os  << endl;
 
-	return os;
+    return os;
 }
 
 

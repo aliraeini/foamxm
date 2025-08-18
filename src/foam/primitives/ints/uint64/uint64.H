@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Primitive
-	uint64
+    uint64
 
 Description
-	64bit uinteger
+    64bit uinteger
 
 SourceFiles
-	uint64.C
-	uint64IO.C
+    uint64.C
+    uint64IO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -77,57 +77,57 @@ Ostream& operator<<(Ostream&, const uintptr_t);
 template<>
 class pTraits<uint64_t>
 {
-	uint64_t p_;
+    uint64_t p_;
 
 public:
 
-	//- Component type
-	typedef uint64_t cmptType;
+    //- Component type
+    typedef uint64_t cmptType;
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			dim = 3,         //!< Dimensionality of space
-			rank = 0,        //!< Rank of uint64_t is 0
-			nComponents = 1  //!< Number of components in uint64_t is 1
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
-		static const char* componentNames[];
-		static const uint64_t zero;
-		static const uint64_t one;
-		static const uint64_t min;
-		static const uint64_t max;
-		static const uint64_t rootMax;
-		static const uint64_t rootMin;
+        enum
+        {
+            dim = 3,         //!< Dimensionality of space
+            rank = 0,        //!< Rank of uint64_t is 0
+            nComponents = 1  //!< Number of components in uint64_t is 1
+        };
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct from primitive
-		explicit pTraits(const uint64_t&);
+        static const char* const typeName;
+        static const char* componentNames[];
+        static const uint64_t zero;
+        static const uint64_t one;
+        static const uint64_t min;
+        static const uint64_t max;
+        static const uint64_t rootMax;
+        static const uint64_t rootMin;
 
-		//- Construct from Istream
-		pTraits(Istream&);
+
+    // Constructors
+
+        //- Construct from primitive
+        explicit pTraits(const uint64_t&);
+
+        //- Construct from Istream
+        pTraits(Istream&);
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Access to the uint64_t value
-		operator uint64_t() const
-		{
-			return p_;
-		}
+        //- Access to the uint64_t value
+        operator uint64_t() const
+        {
+            return p_;
+        }
 
-		//- Access to the uint64_t value
-		operator uint64_t&()
-		{
-			return p_;
-		}
+        //- Access to the uint64_t value
+        operator uint64_t&()
+        {
+            return p_;
+        }
 };
 
 

@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::globalIndex
+    Foam::globalIndex
 
 Description
-	Calculates a unique integer (label so might not have enough room - 2G max)
-	for processor + local index. E.g.
+    Calculates a unique integer (label so might not have enough room - 2G max)
+    for processor + local index. E.g.
 
-	globalIndex globalFaces(mesh.nFaces());
-	label globalFaceI = globalFaces.toGlobal(faceI);
+    globalIndex globalFaces(mesh.nFaces());
+    label globalFaceI = globalFaces.toGlobal(faceI);
 
 SourceFiles
-	globalIndex.C
+    globalIndex.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -54,76 +54,79 @@ Istream& operator>>(Istream& is, globalIndex& gi);
 Ostream& operator<<(Ostream& os, const globalIndex& gi);
 
 
+/*---------------------------------------------------------------------------*\
+                        Class globalIndex Declaration
+\*---------------------------------------------------------------------------*/
 
 class globalIndex
 {
-	// Private data
+    // Private data
 
-		//- Processor offsets
-		labelList offsets_;
+        //- Processor offsets
+        labelList offsets_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from local max size
-		globalIndex(const label localSize);
+        //- Construct from local max size
+        globalIndex(const label localSize);
 
-		//- Construct from Istream
-		globalIndex(Istream& is);
-
-
-	// Destructor - default
+        //- Construct from Istream
+        globalIndex(Istream& is);
 
 
-	// Member Functions
-
-		// Queries relating to my processor
-
-			//- my local size
-			inline label localSize() const;
-
-			//- From local to global
-			inline label toGlobal(const label i) const;
-
-			//- Is on local processor
-			inline bool isLocal(const label i) const;
-
-			//- From global to local on current processor.
-			//  FatalError if not on local processor.
-			inline label toLocal(const label i) const;
+    // Destructor - default
 
 
-		// Global queries
+    // Member Functions
 
-			//- Global sum of localSizes
-			inline label size() const;
+        // Queries relating to my processor
 
-			//- Size of procI data
-			inline label localSize(const label procI) const;
+            //- my local size
+            inline label localSize() const;
 
-			//- From local to global on procI
-			inline label toGlobal(const label procI, const label i) const;
+            //- From local to global
+            inline label toGlobal(const label i) const;
 
-			//- Is on processor procI
-			inline bool isLocal(const label procI, const label i) const;
+            //- Is on local processor
+            inline bool isLocal(const label i) const;
 
-			//- From global to local on procI
-			inline label toLocal(const label procI, const label i) const;
-
-			//- Which processor does global come from? Binary search.
-			inline label whichProcID(const label i) const;
-
-			//- Start of procI data
-			inline label offset(const label procI) const;
+            //- From global to local on current processor.
+            //  FatalError if not on local processor.
+            inline label toLocal(const label i) const;
 
 
+        // Global queries
 
-	// IOstream Operators
+            //- Global sum of localSizes
+            inline label size() const;
 
-		friend Istream& operator>>(Istream& is, globalIndex& gi);
-		friend Ostream& operator<<(Ostream& os, const globalIndex& gi);
+            //- Size of procI data
+            inline label localSize(const label procI) const;
+
+            //- From local to global on procI
+            inline label toGlobal(const label procI, const label i) const;
+
+            //- Is on processor procI
+            inline bool isLocal(const label procI, const label i) const;
+
+            //- From global to local on procI
+            inline label toLocal(const label procI, const label i) const;
+
+            //- Which processor does global come from? Binary search.
+            inline label whichProcID(const label i) const;
+
+            //- Start of procI data
+            inline label offset(const label procI) const;
+
+
+
+    // IOstream Operators
+
+        friend Istream& operator>>(Istream& is, globalIndex& gi);
+        friend Ostream& operator<<(Ostream& os, const globalIndex& gi);
 };
 
 

@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::surfZone
+    Foam::surfZone
 
 Description
-	A surface zone on a MeshedSurface.
+    A surface zone on a MeshedSurface.
 
-	Similar in concept to a faceZone, but the face list is contiguous.
+    Similar in concept to a faceZone, but the face list is contiguous.
 
 SourceFiles
-	surfZone.C
+    surfZone.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,116 +56,119 @@ class surfZone;
 Istream& operator>>(Istream&, surfZone&);
 Ostream& operator<<(Ostream&, const surfZone&);
 
+/*---------------------------------------------------------------------------*\
+                          Class surfZone Declaration
+\*---------------------------------------------------------------------------*/
 
 class surfZone
 :
-	public surfZoneIdentifier
+    public surfZoneIdentifier
 {
-	// Private data
+    // Private data
 
-		//- size of this group in the face list
-		label size_;
+        //- size of this group in the face list
+        label size_;
 
-		//- Start label of this group in the face list
-		label start_;
+        //- Start label of this group in the face list
+        label start_;
 
 
 public:
 
-	//- Runtime type information
-	ClassName("surfZone");
+    //- Runtime type information
+    ClassName("surfZone");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		surfZone();
+        //- Construct null
+        surfZone();
 
-		//- Construct from components
-		surfZone
-		(
-			const word& name,
-			const label size,
-			const label start,
-			const label index,
-			const word& geometricType = word::null
-		);
+        //- Construct from components
+        surfZone
+        (
+            const word& name,
+            const label size,
+            const label start,
+            const label index,
+            const word& geometricType = word::null
+        );
 
-		//- Construct from Istream
-		surfZone(Istream& is, const label index);
+        //- Construct from Istream
+        surfZone(Istream& is, const label index);
 
-		//- Construct from dictionary
-		surfZone
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index
-		);
+        //- Construct from dictionary
+        surfZone
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index
+        );
 
-		//- Construct from another zone, resetting the index
-		surfZone(const surfZone&, const label index);
+        //- Construct from another zone, resetting the index
+        surfZone(const surfZone&, const label index);
 
-		//- Return clone
-		autoPtr<surfZone> clone() const
-		{
-			notImplemented("autoPtr<surfZone> clone() const");
-			return autoPtr<surfZone>(nullptr);
-		}
+        //- Return clone
+        autoPtr<surfZone> clone() const
+        {
+            notImplemented("autoPtr<surfZone> clone() const");
+            return autoPtr<surfZone>(nullptr);
+        }
 
-		static autoPtr<surfZone> New(Istream& is)
-		{
-			word name(is);
-			dictionary dict(is);
+        static autoPtr<surfZone> New(Istream& is)
+        {
+            word name(is);
+            dictionary dict(is);
 
-			return autoPtr<surfZone>(new surfZone(name, dict, 0));
-		}
-
-
-	// Member Functions
-
-		//- Return start label of this zone in the face list
-		label start() const
-		{
-			return start_;
-		}
-
-		//- Return start label of this zone in the face list
-		label& start()
-		{
-			return start_;
-		}
-
-		//- Return size of this zone in the face list
-		label size() const
-		{
-			return size_;
-		}
-
-		//- Return size of this zone in the face list
-		label& size()
-		{
-			return size_;
-		}
-
-		//- Write
-		void write(Ostream&) const;
-
-		//- Write dictionary
-		void writeDict(Ostream&) const;
+            return autoPtr<surfZone>(new surfZone(name, dict, 0));
+        }
 
 
-	// Member Operators
+    // Member Functions
 
-		bool operator!=(const surfZone&) const;
+        //- Return start label of this zone in the face list
+        label start() const
+        {
+            return start_;
+        }
 
-		//- compare.
-		bool operator==(const surfZone&) const;
+        //- Return start label of this zone in the face list
+        label& start()
+        {
+            return start_;
+        }
+
+        //- Return size of this zone in the face list
+        label size() const
+        {
+            return size_;
+        }
+
+        //- Return size of this zone in the face list
+        label& size()
+        {
+            return size_;
+        }
+
+        //- Write
+        void write(Ostream&) const;
+
+        //- Write dictionary
+        void writeDict(Ostream&) const;
 
 
-	// IOstream Operators
+    // Member Operators
 
-		friend Istream& operator>>(Istream&, surfZone&);
-		friend Ostream& operator<<(Ostream&, const surfZone&);
+        bool operator!=(const surfZone&) const;
+
+        //- compare.
+        bool operator==(const surfZone&) const;
+
+
+    // IOstream Operators
+
+        friend Istream& operator>>(Istream&, surfZone&);
+        friend Ostream& operator<<(Ostream&, const surfZone&);
 };
 
 

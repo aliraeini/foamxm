@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -45,6 +45,9 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+               Class pointFieldDecomposer Declaration
+\*---------------------------------------------------------------------------*/
 
 class pointFieldDecomposer
 {
@@ -95,7 +98,7 @@ public:
                     return true;
                 }
 
-                const unallocLabelList& directAddressing() const
+                const labelUList& directAddressing() const
                 {
                     return directAddressing_;
                 }

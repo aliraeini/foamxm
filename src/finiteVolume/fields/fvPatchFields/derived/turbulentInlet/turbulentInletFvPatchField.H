@@ -1,44 +1,44 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::turbulentInletFvPatchField
+    Foam::turbulentInletFvPatchField
 
 Description
-	Generate a fluctuating inlet condition by adding a random component
-	to a reference (mean) field.
-	Input:
-		referenceField
-			Mean field.
-		fluctuationScale
-			RMS fluctuation, provided as the fraction of the mean field.
-		alpha
-			temporal correlation factor;
-			the fraction of the new random component added to the previous
-			time-step (defaults to 0.1).
+    Generate a fluctuating inlet condition by adding a random component
+    to a reference (mean) field.
+    Input:
+        referenceField
+            Mean field.
+        fluctuationScale
+            RMS fluctuation, provided as the fraction of the mean field.
+        alpha
+            temporal correlation factor;
+            the fraction of the new random component added to the previous
+            time-step (defaults to 0.1).
 
 SourceFiles
-	turbulentInletFvPatchField.C
+    turbulentInletFvPatchField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -53,142 +53,145 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                     Class turbulentInletFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class turbulentInletFvPatchField
 :
-	public fixedValueFvPatchField<Type>
+    public fixedValueFvPatchField<Type>
 {
-	// Private data
+    // Private data
 
-		Random ranGen_;
-		Type fluctuationScale_;
-		Field<Type> referenceField_;
-		scalar alpha_;
-		label curTimeIndex_;
+        Random ranGen_;
+        Type fluctuationScale_;
+        Field<Type> referenceField_;
+        scalar alpha_;
+        label curTimeIndex_;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("turbulentInlet");
+    //- Runtime type information
+    TypeName("turbulentInlet");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from patch and internal field
-		turbulentInletFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct from patch and internal field
+        turbulentInletFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct from patch, internal field and dictionary
-		turbulentInletFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const dictionary&
-		);
+        //- Construct from patch, internal field and dictionary
+        turbulentInletFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const dictionary&
+        );
 
-		//- Construct by mapping given turbulentInletFvPatchField
-		//  onto a new patch
-		turbulentInletFvPatchField
-		(
-			const turbulentInletFvPatchField<Type>&,
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const fvPatchFieldMapper&
-		);
+        //- Construct by mapping given turbulentInletFvPatchField
+        //  onto a new patch
+        turbulentInletFvPatchField
+        (
+            const turbulentInletFvPatchField<Type>&,
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const fvPatchFieldMapper&
+        );
 
-		//- Construct as copy
-		turbulentInletFvPatchField
-		(
-			const turbulentInletFvPatchField<Type>&
-		);
+        //- Construct as copy
+        turbulentInletFvPatchField
+        (
+            const turbulentInletFvPatchField<Type>&
+        );
 
-		//- Construct and return a clone
-		virtual tmp<fvPatchField<Type> > clone() const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new turbulentInletFvPatchField<Type>(*this)
-			);
-		}
+        //- Construct and return a clone
+        virtual tmp<fvPatchField<Type> > clone() const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new turbulentInletFvPatchField<Type>(*this)
+            );
+        }
 
-		//- Construct as copy setting internal field reference
-		turbulentInletFvPatchField
-		(
-			const turbulentInletFvPatchField<Type>&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct as copy setting internal field reference
+        turbulentInletFvPatchField
+        (
+            const turbulentInletFvPatchField<Type>&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct and return a clone setting internal field reference
-		virtual tmp<fvPatchField<Type> > clone
-		(
-			const DimensionedField<Type, volMesh>& iF
-		) const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new turbulentInletFvPatchField<Type>(*this, iF)
-			);
-		}
-
-
-	// Member functions
-
-		// Access
-
-			//- Return the fluctuation scale
-			const Type& fluctuationScale() const
-			{
-				return fluctuationScale_;
-			}
-
-			//- Return reference to the fluctuation scale to allow adjustment
-			Type& fluctuationScale()
-			{
-				return fluctuationScale_;
-			}
-
-			//- Return the reference field
-			const Field<Type>& referenceField() const
-			{
-				return referenceField_;
-			}
-
-			//- Return reference to the reference field to allow adjustment
-			Field<Type>& referenceField()
-			{
-				return referenceField_;
-			}
+        //- Construct and return a clone setting internal field reference
+        virtual tmp<fvPatchField<Type> > clone
+        (
+            const DimensionedField<Type, volMesh>& iF
+        ) const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new turbulentInletFvPatchField<Type>(*this, iF)
+            );
+        }
 
 
-		// Mapping functions
+    // Member functions
 
-			//- Map (and resize as needed) from self given a mapping object
-			virtual void autoMap
-			(
-				const fvPatchFieldMapper&
-			);
+        // Access
 
-			//- Reverse map the given fvPatchField onto this fvPatchField
-			virtual void rmap
-			(
-				const fvPatchField<Type>&,
-				const labelList&
-			);
+            //- Return the fluctuation scale
+            const Type& fluctuationScale() const
+            {
+                return fluctuationScale_;
+            }
+
+            //- Return reference to the fluctuation scale to allow adjustment
+            Type& fluctuationScale()
+            {
+                return fluctuationScale_;
+            }
+
+            //- Return the reference field
+            const Field<Type>& referenceField() const
+            {
+                return referenceField_;
+            }
+
+            //- Return reference to the reference field to allow adjustment
+            Field<Type>& referenceField()
+            {
+                return referenceField_;
+            }
 
 
-		// Evaluation functions
+        // Mapping functions
 
-			//- Update the coefficients associated with the patch field
-			virtual void updateCoeffs();
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const fvPatchFieldMapper&
+            );
+
+            //- Reverse map the given fvPatchField onto this fvPatchField
+            virtual void rmap
+            (
+                const fvPatchField<Type>&,
+                const labelList&
+            );
 
 
-		//- Write
-		virtual void write(Ostream&) const;
+        // Evaluation functions
+
+            //- Update the coefficients associated with the patch field
+            virtual void updateCoeffs();
+
+
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
@@ -199,7 +202,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "turbulentInletFvPatchField.C"
+#   include "turbulentInletFvPatchField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

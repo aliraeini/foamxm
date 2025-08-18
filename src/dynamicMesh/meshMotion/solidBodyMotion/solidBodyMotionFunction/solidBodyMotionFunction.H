@@ -1,41 +1,41 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Namespace
-	Foam::solidBodyMotionFunctions
+    Foam::solidBodyMotionFunctions
 
 Description
-	Namespace for solid-body motions
+    Namespace for solid-body motions
 
 Class
-	Foam::solidBodyMotionFunction
+    Foam::solidBodyMotionFunction
 
 Description
-	Base class for defining solid-body motions
+    Base class for defining solid-body motions
 
 SourceFiles
-	solidBodyMotionFunction.C
-	newDynamicFvMesh.C
+    solidBodyMotionFunction.C
+    newDynamicFvMesh.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -54,86 +54,89 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class solidBodyMotionFunction Declaration
+\*---------------------------------------------------------------------------*/
 
 class solidBodyMotionFunction
 {
 protected:
 
-	// Protected data
+    // Protected data
 
-		//- Solid bodi motion coefficients dictionary
-		dictionary SBMFCoeffs_;
+        //- Solid body motion coefficients dictionary
+        dictionary SBMFCoeffs_;
 
-		//- Time
-		const Time& time_;
+        //- Time
+        const Time& time_;
 
 
 private:
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		solidBodyMotionFunction(const solidBodyMotionFunction&);
+        //- Disallow default bitwise copy construct
+        solidBodyMotionFunction(const solidBodyMotionFunction&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const solidBodyMotionFunction&);
+        //- Disallow default bitwise assignment
+        void operator=(const solidBodyMotionFunction&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("solidBodyMotionFunction");
+    //- Runtime type information
+    TypeName("solidBodyMotionFunction");
 
 
-	// Declare run-time constructor selection table
+    // Declare run-time constructor selection table
 
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			solidBodyMotionFunction,
-			dictionary,
-			(const dictionary& SBMFCoeffs, const Time& runTime),
-			(SBMFCoeffs, runTime)
-		);
-
-
-	// Constructors
-
-		//- Construct from the SBMFCoeffs dictionary and Time
-		solidBodyMotionFunction
-		(
-			const dictionary& SBMFCoeffs,
-			const Time& runTime
-		);
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            solidBodyMotionFunction,
+            dictionary,
+            (const dictionary& SBMFCoeffs, const Time& runTime),
+            (SBMFCoeffs, runTime)
+        );
 
 
-	// Selectors
+    // Constructors
 
-		//- Select constructed from the SBMFCoeffs dictionary and Time
-		static autoPtr<solidBodyMotionFunction> New
-		(
-			const dictionary& SBMFCoeffs,
-			const Time& runTime
-		);
-
-
-	// Destructor
-		virtual ~solidBodyMotionFunction();
+        //- Construct from the SBMFCoeffs dictionary and Time
+        solidBodyMotionFunction
+        (
+            const dictionary& SBMFCoeffs,
+            const Time& runTime
+        );
 
 
-	// Member Functions
+    // Selectors
 
-		//- Return the solid-body motion transformation septernion
-		//  Transformation returns new point position with reference to
-		//  original (default) position
-		virtual septernion transformation() const = 0;
+        //- Select constructed from the SBMFCoeffs dictionary and Time
+        static autoPtr<solidBodyMotionFunction> New
+        (
+            const dictionary& SBMFCoeffs,
+            const Time& runTime
+        );
 
-		//- Return the solid-body motion velocity septernion
-		//  Velocity returns point motion velocity
-		virtual septernion velocity() const = 0;
 
-		//- Update properties from given dictionary
-		virtual bool read(const dictionary& SBMFCoeffs) = 0;
+    //- Destructor
+    virtual ~solidBodyMotionFunction() = default;
+
+
+    // Member Functions
+
+        //- Return the solid-body motion transformation septernion
+        //  Transformation returns new point position with reference to
+        //  original (default) position
+        virtual septernion transformation() const = 0;
+
+        //- Return the solid-body motion velocity septernion
+        //  Velocity returns point motion velocity
+        virtual septernion velocity() const = 0;
+
+        //- Update properties from given dictionary
+        virtual bool read(const dictionary& SBMFCoeffs) = 0;
 };
 
 

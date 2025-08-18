@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 Contributor
-	Martin Beaudoin, Hydro-Quebec, 2009.
+    Martin Beaudoin, Hydro-Quebec, 2009.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,13 +36,13 @@ Contributor
 
 namespace Foam
 {
-	defineTypeNameAndDebug(mixingPlaneAMGInterface, 0);
-	addToRunTimeSelectionTable
-	(
-		AMGInterface,
-		mixingPlaneAMGInterface,
-		lduInterface
-	);
+    defineTypeNameAndDebug(mixingPlaneAMGInterface, 0);
+    addToRunTimeSelectionTable
+    (
+        AMGInterface,
+        mixingPlaneAMGInterface,
+        lduInterface
+    );
 }
 
 
@@ -50,20 +50,20 @@ namespace Foam
 
 Foam::mixingPlaneAMGInterface::mixingPlaneAMGInterface
 (
-	const lduPrimitiveMesh& lduMesh,
-	const lduInterfacePtrsList& coarseInterfaces,
-	const lduInterface& fineInterface,
-	const labelField& localRestrictAddressing,
-	const labelField& neighbourRestrictAddressing
+    const lduPrimitiveMesh& lduMesh,
+    const lduInterfacePtrsList& coarseInterfaces,
+    const lduInterface& fineInterface,
+    const labelField& localRestrictAddressing,
+    const labelField& neighbourRestrictAddressing
 )
 :
-	AMGInterface(lduMesh),
-	fineMixingPlaneInterface_
-	(
-		refCast<const mixingPlaneLduInterface>(fineInterface)
-	),
-	comm_(fineMixingPlaneInterface_.comm()),
-	tag_(fineMixingPlaneInterface_.tag())
+    AMGInterface(lduMesh),
+    fineMixingPlaneInterface_
+    (
+        refCast<const mixingPlaneLduInterface>(fineInterface)
+    ),
+    comm_(fineMixingPlaneInterface_.comm()),
+    tag_(fineMixingPlaneInterface_.tag())
 {}
 
 
@@ -77,134 +77,134 @@ Foam::mixingPlaneAMGInterface::~mixingPlaneAMGInterface()
 
 Foam::tmp<Foam::scalarField> Foam::mixingPlaneAMGInterface::agglomerateCoeffs
 (
-	const scalarField& fineCoeffs
+    const scalarField& fineCoeffs
 ) const
 {
-	// AMG agglomeration missing
-	notImplemented("mixingPlaneAMGInterface::agglomerateCoeffs");
-	tmp<scalarField> tcoarseCoeffs(new scalarField(size(), 0.0));
+    // AMG agglomeration missing
+    notImplemented("mixingPlaneAMGInterface::agglomerateCoeffs");
+    tmp<scalarField> tcoarseCoeffs(new scalarField(size(), 0.0));
 
-	return tcoarseCoeffs;
+    return tcoarseCoeffs;
 }
 
 
 bool Foam::mixingPlaneAMGInterface::master() const
 {
-	return fineMixingPlaneInterface_.master();
+    return fineMixingPlaneInterface_.master();
 }
 
 
 Foam::label Foam::mixingPlaneAMGInterface::shadowIndex() const
 {
-	return fineMixingPlaneInterface_.shadowIndex();
+    return fineMixingPlaneInterface_.shadowIndex();
 }
 
 
 const Foam::mixingPlaneLduInterface&
 Foam::mixingPlaneAMGInterface::shadowInterface() const
 {
-	return refCast<const mixingPlaneLduInterface>
-	(
-		ldu().interfaces()[shadowIndex()]
-	);
+    return refCast<const mixingPlaneLduInterface>
+    (
+        ldu().interfaces()[shadowIndex()]
+    );
 }
 
 
 const Foam::labelListList& Foam::mixingPlaneAMGInterface::ggiAddressing() const
 {
-	FatalErrorIn
-	(
-		"const labelListList& mixingPlaneAMGInterface::ggiAddressing() const"
-	)   << "Requested fine addressing at coarse level"
-		<< abort(FatalError);
+    FatalErrorIn
+    (
+        "const labelListList& mixingPlaneAMGInterface::ggiAddressing() const"
+    )   << "Requested fine addressing at coarse level"
+        << abort(FatalError);
 
-	return labelListList::null();
+    return labelListList::null();
 }
 
 
 const Foam::scalarListList& Foam::mixingPlaneAMGInterface::ggiWeights() const
 {
-	FatalErrorIn
-	(
-		"const labelListList& mixingPlaneAMGInterface::ggiWeights() const"
-	)   << "Requested fine addressing at coarse level"
-		<< abort(FatalError);
-	return scalarListList::null();
+    FatalErrorIn
+    (
+        "const labelListList& mixingPlaneAMGInterface::ggiWeights() const"
+    )   << "Requested fine addressing at coarse level"
+        << abort(FatalError);
+    return scalarListList::null();
 }
 
 
 const Foam::tensorField& Foam::mixingPlaneAMGInterface::forwardT() const
 {
-	return fineMixingPlaneInterface_.forwardT();
+    return fineMixingPlaneInterface_.forwardT();
 }
 
 
 const Foam::tensorField& Foam::mixingPlaneAMGInterface::reverseT() const
 {
-	return fineMixingPlaneInterface_.reverseT();
+    return fineMixingPlaneInterface_.reverseT();
 }
 
 
 void Foam::mixingPlaneAMGInterface::initTransfer
 (
-	const Pstream::commsTypes commsType,
-	const unallocLabelList& interfaceData
+    const Pstream::commsTypes commsType,
+    const labelUList& interfaceData
 ) const
 {
-	labelTransferBuffer_ = interfaceData;
+    labelTransferBuffer_ = interfaceData;
 }
 
 
 Foam::tmp<Foam::labelField> Foam::mixingPlaneAMGInterface::transfer
 (
-	const Pstream::commsTypes,
-	const unallocLabelList& interfaceData
+    const Pstream::commsTypes,
+    const labelUList& interfaceData
 ) const
 {
-	return this->shadowInterface().labelTransferBuffer();
+    return this->shadowInterface().labelTransferBuffer();
 }
 
 
 void Foam::mixingPlaneAMGInterface::initInternalFieldTransfer
 (
-	const Pstream::commsTypes commsType,
-	const unallocLabelList& iF
+    const Pstream::commsTypes commsType,
+    const labelUList& iF
 ) const
 {
-	// NOTE: Change this: requires fast reduce.  HJ, 13/Jun/20106
-	labelTransferBuffer_ = interfaceInternalField(iF);
+    // NOTE: Change this: requires fast reduce.  HJ, 13/Jun/20106
+    labelTransferBuffer_ = interfaceInternalField(iF);
 }
 
 
 void Foam::mixingPlaneAMGInterface::initInternalFieldTransfer
 (
-	const Pstream::commsTypes commsType,
-	const scalarField& iF
+    const Pstream::commsTypes commsType,
+    const scalarField& iF
 ) const
 {
-	fieldTransferBuffer_ = interfaceInternalField(iF);
+    fieldTransferBuffer_ = interfaceInternalField(iF);
 }
 
 
 Foam::tmp<Foam::labelField>
 Foam::mixingPlaneAMGInterface::internalFieldTransfer
 (
-	const Pstream::commsTypes,
-	const unallocLabelList&
+    const Pstream::commsTypes,
+    const labelUList&
 ) const
 {
-	return shadowInterface().labelTransferBuffer();
+    return shadowInterface().labelTransferBuffer();
 }
 
 
 Foam::tmp<Foam::scalarField>
 Foam::mixingPlaneAMGInterface::internalFieldTransfer
 (
-	const Pstream::commsTypes,
-	const scalarField&
+    const Pstream::commsTypes,
+    const scalarField&
 ) const
 {
-	return shadowInterface().fieldTransferBuffer();
+    return shadowInterface().fieldTransferBuffer();
 }
 
 

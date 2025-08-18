@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	ggiFvPatch
+    ggiFvPatch
 
 Description
-	Generalized grid interface patch.
+    Generalized grid interface patch.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	ggiFvPatch.C
+    ggiFvPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,258 +47,264 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                         Class ggiFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class ggiFvPatch
 :
-	public coupledFvPatch,
-	public ggiLduInterface
+    public coupledFvPatch,
+    public ggiLduInterface
 {
-	// Private Data
+    // Private Data
 
-		//- Reference to polyPatch
-		const ggiPolyPatch& ggiPolyPatch_;
+        //- Reference to polyPatch
+        const ggiPolyPatch& ggiPolyPatch_;
 
 
 protected:
 
-	// Protected Member functions
+    // Protected Member functions
 
-		//- Make patch weighting factors
-		virtual void makeWeights(fvsPatchScalarField&) const;
+        //- Make patch weighting factors
+        virtual void makeWeights(fvsPatchScalarField&) const;
 
-		//- Make patch face - neighbour cell distances
-		virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
+        //- Make patch face delta coefficients
+        virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
 
-		//- Make patch face non-orthogonality correction vectors
-		virtual void makeCorrVecs(fvsPatchVectorField&) const;
+        //- Construct long distance factors
+        virtual void makeMagLongDeltas(fvsPatchScalarField&) const;
+
+        //- Make patch face non-orthogonality correction vectors
+        virtual void makeCorrVecs(fvsPatchVectorField&) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName(ggiPolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(ggiPolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		ggiFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
-		:
-			coupledFvPatch(patch, bm),
-			ggiPolyPatch_(refCast<const ggiPolyPatch>(patch))
-		{}
-
-
-	//- Destructor
-	virtual ~ggiFvPatch();
+        //- Construct from components
+        ggiFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
+        :
+            coupledFvPatch(patch, bm),
+            ggiPolyPatch_(refCast<const ggiPolyPatch>(patch))
+        {}
 
 
-	// Member functions
-
-		// Communication support
-
-			//- Return communicator used for parallel communication
-			virtual int comm() const
-			{
-				return ggiPolyPatch_.comm();
-			}
-
-			//- Return message tag used for sending
-			virtual int tag() const
-			{
-				return ggiPolyPatch_.tag();
-			}
+    //- Destructor
+    virtual ~ggiFvPatch() = default;
 
 
-		// Access
+    // Member functions
 
-			//- Return ggiPolyPatch
-			const ggiPolyPatch& ggiPatch() const
-			{
-				return ggiPolyPatch_;
-			}
+        // Communication support
 
-			//- Return shadow patch
-			const ggiFvPatch& shadow() const;
+            //- Return communicator used for parallel communication
+            virtual int comm() const
+            {
+                return ggiPolyPatch_.comm();
+            }
 
-			//- Use bridging to fix overlap error in interpolation
-			bool bridgeOverlap() const
-			{
-				return ggiPolyPatch_.bridgeOverlap();
-			}
-
-			//- Return delta (P to N) vectors across coupled patch
-			virtual tmp<vectorField> delta() const;
+            //- Return message tag used for sending
+            virtual int tag() const
+            {
+                return ggiPolyPatch_.tag();
+            }
 
 
-		// Interpolation functions and bridging operations for fully uncovered
-		// and partially covered faces
+        // Access
 
-			//- Interpolate face field
-			template<class Type>
-			tmp<Field<Type> > interpolate(const Field<Type>& pf) const
-			{
-				return ggiPolyPatch_.interpolate(pf);
-			}
+            //- Return ggiPolyPatch
+            const ggiPolyPatch& ggiPatch() const
+            {
+                return ggiPolyPatch_;
+            }
 
-			template<class Type>
-			tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
-			{
-				return ggiPolyPatch_.interpolate(tpf);
-			}
+            //- Return shadow patch
+            const ggiFvPatch& shadow() const;
 
-			//- Set given field for uncovered faces. Usually used for setting
-			//  mirrored field
-			template<class Type>
-			void setUncoveredFaces
-			(
-				const Field<Type>& fieldToSet,
-				Field<Type>& ff
-			) const
-			{
-				return ggiPolyPatch_.setUncoveredFaces(fieldToSet, ff);
-			}
+            //- Use bridging to fix overlap error in interpolation
+            bool bridgeOverlap() const
+            {
+                return ggiPolyPatch_.bridgeOverlap();
+            }
 
-			//- Set given field for partially uncovered faces
-			template<class Type>
-			void setPartialFaces
-			(
-				const Field<Type>& fieldToSet,
-				Field<Type>& ff
-			) const
-			{
-				return ggiPolyPatch_.setPartialFaces(fieldToSet, ff);
-			}
-
-			//- Scale field for partially covered faces. Needed for correct
-			//  construction of mesh interpolation data (weights and delta
-			//  coeffs) and to ensure fully conservative implicit treatment
-			template<class Type>
-			void scalePartialFaces(Field<Type>& ff) const
-			{
-				return ggiPolyPatch_.scalePartialFaces(ff);
-			}
-
-			//- Add given field to partially covered faces. Needed to ensure
-			//  fully conservative implicit treatment
-			template<class Type>
-			void addToPartialFaces
-			(
-				const Field<Type>& fieldToAdd,
-				Field<Type>& ff
-			) const
-			{
-				return ggiPolyPatch_.addToPartialFaces(fieldToAdd, ff);
-			}
+            //- Return delta (P to N) vectors across coupled patch
+            virtual tmp<vectorField> delta() const;
 
 
-		// Interface transfer functions
+        // Interpolation functions and bridging operations for fully uncovered
+        // and partially covered faces
 
-			//- Is this the master side?
-			virtual bool master() const;
+            //- Interpolate face field
+            template<class Type>
+            tmp<Field<Type> > interpolate(const Field<Type>& pf) const
+            {
+                return ggiPolyPatch_.interpolate(pf);
+            }
 
-			//- Is this the fine level?
-			virtual bool fineLevel() const;
+            template<class Type>
+            tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
+            {
+                return ggiPolyPatch_.interpolate(tpf);
+            }
 
-			//- Return shadow patch index
-			virtual label shadowIndex() const;
+            //- Set given field for uncovered faces. Usually used for setting
+            //  mirrored field
+            template<class Type>
+            void setUncoveredFaces
+            (
+                const Field<Type>& fieldToSet,
+                Field<Type>& ff
+            ) const
+            {
+                return ggiPolyPatch_.setUncoveredFaces(fieldToSet, ff);
+            }
 
-			//- Return shadow interface
-			virtual const ggiLduInterface& shadowInterface() const;
+            //- Set given field for partially uncovered faces
+            template<class Type>
+            void setPartialFaces
+            (
+                const Field<Type>& fieldToSet,
+                Field<Type>& ff
+            ) const
+            {
+                return ggiPolyPatch_.setPartialFaces(fieldToSet, ff);
+            }
 
-			//- Return interface size
-			virtual label interfaceSize() const;
+            //- Scale field for partially covered faces. Needed for correct
+            //  construction of mesh interpolation data (weights and delta
+            //  coeffs) and to ensure fully conservative implicit treatment
+            template<class Type>
+            void scalePartialFaces(Field<Type>& ff) const
+            {
+                return ggiPolyPatch_.scalePartialFaces(ff);
+            }
 
-			//- Return zone size
-			virtual label zoneSize() const;
-
-			//- Return zone addressing
-			virtual const labelList& zoneAddressing() const;
-
-			//- Return addressing.  Master side returns own addressing and
-			//  slave side returns addressing from master
-			virtual const labelListList& ggiAddressing() const;
-
-			//- Is the patch localised on a single processor
-			virtual bool localParallel() const;
-
-			//- Return mapDistribute
-			virtual const mapDistribute& map() const;
-
-			//- Return weights.  Master side returns own weights and
-			//  slave side returns weights from master
-			virtual const scalarListList& ggiWeights() const;
-
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return coupledFvPatch::forwardT();
-			}
-
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return coupledFvPatch::reverseT();
-			}
-
-			//- Expand addressing to zone
-			//  Used in optimised AMG coarsening
-			virtual void expandAddrToZone(labelField&) const;
-
-			//- Expand crMatrix to zone
-			//  Used in optimised SAMG coarsening
-			virtual void expandCrMatrixToZone(crMatrix&) const;
+            //- Add given field to partially covered faces. Needed to ensure
+            //  fully conservative implicit treatment
+            template<class Type>
+            void addToPartialFaces
+            (
+                const Field<Type>& fieldToAdd,
+                Field<Type>& ff
+            ) const
+            {
+                return ggiPolyPatch_.addToPartialFaces(fieldToAdd, ff);
+            }
 
 
-			//- Return the values of the given internal data adjacent to
-			//  the interface as a field
-			virtual tmp<labelField> interfaceInternalField
-			(
-				const unallocLabelList& internalData
-			) const;
+        // Interface transfer functions
 
-			//- Initialise interface data transfer
-			virtual void initTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            //- Is this the master side?
+            virtual bool master() const;
 
-			//- Transfer and return neighbour field
-			virtual tmp<labelField> transfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            //- Is this the fine level?
+            virtual bool fineLevel() const;
 
-			//- Initialise transfer of internal field adjacent to the interface
-			virtual void initInternalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& iF
-			) const;
+            //- Return shadow patch index
+            virtual label shadowIndex() const;
 
-			//- Return neighbour field
-			virtual tmp<labelField> internalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& internalData
-			) const;
+            //- Return shadow interface
+            virtual const ggiLduInterface& shadowInterface() const;
 
-			//- Initialise transfer of prolongation matrix to the interface
-			virtual void initProlongationTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const crMatrix& iF
-			) const;
+            //- Return interface size
+            virtual label interfaceSize() const;
 
-			//- Transfer and return prolongation matrix adjacent to
-			//  the interface
-			virtual autoPtr<crMatrix> prolongationTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const crMatrix& iF
-			) const;
+            //- Return zone size
+            virtual label zoneSize() const;
+
+            //- Return zone addressing
+            virtual const labelList& zoneAddressing() const;
+
+            //- Return addressing.  Master side returns own addressing and
+            //  slave side returns addressing from master
+            virtual const labelListList& ggiAddressing() const;
+
+            //- Is the patch localised on a single processor
+            virtual bool localParallel() const;
+
+            //- Return mapDistribute
+            virtual const mapDistribute& map() const;
+
+            //- Return weights.  Master side returns own weights and
+            //  slave side returns weights from master
+            virtual const scalarListList& ggiWeights() const;
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return coupledFvPatch::forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return coupledFvPatch::reverseT();
+            }
+
+            //- Expand addressing to zone
+            //  Used in optimised AMG coarsening
+            virtual void expandAddrToZone(labelField&) const;
+
+            //- Expand crMatrix to zone
+            //  Used in optimised SAMG coarsening
+            virtual void expandCrMatrixToZone(crMatrix&) const;
+
+
+            //- Return the values of the given internal data adjacent to
+            //  the interface as a field
+            virtual tmp<labelField> interfaceInternalField
+            (
+                const labelUList& internalData
+            ) const;
+
+            //- Initialise interface data transfer
+            virtual void initTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Transfer and return neighbour field
+            virtual tmp<labelField> transfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Initialise transfer of internal field adjacent to the interface
+            virtual void initInternalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& iF
+            ) const;
+
+            //- Return neighbour field
+            virtual tmp<labelField> internalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& internalData
+            ) const;
+
+            //- Initialise transfer of prolongation matrix to the interface
+            virtual void initProlongationTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const crMatrix& iF
+            ) const;
+
+            //- Transfer and return prolongation matrix adjacent to
+            //  the interface
+            virtual autoPtr<crMatrix> prolongationTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const crMatrix& iF
+            ) const;
 };
 
 

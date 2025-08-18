@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	pointVolInterpolation
+    pointVolInterpolation
 
 Description
 
 SourceFiles
-	pointVolInterpolation.C
-	pointVolInterpolate.C
+    pointVolInterpolation.C
+    pointVolInterpolate.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,110 +52,113 @@ namespace Foam
 class fvMesh;
 class pointMesh;
 
+/*---------------------------------------------------------------------------*\
+                      Class pointVolInterpolation Declaration
+\*---------------------------------------------------------------------------*/
 
 class pointVolInterpolation
 {
-	// Private data
+    // Private data
 
-		const pointMesh& pointMesh_;
-		const fvMesh& fvMesh_;
+        const pointMesh& pointMesh_;
+        const fvMesh& fvMesh_;
 
-		//- Interpolation scheme weighting factor array.
-		mutable FieldField<Field, scalar>* volWeightsPtr_;
+        //- Interpolation scheme weighting factor array.
+        mutable FieldField<Field, scalar>* volWeightsPtr_;
 
-		//- Primitive patch interpolators
-		mutable PtrList<primitivePatchInterpolation>* patchInterpolatorsPtr_;
+        //- Primitive patch interpolators
+        mutable PtrList<primitivePatchInterpolation>* patchInterpolatorsPtr_;
 
 
-	// Private member functions
+    // Private member functions
 
-		//- Return patch interpolators
-		const PtrList<primitivePatchInterpolation>& patchInterpolators() const;
+        //- Return patch interpolators
+        const PtrList<primitivePatchInterpolation>& patchInterpolators() const;
 
-		//- Construct point weighting factors
-		void makeWeights() const;
+        //- Construct point weighting factors
+        void makeWeights() const;
 
-		//- Clear addressing
-		void clearAddressing() const;
+        //- Clear addressing
+        void clearAddressing() const;
 
-		//- Clear geometry
-		void clearGeom() const;
+        //- Clear geometry
+        void clearGeom() const;
 
 
 protected:
 
-		const pointMesh& pMesh() const
-		{
-			return pointMesh_;
-		}
+        const pointMesh& pMesh() const
+        {
+            return pointMesh_;
+        }
 
-		const fvMesh& vMesh() const
-		{
-			return fvMesh_;
-		}
+        const fvMesh& vMesh() const
+        {
+            return fvMesh_;
+        }
 
 
 public:
 
-	// Declare name of the class and it's debug switch
-	ClassName("pointVolInterpolation");
+    // Declare name of the class and it's debug switch
+    ClassName("pointVolInterpolation");
 
 
-	// Constructors
+    // Constructors
 
-		//- Constructor given pointMesh and fvMesh.
-		pointVolInterpolation(const pointMesh&, const fvMesh&);
-
-
-	// Destructor
-
-		~pointVolInterpolation();
+        //- Constructor given pointMesh and fvMesh.
+        pointVolInterpolation(const pointMesh&, const fvMesh&);
 
 
-	// Member functions
+    // Destructor
 
-		// Access
-
-			//- Return reference to weights arrays.
-			//  This also constructs the weighting factors if neccessary.
-			const FieldField<Field, scalar>& volWeights() const;
+        ~pointVolInterpolation();
 
 
-		// Edit
+    // Member functions
 
-			//- Update mesh topology using the morph engine
-			void updateTopology();
+        // Access
 
-			//- Correct weighting factors for moving mesh.
-			bool movePoints();
+            //- Return reference to weights arrays.
+            //  This also constructs the weighting factors if neccessary.
+            const FieldField<Field, scalar>& volWeights() const;
 
 
-	// Interpolation functions
+        // Edit
 
-		//- Interpolate from pointField to volField
-		//  using inverse distance weighting
-		template<class Type>
-		void interpolate
-		(
-			const GeometricField<Type, pointPatchField, pointMesh>&,
-			GeometricField<Type, fvPatchField, volMesh>&
-		) const;
+            //- Update mesh topology using the morph engine
+            void updateTopology();
 
-		//- Interpolate pointField returning volField
-		//  using inverse distance weighting
-		template<class Type>
-		tmp<GeometricField<Type, fvPatchField, volMesh> > interpolate
-		(
-			const GeometricField<Type, pointPatchField, pointMesh>&
-		) const;
+            //- Correct weighting factors for moving mesh.
+            bool movePoints();
 
-		//- Interpolate tmp<pointField> returning volField
-		//  using inverse distance weighting
-		template<class Type>
-		tmp<GeometricField<Type, fvPatchField, volMesh> > interpolate
-		(
-			const tmp<GeometricField<Type, pointPatchField, pointMesh> >&
-		) const;
+
+    // Interpolation functions
+
+        //- Interpolate from pointField to volField
+        //  using inverse distance weighting
+        template<class Type>
+        void interpolate
+        (
+            const GeometricField<Type, pointPatchField, pointMesh>&,
+            GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
+
+        //- Interpolate pointField returning volField
+        //  using inverse distance weighting
+        template<class Type>
+        tmp<GeometricField<Type, fvPatchField, volMesh> > interpolate
+        (
+            const GeometricField<Type, pointPatchField, pointMesh>&
+        ) const;
+
+        //- Interpolate tmp<pointField> returning volField
+        //  using inverse distance weighting
+        template<class Type>
+        tmp<GeometricField<Type, fvPatchField, volMesh> > interpolate
+        (
+            const tmp<GeometricField<Type, pointPatchField, pointMesh> >&
+        ) const;
 };
 
 
@@ -166,7 +169,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "pointVolInterpolate.C"
+#   include "pointVolInterpolate.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

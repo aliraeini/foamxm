@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,22 +44,22 @@ defineTypeNameAndDebug(wallLayerCells, 0);
 
 bool Foam::wallLayerCells::usesCoupledPatch(const label cellI) const
 {
-	const polyBoundaryMesh& patches = mesh().boundaryMesh();
+    const polyBoundaryMesh& patches = mesh().boundaryMesh();
 
-	const cell& cFaces = mesh().cells()[cellI];
+    const cell& cFaces = mesh().cells()[cellI];
 
-	forAll(cFaces, cFaceI)
-	{
-		label faceI = cFaces[cFaceI];
+    forAll(cFaces, cFaceI)
+    {
+        label faceI = cFaces[cFaceI];
 
-		label patchID = patches.whichPatch(faceI);
+        label patchID = patches.whichPatch(faceI);
 
-		if ((patchID >= 0) && (patches[patchID].coupled()))
-		{
-			return true;
-		}
-	}
-	return false;
+        if ((patchID >= 0) && (patches[patchID].coupled()))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -67,164 +67,164 @@ bool Foam::wallLayerCells::usesCoupledPatch(const label cellI) const
 // Construct from components
 Foam::wallLayerCells::wallLayerCells
 (
-	const polyMesh& mesh,
-	const wordList& patchNames,
-	const label nLayers
+    const polyMesh& mesh,
+    const wordList& patchNames,
+    const label nLayers
 )
 :
-	edgeVertex(mesh),
-	List<refineCell>()
+    edgeVertex(mesh),
+    List<refineCell>()
 {
-	// Find out cells connected to walls.
+    // Find out cells connected to walls.
 
-	const polyPatchList& patches = mesh.boundaryMesh();
+    const polyPatchList& patches = mesh.boundaryMesh();
 
-	// Make map from name to local patch ID
-	HashTable<label> patchNameToIndex(patches.size());
+    // Make map from name to local patch ID
+    HashTable<label> patchNameToIndex(patches.size());
 
-	forAll(patches, patchI)
-	{
-		patchNameToIndex.insert(patches[patchI].name(), patchI);
-	}
-
-
-	// Count size of walls to set
-	label nWalls = 0;
-
-	forAll(patchNames, patchNameI)
-	{
-		const word& name = patchNames[patchNameI];
-
-		if (patchNameToIndex.found(name))
-		{
-			label patchI = patchNameToIndex[name];
-
-			nWalls += patches[patchI].size();
-		}
-	}
-
-	// Allocate storage for start of wave on faces
-	List<wallNormalInfo> changedFacesInfo(nWalls);
-	labelList changedFaces(nWalls);
-
-	// Fill changedFaces info
-	label nChangedFaces = 0;
-
-	forAll(patchNames, patchNameI)
-	{
-		const word& name = patchNames[patchNameI];
-
-		if (patchNameToIndex.found(name))
-		{
-			label patchI = patchNameToIndex[name];
-
-			const polyPatch& pp = patches[patchI];
-
-			forAll(pp, patchFaceI)
-			{
-				label meshFaceI = pp.start() + patchFaceI;
-
-				changedFaces[nChangedFaces] = meshFaceI;
-
-				// Set transported information to the wall normal.
-				const vector& norm = pp.faceNormals()[patchFaceI];
-
-				changedFacesInfo[nChangedFaces] = wallNormalInfo(norm);
-
-				nChangedFaces++;
-			}
-		}
-	}
+    forAll(patches, patchI)
+    {
+        patchNameToIndex.insert(patches[patchI].name(), patchI);
+    }
 
 
-	// Do a wave of nLayers, transporting the index in patchNames
-	// (cannot use local patchIDs since we might get info from neighbouring
-	//  processor)
+    // Count size of walls to set
+    label nWalls = 0;
 
-	MeshWave<wallNormalInfo> regionCalc
-	(
-		mesh,
-		changedFaces,
-		changedFacesInfo,
-		0
-	);
+    forAll(patchNames, patchNameI)
+    {
+        const word& name = patchNames[patchNameI];
 
-	regionCalc.iterate(nLayers);
+        if (patchNameToIndex.found(name))
+        {
+            label patchI = patchNameToIndex[name];
 
+            nWalls += patches[patchI].size();
+        }
+    }
 
-	// Now regionCalc should hold info on faces that are reachable from
-	// changedFaces within nLayers iterations. We use face info since that is
-	// guaranteed to be consistent across processor boundaries.
+    // Allocate storage for start of wave on faces
+    List<wallNormalInfo> changedFacesInfo(nWalls);
+    labelList changedFaces(nWalls);
 
-	const List<wallNormalInfo>& faceInfo = regionCalc.allFaceInfo();
+    // Fill changedFaces info
+    label nChangedFaces = 0;
 
-	if (debug)
-	{
-		Info<< "wallLayerCells::getRefinement : dumping selected faces to "
-			<< "selectedFaces.obj" << endl;
+    forAll(patchNames, patchNameI)
+    {
+        const word& name = patchNames[patchNameI];
 
-		OFstream fcStream("selectedFaces.obj");
+        if (patchNameToIndex.found(name))
+        {
+            label patchI = patchNameToIndex[name];
 
-		label vertI = 0;
+            const polyPatch& pp = patches[patchI];
 
-		forAll(faceInfo, faceI)
-		{
-			const wallNormalInfo& info = faceInfo[faceI];
+            forAll(pp, patchFaceI)
+            {
+                label meshFaceI = pp.start() + patchFaceI;
 
-			if (info.valid())
-			{
-				const face& f = mesh.faces()[faceI];
+                changedFaces[nChangedFaces] = meshFaceI;
 
-				point mid(0.0, 0.0, 0.0);
+                // Set transported information to the wall normal.
+                const vector& norm = pp.faceNormals()[patchFaceI];
 
-				forAll(f, fp)
-				{
-					mid += mesh.points()[f[fp]];
-				}
-				mid /= f.size();
+                changedFacesInfo[nChangedFaces] = wallNormalInfo(norm);
 
-				fcStream
-					<< "v " << mid.x() << ' ' << mid.y() << ' ' << mid.z()
-					<< endl;
-				vertI++;
-
-				point end(mid + info.normal());
-
-				fcStream
-					<< "v " << end.x() << ' ' << end.y() << ' ' << end.z()
-					<< endl;
-				vertI++;
-
-				fcStream << "l " << vertI << ' ' <<vertI-1 << endl;
-			}
-		}
-	}
+                nChangedFaces++;
+            }
+        }
+    }
 
 
-	//
-	// Copy meshWave information to List<refineCell>
-	//
+    // Do a wave of nLayers, transporting the index in patchNames
+    // (cannot use local patchIDs since we might get info from neighbouring
+    //  processor)
 
-	// Estimate size
+    MeshWave<wallNormalInfo> regionCalc
+    (
+        mesh,
+        changedFaces,
+        changedFacesInfo,
+        0
+    );
 
-	DynamicList<refineCell> refineCells(3*nWalls);
+    regionCalc.iterate(nLayers);
 
-	const List<wallNormalInfo>& cellInfo = regionCalc.allCellInfo();
 
-	forAll(cellInfo, cellI)
-	{
-		const wallNormalInfo& info = cellInfo[cellI];
+    // Now regionCalc should hold info on faces that are reachable from
+    // changedFaces within nLayers iterations. We use face info since that is
+    // guaranteed to be consistent across processor boundaries.
 
-		if (info.valid() && !usesCoupledPatch(cellI))
-		{
-			refineCells.append(refineCell(cellI, info.normal()));
-		}
-	}
+    const List<wallNormalInfo>& faceInfo = regionCalc.allFaceInfo();
 
-	refineCells.shrink();
+    if (debug)
+    {
+        Info<< "wallLayerCells::getRefinement : dumping selected faces to "
+            << "selectedFaces.obj" << endl;
 
-	// Transfer refineCells storage to this.
-	transfer(refineCells);
+        OFstream fcStream("selectedFaces.obj");
+
+        label vertI = 0;
+
+        forAll(faceInfo, faceI)
+        {
+            const wallNormalInfo& info = faceInfo[faceI];
+
+            if (info.valid())
+            {
+                const face& f = mesh.faces()[faceI];
+
+                point mid(0.0, 0.0, 0.0);
+
+                forAll(f, fp)
+                {
+                    mid += mesh.points()[f[fp]];
+                }
+                mid /= f.size();
+
+                fcStream
+                    << "v " << mid.x() << ' ' << mid.y() << ' ' << mid.z()
+                    << endl;
+                vertI++;
+
+                point end(mid + info.normal());
+
+                fcStream
+                    << "v " << end.x() << ' ' << end.y() << ' ' << end.z()
+                    << endl;
+                vertI++;
+
+                fcStream << "l " << vertI << ' ' <<vertI-1 << endl;
+            }
+        }
+    }
+
+
+    //
+    // Copy meshWave information to List<refineCell>
+    //
+
+    // Estimate size
+
+    DynamicList<refineCell> refineCells(3*nWalls);
+
+    const List<wallNormalInfo>& cellInfo = regionCalc.allCellInfo();
+
+    forAll(cellInfo, cellI)
+    {
+        const wallNormalInfo& info = cellInfo[cellI];
+
+        if (info.valid() && !usesCoupledPatch(cellI))
+        {
+            refineCells.append(refineCell(cellI, info.normal()));
+        }
+    }
+
+    refineCells.shrink();
+
+    // Transfer refineCells storage to this.
+    transfer(refineCells);
 }
 
 

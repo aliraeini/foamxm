@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::surfZoneIOList
+    Foam::surfZoneIOList
 
 Description
-	IOobject for a surfZoneList
+    IOobject for a surfZoneList
 
 SourceFiles
-	surfZoneIOList.C
+    surfZoneIOList.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,53 +50,56 @@ class surfZoneIOList;
 Ostream& operator<<(Ostream&, const surfZoneIOList&);
 
 
+/*---------------------------------------------------------------------------*\
+                      Class surfZoneIOList Declaration
+\*---------------------------------------------------------------------------*/
 
 class surfZoneIOList
 :
-	public surfZoneList,
-	public regIOobject
+    public surfZoneList,
+    public regIOobject
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		surfZoneIOList(const surfZoneIOList&);
+        //- Disallow default bitwise copy construct
+        surfZoneIOList(const surfZoneIOList&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const surfZoneIOList&);
+        //- Disallow default bitwise assignment
+        void operator=(const surfZoneIOList&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("surfZoneList");
+    //- Runtime type information
+    TypeName("surfZoneList");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject
-		explicit surfZoneIOList(const IOobject&);
+        //- Construct from IOobject
+        explicit surfZoneIOList(const IOobject&);
 
-		//- Construct from IOobject and surfZoneList
-		surfZoneIOList(const IOobject&, const surfZoneList&);
+        //- Construct from IOobject and surfZoneList
+        surfZoneIOList(const IOobject&, const surfZoneList&);
 
-		//- Construct from IOobject and surfZoneList
-		surfZoneIOList(const IOobject&, const Xfer<surfZoneList>&);
-
-
-	// Destructor
-
-		~surfZoneIOList();
+        //- Construct from IOobject and surfZoneList
+        surfZoneIOList(const IOobject&, const Xfer<surfZoneList>&);
 
 
-	// Member Functions
+    // Destructor
 
-		//- writeData member function required by regIOobject
-		bool writeData(Ostream&) const;
+        ~surfZoneIOList();
 
 
-	// IOstream Operators
+    // Member Functions
 
-		friend Ostream& operator<<(Ostream&, const surfZoneIOList&);
+        //- writeData member function required by regIOobject
+        bool writeData(Ostream&) const;
+
+
+    // IOstream Operators
+
+        friend Ostream& operator<<(Ostream&, const surfZoneIOList&);
 };
 
 

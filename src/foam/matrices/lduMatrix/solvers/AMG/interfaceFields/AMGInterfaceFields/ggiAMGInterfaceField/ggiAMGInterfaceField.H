@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::ggiAMGInterfaceField
+    Foam::ggiAMGInterfaceField
 
 Description
-	AMG agglomerated ggi interface field.
+    AMG agglomerated ggi interface field.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 SourceFiles
-	ggiAMGInterfaceField.C
+    ggiAMGInterfaceField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,126 +47,129 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                     Class ggiAMGInterfaceField Declaration
+\*---------------------------------------------------------------------------*/
 
 class ggiAMGInterfaceField
 :
-	public AMGInterfaceField,
-	virtual public ggiLduInterfaceField
+    public AMGInterfaceField,
+    virtual public ggiLduInterfaceField
 {
-	// Private data
+    // Private data
 
-		//- Local reference cast into the ggi interface
-		const ggiAMGInterface& ggiInterface_;
+        //- Local reference cast into the ggi interface
+        const ggiAMGInterface& ggiInterface_;
 
-		//- Is the transform required
-		bool doTransform_;
+        //- Is the transform required
+        bool doTransform_;
 
-		//- Rank of component for transformation
-		int rank_;
+        //- Rank of component for transformation
+        int rank_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		ggiAMGInterfaceField(const ggiAMGInterfaceField&);
+        //- Disallow default bitwise copy construct
+        ggiAMGInterfaceField(const ggiAMGInterfaceField&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const ggiAMGInterfaceField&);
+        //- Disallow default bitwise assignment
+        void operator=(const ggiAMGInterfaceField&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("ggi");
+    //- Runtime type information
+    TypeName("ggi");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from AMG interface and fine level interface field
-		ggiAMGInterfaceField
-		(
-			const AMGInterface& AMGCp,
-			const lduInterfaceField& fineInterfaceField
-		);
-
-
-	//- Destructor
-	virtual ~ggiAMGInterfaceField();
+        //- Construct from AMG interface and fine level interface field
+        ggiAMGInterfaceField
+        (
+            const AMGInterface& AMGCp,
+            const lduInterfaceField& fineInterfaceField
+        );
 
 
-	// Member Functions
-
-		// Access
-
-			//- Return size
-			label size() const
-			{
-				return ggiInterface_.size();
-			}
+    //- Destructor
+    virtual ~ggiAMGInterfaceField() = default;
 
 
-		// Coupled interface matrix update
+    // Member Functions
 
-			//- Transform neighbour field
-			virtual void transformCoupleField
-			(
-				scalarField& pnf,
-				const direction cmpt
-			) const
-			{
-				ggiLduInterfaceField::transformCoupleField(pnf, cmpt);
-			}
+        // Access
 
-			//- Initialise neighbour matrix update
-			virtual void initInterfaceMatrixUpdate
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix& m,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
-
-			//- Update result field based on interface functionality
-			virtual void updateInterfaceMatrix
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix&,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
+            //- Return size
+            label size() const
+            {
+                return ggiInterface_.size();
+            }
 
 
-		//- Ggi interface functions
+        // Coupled interface matrix update
 
-			//- Does the interface field perform the transfromation
-			virtual bool doTransform() const
-			{
-				return doTransform_;
-			}
+            //- Transform neighbour field
+            virtual void transformCoupleField
+            (
+                scalarField& pnf,
+                const direction cmpt
+            ) const
+            {
+                ggiLduInterfaceField::transformCoupleField(pnf, cmpt);
+            }
 
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return ggiInterface_.forwardT();
-			}
+            //- Initialise neighbour matrix update
+            virtual void initInterfaceMatrixUpdate
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix& m,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return ggiInterface_.reverseT();
-			}
+            //- Update result field based on interface functionality
+            virtual void updateInterfaceMatrix
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix&,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 
-			//- Return rank of component for transform
-			virtual int rank() const
-			{
-				return rank_;
-			}
+
+        //- Ggi interface functions
+
+            //- Does the interface field perform the transfromation
+            virtual bool doTransform() const
+            {
+                return doTransform_;
+            }
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return ggiInterface_.forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return ggiInterface_.reverseT();
+            }
+
+            //- Return rank of component for transform
+            virtual int rank() const
+            {
+                return rank_;
+            }
 };
 
 

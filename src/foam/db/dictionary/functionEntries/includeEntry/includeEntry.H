@@ -1,46 +1,46 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::functionEntries::includeEntry
+    Foam::functionEntries::includeEntry
 
 Description
-	Specify an include file when reading dictionaries, expects a
-	single string to follow.
+    Specify an include file when reading dictionaries, expects a
+    single string to follow.
 
-	An example of the \c \#include directive:
-	\verbatim
-		#include "includeFile"
-	\endverbatim
+    An example of the \c \#include directive:
+    \verbatim
+        #include "includeFile"
+    \endverbatim
 
-	The usual expansion of environment variables and other constructs
-	(eg, the \c ~OpenFOAM/ expansion) is retained.
+    The usual expansion of environment variables and other constructs
+    (eg, the \c ~OpenFOAM/ expansion) is retained.
 
 See Also
-	fileName, string::expand()
+    fileName, string::expand()
 
 SourceFiles
-	includeEntry.C
+    includeEntry.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,58 +56,61 @@ namespace Foam
 namespace functionEntries
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class includeEntry Declaration
+\*---------------------------------------------------------------------------*/
 
 class includeEntry
 :
-	public functionEntry
+    public functionEntry
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		includeEntry(const includeEntry&);
+        //- Disallow default bitwise copy construct
+        includeEntry(const includeEntry&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const includeEntry&);
+        //- Disallow default bitwise assignment
+        void operator=(const includeEntry&);
 
 protected:
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		//- Read the include fileName from Istream, expand and return
-		static fileName includeFileName(Istream&, const dictionary&);
+        //- Read the include fileName from Istream, expand and return
+        static fileName includeFileName(Istream&, const dictionary&);
 
-		//- Expand include fileName and return
-		static fileName includeFileName
-		(
-			const fileName& dir,
-			const fileName&,
-			const dictionary&
-		);
+        //- Expand include fileName and return
+        static fileName includeFileName
+        (
+            const fileName& dir,
+            const fileName&,
+            const dictionary&
+        );
 
 public:
 
-	// Static data members
+    // Static data members
 
-		//- Report which file is included to stdout
-		static bool report;
-
-
-	//- Runtime type information
-	ClassName("include");
+        //- Report which file is included to stdout
+        static bool report;
 
 
-	// Member Functions
+    //- Runtime type information
+    ClassName("include");
 
-		//- Execute the functionEntry in a sub-dict context
-		static bool execute(dictionary& parentDict, Istream&);
 
-		//- Execute the functionEntry in a primitiveEntry context
-		static bool execute
-		(
-			const dictionary& parentDict,
-			primitiveEntry&,
-			Istream&
-		);
+    // Member Functions
+
+        //- Execute the functionEntry in a sub-dict context
+        static bool execute(dictionary& parentDict, Istream&);
+
+        //- Execute the functionEntry in a primitiveEntry context
+        static bool execute
+        (
+            const dictionary& parentDict,
+            primitiveEntry&,
+            Istream&
+        );
 
 };
 

@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::GeometricField
+    Foam::GeometricField
 
 Description
-	A class representing the concept of a GeometricField of 1 used to avoid
-	unnecessary manipulations for objects which are known to be one at
-	compile-time.
+    A class representing the concept of a GeometricField of 1 used to avoid
+    unnecessary manipulations for objects which are known to be one at
+    compile-time.
 
-	Used for example as the density argument to a function written for
-	compressible to be used for incompressible flow.
+    Used for example as the density argument to a function written for
+    compressible to be used for incompressible flow.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,30 +45,33 @@ Description
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class geometricOneField Declaration
+\*---------------------------------------------------------------------------*/
 
 class geometricOneField
 :
-	public one
+    public one
 {
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		geometricOneField()
-		{}
+        //- Construct null
+        geometricOneField()
+        {}
 
 
-	// Member Operators
+    // Member Operators
 
-		inline scalar operator[](const label) const;
+        inline scalar operator[](const label) const;
 
-		inline oneField field() const;
+        inline oneField field() const;
 
-		inline oneField oldTime() const;
+        inline oneField oldTime() const;
 
-		inline oneFieldField boundaryField() const;
+        inline oneFieldField boundaryField() const;
 };
 
 
@@ -78,7 +81,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#	include "geometricOneFieldI.H"
+#   include "geometricOneFieldI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -5,4 +5,4 @@
         << " change = " << Foam::mag(newTotalVolume - totalVolume)
         << " ratio = " << totalVolRatio - 1 << endl;
 
-	totalVolume = newTotalVolume;
+    totalVolume = newTotalVolume;

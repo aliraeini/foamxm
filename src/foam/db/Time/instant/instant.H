@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::instant
+    Foam::instant
 
 Description
-	An instant of time. Contains the time value and name.
+    An instant of time. Contains the time value and name.
 
 SourceFiles
-	instant.C
+    instant.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,92 +58,95 @@ Istream& operator>>(Istream&, instant&);
 Ostream& operator<<(Ostream&, const instant&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class instant Declaration
+\*---------------------------------------------------------------------------*/
 
 class instant
 {
-	// Private data
+    // Private data
 
-		scalar value_;
-		word name_;
+        scalar value_;
+        word name_;
 
 public:
 
-	// Public classes
+    // Public classes
 
-		//- Less function class used in sorting instants
-		class less
-		{
-		public:
+        //- Less function class used in sorting instants
+        class less
+        {
+        public:
 
-			bool operator()(const instant& a, const instant& b) const
-			{
-				return a.value() < b.value();
-			}
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
+            bool operator()(const instant& a, const instant& b) const
+            {
+                return a.value() < b.value();
+            }
+        };
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct null
-		instant();
-
-		//- Construct from components
-		instant(const scalar, const word&);
-
-		//- Construct from time value
-		explicit instant(const scalar);
-
-		//- Construct from word
-		explicit instant(const word&);
+        static const char* const typeName;
 
 
-	// Member Functions
+    // Constructors
 
-		// Access
+        //- Construct null
+        instant();
 
-			//- Value (const access)
-			scalar value() const
-			{
-				return value_;
-			}
+        //- Construct from components
+        instant(const scalar, const word&);
 
-			//- Value (non-const access)
-			scalar& value()
-			{
-				return value_;
-			}
+        //- Construct from time value
+        explicit instant(const scalar);
 
-			//- Name (const access)
-			const word& name() const
-			{
-				return name_;
-			}
-
-			//- Name (non-const access)
-			word& name()
-			{
-				return name_;
-			}
-
-			//- Comparison used for instants to be equal
-			bool equal(const scalar) const;
+        //- Construct from word
+        explicit instant(const word&);
 
 
-	// Friend Operators
+    // Member Functions
 
-		friend bool operator==(const instant&, const instant&);
-		friend bool operator!=(const instant&, const instant&);
+        // Access
+
+            //- Value (const access)
+            scalar value() const
+            {
+                return value_;
+            }
+
+            //- Value (non-const access)
+            scalar& value()
+            {
+                return value_;
+            }
+
+            //- Name (const access)
+            const word& name() const
+            {
+                return name_;
+            }
+
+            //- Name (non-const access)
+            word& name()
+            {
+                return name_;
+            }
+
+            //- Comparison used for instants to be equal
+            bool equal(const scalar) const;
 
 
-	// IOstream Operators
+    // Friend Operators
 
-		friend Istream& operator>>(Istream&, instant&);
-		friend Ostream& operator<<(Ostream&, const instant&);
+        friend bool operator==(const instant&, const instant&);
+        friend bool operator!=(const instant&, const instant&);
+
+
+    // IOstream Operators
+
+        friend Istream& operator>>(Istream&, instant&);
+        friend Ostream& operator<<(Ostream&, const instant&);
 };
 
 

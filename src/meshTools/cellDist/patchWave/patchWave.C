@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,101 +33,101 @@ License
 
 void Foam::patchWave::setChangedFaces
 (
-	const labelHashSet& patchIDs,
-	labelList& changedFaces,
-	List<wallPoint>& faceDist
+    const labelHashSet& patchIDs,
+    labelList& changedFaces,
+    List<wallPoint>& faceDist
 ) const
 {
-	const polyMesh& mesh = cellDistFuncs::mesh();
+    const polyMesh& mesh = cellDistFuncs::mesh();
 
-	label nChangedFaces = 0;
+    label nChangedFaces = 0;
 
-	forAll(mesh.boundaryMesh(), patchI)
-	{
-		if (patchIDs.found(patchI))
-		{
-			const polyPatch& patch = mesh.boundaryMesh()[patchI];
+    forAll (mesh.boundaryMesh(), patchI)
+    {
+        if (patchIDs.found(patchI))
+        {
+            const polyPatch& patch = mesh.boundaryMesh()[patchI];
 
-			forAll(patch.faceCentres(), patchFaceI)
-			{
-				label meshFaceI = patch.start() + patchFaceI;
+            forAll (patch.faceCentres(), patchFaceI)
+            {
+                label meshFaceI = patch.start() + patchFaceI;
 
-				changedFaces[nChangedFaces] = meshFaceI;
+                changedFaces[nChangedFaces] = meshFaceI;
 
-				faceDist[nChangedFaces] =
-					wallPoint
-					(
-					    patch.faceCentres()[patchFaceI],
-					    0.0
-					);
+                faceDist[nChangedFaces] =
+                    wallPoint
+                    (
+                        patch.faceCentres()[patchFaceI],
+                        0.0
+                    );
 
-				nChangedFaces++;
-			}
-		}
-	}
+                nChangedFaces++;
+            }
+        }
+    }
 }
 
 
 Foam::label Foam::patchWave::getValues(const MeshWave<wallPoint>& waveInfo)
 {
-	const List<wallPoint>& cellInfo = waveInfo.allCellInfo();
-	const List<wallPoint>& faceInfo = waveInfo.allFaceInfo();
+    const List<wallPoint>& cellInfo = waveInfo.allCellInfo();
+    const List<wallPoint>& faceInfo = waveInfo.allFaceInfo();
 
-	label nIllegal = 0;
+    label nIllegal = 0;
 
-	// Copy cell values
-	distance_.setSize(cellInfo.size());
+    // Copy cell values
+    distance_.setSize(cellInfo.size());
 
-	forAll(cellInfo, cellI)
-	{
-		scalar dist = cellInfo[cellI].distSqr();
+    forAll (cellInfo, cellI)
+    {
+        scalar dist = cellInfo[cellI].distSqr();
 
-		if (cellInfo[cellI].valid())
-		{
-			distance_[cellI] = Foam::sqrt(dist);
-		}
-		else
-		{
-			distance_[cellI] = dist;
+        if (cellInfo[cellI].valid())
+        {
+            distance_[cellI] = Foam::sqrt(dist);
+        }
+        else
+        {
+            distance_[cellI] = dist;
 
-			nIllegal++;
-		}
-	}
+            nIllegal++;
+        }
+    }
 
-	// Copy boundary values
-	forAll(patchDistance_, patchI)
-	{
-		const polyPatch& patch = mesh().boundaryMesh()[patchI];
+    // Copy boundary values
+    forAll (patchDistance_, patchI)
+    {
+        const polyPatch& patch = mesh().boundaryMesh()[patchI];
 
-		// Allocate storage for patchDistance
-		scalarField* patchDistPtr = new scalarField(patch.size());
+        // Allocate storage for patchDistance
+        scalarField* patchDistPtr = new scalarField(patch.size());
 
-		patchDistance_.set(patchI, patchDistPtr);
+        patchDistance_.set(patchI, patchDistPtr);
 
-		scalarField& patchField = *patchDistPtr;
+        scalarField& patchField = *patchDistPtr;
 
-		forAll(patchField, patchFaceI)
-		{
-			label meshFaceI = patch.start() + patchFaceI;
+        forAll (patchField, patchFaceI)
+        {
+            label meshFaceI = patch.start() + patchFaceI;
 
-			scalar dist = faceInfo[meshFaceI].distSqr();
+            scalar dist = faceInfo[meshFaceI].distSqr();
 
-			if (faceInfo[meshFaceI].valid())
-			{
-				// Adding SMALL to avoid problems with /0 in the turbulence
-				// models
-				patchField[patchFaceI] = Foam::sqrt(dist) + SMALL;
-			}
-			else
-			{
-				patchField[patchFaceI] = dist;
+            if (faceInfo[meshFaceI].valid())
+            {
+                // Adding SMALL to avoid problems with /0 in the turbulence
+                // models
+                patchField[patchFaceI] = Foam::sqrt(dist) + SMALL;
+            }
+            else
+            {
+                patchField[patchFaceI] = dist;
 
-				nIllegal++;
-			}
-		}
-	}
+                nIllegal++;
+            }
+        }
+    }
 
-	return nIllegal;
+    return nIllegal;
 }
 
 
@@ -136,26 +136,20 @@ Foam::label Foam::patchWave::getValues(const MeshWave<wallPoint>& waveInfo)
 // Construct from components
 Foam::patchWave::patchWave
 (
-	const polyMesh& mesh,
-	const labelHashSet& patchIDs,
-	const bool correctWalls
+    const polyMesh& mesh,
+    const labelHashSet& patchIDs,
+    const bool correctWalls
 )
 :
-	cellDistFuncs(mesh),
-	patchIDs_(patchIDs),
-	correctWalls_(correctWalls),
-	nUnset_(0),
-	distance_(mesh.nCells()),
-	patchDistance_(mesh.boundaryMesh().size())
+    cellDistFuncs(mesh),
+    patchIDs_(patchIDs),
+    correctWalls_(correctWalls),
+    nUnset_(0),
+    distance_(mesh.nCells()),
+    patchDistance_(mesh.boundaryMesh().size())
 {
-	patchWave::correct();
+    patchWave::correct();
 }
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-Foam::patchWave::~patchWave()
-{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -164,61 +158,59 @@ Foam::patchWave::~patchWave()
 // future (if only small topology change)
 void Foam::patchWave::correct()
 {
-	//
-	// Set initial changed faces: set wallPoint for wall faces to wall centre
-	//
+    // Set initial changed faces: set wallPoint for wall faces to wall centre
 
-	// Count walls
-	label nWalls = sumPatchSize(patchIDs_);
+    // Count walls
+    label nWalls = sumPatchSize(patchIDs_);
 
-	List<wallPoint> faceDist(nWalls);
-	labelList changedFaces(nWalls);
+    List<wallPoint> faceDist(nWalls);
+    labelList changedFaces(nWalls);
 
-	// Set to faceDist information to facecentre on walls.
-	setChangedFaces(patchIDs_, changedFaces, faceDist);
+    // Set to faceDist information to facecentre on walls.
+    setChangedFaces(patchIDs_, changedFaces, faceDist);
 
 
-	//
-	// Do calculate wall distance by 'growing' from faces.
-	//
+    //
+    // Do calculate wall distance by 'growing' from faces.
+    //
 
-	MeshWave<wallPoint> waveInfo
-	(
-		mesh(),
-		changedFaces,
-		faceDist,
-		mesh().globalData().nTotalCells()   // max iterations
-	);
+    MeshWave<wallPoint> waveInfo
+    (
+        mesh(),
+        changedFaces,
+        faceDist,
+        mesh().globalData().nTotalCells()   // max iterations
+    );
 
 
-	//
-	// Copy distance into return field
-	//
+    //
+    // Copy distance into return field
+    //
 
-	nUnset_ = getValues(waveInfo);
+    nUnset_ = getValues(waveInfo);
 
-	//
-	// Correct wall cells for true distance
-	//
+    //
+    // Correct wall cells for true distance
+    //
 
-	if (correctWalls_)
-	{
-		Map<label> nearestFace(2 * nWalls);
+    if (correctWalls_)
+    {
+        Map<label> nearestFace(2*nWalls);
 
-		correctBoundaryFaceCells
-		(
-			patchIDs_,
-			distance_,
-			nearestFace
-		);
+        correctBoundaryFaceCells
+        (
+            patchIDs_,
+            distance_,
+            nearestFace
+        );
 
-		correctBoundaryPointCells
-		(
-			patchIDs_,
-			distance_,
-			nearestFace
-		);
-	}
+        correctBoundaryPointCells
+        (
+            patchIDs_,
+            distance_,
+            nearestFace
+        );
+    }
 }
 
 

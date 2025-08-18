@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,58 +49,58 @@ addToRunTimeSelectionTable(topoSet, faceSet, set);
 
 faceSet::faceSet(const IOobject& obj)
 :
-	topoSet(obj, typeName)
+    topoSet(obj, typeName)
 {}
 
 
 faceSet::faceSet
 (
-	const polyMesh& mesh,
-	const word& name,
-	readOption r,
-	writeOption w
+    const polyMesh& mesh,
+    const word& name,
+    readOption r,
+    writeOption w
 )
 :
-	topoSet(mesh, typeName, name, r, w)
+    topoSet(mesh, typeName, name, r, w)
 {
-	// Sets can also contain retired faces.  HJ, 17/Aug/2015
-	check(mesh.allFaces().size());
+    // Sets can also contain retired faces.  HJ, 17/Aug/2015
+    check(mesh.allFaces().size());
 }
 
 
 faceSet::faceSet
 (
-	const polyMesh& mesh,
-	const word& name,
-	const label size,
-	writeOption w
+    const polyMesh& mesh,
+    const word& name,
+    const label size,
+    writeOption w
 )
 :
-	topoSet(mesh, name, size, w)
+    topoSet(mesh, name, size, w)
 {}
 
 
 faceSet::faceSet
 (
-	const polyMesh& mesh,
-	const word& name,
-	const topoSet& set,
-	writeOption w
+    const polyMesh& mesh,
+    const word& name,
+    const topoSet& set,
+    writeOption w
 )
 :
-	topoSet(mesh, name, set, w)
+    topoSet(mesh, name, set, w)
 {}
 
 
 faceSet::faceSet
 (
-	const polyMesh& mesh,
-	const word& name,
-	const labelHashSet& set,
-	writeOption w
+    const polyMesh& mesh,
+    const word& name,
+    const labelHashSet& set,
+    writeOption w
 )
 :
-	topoSet(mesh, name, set, w)
+    topoSet(mesh, name, set, w)
 {}
 
 
@@ -114,139 +114,139 @@ faceSet::~faceSet()
 
 void faceSet::sync(const polyMesh& mesh)
 {
-	const polyBoundaryMesh& patches = mesh.boundaryMesh();
+    const polyBoundaryMesh& patches = mesh.boundaryMesh();
 
-	label nAdded = 0;
+    label nAdded = 0;
 
-	if (Pstream::parRun())
-	{
-		// Send faces in set that are on a processorPatch. Send as patch face
-		// indices.
-		forAll(patches, patchI)
-		{
-			const polyPatch& pp = patches[patchI];
+    if (Pstream::parRun())
+    {
+        // Send faces in set that are on a processorPatch. Send as patch face
+        // indices.
+        forAll(patches, patchI)
+        {
+            const polyPatch& pp = patches[patchI];
 
-			if (isA<processorPolyPatch>(pp))
-			{
-				const processorPolyPatch& procPatch =
-					refCast<const processorPolyPatch>(pp);
+            if (isA<processorPolyPatch>(pp))
+            {
+                const processorPolyPatch& procPatch =
+                    refCast<const processorPolyPatch>(pp);
 
-				// Convert faceSet locally to labelList.
-				dynamicLabelList setFaces(pp.size());
+                // Convert faceSet locally to labelList.
+                dynamicLabelList setFaces(pp.size());
 
-				forAll(pp, i)
-				{
-					if (found(pp.start() + i))
-					{
-					    setFaces.append(i);
-					}
-				}
-				setFaces.shrink();
+                forAll(pp, i)
+                {
+                    if (found(pp.start() + i))
+                    {
+                        setFaces.append(i);
+                    }
+                }
+                setFaces.shrink();
 
-				OPstream toNeighbour
-				(
-					Pstream::blocking,
-					procPatch.neighbProcNo()
-				);
+                OPstream toNeighbour
+                (
+                    Pstream::blocking,
+                    procPatch.neighbProcNo()
+                );
 
-				toNeighbour << setFaces;
-			}
-		}
+                toNeighbour << setFaces;
+            }
+        }
 
-		// Receive
-		forAll(patches, patchI)
-		{
-			const polyPatch& pp = patches[patchI];
+        // Receive
+        forAll(patches, patchI)
+        {
+            const polyPatch& pp = patches[patchI];
 
-			if (isA<processorPolyPatch>(pp))
-			{
-				const processorPolyPatch& procPatch =
-					refCast<const processorPolyPatch>(pp);
+            if (isA<processorPolyPatch>(pp))
+            {
+                const processorPolyPatch& procPatch =
+                    refCast<const processorPolyPatch>(pp);
 
-				IPstream fromNeighbour
-				(
-					Pstream::blocking,
-					procPatch.neighbProcNo()
-				);
+                IPstream fromNeighbour
+                (
+                    Pstream::blocking,
+                    procPatch.neighbProcNo()
+                );
 
-				labelList setFaces(fromNeighbour);
+                labelList setFaces(fromNeighbour);
 
-				forAll(setFaces, i)
-				{
-					if (insert(pp.start() + setFaces[i]))
-					{
-					    nAdded++;
-					}
-				}
-			}
-		}
-	}
+                forAll(setFaces, i)
+                {
+                    if (insert(pp.start() + setFaces[i]))
+                    {
+                        nAdded++;
+                    }
+                }
+            }
+        }
+    }
 
-	// Couple cyclic patches
-	forAll (patches, patchI)
-	{
-		const polyPatch& pp = patches[patchI];
+    // Couple cyclic patches
+    forAll (patches, patchI)
+    {
+        const polyPatch& pp = patches[patchI];
 
-		if (isA<cyclicPolyPatch>(pp))
-		{
-			const cyclicPolyPatch& cycPatch =
-				refCast<const cyclicPolyPatch>(pp);
+        if (isA<cyclicPolyPatch>(pp))
+        {
+            const cyclicPolyPatch& cycPatch =
+                refCast<const cyclicPolyPatch>(pp);
 
-			forAll (cycPatch, i)
-			{
-				label thisFaceI = cycPatch.start() + i;
-				label otherFaceI = cycPatch.transformGlobalFace(thisFaceI);
+            forAll (cycPatch, i)
+            {
+                label thisFaceI = cycPatch.start() + i;
+                label otherFaceI = cycPatch.transformGlobalFace(thisFaceI);
 
-				if (found(thisFaceI))
-				{
-					if (insert(otherFaceI))
-					{
-					    nAdded++;
-					}
-				}
-				else if (found(otherFaceI))
-				{
-					if (insert(thisFaceI))
-					{
-					    nAdded++;
-					}
-				}
-			}
-		}
-	}
+                if (found(thisFaceI))
+                {
+                    if (insert(otherFaceI))
+                    {
+                        nAdded++;
+                    }
+                }
+                else if (found(otherFaceI))
+                {
+                    if (insert(thisFaceI))
+                    {
+                        nAdded++;
+                    }
+                }
+            }
+        }
+    }
 
 
-	reduce(nAdded, sumOp<label>());
+    reduce(nAdded, sumOp<label>());
 
-	//if (nAdded > 0)
-	//{
-	//    Info<< "Added an additional " << nAdded
-	//        << " faces on coupled patches. "
-	//        << "(processorPolyPatch, cyclicPolyPatch)" << endl;
-	//}
+    //if (nAdded > 0)
+    //{
+    //    Info<< "Added an additional " << nAdded
+    //        << " faces on coupled patches. "
+    //        << "(processorPolyPatch, cyclicPolyPatch)" << endl;
+    //}
 }
 
 
 label faceSet::maxSize(const polyMesh& mesh) const
 {
-	return mesh.allFaces().size();
+    return mesh.allFaces().size();
 }
 
 
 void faceSet::updateMesh(const mapPolyMesh& morphMap)
 {
-	updateLabels(morphMap.reverseFaceMap());
+    updateLabels(morphMap.reverseFaceMap());
 }
 
 
 void faceSet::writeDebug
 (
-	Ostream& os,
-	const primitiveMesh& mesh,
-	const label maxLen
+    Ostream& os,
+    const primitiveMesh& mesh,
+    const label maxLen
 ) const
 {
-	topoSet::writeDebug(os, mesh.faceCentres(), maxLen);
+    topoSet::writeDebug(os, mesh.faceCentres(), maxLen);
 }
 
 

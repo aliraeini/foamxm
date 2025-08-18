@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Simple central-difference snGrad scheme with non-orthogonal correction.
+    Simple central-difference snGrad scheme with non-orthogonal correction.
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,87 +56,87 @@ template<class Type>
 tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
 skewCorrectedSnGrad<Type>::correction
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf
+    const GeometricField<Type, fvPatchField, volMesh>& vf
 ) const
 {
-	const fvMesh& mesh = this->mesh();
+    const fvMesh& mesh = this->mesh();
 
-	// construct GeometricField<Type, fvsPatchField, surfaceMesh>
-	tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tssf
-	(
-		new GeometricField<Type, fvsPatchField, surfaceMesh>
-		(
-			IOobject
-			(
-				"snGradCorr("+vf.name()+')',
-				vf.instance(),
-				mesh,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh,
-			vf.dimensions()*mesh.deltaCoeffs().dimensions()
-		)
-	);
-	GeometricField<Type, fvsPatchField, surfaceMesh>& ssf = tssf();
+    // construct GeometricField<Type, fvsPatchField, surfaceMesh>
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tssf
+    (
+        new GeometricField<Type, fvsPatchField, surfaceMesh>
+        (
+            IOobject
+            (
+                "snGradCorr("+vf.name()+')',
+                vf.instance(),
+                mesh,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh,
+            vf.dimensions()*mesh.deltaCoeffs().dimensions()
+        )
+    );
+    GeometricField<Type, fvsPatchField, surfaceMesh>& ssf = tssf.ref();
 
-	ssf = dimensioned<Type>("0", ssf.dimensions(), pTraits<Type>::zero);
+    ssf = dimensioned<Type>("0", ssf.dimensions(), pTraits<Type>::zero);
 
 //     typedef typename pTraits<Type>::cmptType cType;
 
-	typedef typename
-		outerProduct<vector, typename pTraits<Type>::cmptType>::type
-		CmptGradType;
+    typedef typename
+        outerProduct<vector, typename pTraits<Type>::cmptType>::type
+        CmptGradType;
 
-	const unallocLabelList& owner = mesh.owner();
-	const unallocLabelList& neighbour = mesh.neighbour();
+    const labelUList& owner = mesh.owner();
+    const labelUList& neighbour = mesh.neighbour();
 
-	const vectorField& Sf = mesh.Sf().internalField();
-	const scalarField& magSf = mesh.magSf().internalField();
+    const vectorField& Sf = mesh.Sf().internalField();
+    const scalarField& magSf = mesh.magSf().internalField();
 
-	vectorField nf = Sf/magSf;
+    vectorField nf = Sf/magSf;
 
-	const vectorField& Cf = mesh.Cf().internalField();
-	const vectorField& C = mesh.C().internalField();
+    const vectorField& Cf = mesh.Cf().internalField();
+    const vectorField& C = mesh.C().internalField();
 
-	const scalarField& deltaCoeffs =
-		mesh.deltaCoeffs().internalField();
+    const scalarField& deltaCoeffs =
+        mesh.deltaCoeffs().internalField();
 
-	surfaceVectorField kP
-	(
-		IOobject
-		(
-			"kP",
-			vf.instance(),
-			mesh,
-			IOobject::NO_READ,
-			IOobject::NO_WRITE
-		),
-		mesh,
-		dimensionedVector("0", dimLength, vector::zero)
-	);
-	vectorField& kPI = kP.internalField();
+    surfaceVectorField kP
+    (
+        IOobject
+        (
+            "kP",
+            vf.instance(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedVector("0", dimLength, vector::zero)
+    );
+    vectorField& kPI = kP.internalField();
 
-	surfaceVectorField kN
-	(
-		IOobject
-		(
-			"kN",
-			vf.instance(),
-			mesh,
-			IOobject::NO_READ,
-			IOobject::NO_WRITE
-		),
-		mesh,
-		dimensionedVector("0", dimLength, vector::zero)
-	);
-	vectorField& kNI = kN.internalField();
+    surfaceVectorField kN
+    (
+        IOobject
+        (
+            "kN",
+            vf.instance(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedVector("0", dimLength, vector::zero)
+    );
+    vectorField& kNI = kN.internalField();
 
-	kPI = Cf - vectorField(C, owner);
-	kPI -= Sf*(Sf&kPI)/sqr(magSf);
+    kPI = Cf - vectorField(C, owner);
+    kPI -= Sf*(Sf&kPI)/sqr(magSf);
 
-	kNI = Cf - vectorField(C, neighbour);
-	kNI -= Sf*(Sf&kNI)/sqr(magSf);
+    kNI = Cf - vectorField(C, neighbour);
+    kNI -= Sf*(Sf&kNI)/sqr(magSf);
 
 //     vectorField delta =
 //         Cf
@@ -145,36 +145,36 @@ skewCorrectedSnGrad<Type>::correction
 //     kPI += delta;
 //     kNI += delta;
 
-	forAll(kP.boundaryField(), patchI)
-	{
-		if (kP.boundaryField()[patchI].coupled())
-		{
-			kP.boundaryField()[patchI] =
-				mesh.boundary()[patchI].Cf()
-			  - mesh.boundary()[patchI].Cn();
+    forAll(kP.boundaryField(), patchI)
+    {
+        if (kP.boundaryField()[patchI].coupled())
+        {
+            kP.boundaryField()[patchI] =
+                mesh.boundary()[patchI].Cf()
+              - mesh.boundary()[patchI].Cn();
 
-			kP.boundaryField()[patchI] -=
-				mesh.boundary()[patchI].Sf()
-			   *(
-					mesh.boundary()[patchI].Sf()
-				  & kP.boundaryField()[patchI]
-				)
-			   /sqr(mesh.boundary()[patchI].magSf());
+            kP.boundaryField()[patchI] -=
+                mesh.boundary()[patchI].Sf()
+               *(
+                    mesh.boundary()[patchI].Sf()
+                  & kP.boundaryField()[patchI]
+                )
+               /sqr(mesh.boundary()[patchI].magSf());
 
-			kN.boundaryField()[patchI] =
-				mesh.Cf().boundaryField()[patchI]
-			  - (
-					mesh.boundary()[patchI].Cn()
-				  + mesh.boundary()[patchI].delta()
-				);
+            kN.boundaryField()[patchI] =
+                mesh.Cf().boundaryField()[patchI]
+              - (
+                    mesh.boundary()[patchI].Cn()
+                  + mesh.boundary()[patchI].delta()
+                );
 
-			kN.boundaryField()[patchI] -=
-				mesh.boundary()[patchI].Sf()
-			   *(
-					mesh.boundary()[patchI].Sf()
-				  & kN.boundaryField()[patchI]
-				)
-			   /sqr(mesh.boundary()[patchI].magSf());
+            kN.boundaryField()[patchI] -=
+                mesh.boundary()[patchI].Sf()
+               *(
+                    mesh.boundary()[patchI].Sf()
+                  & kN.boundaryField()[patchI]
+                )
+               /sqr(mesh.boundary()[patchI].magSf());
 
 //             vectorField delta =
 //                 mesh.boundary()[patchI].Cf()
@@ -190,92 +190,92 @@ skewCorrectedSnGrad<Type>::correction
 
 //             kP.boundaryField()[patchI] += delta;
 //             kN.boundaryField()[patchI] += delta;
-		}
-	}
+        }
+    }
 
-	for (direction cmpt = 0; cmpt < pTraits<Type>::nComponents; cmpt++)
-	{
-		GeometricField<CmptGradType, fvPatchField, volMesh> cmptGrad =
-			gradScheme<typename pTraits<Type>::cmptType>::New
-			(
-				mesh,
-				mesh.schemesDict().gradScheme(ssf.name())
-			)()
-		   .grad(vf.component(cmpt));
+    for (direction cmpt = 0; cmpt < pTraits<Type>::nComponents; cmpt++)
+    {
+        GeometricField<CmptGradType, fvPatchField, volMesh> cmptGrad =
+            gradScheme<typename pTraits<Type>::cmptType>::New
+            (
+                mesh,
+                mesh.schemesDict().gradScheme(ssf.name())
+            )()
+           .grad(vf.component(cmpt));
 
-		const Field<CmptGradType>& cmptGradI = cmptGrad.internalField();
+        const Field<CmptGradType>& cmptGradI = cmptGrad.internalField();
 
-		// Skewness and non-rothogonal correction
-		{
-			ssf.internalField().replace
-			(
-				cmpt,
-				(
-					(kNI&Field<CmptGradType>(cmptGradI, neighbour))
-				  - (kPI&Field<CmptGradType>(cmptGradI, owner))
-				)
-			   *deltaCoeffs
-			);
-		}
+        // Skewness and non-rothogonal correction
+        {
+            ssf.internalField().replace
+            (
+                cmpt,
+                (
+                    (kNI&Field<CmptGradType>(cmptGradI, neighbour))
+                  - (kPI&Field<CmptGradType>(cmptGradI, owner))
+                )
+               *deltaCoeffs
+            );
+        }
 
-		forAll(ssf.boundaryField(), patchI)
-		{
-			if (ssf.boundaryField()[patchI].coupled())
-			{
-				ssf.boundaryField()[patchI].replace
-				(
-					cmpt,
-					(
-					    (
-					        kN.boundaryField()[patchI]
-					      & cmptGrad.boundaryField()[patchI]
-					       .patchNeighbourField()
-					    )
-					  - (
-					        kP.boundaryField()[patchI]
-					      & cmptGrad.boundaryField()[patchI]
-					       .patchInternalField()
-					    )
-					)
-				   *mesh.deltaCoeffs().boundaryField()[patchI]
-				);
-			}
-		}
-	}
+        forAll(ssf.boundaryField(), patchI)
+        {
+            if (ssf.boundaryField()[patchI].coupled())
+            {
+                ssf.boundaryField()[patchI].replace
+                (
+                    cmpt,
+                    (
+                        (
+                            kN.boundaryField()[patchI]
+                          & cmptGrad.boundaryField()[patchI]
+                           .patchNeighbourField()
+                        )
+                      - (
+                            kP.boundaryField()[patchI]
+                          & cmptGrad.boundaryField()[patchI]
+                           .patchInternalField()
+                        )
+                    )
+                   *mesh.deltaCoeffs().boundaryField()[patchI]
+                );
+            }
+        }
+    }
 
-	surfaceScalarField limiter
-	(
-		min
-		(
-			limitCoeff_
-		   *mag
-			(
-				uncorrectedSnGrad<Type>::snGrad
-				(
-					vf,
-					this->deltaCoeffs(vf),
-					"orthSnGrad"
-				)
-			  + ssf
-			)
-		   /(
-				(1 - limitCoeff_)*mag(ssf)
-			  + dimensionedScalar("small", ssf.dimensions(), SMALL)
-			),
-			dimensionedScalar("one", dimless, 1.0)
-		)
-	);
+    surfaceScalarField limiter
+    (
+        min
+        (
+            limitCoeff_
+           *mag
+            (
+                uncorrectedSnGrad<Type>::snGrad
+                (
+                    vf,
+                    this->deltaCoeffs(vf),
+                    "orthSnGrad"
+                )
+              + ssf
+            )
+           /(
+                (1 - limitCoeff_)*mag(ssf)
+              + dimensionedScalar("small", ssf.dimensions(), SMALL)
+            ),
+            dimensionedScalar("one", dimless, 1.0)
+        )
+    );
 
-	if (fv::debug)
-	{
-		Info<< "limitedSnGrad :: limiter min: " << min(limiter.internalField())
-			<< " max: "<< max(limiter.internalField())
-			<< " avg: " << average(limiter.internalField()) << endl;
-	}
+    if (fv::debug)
+    {
+        Info<< "limitedSnGrad :: limiter min: " << min(limiter.internalField())
+            << " max: "<< max(limiter.internalField())
+            << " avg: " << average(limiter.internalField()) << endl;
+    }
 
-	ssf *= limiter;
+    ssf *= limiter;
 
-	return tssf;
+    return tssf;
 }
 
 

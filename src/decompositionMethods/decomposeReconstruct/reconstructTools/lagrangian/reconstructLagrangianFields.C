@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ Foam::tmp<Foam::IOField<Type> > Foam::reconstructLagrangianField
             Field<Type>(0)
         )
     );
-    Field<Type>& field = tfield();
+    Field<Type>& field = tfield.ref();
 
     forAll (meshes, i)
     {

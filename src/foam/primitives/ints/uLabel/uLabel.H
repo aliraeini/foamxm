@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-	Foam::uLabel
+    Foam::uLabel
 
 Description
-	A uLabel is an uint32_t or uint64_t as specified by the pre-processor macro
-	WM_LABEL_SIZE.
+    A uLabel is an uint32_t or uint64_t as specified by the pre-processor macro
+    WM_LABEL_SIZE.
 
-	A readLabel function is defined so that uLabel can be constructed from
-	Istream.
+    A readLabel function is defined so that uLabel can be constructed from
+    Istream.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@ Description
 #define UINT_SIZE(x,y) UINT_ADD_DEF_SIZE(x,WM_LABEL_SIZE,y)
 
 #if WM_LABEL_SIZE != 32 && WM_LABEL_SIZE != 64
-	#error "uLabel.H: WM_LABEL_SIZE must be set to either 32 or 64"
+    #error "uLabel.H: WM_LABEL_SIZE must be set to either 32 or 64"
 #endif
 
 
@@ -63,7 +63,7 @@ static const uLabel uLabelMax = UINT_SIZE(UINT, _MAX);
 
 inline uLabel readULabel(Istream& is)
 {
-	return UINT_SIZE(readUint,) (is);
+    return UINT_SIZE(readUint,) (is);
 }
 
 
@@ -78,12 +78,12 @@ uLabel factorial(uLabel n);
 
 inline uLabel& setComponent(uLabel& l, const direction)
 {
-	return l;
+    return l;
 }
 
 inline uLabel component(const uLabel l, const direction)
 {
-	return l;
+    return l;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

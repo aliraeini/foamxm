@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,39 +37,39 @@ namespace Foam
 template<class ZoneType, class MeshType>
 void ZoneMesh<ZoneType, MeshType>::calcZoneMap() const
 {
-	// It is an error to attempt to recalculate zoneMap
-	// if the pointer is already set
-	if (zoneMapPtr_)
-	{
-		FatalErrorIn("void ZoneMesh<ZoneType>::calcZoneMap() const")
-			<< "zone map already calculated"
-			<< abort(FatalError);
-	}
-	else
-	{
-		// Count number of objects in all zones
-		label nObjects = 0;
+    // It is an error to attempt to recalculate zoneMap
+    // if the pointer is already set
+    if (zoneMapPtr_)
+    {
+        FatalErrorIn("void ZoneMesh<ZoneType>::calcZoneMap() const")
+            << "zone map already calculated"
+            << abort(FatalError);
+    }
+    else
+    {
+        // Count number of objects in all zones
+        label nObjects = 0;
 
-		forAll (*this, zoneI)
-		{
-			nObjects += this->operator[](zoneI).size();
-		}
+        forAll (*this, zoneI)
+        {
+            nObjects += this->operator[](zoneI).size();
+        }
 
-		zoneMapPtr_ = new Map<label>(2*nObjects);
-		Map<label>& zm = *zoneMapPtr_;
+        zoneMapPtr_ = new Map<label>(2*nObjects);
+        Map<label>& zm = *zoneMapPtr_;
 
-		// Fill in objects of all zones into the map.  The key is the global
-		// object index and the result is the zone index
-		forAll (*this, zoneI)
-		{
-			const labelList& zoneObjects = this->operator[](zoneI);
+        // Fill in objects of all zones into the map.  The key is the global
+        // object index and the result is the zone index
+        forAll (*this, zoneI)
+        {
+            const labelList& zoneObjects = this->operator[](zoneI);
 
-			forAll (zoneObjects, objI)
-			{
-				zm.insert(zoneObjects[objI], zoneI);
-			}
-		}
-	}
+            forAll (zoneObjects, objI)
+            {
+                zm.insert(zoneObjects[objI], zoneI);
+            }
+        }
+    }
 }
 
 
@@ -79,58 +79,58 @@ void ZoneMesh<ZoneType, MeshType>::calcZoneMap() const
 template<class ZoneType, class MeshType>
 ZoneMesh<ZoneType, MeshType>::ZoneMesh
 (
-	const IOobject& io,
-	const MeshType& mesh
+    const IOobject& io,
+    const MeshType& mesh
 )
 :
-	PtrList<ZoneType>(),
-	regIOobject(io),
-	mesh_(mesh),
-	zoneMapPtr_(nullptr)
+    PtrList<ZoneType>(),
+    regIOobject(io),
+    mesh_(mesh),
+    zoneMapPtr_(nullptr)
 {
-	if
-	(
-		readOpt() == IOobject::MUST_READ
-	 || (readOpt() == IOobject::READ_IF_PRESENT && headerOk())
-	)
-	{
-		PtrList<ZoneType>& zones = *this;
+    if
+    (
+        readOpt() == IOobject::MUST_READ
+     || (readOpt() == IOobject::READ_IF_PRESENT && headerOk())
+    )
+    {
+        PtrList<ZoneType>& zones = *this;
 
-		// Read zones
-		Istream& is = readStream(typeName);
+        // Read zones
+        Istream& is = readStream(typeName);
 
-		PtrList<entry> patchEntries(is);
-		zones.setSize(patchEntries.size());
+        PtrList<entry> patchEntries(is);
+        zones.setSize(patchEntries.size());
 
-		forAll(zones, zoneI)
-		{
-			zones.set
-			(
-				zoneI,
-				ZoneType::New
-				(
-					patchEntries[zoneI].keyword(),
-					patchEntries[zoneI].dict(),
-					zoneI,
-					*this
-				)
-			);
-		}
+        forAll(zones, zoneI)
+        {
+            zones.set
+            (
+                zoneI,
+                ZoneType::New
+                (
+                    patchEntries[zoneI].keyword(),
+                    patchEntries[zoneI].dict(),
+                    zoneI,
+                    *this
+                )
+            );
+        }
 
-		// Check state of IOstream
-		is.check
-		(
-			"ZoneMesh::ZoneMesh"
-			"(const IOobject&, const MeshType&)"
-		);
+        // Check state of IOstream
+        is.check
+        (
+            "ZoneMesh::ZoneMesh"
+            "(const IOobject&, const MeshType&)"
+        );
 
-		close();
-	}
-	else
-	{
-		// No files found.  Force a write of zero-sized zones
-		// write();
-	}
+        close();
+    }
+    else
+    {
+        // No files found.  Force a write of zero-sized zones
+        // write();
+    }
 }
 
 
@@ -138,15 +138,15 @@ ZoneMesh<ZoneType, MeshType>::ZoneMesh
 template<class ZoneType, class MeshType>
 ZoneMesh<ZoneType, MeshType>::ZoneMesh
 (
-	const IOobject& io,
-	const MeshType& mesh,
-	const label size
+    const IOobject& io,
+    const MeshType& mesh,
+    const label size
 )
 :
-	PtrList<ZoneType>(size),
-	regIOobject(io),
-	mesh_(mesh),
-	zoneMapPtr_(nullptr)
+    PtrList<ZoneType>(size),
+    regIOobject(io),
+    mesh_(mesh),
+    zoneMapPtr_(nullptr)
 {}
 
 
@@ -154,39 +154,39 @@ ZoneMesh<ZoneType, MeshType>::ZoneMesh
 template<class ZoneType, class MeshType>
 ZoneMesh<ZoneType, MeshType>::ZoneMesh
 (
-	const IOobject& io,
-	const MeshType& mesh,
-	Istream& is
+    const IOobject& io,
+    const MeshType& mesh,
+    Istream& is
 )
 :
-	PtrList<ZoneType>(),
-	regIOobject(io),
-	mesh_(mesh),
-	zoneMapPtr_(nullptr)
+    PtrList<ZoneType>(),
+    regIOobject(io),
+    mesh_(mesh),
+    zoneMapPtr_(nullptr)
 {
-	PtrList<entry> zoneEntries(is);
+    PtrList<entry> zoneEntries(is);
 
-	if (!zoneEntries.empty())
-	{
-		PtrList<ZoneType>& zones = *this;
+    if (!zoneEntries.empty())
+    {
+        PtrList<ZoneType>& zones = *this;
 
-		zones.setSize(zoneEntries.size());
+        zones.setSize(zoneEntries.size());
 
-		forAll(zones, zoneI)
-		{
-			zones.set
-			(
-				zoneI,
-				ZoneType::New
-				(
-					zoneEntries[zoneI].keyword(),
-					zoneEntries[zoneI].dict(),
-					zoneI,
-					*this
-				)
-			);
-		}
-	}
+        forAll(zones, zoneI)
+        {
+            zones.set
+            (
+                zoneI,
+                ZoneType::New
+                (
+                    zoneEntries[zoneI].keyword(),
+                    zoneEntries[zoneI].dict(),
+                    zoneI,
+                    *this
+                )
+            );
+        }
+    }
 }
 
 
@@ -195,7 +195,7 @@ ZoneMesh<ZoneType, MeshType>::ZoneMesh
 template<class ZoneType, class MeshType>
 ZoneMesh<ZoneType, MeshType>::~ZoneMesh()
 {
-	clearAddressing();
+    clearAddressing();
 }
 
 
@@ -205,12 +205,12 @@ ZoneMesh<ZoneType, MeshType>::~ZoneMesh()
 template<class ZoneType, class MeshType>
 const Map<label>& ZoneMesh<ZoneType, MeshType>::zoneMap() const
 {
-	if (!zoneMapPtr_)
-	{
-		calcZoneMap();
-	}
+    if (!zoneMapPtr_)
+    {
+        calcZoneMap();
+    }
 
-	return *zoneMapPtr_;
+    return *zoneMapPtr_;
 }
 
 
@@ -219,17 +219,17 @@ const Map<label>& ZoneMesh<ZoneType, MeshType>::zoneMap() const
 template<class ZoneType, class MeshType>
 label ZoneMesh<ZoneType, MeshType>::whichZone(const label objectIndex) const
 {
-	const Map<label>& zm = zoneMap();
-	Map<label>::const_iterator zmIter = zm.find(objectIndex);
+    const Map<label>& zm = zoneMap();
+    Map<label>::const_iterator zmIter = zm.find(objectIndex);
 
-	if (zmIter == zm.end())
-	{
-		return -1;
-	}
-	else
-	{
-		return zmIter();
-	}
+    if (zmIter == zm.end())
+    {
+        return -1;
+    }
+    else
+    {
+        return zmIter();
+    }
 }
 
 
@@ -237,16 +237,16 @@ label ZoneMesh<ZoneType, MeshType>::whichZone(const label objectIndex) const
 template<class ZoneType, class MeshType>
 wordList ZoneMesh<ZoneType, MeshType>::types() const
 {
-	const PtrList<ZoneType>& zones = *this;
+    const PtrList<ZoneType>& zones = *this;
 
-	wordList t(zones.size());
+    wordList t(zones.size());
 
-	forAll (zones, zoneI)
-	{
-		t[zoneI] = zones[zoneI].type();
-	}
+    forAll (zones, zoneI)
+    {
+        t[zoneI] = zones[zoneI].type();
+    }
 
-	return t;
+    return t;
 }
 
 
@@ -254,66 +254,66 @@ wordList ZoneMesh<ZoneType, MeshType>::types() const
 template<class ZoneType, class MeshType>
 wordList ZoneMesh<ZoneType, MeshType>::names() const
 {
-	const PtrList<ZoneType>& zones = *this;
+    const PtrList<ZoneType>& zones = *this;
 
-	wordList t(zones.size());
+    wordList t(zones.size());
 
-	forAll (zones, zoneI)
-	{
-		t[zoneI] = zones[zoneI].name();
-	}
+    forAll (zones, zoneI)
+    {
+        t[zoneI] = zones[zoneI].name();
+    }
 
-	return t;
+    return t;
 }
 
 
 template<class ZoneType, class MeshType>
 label ZoneMesh<ZoneType, MeshType>::findZoneID(const word& zoneName) const
 {
-	const PtrList<ZoneType>& zones = *this;
+    const PtrList<ZoneType>& zones = *this;
 
-	forAll (zones, zoneI)
-	{
-		if (zones[zoneI].name() == zoneName)
-		{
-			return zoneI;
-		}
-	}
+    forAll (zones, zoneI)
+    {
+        if (zones[zoneI].name() == zoneName)
+        {
+            return zoneI;
+        }
+    }
 
-	// Zone not found
-	if (debug)
-	{
-		InfoIn
-		(
-			"label ZoneMesh<ZoneType>::findZoneID(const word& zoneName) const"
-		)   << "Zone named " << zoneName << " not found.  "
-			<< "List of available zone names: " << names() << endl;
-	}
+    // Zone not found
+    if (debug)
+    {
+        InfoIn
+        (
+            "label ZoneMesh<ZoneType>::findZoneID(const word& zoneName) const"
+        )   << "Zone named " << zoneName << " not found.  "
+            << "List of available zone names: " << names() << endl;
+    }
 
-	// Return for zone not found
-	return -1;
+    // Return for zone not found
+    return -1;
 }
 
 
 template<class ZoneType, class MeshType>
 void ZoneMesh<ZoneType, MeshType>::clearAddressing()
 {
-	deleteDemandDrivenData(zoneMapPtr_);
+    deleteDemandDrivenData(zoneMapPtr_);
 
-	PtrList<ZoneType>& zones = *this;
+    PtrList<ZoneType>& zones = *this;
 
-	forAll (zones, zoneI)
-	{
-		zones[zoneI].clearAddressing();
-	}
+    forAll (zones, zoneI)
+    {
+        zones[zoneI].clearAddressing();
+    }
 }
 
 
 template<class ZoneType, class MeshType>
 void ZoneMesh<ZoneType, MeshType>::clear()
 {
-	clearAddressing();
-	PtrList<ZoneType>::clear();
+    clearAddressing();
+    PtrList<ZoneType>::clear();
 }
 
 
@@ -321,15 +321,15 @@ void ZoneMesh<ZoneType, MeshType>::clear()
 template<class ZoneType, class MeshType>
 bool ZoneMesh<ZoneType, MeshType>::checkDefinition(const bool report) const
 {
-	bool inError = false;
+    bool inError = false;
 
-	const PtrList<ZoneType>& zones = *this;
+    const PtrList<ZoneType>& zones = *this;
 
-	forAll (zones, zoneI)
-	{
-		inError |= zones[zoneI].checkDefinition(report);
-	}
-	return inError;
+    forAll (zones, zoneI)
+    {
+        inError |= zones[zoneI].checkDefinition(report);
+    }
+    return inError;
 }
 
 
@@ -337,26 +337,26 @@ bool ZoneMesh<ZoneType, MeshType>::checkDefinition(const bool report) const
 template<class ZoneType, class MeshType>
 void ZoneMesh<ZoneType, MeshType>::movePoints(const pointField& p)
 {
-	PtrList<ZoneType>& zones = *this;
+    PtrList<ZoneType>& zones = *this;
 
-	forAll (zones, zoneI)
-	{
-		zones[zoneI].movePoints(p);
-	}
+    forAll (zones, zoneI)
+    {
+        zones[zoneI].movePoints(p);
+    }
 }
 
 
 template<class ZoneType, class MeshType>
 void ZoneMesh<ZoneType, MeshType>::updateMesh()
 {
-	this->clearAddressing();
+    this->clearAddressing();
 
-	PtrList<ZoneType>& zones = *this;
+    PtrList<ZoneType>& zones = *this;
 
-	forAll (zones, zoneI)
-	{
-		zones[zoneI].updateMesh();
-	}
+    forAll (zones, zoneI)
+    {
+        zones[zoneI].updateMesh();
+    }
 }
 
 
@@ -364,8 +364,8 @@ void ZoneMesh<ZoneType, MeshType>::updateMesh()
 template<class ZoneType, class MeshType>
 bool ZoneMesh<ZoneType, MeshType>::writeData(Ostream& os) const
 {
-	os << *this;
-	return os.good();
+    os << *this;
+    return os.good();
 }
 
 
@@ -374,16 +374,16 @@ bool ZoneMesh<ZoneType, MeshType>::writeData(Ostream& os) const
 template<class ZoneType, class MeshType>
 Ostream& operator<<(Ostream& os, const ZoneMesh<ZoneType, MeshType>& zones)
 {
-	os  << zones.size() << nl << token::BEGIN_LIST;
+    os  << zones.size() << nl << token::BEGIN_LIST;
 
-	forAll(zones, zoneI)
-	{
-		zones[zoneI].writeDict(os);
-	}
+    forAll(zones, zoneI)
+    {
+        zones[zoneI].writeDict(os);
+    }
 
-	os  << token::END_LIST;
+    os  << token::END_LIST;
 
-	return os;
+    return os;
 }
 
 

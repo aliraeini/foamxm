@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::surfaceSets
+    Foam::surfaceSets
 
 Description
-	Various utilities to handle sets relating mesh to surface.
-	Note: work in progress. Used in meshing tools.
+    Various utilities to handle sets relating mesh to surface.
+    Note: work in progress. Used in meshing tools.
 
 SourceFiles
-	surfaceSets.C
+    surfaceSets.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,86 +56,89 @@ class triSurface;
 class triSurfaceSearch;
 class pointSet;
 
+/*---------------------------------------------------------------------------*\
+                           Class surfaceSets Declaration
+\*---------------------------------------------------------------------------*/
 
 class surfaceSets
 {
-	//- Visibility of points: from inside cells, from outside cells or
-	//  from both
-	enum pointStatus
-	{
-		NOTSET,
-		INSIDE,
-		MIXED,
-		OUTSIDE
-	};
+    //- Visibility of points: from inside cells, from outside cells or
+    //  from both
+    enum pointStatus
+    {
+        NOTSET,
+        INSIDE,
+        MIXED,
+        OUTSIDE
+    };
 
 
-	// Static
+    // Static
 
-		////- Min length of connected mesh edges
-		//static scalar minEdgeLen(const primitiveMesh& mesh, const label pointI);
-		//
-		////- Returns true if cell uses at least one selected point
-		//static bool usesPoint
-		//(
-		//    const primitiveMesh& mesh,
-		//    const boolList& selectedPoint,
-		//    const label cellI
-		//);
+        ////- Min length of connected mesh edges
+        //static scalar minEdgeLen(const primitiveMesh& mesh, const label pointI);
+        //
+        ////- Returns true if cell uses at least one selected point
+        //static bool usesPoint
+        //(
+        //    const primitiveMesh& mesh,
+        //    const boolList& selectedPoint,
+        //    const label cellI
+        //);
 
-		////- Find points used only by internalCells and remove from
-		////  internalCells all
-		////  cells which don't use any internal point. Return number of
-		////  removed cells.
-		//static label removeHangingCells
-		//(
-		//    const primitiveMesh&,
-		//    const triSurfaceSearch& querySurf,
-		//    labelHashSet& internalCells
-		//);
+        ////- Find points used only by internalCells and remove from
+        ////  internalCells all
+        ////  cells which don't use any internal point. Return number of
+        ////  removed cells.
+        //static label removeHangingCells
+        //(
+        //    const primitiveMesh&,
+        //    const triSurfaceSearch& querySurf,
+        //    labelHashSet& internalCells
+        //);
 
-		////- Select all points out of pointSet where the distance to the surface
-		////  is less
-		////  than a factor times a local length scale (minimum length of
-		////  connected edges)
-		//static void getNearPoints
-		//(
-		//    const primitiveMesh& mesh,
-		//    const triSurface& surf,
-		//    const triSurfaceSearch& querySurf,
-		//    const scalar edgeFactor,
-		//    const pointSet& candidateSet,
-		//    pointSet& nearPointSet
-		//);
+        ////- Select all points out of pointSet where the distance to the surface
+        ////  is less
+        ////  than a factor times a local length scale (minimum length of
+        ////  connected edges)
+        //static void getNearPoints
+        //(
+        //    const primitiveMesh& mesh,
+        //    const triSurface& surf,
+        //    const triSurfaceSearch& querySurf,
+        //    const scalar edgeFactor,
+        //    const pointSet& candidateSet,
+        //    pointSet& nearPointSet
+        //);
 
 public:
 
-	// Static Functions
+    // Static Functions
 
-		//- Divide cells into cut,inside and outside
-		//  nCutLayers>0 : remove cutCells (set to type inside) if further
-		//  than nCutLayers away from outside type cell.
-		static void getSurfaceSets
-		(
-			const polyMesh& mesh,
-			const fileName& surfName,
-			const triSurface& surf,
-			const triSurfaceSearch& querySurf,
-			const pointField& outsidePts,
+        //- Divide cells into cut,inside and outside
+        //  nCutLayers>0 : remove cutCells (set to type inside) if further
+        //  than nCutLayers away from outside type cell.
+        static void getSurfaceSets
+        (
+            const polyMesh& mesh,
+            const fileName& surfName,
+            const triSurface& surf,
+            const triSurfaceSearch& querySurf,
+            const pointField& outsidePts,
 
-			const label nCutLayers,
+            const label nCutLayers,
 
-			labelHashSet& inside,
-			labelHashSet& outside,
-			labelHashSet& cut
-		);
+            labelHashSet& inside,
+            labelHashSet& outside,
+            labelHashSet& cut
+        );
 
-		//- Get cells using points on 'outside' only
-		static labelHashSet getHangingCells
-		(
-			const primitiveMesh& mesh,
-			const labelHashSet& internalCells
-		);
+        //- Get cells using points on 'outside' only
+        static labelHashSet getHangingCells
+        (
+            const primitiveMesh& mesh,
+            const labelHashSet& internalCells
+        );
 
 
 //        //- Write cell sets with cells 'inside' and 'outside' surface.

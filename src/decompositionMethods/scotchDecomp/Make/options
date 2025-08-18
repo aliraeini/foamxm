@@ -9,25 +9,25 @@ EXE_INC = \
 
 /* No librt for Mac OS X */
 LIB_LIBS = \
-	-lfoam \
-	-L$(SCOTCH_LIB_DIR) -lscotch \
-	-L$(SCOTCH_LIB_DIR) -lscotcherrexit
+    -lfoam \
+    -L$(SCOTCH_LIB_DIR) -lscotch \
+    -L$(SCOTCH_LIB_DIR) -lscotcherrexit
 
 #elif defined(mingw)
 
 /* No librt for MinGW */
 LIB_LIBS = \
-	-l:libdecompositionMethods.$(SO) \
-	-L$(SCOTCH_LIB_DIR) -lscotch \
-	-L$(SCOTCH_LIB_DIR) -lscotcherrexit \
-	-L$(WM_THIRD_PARTY_DIR)/packages/pthreads-w32-2-9-1-release/Pre-built.2/lib/x64 -lpthreadGC2 \
+    -l:libdecompositionMethods.$(SO) \
+    -L$(SCOTCH_LIB_DIR) -lscotch \
+    -L$(SCOTCH_LIB_DIR) -lscotcherrexit \
+    -L$(WM_THIRD_PARTY_DIR)/packages/pthreads-w32-2-9-1-release/Pre-built.2/lib/x64 -lpthreadGC2 \
 	-L$(OPENMPI_DIR)/lib -lmpi
 
 #else
 
 LIB_LIBS = \
-	-L$(SCOTCH_LIB_DIR) -lscotch \
-	-L$(SCOTCH_LIB_DIR) -lscotcherrexit \
-	-lrt
+    -L$(SCOTCH_LIB_DIR) -lscotch \
+    -L$(SCOTCH_LIB_DIR) -lscotcherrexit \
+    -lrt
 
 #endif

@@ -21,6 +21,9 @@ $(constraintFvPatches)/symmetry/symmetryFvPatch.C
 $(constraintFvPatches)/wedge/wedgeFvPatch.C
 $(constraintFvPatches)/cyclic/cyclicFvPatch.C
 $(constraintFvPatches)/processor/processorFvPatch.C
+$(constraintFvPatches)/ggi/ggiFvPatch.C
+$(constraintFvPatches)/cyclicGgi/cyclicGgiFvPatch.C
+$(constraintFvPatches)/overlapGgi/overlapGgiFvPatch.C
 $(constraintFvPatches)/mixingPlane/mixingPlaneFvPatch.C
 $(constraintFvPatches)/regionCouple/regionCoupleFvPatch.C
 
@@ -83,6 +86,7 @@ $(fvPatchFields)/fvPatchField/fvPatchFields.C
 basicFvPatchFields = $(fvPatchFields)/basic
 $(basicFvPatchFields)/basicSymmetry/basicSymmetryFvPatchScalarField.C
 $(basicFvPatchFields)/calculated/calculatedFvPatchFields.C
+$(basicFvPatchFields)/extrapolatedCalculated/extrapolatedCalculatedFvPatchFields.C
 $(basicFvPatchFields)/coupled/coupledFvPatchFields.C
 $(basicFvPatchFields)/directionMixed/directionMixedFvPatchFields.C
 $(basicFvPatchFields)/fixedGradient/fixedGradientFvPatchFields.C
@@ -224,7 +228,6 @@ $(schemes)/leastSquaresSkewCorrected/leastSquaresSkewCorrected.C
 $(schemes)/outletStabilised/outletStabilised.C
 $(schemes)/reverseLinear/reverseLinear.C
 $(schemes)/clippedLinear/clippedLinear.C
-$(schemes)/harmonic/magLongDelta.C
 $(schemes)/harmonic/harmonic.C
 $(schemes)/fixedBlended/fixedBlended.C
 $(schemes)/localBlended/localBlended.C

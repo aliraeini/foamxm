@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Primitive
-	int64
+    int64
 
 Description
-	64bit integer
+    64bit integer
 
 SourceFiles
-	int64.C
-	int64IO.C
+    int64.C
+    int64IO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -70,76 +70,76 @@ Istream& operator>>(Istream&, int64_t&);
 Ostream& operator<<(Ostream&, const int64_t);
 
 #if WM_ARCH_OPTION == 64 && darwin && __clang__
-	Istream& operator>>(Istream&, long&);
-	Ostream& operator<<(Ostream&, const long);
+    Istream& operator>>(Istream&, long&);
+    Ostream& operator<<(Ostream&, const long);
 #endif
 
 #if defined(mingw)
-	Istream& operator>>(Istream&, off_t&);
-	Ostream& operator<<(Ostream&, const off_t);
+    Istream& operator>>(Istream&, off_t&);
+    Ostream& operator<<(Ostream&, const off_t);
 #endif
 
 //- Template specialization for pTraits<int64_t>
 template<>
 class pTraits<int64_t>
 {
-	int64_t p_;
+    int64_t p_;
 
 public:
 
-	//- Component type
-	typedef int64_t cmptType;
+    //- Component type
+    typedef int64_t cmptType;
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			dim = 3,         //!< Dimensionality of space
-			rank = 0,        //!< Rank of int64_t is 0
-			nComponents = 1  //!< Number of components in int64_t is 1
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
-		static const char* componentNames[];
-		static const int64_t zero;
-		static const int64_t one;
-		static const int64_t min;
-		static const int64_t max;
-		static const int64_t rootMax;
-		static const int64_t rootMin;
+        enum
+        {
+            dim = 3,         //!< Dimensionality of space
+            rank = 0,        //!< Rank of int64_t is 0
+            nComponents = 1  //!< Number of components in int64_t is 1
+        };
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct from primitive
-		explicit pTraits(const int64_t&);
+        static const char* const typeName;
+        static const char* componentNames[];
+        static const int64_t zero;
+        static const int64_t one;
+        static const int64_t min;
+        static const int64_t max;
+        static const int64_t rootMax;
+        static const int64_t rootMin;
 
-		//- Construct from Istream
-		pTraits(Istream&);
+
+    // Constructors
+
+        //- Construct from primitive
+        explicit pTraits(const int64_t&);
+
+        //- Construct from Istream
+        pTraits(Istream&);
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Access to the int64_t value
-		operator int64_t() const
-		{
-			return p_;
-		}
+        //- Access to the int64_t value
+        operator int64_t() const
+        {
+            return p_;
+        }
 
-		//- Access to the int value
-		operator int64_t&()
-		{
-			return p_;
-		}
+        //- Access to the int value
+        operator int64_t&()
+        {
+            return p_;
+        }
 };
 
 
 inline int64_t mag(const int64_t l)
 {
-	return ::labs(l);
+    return ::labs(l);
 }
 
 

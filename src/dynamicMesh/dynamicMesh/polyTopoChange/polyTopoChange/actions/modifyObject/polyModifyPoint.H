@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::polyModifyPoint
+    Foam::polyModifyPoint
 
 Description
-	Class describing modification of a point.
+    Class describing modification of a point.
 
 \*---------------------------------------------------------------------------*/
 
@@ -41,112 +41,115 @@ Description
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class polyModifyPoint Declaration
+\*---------------------------------------------------------------------------*/
 
 class polyModifyPoint
 :
-	public topoAction
+    public topoAction
 {
-	// Private data
+    // Private data
 
-		//- Point ID
-		label pointID_;
+        //- Point ID
+        label pointID_;
 
-		//- New point location
-		point location_;
+        //- New point location
+        point location_;
 
-		//- Remove from current zone
-		bool removeFromZone_;
+        //- Remove from current zone
+        bool removeFromZone_;
 
-		//- New zone ID
-		label zoneID_;
+        //- New zone ID
+        label zoneID_;
 
-		//- Does the point support a cell
-		bool inCell_;
+        //- Does the point support a cell
+        bool inCell_;
 
 
 public:
 
-	// Static data members
+    // Static data members
 
-		//- Runtime type information
-		TypeName("modifyPoint");
-
-
-	// Constructors
-
-		//- Construct null.  Used only for list construction
-		polyModifyPoint()
-		:
-			pointID_(-1),
-			location_(vector::zero),
-			removeFromZone_(false),
-			zoneID_(-1),
-			inCell_(false)
-		{}
-
-		//- Construct from components
-		polyModifyPoint
-		(
-			const label pointID,
-			const point& newP,
-			const bool removeFromZone,
-			const label newZoneID,
-			const bool inCell
-		)
-		:
-			pointID_(pointID),
-			location_(newP),
-			removeFromZone_(removeFromZone),
-			zoneID_(newZoneID),
-			inCell_(inCell)
-		{}
-
-		//- Construct and return a clone
-		virtual autoPtr<topoAction> clone() const
-		{
-			return autoPtr<topoAction>(new polyModifyPoint(*this));
-		}
+        //- Runtime type information
+        TypeName("modifyPoint");
 
 
-	// Default Destructor
+    // Constructors
 
-	// Member Functions
+        //- Construct null.  Used only for list construction
+        polyModifyPoint()
+        :
+            pointID_(-1),
+            location_(vector::zero),
+            removeFromZone_(false),
+            zoneID_(-1),
+            inCell_(false)
+        {}
 
-		//- Point ID
-		label pointID() const
-		{
-			return pointID_;
-		}
+        //- Construct from components
+        polyModifyPoint
+        (
+            const label pointID,
+            const point& newP,
+            const bool removeFromZone,
+            const label newZoneID,
+            const bool inCell
+        )
+        :
+            pointID_(pointID),
+            location_(newP),
+            removeFromZone_(removeFromZone),
+            zoneID_(newZoneID),
+            inCell_(inCell)
+        {}
 
-		//- New point location
-		const point& newPoint() const
-		{
-			return location_;
-		}
+        //- Construct and return a clone
+        virtual autoPtr<topoAction> clone() const
+        {
+            return autoPtr<topoAction>(new polyModifyPoint(*this));
+        }
 
-		//- Does the point belong to a zone?
-		bool isInZone() const
-		{
-			return zoneID_ >= 0;
-		}
 
-		//- Should the point be removed from current zone
-		bool removeFromZone() const
-		{
-			return removeFromZone_;
-		}
+    // Default Destructor
 
-		//- Point zone ID
-		label zoneID() const
-		{
-			return zoneID_;
-		}
+    // Member Functions
 
-		//- Does the point support a cell
-		bool inCell() const
-		{
-			return inCell_;
-		}
+        //- Point ID
+        label pointID() const
+        {
+            return pointID_;
+        }
+
+        //- New point location
+        const point& newPoint() const
+        {
+            return location_;
+        }
+
+        //- Does the point belong to a zone?
+        bool isInZone() const
+        {
+            return zoneID_ >= 0;
+        }
+
+        //- Should the point be removed from current zone
+        bool removeFromZone() const
+        {
+            return removeFromZone_;
+        }
+
+        //- Point zone ID
+        label zoneID() const
+        {
+            return zoneID_;
+        }
+
+        //- Does the point support a cell
+        bool inCell() const
+        {
+            return inCell_;
+        }
 };
 
 

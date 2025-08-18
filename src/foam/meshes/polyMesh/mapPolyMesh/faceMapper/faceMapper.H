@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::faceMapper
+    Foam::faceMapper
 
 Description
-	This object provides mapping and fill-in information for face data
-	between the two meshes after the topological change.  It is
-	constructed from mapPolyMesh.
+    This object provides mapping and fill-in information for face data
+    between the two meshes after the topological change.  It is
+    constructed from mapPolyMesh.
 
 SourceFiles
-	faceMapper.C
+    faceMapper.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,118 +49,120 @@ namespace Foam
 class polyMesh;
 class mapPolyMesh;
 
+/*---------------------------------------------------------------------------*\
+                           Class faceMapper Declaration
+\*---------------------------------------------------------------------------*/
 
 class faceMapper
 :
-	public morphFieldMapper
+    public morphFieldMapper
 {
-	// Private data
+    // Private data
 
-		//- Reference to polyMesh
-		const polyMesh& mesh_;
+        //- Reference to polyMesh
+        const polyMesh& mesh_;
 
-		//- Reference to mapPolyMesh
-		const mapPolyMesh& mpm_;
+        //- Reference to mapPolyMesh
+        const mapPolyMesh& mpm_;
 
-		//- Are there any inserted (unmapped) faces
-		bool insertedFaces_;
+        //- Are there any inserted (unmapped) faces
+        bool insertedFaces_;
 
-		//- Is the mapping direct
-		bool direct_;
-
-
-	// Demand-driven private data
-
-		//- Direct addressing (only one form of addressing is used)
-		mutable labelList* directAddrPtr_;
-
-		//- Interpolated addressing (only one form of addressing is used)
-		mutable labelListList* interpolationAddrPtr_;
-
-		//- Interpolation weights
-		mutable scalarListList* weightsPtr_;
-
-		//- Inserted faces
-		mutable labelList* insertedFaceLabelsPtr_;
+        //- Is the mapping direct
+        bool direct_;
 
 
-	// Private Member Functions
+    // Demand-driven private data
 
-		//- Disallow default bitwise copy construct
-		faceMapper(const faceMapper&);
+        //- Direct addressing (only one form of addressing is used)
+        mutable labelList* directAddrPtr_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const faceMapper&);
+        //- Interpolated addressing (only one form of addressing is used)
+        mutable labelListList* interpolationAddrPtr_;
+
+        //- Interpolation weights
+        mutable scalarListList* weightsPtr_;
+
+        //- Inserted faces
+        mutable labelList* insertedFaceLabelsPtr_;
 
 
-		//- Calculate addressing for mapping with inserted faces
-		void calcAddressing() const;
+    // Private Member Functions
 
-		//- Clear out local storage
-		void clearOut();
+        //- Disallow default bitwise copy construct
+        faceMapper(const faceMapper&) = delete;
+
+        //- Disallow default bitwise assignment
+        void operator=(const faceMapper&) = delete;
+
+
+        //- Calculate addressing for mapping with inserted faces
+        void calcAddressing() const;
+
+        //- Clear out local storage
+        void clearOut();
 
 
 public:
 
-	// Static data members
+    // Static data members
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mapPolyMesh
-		faceMapper(const mapPolyMesh& mpm);
-
-
-	// Destructor
-
-		virtual ~faceMapper();
+        //- Construct from mapPolyMesh
+        faceMapper(const mapPolyMesh& mpm);
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~faceMapper();
 
-		//- Return size
-		virtual label size() const;
 
-		//- Return size of field before mapping
-		virtual label sizeBeforeMapping() const;
+    // Member Functions
 
-		//- Return number of internal faces before mapping
-		virtual label internalSizeBeforeMapping() const;
+        //- Return size
+        virtual label size() const;
 
-		//- Is the mapping direct
-		virtual bool direct() const
-		{
-			return direct_;
-		}
+        //- Return size of field before mapping
+        virtual label sizeBeforeMapping() const;
 
-		//- Return direct addressing
-		virtual const unallocLabelList& directAddressing() const;
+        //- Return number of internal faces before mapping
+        virtual label internalSizeBeforeMapping() const;
 
-		//- Return interpolated addressing
-		virtual const labelListList& addressing() const;
+        //- Is the mapping direct
+        virtual bool direct() const
+        {
+            return direct_;
+        }
 
-		//- Return interpolaion weights
-		virtual const scalarListList& weights() const;
+        //- Return direct addressing
+        virtual const labelUList& directAddressing() const;
 
-		//- Return flux flip map
-		virtual const labelHashSet& flipFaceFlux() const;
+        //- Return interpolated addressing
+        virtual const labelListList& addressing() const;
 
-		//- Return number of old internalFaces
-		virtual label nOldInternalFaces() const;
+        //- Return interpolaion weights
+        virtual const scalarListList& weights() const;
 
-		//- Return old patch starts
-		virtual const labelList& oldPatchStarts() const;
+        //- Return flux flip map
+        virtual const labelHashSet& flipFaceFlux() const;
 
-		//- Return old patch sizes
-		virtual const labelList& oldPatchSizes() const;
+        //- Return number of old internalFaces
+        virtual label nOldInternalFaces() const;
 
-		//- Are there any inserted faces
-		virtual bool insertedObjects() const
-		{
-			return insertedFaces_;
-		}
+        //- Return old patch starts
+        virtual const labelList& oldPatchStarts() const;
 
-		//- Return list of inserted faces
-		virtual const labelList& insertedObjectLabels() const;
+        //- Return old patch sizes
+        virtual const labelList& oldPatchSizes() const;
+
+        //- Are there any inserted faces
+        virtual bool insertedObjects() const
+        {
+            return insertedFaces_;
+        }
+
+        //- Return list of inserted faces
+        virtual const labelList& insertedObjectLabels() const;
 };
 
 

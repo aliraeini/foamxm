@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,8 +36,8 @@ Author
 
 namespace Foam
 {
-	defineTypeNameAndDebug(overlapGgiFvPatch, 0);
-	addToRunTimeSelectionTable(fvPatch, overlapGgiFvPatch, polyPatch);
+    defineTypeNameAndDebug(overlapGgiFvPatch, 0);
+    addToRunTimeSelectionTable(fvPatch, overlapGgiFvPatch, polyPatch);
 }
 
 
@@ -46,142 +46,167 @@ namespace Foam
 // Make patch weighting factors
 void Foam::overlapGgiFvPatch::makeWeights(fvsPatchScalarField& w) const
 {
-	// Calculation of weighting factors is performed from the master
-	// position, using reconstructed shadow cell centres
-	// HJ, 2/Aug/2007
-	if (overlapGgiPolyPatch_.master())
-	{
-		vectorField n = nf();
+    // Calculation of weighting factors is performed from the master
+    // position, using reconstructed shadow cell centres
+    // HJ, 2/Aug/2007
+    if (overlapGgiPolyPatch_.master())
+    {
+        vectorField n = nf();
 
-		// Note: mag in the dot-product.
-		// For all valid meshes, the non-orthogonality will be less than
-		// 90 deg and the dot-product will be positive.  For invalid
-		// meshes (d & s <= 0), this will stabilise the calculation
-		// but the result will be poor.  HJ, 24/Aug/2011
-		scalarField nfc =
-			mag(n & (overlapGgiPolyPatch_.reconFaceCellCentres() - Cf()));
+        // Note: mag in the dot-product.
+        // For all valid meshes, the non-orthogonality will be less than
+        // 90 deg and the dot-product will be positive.  For invalid
+        // meshes (d & s <= 0), this will stabilise the calculation
+        // but the result will be poor.  HJ, 24/Aug/2011
+        scalarField nfc =
+            mag(n & (overlapGgiPolyPatch_.reconFaceCellCentres() - Cf()));
 
-		w = nfc/(mag(n & (Cf() - Cn())) + nfc);
-	}
-	else
-	{
-		// Pick up weights from the master side
-		fvsPatchScalarField masterWeights
-		(
-			shadow(),
-			w.dimensionedInternalField()
-		);
+        w = nfc/(mag(n & (Cf() - Cn())) + nfc);
+    }
+    else
+    {
+        // Pick up weights from the master side
+        fvsPatchScalarField masterWeights
+        (
+            shadow(),
+            w.dimensionedInternalField()
+        );
 
-		shadow().makeWeights(masterWeights);
+        shadow().makeWeights(masterWeights);
 
-		w = interpolate(1 - masterWeights);
-	}
+        w = interpolate(1 - masterWeights);
+    }
 }
 
 
-// Make patch face - neighbour cell distances
+// Make patch face delta coefficients
 void Foam::overlapGgiFvPatch::makeDeltaCoeffs(fvsPatchScalarField& dc) const
 {
-	if (overlapGgiPolyPatch_.master())
-	{
-		// Stabilised form for bad meshes.  HJ, 24/Aug/2011
-		vectorField d = delta();
+    if (overlapGgiPolyPatch_.master())
+    {
+        // Stabilised form for bad meshes.  HJ, 24/Aug/2011
+        vectorField d = delta();
 
-		dc = 1.0/max(nf() & d, 0.05*mag(d));
-	}
-	else
-	{
-		fvsPatchScalarField masterDeltas
-		(
-			shadow(),
-			dc.dimensionedInternalField()
-		);
+        dc = 1.0/max(nf() & d, 0.05*mag(d));
+    }
+    else
+    {
+        fvsPatchScalarField masterDeltas
+        (
+            shadow(),
+            dc.dimensionedInternalField()
+        );
 
-		shadow().makeDeltaCoeffs(masterDeltas);
+        shadow().makeDeltaCoeffs(masterDeltas);
 
-		dc = interpolate(masterDeltas);
-	}
+        dc = interpolate(masterDeltas);
+    }
+}
+
+
+// Make patch face long distance factors
+void Foam::overlapGgiFvPatch::makeMagLongDeltas(fvsPatchScalarField& mld) const
+{
+    if (overlapGgiPolyPatch_.master())
+    {
+        vectorField d = fvPatch::delta();
+
+        // NOT stabilised for bad meshes.  HJ, 11/May/2020
+        mld = (mag(Sf() & d) + mag(Sf() & (delta() - d)))/magSf();
+    }
+    else
+    {
+        fvsPatchScalarField masterLongDeltas
+        (
+            shadow(),
+            mld.dimensionedInternalField()
+        );
+
+        shadow().makeMagLongDeltas(masterLongDeltas);
+
+        mld = interpolate(masterLongDeltas);
+    }
 }
 
 
 void Foam::overlapGgiFvPatch::makeCorrVecs(fvsPatchVectorField& cv) const
 {
-	// Non-orthogonality correction on a ggi interface
-	// MB, 7/April/2009
+    // Non-orthogonality correction on a ggi interface
+    // MB, 7/April/2009
 
-	// Calculate correction vectors on coupled patches
-	const scalarField& patchDeltaCoeffs = deltaCoeffs();
+    // Calculate correction vectors on coupled patches
+    const scalarField& patchDeltaCoeffs = deltaCoeffs();
 
-	vectorField patchDeltas = delta();
-	vectorField n = nf();
-	cv = n - patchDeltas*patchDeltaCoeffs;
+    vectorField patchDeltas = delta();
+    vectorField n = nf();
+    cv = n - patchDeltas*patchDeltaCoeffs;
 }
 
 
 const Foam::overlapGgiFvPatch& Foam::overlapGgiFvPatch::shadow() const
 {
-	const fvPatch& p =
-		this->boundaryMesh()[overlapGgiPolyPatch_.shadowIndex()];
+    const fvPatch& p =
+        this->boundaryMesh()[overlapGgiPolyPatch_.shadowIndex()];
 
-	return refCast<const overlapGgiFvPatch>(p);
+    return refCast<const overlapGgiFvPatch>(p);
 }
 
 
 // Return delta (P to N) vectors across coupled patch
 Foam::tmp<Foam::vectorField> Foam::overlapGgiFvPatch::delta() const
 {
-	if (overlapGgiPolyPatch_.master())
-	{
-		return overlapGgiPolyPatch_.reconFaceCellCentres() - Cn();
-	}
-	else
-	{
+    if (overlapGgiPolyPatch_.master())
+    {
+        return overlapGgiPolyPatch_.reconFaceCellCentres() - Cn();
+    }
+    else
+    {
 //         vectorField masterDelta = shadow().Cn()
 //             - overlapGgiPolyPatch_.shadow().reconFaceCellCentres();
 
 //         return interpolate(masterDelta);
 
-		return interpolate
-		(
-			shadow().Cn()
-		  - overlapGgiPolyPatch_.shadow().reconFaceCellCentres()
-		);
-	}
+        return interpolate
+        (
+            shadow().Cn()
+          - overlapGgiPolyPatch_.shadow().reconFaceCellCentres()
+        );
+    }
 }
 
 
 Foam::tmp<Foam::labelField> Foam::overlapGgiFvPatch::interfaceInternalField
 (
-	const unallocLabelList& internalData
+    const labelUList& internalData
 ) const
 {
-	return patchInternalField(internalData);
+    return patchInternalField(internalData);
 }
 
 
 Foam::tmp<Foam::labelField> Foam::overlapGgiFvPatch::transfer
 (
-	const Pstream::commsTypes,
-	const unallocLabelList& interfaceData
+    const Pstream::commsTypes,
+    const labelUList& interfaceData
 ) const
 {
-	notImplemented
-	(
-		"overlapGgiFvPatchField<Type>::"
-		"transfer(const unallocLabelList& interfaceData) const"
-	);
+    notImplemented
+    (
+        "overlapGgiFvPatchField<Type>::"
+        "transfer(const labelUList& interfaceData) const"
+    );
 
-	return labelField::null();
+    return labelField::null();
 }
 
 
 Foam::tmp<Foam::labelField> Foam::overlapGgiFvPatch::internalFieldTransfer
 (
-	const Pstream::commsTypes,
-	const unallocLabelList& iF
+    const Pstream::commsTypes,
+    const labelUList& iF
 ) const
 {
-	return shadow().patchInternalField(iF);
+    return shadow().patchInternalField(iF);
 }
 
 

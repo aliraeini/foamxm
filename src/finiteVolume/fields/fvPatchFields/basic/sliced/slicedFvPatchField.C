@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,127 +35,127 @@ namespace Foam
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF,
-	const Field<Type>& completeField
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF,
+    const Field<Type>& completeField
 )
 :
-	fvPatchField<Type>(p, iF, Field<Type>())
+    fvPatchField<Type>(p, iF, Field<Type>())
 {
-	// Set the fvPatchField to a slice of the given complete field
-	UList<Type>::operator=(p.patchSlice(completeField));
+    // Set the fvPatchField to a slice of the given complete field
+    UList<Type>::shallowCopy(p.patchSlice(completeField));
 }
 
 
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF
 )
 :
-	fvPatchField<Type>(p, iF, Field<Type>())
+    fvPatchField<Type>(p, iF, Field<Type>())
 {}
 
 
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const slicedFvPatchField<Type>& ptf,
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF,
-	const fvPatchFieldMapper& mapper
+    const slicedFvPatchField<Type>& ptf,
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
 )
 :
-	fvPatchField<Type>(ptf, p, iF, mapper)
+    fvPatchField<Type>(ptf, p, iF, mapper)
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"slicedFvPatchField(const slicedFvPatchField<Type>&, "
-		"const fvPatch&, const Field<Type>&, const fvPatchFieldMapper&)"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "slicedFvPatchField(const slicedFvPatchField<Type>&, "
+        "const fvPatch&, const Field<Type>&, const fvPatchFieldMapper&)"
+    );
 }
 
 
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF,
-	const dictionary& dict
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF,
+    const dictionary& dict
 )
 :
-	fvPatchField<Type>(p, iF, dict)
+    fvPatchField<Type>(p, iF, dict)
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"slicedFvPatchField(const Field<Type>&, const dictionary&)"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "slicedFvPatchField(const Field<Type>&, const dictionary&)"
+    );
 }
 
 
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const slicedFvPatchField<Type>& ptf,
-	const DimensionedField<Type, volMesh>& iF
+    const slicedFvPatchField<Type>& ptf,
+    const DimensionedField<Type, volMesh>& iF
 )
 :
-	fvPatchField<Type>(ptf.patch(), iF, Field<Type>())
+    fvPatchField<Type>(ptf.patch(), iF, Field<Type>())
 {
-	// Transfer the slice from the argument
-	UList<Type>::operator=(ptf);
+    // Transfer the slice from the argument
+    UList<Type>::shallowCopy(ptf);
 }
 
 template<class Type>
 tmp<fvPatchField<Type> > slicedFvPatchField<Type>::clone() const
 {
-	return tmp<fvPatchField<Type> >
-	(
-		new slicedFvPatchField<Type>(*this)
-	);
+    return tmp<fvPatchField<Type> >
+    (
+        new slicedFvPatchField<Type>(*this)
+    );
 }
 
 
 template<class Type>
 slicedFvPatchField<Type>::slicedFvPatchField
 (
-	const slicedFvPatchField<Type>& ptf
+    const slicedFvPatchField<Type>& ptf
 )
 :
-	fvPatchField<Type>
-	(
-		ptf.patch(),
-		ptf.dimensionedInternalField(),
-		Field<Type>()
-	)
+    fvPatchField<Type>
+    (
+        ptf.patch(),
+        ptf.dimensionedInternalField(),
+        Field<Type>()
+    )
 {
-	// Transfer the slice from the argument
-	UList<Type>::operator=(ptf);
+    // Transfer the slice from the argument
+    UList<Type>::shallowCopy(ptf);
 }
 
 
 template<class Type>
 tmp<fvPatchField<Type> > slicedFvPatchField<Type>::clone
 (
-	const DimensionedField<Type, volMesh>& iF
+    const DimensionedField<Type, volMesh>& iF
 ) const
 {
-	return tmp<fvPatchField<Type> >
-	(
-		new slicedFvPatchField<Type>(*this, iF)
-	);
+    return tmp<fvPatchField<Type> >
+    (
+        new slicedFvPatchField<Type>(*this, iF)
+    );
 }
 
 
 template<class Type>
 slicedFvPatchField<Type>::~slicedFvPatchField()
 {
-	// Set the fvPatchField storage pointer to nullptr before its destruction
-	// to protect the field it a slice of.
-	UList<Type>::operator=(UList<Type>(nullptr, 0));
+    // Set the fvPatchField storage pointer to nullptr before its destruction
+    // to protect the field it a slice of.
+    UList<Type>::shallowCopy(UList<Type>(nullptr, 0));
 }
 
 
@@ -164,132 +164,132 @@ slicedFvPatchField<Type>::~slicedFvPatchField()
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::snGrad() const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"snGrad()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "snGrad()"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 void slicedFvPatchField<Type>::updateCoeffs()
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"updateCoeffs()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "updateCoeffs()"
+    );
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::patchInternalField() const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"patchInternalField()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "patchInternalField()"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::patchNeighbourField
 (
-	const Field<Type>& iField
+    const Field<Type>& iField
 ) const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"patchNeighbourField(const DimensionedField<Type, volMesh>& iField)"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "patchNeighbourField(const DimensionedField<Type, volMesh>& iField)"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::patchNeighbourField() const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"patchNeighbourField()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "patchNeighbourField()"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::valueInternalCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"valueInternalCoeffs(const tmp<scalarField>&)"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "valueInternalCoeffs(const tmp<scalarField>&)"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::valueBoundaryCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"valueBoundaryCoeffs(const tmp<scalarField>&)"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "valueBoundaryCoeffs(const tmp<scalarField>&)"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::gradientInternalCoeffs() const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"gradientInternalCoeffs()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "gradientInternalCoeffs()"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 tmp<Field<Type> > slicedFvPatchField<Type>::gradientBoundaryCoeffs() const
 {
-	notImplemented
-	(
-		"slicedFvPatchField<Type>::"
-		"gradientBoundaryCoeffs()"
-	);
+    notImplemented
+    (
+        "slicedFvPatchField<Type>::"
+        "gradientBoundaryCoeffs()"
+    );
 
-	return Field<Type>::null();
+    return Field<Type>::null();
 }
 
 
 template<class Type>
 void slicedFvPatchField<Type>::write(Ostream& os) const
 {
-	fvPatchField<Type>::write(os);
-	this->writeEntry("value", os);
+    fvPatchField<Type>::write(os);
+    this->writeEntry("value", os);
 }
 
 

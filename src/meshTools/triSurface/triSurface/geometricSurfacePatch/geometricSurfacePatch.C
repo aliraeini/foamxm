@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -40,62 +40,62 @@ defineTypeNameAndDebug(geometricSurfacePatch, 0);
 // Construct null
 geometricSurfacePatch::geometricSurfacePatch()
 :
-	geometricType_("patch"),
-	name_("patch"),
-	index_(0)
+    geometricType_("patch"),
+    name_("patch"),
+    index_(0)
 {}
 
 
 // Construct from components
 geometricSurfacePatch::geometricSurfacePatch
 (
-	const word& geometricType,
-	const word& name,
-	const label index
+    const word& geometricType,
+    const word& name,
+    const label index
 )
 :
-	geometricType_(geometricType),
-	name_(name),
-	index_(index)
+    geometricType_(geometricType),
+    name_(name),
+    index_(index)
 
 {
-	if (geometricType_.empty())
-	{
-		geometricType_ = "patch";
-	}
+    if (geometricType_.empty())
+    {
+        geometricType_ = "patch";
+    }
 }
 
 
 // Construct from Istream
 geometricSurfacePatch::geometricSurfacePatch(Istream& is, const label index)
 :
-	geometricType_(is),
-	name_(is),
-	index_(index)
+    geometricType_(is),
+    name_(is),
+    index_(index)
 {
-	if (geometricType_.empty())
-	{
-		geometricType_ = "patch";
-	}
+    if (geometricType_.empty())
+    {
+        geometricType_ = "patch";
+    }
 }
 
 
 // Construct from dictionary
 geometricSurfacePatch::geometricSurfacePatch
 (
-	const word& name,
-	const dictionary& dict,
-	const label index
+    const word& name,
+    const dictionary& dict,
+    const label index
 )
 :
-	geometricType_(dict.lookup("geometricType")),
-	name_(name),
-	index_(index)
+    geometricType_(dict.lookup("geometricType")),
+    name_(name),
+    index_(index)
 {
-	if (geometricType_.empty())
-	{
-		geometricType_ = "patch";
-	}
+    if (geometricType_.empty())
+    {
+        geometricType_ = "patch";
+    }
 }
 
 
@@ -104,34 +104,34 @@ geometricSurfacePatch::geometricSurfacePatch
 // Write
 void geometricSurfacePatch::write(Ostream& os) const
 {
-	os  << nl << name_
-		<< nl << geometricType_;
+    os  << nl << name_
+        << nl << geometricType_;
 }
 
 
 void geometricSurfacePatch::writeDict(Ostream& os) const
 {
-	os  << "    geometricType " << geometricType_ << ';' << nl;
+    os  << "    geometricType " << geometricType_ << ';' << nl;
 }
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 bool Foam::geometricSurfacePatch::operator!=(const geometricSurfacePatch& p)
-	const
+    const
 {
-	return !(*this == p);
+    return !(*this == p);
 }
 
 
 bool Foam::geometricSurfacePatch::operator==(const geometricSurfacePatch& p)
-	const
+    const
 {
-	return
-	(
-		(geometricType() == p.geometricType())
-	 && (name() == p.name())
-	);
+    return
+    (
+        (geometricType() == p.geometricType())
+     && (name() == p.name())
+    );
 }
 
 
@@ -139,20 +139,20 @@ bool Foam::geometricSurfacePatch::operator==(const geometricSurfacePatch& p)
 
 Istream& operator>>(Istream& is, geometricSurfacePatch& gp)
 {
-	is >> gp.name_ >> gp.geometricType_;
+    is >> gp.name_ >> gp.geometricType_;
 
-	return is;
+    return is;
 }
 
 
 Ostream& operator<<(Ostream& os, const geometricSurfacePatch& gp)
 {
-	gp.write(os);
-	os.check
-	(
-		"Ostream& operator<<(Ostream& f, const geometricSurfacePatch& gp)"
-	);
-	return os;
+    gp.write(os);
+    os.check
+    (
+        "Ostream& operator<<(Ostream& f, const geometricSurfacePatch& gp)"
+    );
+    return os;
 }
 
 

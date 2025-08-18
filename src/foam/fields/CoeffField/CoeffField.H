@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	CoeffField<T>
+    CoeffField<T>
 
 Description
-	Generic coefficient field type.  Used in BlockLduMatrix.  HJ, 2/Apr/2005
+    Generic coefficient field type.  Used in BlockLduMatrix.  HJ, 2/Apr/2005
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	CoeffField.C
+    CoeffField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -59,271 +59,274 @@ template<class Type>
 Ostream& operator<<(Ostream&, const tmp<CoeffField<Type> >&);
 
 
+/*---------------------------------------------------------------------------*\
+                          Class CoeffField Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class CoeffField
 :
-	public refCount
+    public refCount
 {
 public:
 
-	// Public data types
+    // Public data types
 
-		//- Component type
-		typedef typename BlockCoeff<Type>::scalarType scalarType;
-		typedef typename BlockCoeff<Type>::linearType linearType;
-		typedef typename BlockCoeff<Type>::squareType squareType;
+        //- Component type
+        typedef typename BlockCoeff<Type>::scalarType scalarType;
+        typedef typename BlockCoeff<Type>::linearType linearType;
+        typedef typename BlockCoeff<Type>::squareType squareType;
 
-		//- Field type
-		typedef typename BlockCoeff<Type>::scalarTypeField scalarTypeField;
-		typedef typename BlockCoeff<Type>::linearTypeField linearTypeField;
-		typedef typename BlockCoeff<Type>::squareTypeField squareTypeField;
+        //- Field type
+        typedef typename BlockCoeff<Type>::scalarTypeField scalarTypeField;
+        typedef typename BlockCoeff<Type>::linearTypeField linearTypeField;
+        typedef typename BlockCoeff<Type>::squareTypeField squareTypeField;
 
 
 private:
 
-	// Private data
+    // Private data
 
-		//- Scalar coefficient
-		mutable scalarTypeField* scalarCoeffPtr_;
+        //- Scalar coefficient
+        mutable scalarTypeField* scalarCoeffPtr_;
 
-		//- Linear coefficient
-		mutable linearTypeField* linearCoeffPtr_;
+        //- Linear coefficient
+        mutable linearTypeField* linearCoeffPtr_;
 
-		//- Square coefficient
-		mutable squareTypeField* squareCoeffPtr_;
+        //- Square coefficient
+        mutable squareTypeField* squareCoeffPtr_;
 
-		//- Number of elements
-		label size_;
+        //- Number of elements
+        label size_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Check size for arithmetic operations: resizing is not allowed!
-		template<class Type2>
-		inline void checkSize(const UList<Type2>&) const;
+        //- Check size for arithmetic operations: resizing is not allowed!
+        template<class Type2>
+        inline void checkSize(const UList<Type2>&) const;
 
-		//- Promote to scalar
-		scalarTypeField& toScalar();
+        //- Promote to scalar
+        scalarTypeField& toScalar();
 
-		//- Promote to linear
-		linearTypeField& toLinear();
+        //- Promote to linear
+        linearTypeField& toLinear();
 
-		//- Promote to square
-		squareTypeField& toSquare();
+        //- Promote to square
+        squareTypeField& toSquare();
 
 
 public:
 
-	// Static data members
+    // Static data members
 
-		static const char* const typeName;
+        static const char* const typeName;
 
-		//- Empty field
-		static const CoeffField<Type> zero;
-
-
-	// Static Member Functions
-
-		//- Return a null field
-		inline static const CoeffField<Type>& null()
-		{
-			return zero;
-		}
+        //- Empty field
+        static const CoeffField<Type> zero;
 
 
+    // Static Member Functions
 
-	// Constructors
-
-		//- Construct given size
-		explicit CoeffField(const label);
-
-		//- Construct as copy
-		CoeffField(const CoeffField<Type>&);
-
-		//- Construct from Istream
-		explicit CoeffField(Istream&);
-
-		//- Clone
-		tmp<CoeffField<Type> > clone() const;
+        //- Return a null field
+        inline static const CoeffField<Type>& null()
+        {
+            return zero;
+        }
 
 
-	//- Destructor
-	~CoeffField();
+
+    // Constructors
+
+        //- Construct given size
+        explicit CoeffField(const label);
+
+        //- Construct as copy
+        CoeffField(const CoeffField<Type>&);
+
+        //- Construct from Istream
+        explicit CoeffField(Istream&);
+
+        //- Clone
+        tmp<CoeffField<Type> > clone() const;
 
 
-	// Member functions
-
-		//- Return size
-		inline label size() const;
-
-		//- Return active type
-		blockCoeffBase::activeLevel activeType() const;
-
-		//- Check pointers: only one type should be active (debug only)
-		void checkActive() const;
-
-		//- Negate this field
-		void negate();
-
-		//- Return the field transpose
-		tmp<CoeffField<Type> > transpose() const;
-
-		//- Clear data
-		void clear();
+    //- Destructor
+    ~CoeffField();
 
 
-		// Return as typed.  Fails when asked for the incorrect type
+    // Member functions
 
-			//- Return as scalar field
-			const scalarTypeField& asScalar() const;
+        //- Return size
+        inline label size() const;
 
-			//- Return as linear field
-			const linearTypeField& asLinear() const;
+        //- Return active type
+        blockCoeffBase::activeLevel activeType() const;
 
-			//- Return as square field
-			const squareTypeField& asSquare() const;
+        //- Check pointers: only one type should be active (debug only)
+        void checkActive() const;
 
+        //- Negate this field
+        void negate();
 
-		// Return as typed.  Fails when asked for demotion
+        //- Return the field transpose
+        tmp<CoeffField<Type> > transpose() const;
 
-			//- Return as scalar field
-			scalarTypeField& asScalar();
-
-			//- Return as linear field
-			linearTypeField& asLinear();
-
-			//- Return as square field
-			squareTypeField& asSquare();
+        //- Clear data
+        void clear();
 
 
-		//- Return component
-		tmp<scalarTypeField> component(const direction) const;
+        // Return as typed.  Fails when asked for the incorrect type
 
-		//- Return coefficient as block
-		BlockCoeff<Type> getCoeff(const label index) const;
+            //- Return as scalar field
+            const scalarTypeField& asScalar() const;
 
-		//- Set coefficient from a block
-		void setCoeff(const label index, const BlockCoeff<Type>& coeff);
+            //- Return as linear field
+            const linearTypeField& asLinear() const;
 
-
-		// Subset operations
-
-			//- Get subset with offset and size and store in given field
-			void getSubset
-			(
-				CoeffField<Type>& f,
-				const label start,
-				const label size
-			) const;
-
-			//- Get subset with addressing and store in given field
-			void getSubset
-			(
-				CoeffField<Type>& f,
-				const labelList& addr
-			) const;
+            //- Return as square field
+            const squareTypeField& asSquare() const;
 
 
-			//- Set subset with offset and size from given field
-			void setSubset
-			(
-				const CoeffField<Type>& f,
-				const label start,
-				const label size
-			);
+        // Return as typed.  Fails when asked for demotion
 
-			//- Get subset with addressing and store in target field
-			void setSubset
-			(
-				const CoeffField<Type>& f,
-				const labelList& addr
-			);
+            //- Return as scalar field
+            scalarTypeField& asScalar();
 
-			//- Zero out subset with offset and size
-			void zeroOutSubset
-			(
-				const label start,
-				const label size
-			);
+            //- Return as linear field
+            linearTypeField& asLinear();
 
-			//- Zero out subset with addressing
-			void zeroOutSubset
-			(
-				const labelList& addr
-			);
-
-			//- Add subset with addressing to field
-			void addSubset
-			(
-				const CoeffField<Type>& f,
-				const labelList& addr
-			);
-
-			//- Subtract subset with addressing to field
-			void subtractSubset
-			(
-				const CoeffField<Type>& f,
-				const labelList& addr
-			);
+            //- Return as square field
+            squareTypeField& asSquare();
 
 
-	// Member operators
+        //- Return component
+        tmp<scalarTypeField> component(const direction) const;
 
-		void operator=(const CoeffField<Type>&);
-		void operator=(const tmp<CoeffField<Type> >&);
+        //- Return coefficient as block
+        BlockCoeff<Type> getCoeff(const label index) const;
 
-		void operator=(const scalarTypeField&);
-		void operator=(const tmp<scalarTypeField>&);
-		void operator=(const linearTypeField&);
-		void operator=(const tmp<linearTypeField>&);
-		void operator=(const squareTypeField&);
-		void operator=(const tmp<squareTypeField>&);
+        //- Set coefficient from a block
+        void setCoeff(const label index, const BlockCoeff<Type>& coeff);
 
 
-		void operator+=(const CoeffField<Type>&);
-		void operator+=(const tmp<CoeffField<Type> >&);
+        // Subset operations
 
-		void operator+=(const scalarTypeField&);
-		void operator+=(const tmp<scalarTypeField>&);
-		void operator+=(const linearTypeField&);
-		void operator+=(const tmp<linearTypeField>&);
-		void operator+=(const squareTypeField&);
-		void operator+=(const tmp<squareTypeField>&);
+            //- Get subset with offset and size and store in given field
+            void getSubset
+            (
+                CoeffField<Type>& f,
+                const label start,
+                const label size
+            ) const;
 
-		void operator-=(const CoeffField<Type>&);
-		void operator-=(const tmp<CoeffField<Type> >&);
+            //- Get subset with addressing and store in given field
+            void getSubset
+            (
+                CoeffField<Type>& f,
+                const labelList& addr
+            ) const;
 
-		void operator-=(const scalarTypeField&);
-		void operator-=(const tmp<scalarTypeField>&);
-		void operator-=(const linearTypeField&);
-		void operator-=(const tmp<linearTypeField>&);
-		void operator-=(const squareTypeField&);
-		void operator-=(const tmp<squareTypeField>&);
 
-		void operator*=(const UList<scalar>&);
-		void operator*=(const tmp<Field<scalar> >&);
-		void operator*=(const scalar&);
+            //- Set subset with offset and size from given field
+            void setSubset
+            (
+                const CoeffField<Type>& f,
+                const label start,
+                const label size
+            );
 
-		void operator/=(const UList<scalar>&);
-		void operator/=(const tmp<Field<scalar> >&);
-		void operator/=(const scalar&);
+            //- Get subset with addressing and store in target field
+            void setSubset
+            (
+                const CoeffField<Type>& f,
+                const labelList& addr
+            );
 
-		tmp<CoeffField<Type> > operator-();
+            //- Zero out subset with offset and size
+            void zeroOutSubset
+            (
+                const label start,
+                const label size
+            );
 
-	// IOstream operators
+            //- Zero out subset with addressing
+            void zeroOutSubset
+            (
+                const labelList& addr
+            );
 
-		friend Ostream& operator<< <Type>
-		(
-			Ostream&,
-			const CoeffField<Type>&
-		);
+            //- Add subset with addressing to field
+            void addSubset
+            (
+                const CoeffField<Type>& f,
+                const labelList& addr
+            );
 
-		friend Ostream& operator<< <Type>
-		(
-			Ostream&,
-			const tmp<CoeffField<Type> >&
-		);
+            //- Subtract subset with addressing to field
+            void subtractSubset
+            (
+                const CoeffField<Type>& f,
+                const labelList& addr
+            );
+
+
+    // Member operators
+
+        void operator=(const CoeffField<Type>&);
+        void operator=(const tmp<CoeffField<Type> >&);
+
+        void operator=(const scalarTypeField&);
+        void operator=(const tmp<scalarTypeField>&);
+        void operator=(const linearTypeField&);
+        void operator=(const tmp<linearTypeField>&);
+        void operator=(const squareTypeField&);
+        void operator=(const tmp<squareTypeField>&);
+
+
+        void operator+=(const CoeffField<Type>&);
+        void operator+=(const tmp<CoeffField<Type> >&);
+
+        void operator+=(const scalarTypeField&);
+        void operator+=(const tmp<scalarTypeField>&);
+        void operator+=(const linearTypeField&);
+        void operator+=(const tmp<linearTypeField>&);
+        void operator+=(const squareTypeField&);
+        void operator+=(const tmp<squareTypeField>&);
+
+        void operator-=(const CoeffField<Type>&);
+        void operator-=(const tmp<CoeffField<Type> >&);
+
+        void operator-=(const scalarTypeField&);
+        void operator-=(const tmp<scalarTypeField>&);
+        void operator-=(const linearTypeField&);
+        void operator-=(const tmp<linearTypeField>&);
+        void operator-=(const squareTypeField&);
+        void operator-=(const tmp<squareTypeField>&);
+
+        void operator*=(const UList<scalar>&);
+        void operator*=(const tmp<Field<scalar> >&);
+        void operator*=(const scalar&);
+
+        void operator/=(const UList<scalar>&);
+        void operator/=(const tmp<Field<scalar> >&);
+        void operator/=(const scalar&);
+
+        tmp<CoeffField<Type> > operator-();
+
+    // IOstream operators
+
+        friend Ostream& operator<< <Type>
+        (
+            Ostream&,
+            const CoeffField<Type>&
+        );
+
+        friend Ostream& operator<< <Type>
+        (
+            Ostream&,
+            const tmp<CoeffField<Type> >&
+        );
 };
 
 
@@ -336,7 +339,7 @@ public:
 #include "CoeffFieldFunctions.H"
 
 #ifdef NoRepository
-#	include "CoeffField.C"
+#   include "CoeffField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

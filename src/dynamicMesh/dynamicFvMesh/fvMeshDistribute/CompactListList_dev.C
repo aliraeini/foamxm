@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,95 +30,95 @@ License
 template<class T, class Container>
 Foam::CompactListList_dev<T, Container>::CompactListList_dev(const List<Container>& ll)
 :
-	size_(ll.size()),
-	offsets_(ll.size()+1)
+    size_(ll.size()),
+    offsets_(ll.size()+1)
 {
-	label sumSize = 0;
-	offsets_[0] = 0;
-	forAll(ll, i)
-	{
-		sumSize += ll[i].size();
-		offsets_[i+1] = sumSize;
-	}
+    label sumSize = 0;
+    offsets_[0] = 0;
+    forAll(ll, i)
+    {
+        sumSize += ll[i].size();
+        offsets_[i+1] = sumSize;
+    }
 
-	m_.setSize(sumSize);
+    m_.setSize(sumSize);
 
-	label k = 0;
-	forAll(ll, i)
-	{
-		const Container& lli = ll[i];
+    label k = 0;
+    forAll(ll, i)
+    {
+        const Container& lli = ll[i];
 
-		forAll(lli, j)
-		{
-			m_[k++] = lli[j];
-		}
-	}
+        forAll(lli, j)
+        {
+            m_[k++] = lli[j];
+        }
+    }
 }
 
 
 template<class T, class Container>
 Foam::CompactListList_dev<T, Container>::CompactListList_dev
 (
-	const UList<label>& rowSizes
+    const UList<label>& rowSizes
 )
 :
-	size_(rowSizes.size()),
-	offsets_(rowSizes.size()+1)
+    size_(rowSizes.size()),
+    offsets_(rowSizes.size()+1)
 {
-	label sumSize = 0;
-	offsets_[0] = 0;
-	forAll(rowSizes, i)
-	{
-		sumSize += rowSizes[i];
-		offsets_[i+1] = sumSize;
-	}
+    label sumSize = 0;
+    offsets_[0] = 0;
+    forAll(rowSizes, i)
+    {
+        sumSize += rowSizes[i];
+        offsets_[i+1] = sumSize;
+    }
 
-	m_.setSize(sumSize);
+    m_.setSize(sumSize);
 }
 
 
 template<class T, class Container>
 Foam::CompactListList_dev<T, Container>::CompactListList_dev
 (
-	const UList<label>& rowSizes,
-	const T& t
+    const UList<label>& rowSizes,
+    const T& t
 )
 :
-	size_(rowSizes.size()),
-	offsets_(rowSizes.size()+1)
+    size_(rowSizes.size()),
+    offsets_(rowSizes.size()+1)
 {
-	label sumSize = 0;
-	offsets_[0] = 0;
-	forAll(rowSizes, i)
-	{
-		sumSize += rowSizes[i];
-		offsets_[i+1] = sumSize;
-	}
+    label sumSize = 0;
+    offsets_[0] = 0;
+    forAll(rowSizes, i)
+    {
+        sumSize += rowSizes[i];
+        offsets_[i+1] = sumSize;
+    }
 
-	m_.setSize(sumSize, t);
+    m_.setSize(sumSize, t);
 }
 
 
 template<class T, class Container>
 Foam::CompactListList_dev<T, Container>::CompactListList_dev
 (
-	const Xfer<CompactListList_dev<T, Container> >& lst
+    const Xfer<CompactListList_dev<T, Container> >& lst
 )
 {
-	transfer(lst());
+    transfer(lst());
 }
 
 
 template<class T, class Container>
 Foam::CompactListList_dev<T, Container>::CompactListList_dev
 (
-	CompactListList_dev<T, Container>& lst,
-	bool reUse
+    CompactListList_dev<T, Container>& lst,
+    bool reUse
 )
 :
-	size_(lst.size()),
-	offsets_(lst.offsets_, reUse),
-	m_(lst.m_, reUse)
+    size_(lst.size()),
+    offsets_(lst.offsets_, reUse),
+    m_(lst.m_, reUse)
 {}
 
 
@@ -127,108 +127,108 @@ Foam::CompactListList_dev<T, Container>::CompactListList_dev
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::setSize(const label nRows)
 {
-	if (nRows == 0)
-	{
-		clear();
-	}
-	if (nRows < size())
-	{
-		size_ = nRows;
-		offsets_.setSize(nRows+1);
-		m_.setSize(offsets_[nRows]);
-	}
-	else if (nRows > size())
-	{
-		FatalErrorIn
-		(
-			"CompactListList_dev<T, Container>::setSize(const label nRows)"
-		)   << "Cannot be used to extend the list from " << offsets_.size()
-			<< " to " << nRows << nl
-			<< "    Please use one of the other setSize member functions"
-			<< abort(FatalError);
-	}
+    if (nRows == 0)
+    {
+        clear();
+    }
+    if (nRows < size())
+    {
+        size_ = nRows;
+        offsets_.setSize(nRows+1);
+        m_.setSize(offsets_[nRows]);
+    }
+    else if (nRows > size())
+    {
+        FatalErrorIn
+        (
+            "CompactListList_dev<T, Container>::setSize(const label nRows)"
+        )   << "Cannot be used to extend the list from " << offsets_.size()
+            << " to " << nRows << nl
+            << "    Please use one of the other setSize member functions"
+            << abort(FatalError);
+    }
 }
 
 
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::setSize
 (
-	const label nRows,
-	const label nData
+    const label nRows,
+    const label nData
 )
 {
-	size_ = nRows;
-	offsets_.setSize(nRows+1);
-	m_.setSize(nData);
+    size_ = nRows;
+    offsets_.setSize(nRows+1);
+    m_.setSize(nData);
 }
 
 
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::setSize
 (
-	const label nRows,
-	const label nData,
-	const T& t
+    const label nRows,
+    const label nData,
+    const T& t
 )
 {
-	size_ = nRows;
-	offsets_.setSize(nRows+1);
-	m_.setSize(nData, t);
+    size_ = nRows;
+    offsets_.setSize(nRows+1);
+    m_.setSize(nData, t);
 }
 
 
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::setSize(const UList<label>& rowSizes)
 {
-	size_ = rowSizes.size();
-	offsets_.setSize(rowSizes.size()+1);
+    size_ = rowSizes.size();
+    offsets_.setSize(rowSizes.size()+1);
 
-	label sumSize = 0;
-	offsets_[0] = 0;
-	forAll(rowSizes, i)
-	{
-		sumSize += rowSizes[i];
-		offsets_[i+1] = sumSize;
-	}
+    label sumSize = 0;
+    offsets_[0] = 0;
+    forAll(rowSizes, i)
+    {
+        sumSize += rowSizes[i];
+        offsets_[i+1] = sumSize;
+    }
 
-	m_.setSize(sumSize);
+    m_.setSize(sumSize);
 }
 
 
 template<class T, class Container>
 Foam::labelList Foam::CompactListList_dev<T, Container>::sizes() const
 {
-	labelList rowSizes(size());
+    labelList rowSizes(size());
 
-	if (rowSizes.size() > 0)
-	{
-		forAll(rowSizes, i)
-		{
-			rowSizes[i] = offsets_[i+1] - offsets_[i];
-		}
-	}
-	return rowSizes;
+    if (rowSizes.size() > 0)
+    {
+        forAll(rowSizes, i)
+        {
+            rowSizes[i] = offsets_[i+1] - offsets_[i];
+        }
+    }
+    return rowSizes;
 }
 
 
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::clear()
 {
-	size_ = 0;
-	offsets_.clear();
-	m_.clear();
+    size_ = 0;
+    offsets_.clear();
+    m_.clear();
 }
 
 
 template<class T, class Container>
 void Foam::CompactListList_dev<T, Container>::transfer
 (
-	CompactListList_dev<T, Container>& a
+    CompactListList_dev<T, Container>& a
 )
 {
-	size_ = a.size_;
-	offsets_.transfer(a.offsets_);
-	m_.transfer(a.m_);
+    size_ = a.size_;
+    offsets_.transfer(a.offsets_);
+    m_.transfer(a.m_);
 }
 
 
@@ -238,14 +238,14 @@ template<class T, class Container>
 Foam::List<Container> Foam::CompactListList_dev<T, Container>::operator()()
 const
 {
-	List<Container> ll(size());
+    List<Container> ll(size());
 
-	forAll(ll, i)
-	{
-		ll[i] = Container(operator[](i));
-	}
+    forAll(ll, i)
+    {
+        ll[i] = Container(operator[](i));
+    }
 
-	return ll;
+    return ll;
 }
 
 

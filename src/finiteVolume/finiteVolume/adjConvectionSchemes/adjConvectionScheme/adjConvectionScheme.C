@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Abstract base class for finite volume calculus adjConvection schemes.
+    Abstract base class for finite volume calculus adjConvection schemes.
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,8 +46,8 @@ namespace fv
 template<class Type>
 adjConvectionScheme<Type>::adjConvectionScheme(const adjConvectionScheme& cs)
 :
-	refCount(),
-	mesh_(cs.mesh_)
+    refCount(),
+    mesh_(cs.mesh_)
 {}
 
 
@@ -56,51 +56,51 @@ adjConvectionScheme<Type>::adjConvectionScheme(const adjConvectionScheme& cs)
 template<class Type>
 tmp<adjConvectionScheme<Type> > adjConvectionScheme<Type>::New
 (
-	const fvMesh& mesh,
-	const volVectorField& Up,
-	Istream& schemeData
+    const fvMesh& mesh,
+    const volVectorField& Up,
+    Istream& schemeData
 )
 {
-	if (fv::debug)
-	{
-		Info<< "adjConvectionScheme<Type>::New"
-			   "(const fvMesh&, const volVectorField&, Istream&) : "
-			   "constructing adjConvectionScheme<Type>"
-			<< endl;
-	}
+    if (fv::debug)
+    {
+        Info<< "adjConvectionScheme<Type>::New"
+               "(const fvMesh&, const volVectorField&, Istream&) : "
+               "constructing adjConvectionScheme<Type>"
+            << endl;
+    }
 
-	if (schemeData.eof())
-	{
-		FatalIOErrorIn
-		(
-			"adjConvectionScheme<Type>::New"
-			"(const fvMesh&, const volVectorField&, Istream&)",
-			schemeData
-		)   << "AdjConvection scheme not specified" << endl << endl
-			<< "Valid adjConvection schemes are :" << endl
-			<< IstreamConstructorTablePtr_->sortedToc()
-			<< exit(FatalIOError);
-	}
+    if (schemeData.eof())
+    {
+        FatalIOErrorIn
+        (
+            "adjConvectionScheme<Type>::New"
+            "(const fvMesh&, const volVectorField&, Istream&)",
+            schemeData
+        )   << "AdjConvection scheme not specified" << endl << endl
+            << "Valid adjConvection schemes are :" << endl
+            << IstreamConstructorTablePtr_->sortedToc()
+            << exit(FatalIOError);
+    }
 
-	const word schemeName(schemeData);
+    const word schemeName(schemeData);
 
-	typename IstreamConstructorTable::iterator cstrIter =
-		IstreamConstructorTablePtr_->find(schemeName);
+    typename IstreamConstructorTable::iterator cstrIter =
+        IstreamConstructorTablePtr_->find(schemeName);
 
-	if (cstrIter == IstreamConstructorTablePtr_->end())
-	{
-		FatalIOErrorIn
-		(
-			"adjConvectionScheme<Type>::New"
-			"(const fvMesh&, const volVectorField&, Istream&)",
-			schemeData
-		)   << "unknown adjConvection scheme " << schemeName << endl << endl
-			<< "Valid adjConvection schemes are :" << endl
-			<< IstreamConstructorTablePtr_->sortedToc()
-			<< exit(FatalIOError);
-	}
+    if (cstrIter == IstreamConstructorTablePtr_->end())
+    {
+        FatalIOErrorIn
+        (
+            "adjConvectionScheme<Type>::New"
+            "(const fvMesh&, const volVectorField&, Istream&)",
+            schemeData
+        )   << "unknown adjConvection scheme " << schemeName << endl << endl
+            << "Valid adjConvection schemes are :" << endl
+            << IstreamConstructorTablePtr_->sortedToc()
+            << exit(FatalIOError);
+    }
 
-	return cstrIter()(mesh, Up, schemeData);
+    return cstrIter()(mesh, Up, schemeData);
 }
 
 
@@ -116,15 +116,15 @@ adjConvectionScheme<Type>::~adjConvectionScheme()
 template<class Type>
 void adjConvectionScheme<Type>::operator=(const adjConvectionScheme<Type>& cs)
 {
-	if (this == &cs)
-	{
-		FatalErrorIn
-		(
-			"adjConvectionScheme<Type>::operator="
-			"(const adjConvectionScheme<Type>&)"
-		)   << "attempted assignment to self"
-			<< abort(FatalError);
-	}
+    if (this == &cs)
+    {
+        FatalErrorIn
+        (
+            "adjConvectionScheme<Type>::operator="
+            "(const adjConvectionScheme<Type>&)"
+        )   << "attempted assignment to self"
+            << abort(FatalError);
+    }
 }
 
 

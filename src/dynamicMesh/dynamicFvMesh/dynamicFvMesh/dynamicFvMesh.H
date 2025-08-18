@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::dynamicFvMesh
+    Foam::dynamicFvMesh
 
 Description
-	Abstract base class for geometry and/or topology changing fvMesh.
+    Abstract base class for geometry and/or topology changing fvMesh.
 
 SourceFiles
-	dynamicFvMesh.C
-	newDynamicFvMesh.C
+    dynamicFvMesh.C
+    newDynamicFvMesh.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,86 +45,89 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class dynamicFvMesh Declaration
+\*---------------------------------------------------------------------------*/
 
 class dynamicFvMesh
 :
-	public fvMesh
+    public fvMesh
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		dynamicFvMesh(const dynamicFvMesh&);
+        //- Disallow default bitwise copy construct
+        dynamicFvMesh(const dynamicFvMesh&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const dynamicFvMesh&);
+        //- Disallow default bitwise assignment
+        void operator=(const dynamicFvMesh&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("dynamicFvMesh");
+    //- Runtime type information
+    TypeName("dynamicFvMesh");
 
 
-	// Declare run-time constructor selection table
+    // Declare run-time constructor selection table
 
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			dynamicFvMesh,
-			IOobject,
-			(const IOobject& io),
-			(io)
-		);
-
-
-	// Constructors
-
-		//- Construct from objectRegistry, and read/write options
-		explicit dynamicFvMesh(const IOobject& io);
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            dynamicFvMesh,
+            IOobject,
+            (const IOobject& io),
+            (io)
+        );
 
 
-		//- Construct from components without boundary.
-		//  Boundary is added using addPatches() member function
-		dynamicFvMesh
-		(
-			const IOobject& io,
-			const Xfer<pointField>& points,
-			const Xfer<faceList>& faces,
-			const Xfer<labelList>& allOwner,
-			const Xfer<labelList>& allNeighbour,
-			const bool syncPar = true
-		);
+    // Constructors
+
+        //- Construct from objectRegistry, and read/write options
+        explicit dynamicFvMesh(const IOobject& io);
 
 
-		//- Construct from components with cells rather than owner
-		//  and neighbour without boundary.
-		//  Boundary is added using addPatches() member function
-		dynamicFvMesh
-		(
-			const IOobject& io,
-			const Xfer<pointField>& points,
-			const Xfer<faceList>& faces,
-			const Xfer<cellList>& cells,
-			const bool syncPar = true
-		);
+        //- Construct from components without boundary.
+        //  Boundary is added using addPatches() member function
+        dynamicFvMesh
+        (
+            const IOobject& io,
+            const Xfer<pointField>& points,
+            const Xfer<faceList>& faces,
+            const Xfer<labelList>& allOwner,
+            const Xfer<labelList>& allNeighbour,
+            const bool syncPar = true
+        );
 
 
-	// Selectors
+        //- Construct from components with cells rather than owner
+        //  and neighbour without boundary.
+        //  Boundary is added using addPatches() member function
+        dynamicFvMesh
+        (
+            const IOobject& io,
+            const Xfer<pointField>& points,
+            const Xfer<faceList>& faces,
+            const Xfer<cellList>& cells,
+            const bool syncPar = true
+        );
 
-		//- Select null constructed
-		static autoPtr<dynamicFvMesh> New(const IOobject& io);
+
+    // Selectors
+
+        //- Select null constructed
+        static autoPtr<dynamicFvMesh> New(const IOobject& io);
 
 
-	// Destructor
-		virtual ~dynamicFvMesh();
+    //- Destructor
+    virtual ~dynamicFvMesh();
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Update the mesh for both mesh motion and topology change
-		//  Return true if topology changes and false for motion only
-		//  HJ, 24/Jan/2007
-		virtual bool update() = 0;
+        //- Update the mesh for both mesh motion and topology change
+        //  Return true if topology changes and false for motion only
+        //  HJ, 24/Jan/2007
+        virtual bool update() = 0;
 };
 
 

@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Starts timing CPU usage and return elapsed time from start.
+    Starts timing CPU usage and return elapsed time from start.
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,24 +44,24 @@ long cpuTime::Hz_(sysconf(_SC_CLK_TCK));
 
 void cpuTime::getTime(struct tms& t)
 {
-	times(&t);
+    times(&t);
 }
 
 
 double cpuTime::timeDifference
 (
-	const struct tms& start,
-	const struct tms& end
+    const struct tms& start,
+    const struct tms& end
 )
 {
-	return
-	(
-		double
-		(
-			(end.tms_utime + end.tms_stime)
-		  - (start.tms_utime + start.tms_stime)
-		)/Hz_
-	);
+    return
+    (
+        double
+        (
+            (end.tms_utime + end.tms_stime)
+          - (start.tms_utime + start.tms_stime)
+        )/Hz_
+    );
 }
 
 
@@ -69,9 +69,9 @@ double cpuTime::timeDifference
 
 cpuTime::cpuTime()
 {
-	getTime(startTime_);
-	lastTime_ = startTime_;
-	newTime_ = startTime_;
+    getTime(startTime_);
+    lastTime_ = startTime_;
+    newTime_ = startTime_;
 }
 
 
@@ -79,16 +79,16 @@ cpuTime::cpuTime()
 
 double cpuTime::elapsedCpuTime() const
 {
-	getTime(newTime_);
-	return timeDifference(startTime_, newTime_);
+    getTime(newTime_);
+    return timeDifference(startTime_, newTime_);
 }
 
 
 double cpuTime::cpuTimeIncrement() const
 {
-	lastTime_ = newTime_;
-	getTime(newTime_);
-	return timeDifference(lastTime_, newTime_);
+    lastTime_ = newTime_;
+    getTime(newTime_);
+    return timeDifference(lastTime_, newTime_);
 }
 
 

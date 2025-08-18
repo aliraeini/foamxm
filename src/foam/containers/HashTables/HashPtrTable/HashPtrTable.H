@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::HashPtrTable
+    Foam::HashPtrTable
 
 Description
-	A HashTable specialization for hashing pointers.
+    A HashTable specialization for hashing pointers.
 
 SourceFiles
-	HashPtrTable.C
-	HashPtrTableIO.C
+    HashPtrTable.C
+    HashPtrTableIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,89 +58,92 @@ template<class T, class Key, class Hash>
 Ostream& operator<<(Ostream&, const HashPtrTable<T, Key, Hash>&);
 
 
+/*---------------------------------------------------------------------------*\
+                        Class HashPtrTable Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class T, class Key=word, class Hash=string::hash>
 class HashPtrTable
 :
-	public HashTable<T*, Key, Hash>
+    public HashTable<T*, Key, Hash>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read from Istream using given Istream constructor class
-		template<class INew>
-		void read(Istream&, const INew& inewt);
+        //- Read from Istream using given Istream constructor class
+        template<class INew>
+        void read(Istream&, const INew& inewt);
 
-		//- Read from dictionary using given dictionary constructor class
-		template<class INew>
-		void read(const dictionary& dict, const INew& inewt);
+        //- Read from dictionary using given dictionary constructor class
+        template<class INew>
+        void read(const dictionary& dict, const INew& inewt);
 
 
 
 public:
 
-	typedef typename HashTable<T*, Key, Hash>::iterator iterator;
-	typedef typename HashTable<T*, Key, Hash>::const_iterator const_iterator;
+    typedef typename HashTable<T*, Key, Hash>::iterator iterator;
+    typedef typename HashTable<T*, Key, Hash>::const_iterator const_iterator;
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct given initial table size
-		HashPtrTable(const label size = 128);
+        //- Construct given initial table size
+        HashPtrTable(const label size = 128);
 
-		//- Construct from Istream using given Istream constructor class
-		template<class INew>
-		HashPtrTable(Istream&, const INew&);
+        //- Construct from Istream using given Istream constructor class
+        template<class INew>
+        HashPtrTable(Istream&, const INew&);
 
-		//- Construct from Istream using default Istream constructor class
-		HashPtrTable(Istream&);
+        //- Construct from Istream using default Istream constructor class
+        HashPtrTable(Istream&);
 
-		//- Construct from dictionary using default dictionary constructor
-		//  class
-		HashPtrTable(const dictionary&);
+        //- Construct from dictionary using default dictionary constructor
+        //  class
+        HashPtrTable(const dictionary&);
 
-		//- Construct as copy
-		HashPtrTable(const HashPtrTable<T, Key, Hash>&);
-
-
-	//- Destructor
-	~HashPtrTable();
+        //- Construct as copy
+        HashPtrTable(const HashPtrTable<T, Key, Hash>&);
 
 
-	// Member Functions
-
-		// Edit
-
-			//- Remove and return the pointer specified by given iterator
-			T* remove(iterator&);
-
-			//- Erase an hashedEntry specified by given iterator
-			bool erase(iterator&);
-
-			//- Clear all entries from table
-			void clear();
-
-			//- Write
-			void write(Ostream& os) const;
+    //- Destructor
+    ~HashPtrTable();
 
 
-	// Member Operators
+    // Member Functions
 
-		void operator=(const HashPtrTable<T, Key, Hash>&);
+        // Edit
+
+            //- Remove and return the pointer specified by given iterator
+            T* remove(iterator&);
+
+            //- Erase an hashedEntry specified by given iterator
+            bool erase(iterator&);
+
+            //- Clear all entries from table
+            void clear();
+
+            //- Write
+            void write(Ostream& os) const;
 
 
-	// IOstream Operators
+    // Member Operators
 
-		friend Istream& operator>> <T, Key, Hash>
-		(
-			Istream&,
-			HashPtrTable<T, Key, Hash>&
-		);
+        void operator=(const HashPtrTable<T, Key, Hash>&);
 
-		friend Ostream& operator<< <T, Key, Hash>
-		(
-			Ostream&,
-			const HashPtrTable<T, Key, Hash>&
-		);
+
+    // IOstream Operators
+
+        friend Istream& operator>> <T, Key, Hash>
+        (
+            Istream&,
+            HashPtrTable<T, Key, Hash>&
+        );
+
+        friend Ostream& operator<< <T, Key, Hash>
+        (
+            Ostream&,
+            const HashPtrTable<T, Key, Hash>&
+        );
 };
 
 
@@ -151,7 +154,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "HashPtrTable.C"
+#   include "HashPtrTable.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

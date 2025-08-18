@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,7 +32,7 @@ License
 
 const Foam::word Foam::functionEntries::includeIfPresentEntry::typeName
 (
-	Foam::functionEntries::includeIfPresentEntry::typeName_()
+    Foam::functionEntries::includeIfPresentEntry::typeName_()
 );
 
 // Don't lookup the debug switch here as the debug switch dictionary
@@ -40,29 +40,29 @@ const Foam::word Foam::functionEntries::includeIfPresentEntry::typeName
 Foam::debug::debugSwitch
 Foam::functionEntries::includeIfPresentEntry::debug
 (
-	"includeIfPresentEntry",
-	0
+    "includeIfPresentEntry",
+    0
 );
 
 namespace Foam
 {
 namespace functionEntries
 {
-	addToMemberFunctionSelectionTable
-	(
-		functionEntry,
-		includeIfPresentEntry,
-		execute,
-		dictionaryIstream
-	);
+    addToMemberFunctionSelectionTable
+    (
+        functionEntry,
+        includeIfPresentEntry,
+        execute,
+        dictionaryIstream
+    );
 
-	addToMemberFunctionSelectionTable
-	(
-		functionEntry,
-		includeIfPresentEntry,
-		execute,
-		primitiveEntryIstream
-	);
+    addToMemberFunctionSelectionTable
+    (
+        functionEntry,
+        includeIfPresentEntry,
+        execute,
+        primitiveEntryIstream
+    );
 }
 }
 
@@ -70,46 +70,46 @@ namespace functionEntries
 
 bool Foam::functionEntries::includeIfPresentEntry::execute
 (
-	dictionary& parentDict,
-	Istream& is
+    dictionary& parentDict,
+    Istream& is
 )
 {
-	const fileName fName(includeFileName(is, parentDict));
-	IFstream ifs(fName);
+    const fileName fName(includeFileName(is, parentDict));
+    IFstream ifs(fName);
 
-	if (ifs)
-	{
-		if (Foam::functionEntries::includeEntry::report)
-		{
-			Info<< fName << endl;
-		}
-		parentDict.read(ifs);
-	}
+    if (ifs)
+    {
+        if (Foam::functionEntries::includeEntry::report)
+        {
+            Info<< fName << endl;
+        }
+        parentDict.read(ifs);
+    }
 
-	return true;
+    return true;
 }
 
 
 bool Foam::functionEntries::includeIfPresentEntry::execute
 (
-	const dictionary& parentDict,
-	primitiveEntry& entry,
-	Istream& is
+    const dictionary& parentDict,
+    primitiveEntry& entry,
+    Istream& is
 )
 {
-	const fileName fName(includeFileName(is, parentDict));
-	IFstream ifs(fName);
+    const fileName fName(includeFileName(is, parentDict));
+    IFstream ifs(fName);
 
-	if (ifs)
-	{
-		if (Foam::functionEntries::includeEntry::report)
-		{
-			Info<< fName << endl;
-		}
-		entry.read(parentDict, ifs);
-	}
+    if (ifs)
+    {
+        if (Foam::functionEntries::includeEntry::report)
+        {
+            Info<< fName << endl;
+        }
+        entry.read(parentDict, ifs);
+    }
 
-	return true;
+    return true;
 }
 
 // ************************************************************************* //

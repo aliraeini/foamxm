@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 InNamspace
-	Foam
+    Foam
 
 Description
-	Operations on lists of strings.
+    Operations on lists of strings.
 
 SourceFiles
-	stringListOpsTemplates.C
+    stringListOpsTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,258 +45,258 @@ SourceFiles
 
 namespace Foam
 {
-	// single-string matches:
+    // single-string matches:
 
-	//- Return true if string matches one of the regular expressions
-	inline bool findStrings
-	(
-		const wordReListMatcher& matcher,
-		const std::string& str
-	)
-	{
-		return matcher.match(str);
-	}
+    //- Return true if string matches one of the regular expressions
+    inline bool findStrings
+    (
+        const wordReListMatcher& matcher,
+        const std::string& str
+    )
+    {
+        return matcher.match(str);
+    }
 
-	// multi-string matches:
+    // multi-string matches:
 
-	//- Return list indices for matching strings
-	template<class Matcher, class StringType>
-	labelList findMatchingStrings
-	(
-		const Matcher&,
-		const UList<StringType>&,
-		const bool invert=false
-	);
+    //- Return list indices for matching strings
+    template<class Matcher, class StringType>
+    labelList findMatchingStrings
+    (
+        const Matcher&,
+        const UList<StringType>&,
+        const bool invert=false
+    );
 
-	//- Return list indices for strings matching the regular expression
-	//  Template partial specialization of findMatchingStrings
-	template<class StringType>
-	labelList findStrings
-	(
-		const regExp& re,
-		const UList<StringType>& lst,
-		const bool invert=false
-	)
-	{
-		return findMatchingStrings(re, lst, invert);
-	}
+    //- Return list indices for strings matching the regular expression
+    //  Template partial specialization of findMatchingStrings
+    template<class StringType>
+    labelList findStrings
+    (
+        const regExp& re,
+        const UList<StringType>& lst,
+        const bool invert=false
+    )
+    {
+        return findMatchingStrings(re, lst, invert);
+    }
 
-	//- Return list indices for strings matching the regular expression
-	//  Template partial specialization of findMatchingStrings
-	template<class StringType>
-	labelList findStrings
-	(
-		const char* rePattern,
-		const UList<StringType>& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
+    //- Return list indices for strings matching the regular expression
+    //  Template partial specialization of findMatchingStrings
+    template<class StringType>
+    labelList findStrings
+    (
+        const char* rePattern,
+        const UList<StringType>& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
 
-		return findStrings(rp, lst, invert);
-	}
+        return findStrings(rp, lst, invert);
+    }
 
-	//- Return list indices for strings matching the regular expression
-	//  Template partial specialization of findMatchingStrings
-	template<class StringType>
-	labelList findStrings
-	(
-		const std::string& rePattern,
-		const UList<StringType>& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
-		return findMatchingStrings(rp, lst, invert);
-	}
+    //- Return list indices for strings matching the regular expression
+    //  Template partial specialization of findMatchingStrings
+    template<class StringType>
+    labelList findStrings
+    (
+        const std::string& rePattern,
+        const UList<StringType>& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
+        return findMatchingStrings(rp, lst, invert);
+    }
 
-	//- Return list indices for strings matching the regular expression
-	//  Template partial specialization of findMatchingStrings
-	template<class StringType>
-	labelList findStrings
-	(
-		const wordRe& wre,
-		const UList<StringType>& lst,
-		const bool invert=false
-	)
-	{
-		return findMatchingStrings(wre, lst, invert);
-	}
-
-
-	//- Return list indices for strings matching one of the regular expression
-	//  Template partial specialization of findMatchingStrings
-	template<class StringType>
-	labelList findStrings
-	(
-		const wordReListMatcher& matcher,
-		const UList<StringType>& lst,
-		const bool invert=false
-	)
-	{
-		return findMatchingStrings(matcher, lst, invert);
-	}
-
-	// subsetting multi-string matches (similar to ListOp):
-
-	//- Extract elements of StringList when regular expression matches
-	//  optionally invert the match
-	//  eg, to extract all selected elements:
-	//    subsetMatchingStrings<regExp, stringList>(myRegExp, lst);
-	template<class Matcher, class StringListType>
-	StringListType subsetMatchingStrings
-	(
-		const Matcher&,
-		const StringListType&,
-		const bool invert=false
-	);
-
-	//- Extract elements of StringList when regular expression matches
-	//  Template partial specialization of subsetMatchingStrings
-	template<class StringListType>
-	StringListType subsetStrings
-	(
-		const regExp& re,
-		const StringListType& lst,
-		const bool invert=false
-	)
-	{
-		return subsetMatchingStrings(re, lst, invert);
-	}
-
-	//- Extract elements of StringList when regular expression matches
-	//  Template partial specialization of subsetMatchingStrings
-	template<class StringListType>
-	StringListType subsetStrings
-	(
-		const char* rePattern,
-		const StringListType& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
-		return subsetMatchingStrings(rp, lst, invert);
-	}
-
-	//- Extract elements of StringList when regular expression matches
-	//  Template partial specialization of subsetMatchingStrings
-	template<class StringListType>
-	StringListType subsetStrings
-	(
-		const std::string& rePattern,
-		const StringListType& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
-		return subsetMatchingStrings(rp, lst, invert);
-	}
-
-	//- Extract elements of StringList when regular expression matches
-	//  Template partial specialization of subsetMatchingStrings
-	template<class StringListType>
-	StringListType subsetStrings
-	(
-		const wordRe& wre,
-		const StringListType& lst,
-		const bool invert=false
-	)
-	{
-		return subsetMatchingStrings(wre, lst, invert);
-	}
-
-	//- Extract elements of StringList when regular expression matches
-	//  Template partial specialization of subsetMatchingStrings
-	template<class StringListType>
-	StringListType subsetStrings
-	(
-		const wordReListMatcher& matcher,
-		const StringListType& lst,
-		const bool invert=false
-	)
-	{
-		return subsetMatchingStrings(matcher, lst, invert);
-	}
+    //- Return list indices for strings matching the regular expression
+    //  Template partial specialization of findMatchingStrings
+    template<class StringType>
+    labelList findStrings
+    (
+        const wordRe& wre,
+        const UList<StringType>& lst,
+        const bool invert=false
+    )
+    {
+        return findMatchingStrings(wre, lst, invert);
+    }
 
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  optionally invert the match
-	//  eg, to extract all selected elements:
-	//    inplaceSubsetMatchingStrings<regExp, stringList>(myRegExp, lst);
-	template<class Matcher, class StringListType>
-	void inplaceSubsetMatchingStrings
-	(
-		const Matcher&,
-		StringListType&,
-		const bool invert=false
-	);
+    //- Return list indices for strings matching one of the regular expression
+    //  Template partial specialization of findMatchingStrings
+    template<class StringType>
+    labelList findStrings
+    (
+        const wordReListMatcher& matcher,
+        const UList<StringType>& lst,
+        const bool invert=false
+    )
+    {
+        return findMatchingStrings(matcher, lst, invert);
+    }
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  Template partial specialization of inplaceSubsetMatchingStrings
-	template<class StringListType>
-	void inplaceSubsetStrings
-	(
-		const regExp& re,
-		StringListType& lst,
-		const bool invert=false
-	)
-	{
-		inplaceSubsetMatchingStrings(re, lst, invert);
-	}
+    // subsetting multi-string matches (similar to ListOp):
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  Template partial specialization of inplaceSubsetMatchingStrings
-	template<class StringListType>
-	void inplaceSubsetStrings
-	(
-		const char* rePattern,
-		StringListType& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
-		inplaceSubsetMatchingStrings(rp, lst, invert);
-	}
+    //- Extract elements of StringList when regular expression matches
+    //  optionally invert the match
+    //  eg, to extract all selected elements:
+    //    subsetMatchingStrings<regExp, stringList>(myRegExp, lst);
+    template<class Matcher, class StringListType>
+    StringListType subsetMatchingStrings
+    (
+        const Matcher&,
+        const StringListType&,
+        const bool invert=false
+    );
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  Template partial specialization of inplaceSubsetMatchingStrings
-	template<class StringListType>
-	void inplaceSubsetStrings
-	(
-		const std::string& rePattern,
-		StringListType& lst,
-		const bool invert=false
-	)
-	{
-		regExp rp(rePattern);
-		inplaceSubsetMatchingStrings(rp, lst, invert);
-	}
+    //- Extract elements of StringList when regular expression matches
+    //  Template partial specialization of subsetMatchingStrings
+    template<class StringListType>
+    StringListType subsetStrings
+    (
+        const regExp& re,
+        const StringListType& lst,
+        const bool invert=false
+    )
+    {
+        return subsetMatchingStrings(re, lst, invert);
+    }
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  Template partial specialization of inplaceSubsetMatchingStrings
-	template<class StringListType>
-	void inplaceSubsetStrings
-	(
-		const wordRe& wre,
-		StringListType& lst,
-		const bool invert=false
-	)
-	{
-		inplaceSubsetMatchingStrings(wre, lst, invert);
-	}
+    //- Extract elements of StringList when regular expression matches
+    //  Template partial specialization of subsetMatchingStrings
+    template<class StringListType>
+    StringListType subsetStrings
+    (
+        const char* rePattern,
+        const StringListType& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
+        return subsetMatchingStrings(rp, lst, invert);
+    }
 
-	//- Inplace extract elements of StringList when regular expression matches
-	//  Template partial specialization of inplaceSubsetMatchingStrings
-	template<class StringListType>
-	void inplaceSubsetStrings
-	(
-		const wordReListMatcher& matcher,
-		StringListType& lst,
-		const bool invert=false
-	)
-	{
-		inplaceSubsetMatchingStrings(matcher, lst, invert);
-	}
+    //- Extract elements of StringList when regular expression matches
+    //  Template partial specialization of subsetMatchingStrings
+    template<class StringListType>
+    StringListType subsetStrings
+    (
+        const std::string& rePattern,
+        const StringListType& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
+        return subsetMatchingStrings(rp, lst, invert);
+    }
+
+    //- Extract elements of StringList when regular expression matches
+    //  Template partial specialization of subsetMatchingStrings
+    template<class StringListType>
+    StringListType subsetStrings
+    (
+        const wordRe& wre,
+        const StringListType& lst,
+        const bool invert=false
+    )
+    {
+        return subsetMatchingStrings(wre, lst, invert);
+    }
+
+    //- Extract elements of StringList when regular expression matches
+    //  Template partial specialization of subsetMatchingStrings
+    template<class StringListType>
+    StringListType subsetStrings
+    (
+        const wordReListMatcher& matcher,
+        const StringListType& lst,
+        const bool invert=false
+    )
+    {
+        return subsetMatchingStrings(matcher, lst, invert);
+    }
+
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  optionally invert the match
+    //  eg, to extract all selected elements:
+    //    inplaceSubsetMatchingStrings<regExp, stringList>(myRegExp, lst);
+    template<class Matcher, class StringListType>
+    void inplaceSubsetMatchingStrings
+    (
+        const Matcher&,
+        StringListType&,
+        const bool invert=false
+    );
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  Template partial specialization of inplaceSubsetMatchingStrings
+    template<class StringListType>
+    void inplaceSubsetStrings
+    (
+        const regExp& re,
+        StringListType& lst,
+        const bool invert=false
+    )
+    {
+        inplaceSubsetMatchingStrings(re, lst, invert);
+    }
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  Template partial specialization of inplaceSubsetMatchingStrings
+    template<class StringListType>
+    void inplaceSubsetStrings
+    (
+        const char* rePattern,
+        StringListType& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
+        inplaceSubsetMatchingStrings(rp, lst, invert);
+    }
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  Template partial specialization of inplaceSubsetMatchingStrings
+    template<class StringListType>
+    void inplaceSubsetStrings
+    (
+        const std::string& rePattern,
+        StringListType& lst,
+        const bool invert=false
+    )
+    {
+        regExp rp(rePattern);
+        inplaceSubsetMatchingStrings(rp, lst, invert);
+    }
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  Template partial specialization of inplaceSubsetMatchingStrings
+    template<class StringListType>
+    void inplaceSubsetStrings
+    (
+        const wordRe& wre,
+        StringListType& lst,
+        const bool invert=false
+    )
+    {
+        inplaceSubsetMatchingStrings(wre, lst, invert);
+    }
+
+    //- Inplace extract elements of StringList when regular expression matches
+    //  Template partial specialization of inplaceSubsetMatchingStrings
+    template<class StringListType>
+    void inplaceSubsetStrings
+    (
+        const wordReListMatcher& matcher,
+        StringListType& lst,
+        const bool invert=false
+    )
+    {
+        inplaceSubsetMatchingStrings(matcher, lst, invert);
+    }
 
 }
 
@@ -304,7 +304,7 @@ namespace Foam
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "stringListOpsTemplates.C"
+#   include "stringListOpsTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

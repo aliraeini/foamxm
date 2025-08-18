@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::splitCell
+    Foam::splitCell
 
 Description
-	Description of cell after splitting. Contains cellLabel and pointers
-	to cells it it split in. See directedRefinement.
+    Description of cell after splitting. Contains cellLabel and pointers
+    to cells it it split in. See directedRefinement.
 
 SourceFiles
-	splitCell.C
+    splitCell.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,98 +45,101 @@ namespace Foam
 
 // Forward declaration of classes
 
+/*---------------------------------------------------------------------------*\
+                           Class splitCell Declaration
+\*---------------------------------------------------------------------------*/
 
 class splitCell
 {
-	// Private data
+    // Private data
 
-		//- Unsplit cell label. Only uptodate if this cell is 'live'
-		//  (i.e. no master or slave)
-		label cellI_;
+        //- Unsplit cell label. Only uptodate if this cell is 'live'
+        //  (i.e. no master or slave)
+        label cellI_;
 
-		//- Parent splitCell or null
-		splitCell* parent_;
+        //- Parent splitCell or null
+        splitCell* parent_;
 
-		//- Cells replacing this or null
-		splitCell* master_;
+        //- Cells replacing this or null
+        splitCell* master_;
 
-		splitCell* slave_;
+        splitCell* slave_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		splitCell(const splitCell&);
+        //- Disallow default bitwise copy construct
+        splitCell(const splitCell&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const splitCell&);
+        //- Disallow default bitwise assignment
+        void operator=(const splitCell&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from cell number and parent
-		splitCell(const label cellI, splitCell* parent);
-
-
-	// Destructor
-
-		~splitCell();
+        //- Construct from cell number and parent
+        splitCell(const label cellI, splitCell* parent);
 
 
-	// Member Functions
+    // Destructor
 
-		// Access
+        ~splitCell();
 
-			label cellLabel() const
-			{
-				return cellI_;
-			}
 
-			label& cellLabel()
-			{
-				return cellI_;
-			}
+    // Member Functions
 
-			splitCell* parent() const
-			{
-				return parent_;
-			}
+        // Access
 
-			splitCell*& parent()
-			{
-				return parent_;
-			}
+            label cellLabel() const
+            {
+                return cellI_;
+            }
 
-			splitCell* master() const
-			{
-				return master_;
-			}
+            label& cellLabel()
+            {
+                return cellI_;
+            }
 
-			splitCell*& master()
-			{
-				return master_;
-			}
+            splitCell* parent() const
+            {
+                return parent_;
+            }
 
-			splitCell* slave() const
-			{
-				return slave_;
-			}
+            splitCell*& parent()
+            {
+                return parent_;
+            }
 
-			splitCell*& slave()
-			{
-				return slave_;
-			}
+            splitCell* master() const
+            {
+                return master_;
+            }
 
-			//- Check if this is master cell of split
-			bool isMaster() const;
+            splitCell*& master()
+            {
+                return master_;
+            }
 
-			//- Check if this is unrefined (i.e. has no master or slave)
-			bool isUnrefined() const;
+            splitCell* slave() const
+            {
+                return slave_;
+            }
 
-			//- Returns other half of split cell. I.e. slave if this is master.
-			splitCell* getOther() const;
+            splitCell*& slave()
+            {
+                return slave_;
+            }
+
+            //- Check if this is master cell of split
+            bool isMaster() const;
+
+            //- Check if this is unrefined (i.e. has no master or slave)
+            bool isUnrefined() const;
+
+            //- Returns other half of split cell. I.e. slave if this is master.
+            splitCell* getOther() const;
 };
 
 

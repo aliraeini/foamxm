@@ -49,6 +49,9 @@ namespace Foam
 namespace fileFormats
 {
 
+/*---------------------------------------------------------------------------*\
+                     Class VTKsurfaceFormat Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Face>
 class VTKsurfaceFormat
@@ -58,8 +61,8 @@ class VTKsurfaceFormat
 {
     // Private Member Functions
 
-        //- Write polygons
-		static void writeHeaderPolygons(Ostream&, const UList<Face>&);
+        //- Write header information about number of polygon points
+        static void writeHeaderPolygons(Ostream&, const UList<Face>&);
 
         //- No copy construct
         VTKsurfaceFormat(const VTKsurfaceFormat<Face>&) = delete;
@@ -76,13 +79,13 @@ public:
         VTKsurfaceFormat(const fileName& filename);
 
 
-		static autoPtr<MeshedSurface<Face> > New(const fileName& name)
-		{
-			return autoPtr<MeshedSurface<Face> >
-			(
-				new VTKsurfaceFormat(name)
-			);
-		}
+        static autoPtr<MeshedSurface<Face> > New(const fileName& name)
+        {
+            return autoPtr<MeshedSurface<Face> >
+            (
+                new VTKsurfaceFormat(name)
+            );
+        }
 
     //- Destructor
     virtual ~VTKsurfaceFormat() = default;
@@ -92,33 +95,33 @@ public:
 
     // Member Functions
 
-		// Write
+        // Write
 
-		//- Write surface mesh components by proxy
-		static void write(Ostream&, const MeshedSurfaceProxy<Face>&);
+        //- Write surface mesh components by proxy
+        static void write(Ostream&, const MeshedSurfaceProxy<Face>&);
 
-		static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
+        static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
 
-		//- Write UnsortedMeshedSurface, the output remains unsorted
-		static void write
-		(
-			const fileName&, const UnsortedMeshedSurface<Face>&
-		);
+        //- Write UnsortedMeshedSurface, the output remains unsorted
+        static void write
+        (
+            const fileName&, const UnsortedMeshedSurface<Face>&
+        );
 
 
-		//- Write object
-		virtual void write(Ostream& os) const
-		{
-			write(os, MeshedSurfaceProxy<Face>(*this));
-		}
+        //- Write object
+        virtual void write(Ostream& os) const
+        {
+            write(os, MeshedSurfaceProxy<Face>(*this));
+        }
 
         //- Read from file
         virtual bool read(const fileName& filename);
 
-		virtual void write(const fileName& name) const
-		{
-			write(name, MeshedSurfaceProxy<Face>(*this));
-		}
+        virtual void write(const fileName& name) const
+        {
+            write(name, MeshedSurfaceProxy<Face>(*this));
+        }
 };
 
 
@@ -130,7 +133,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "VTKsurfaceFormat.C"
+#   include "VTKsurfaceFormat.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

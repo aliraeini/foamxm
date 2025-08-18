@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	symGaussSeidelSmoother
+    symGaussSeidelSmoother
 
 Description
-	Symmetric Gauss-Seidel smoother
+    Symmetric Gauss-Seidel smoother
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	symGaussSeidelSmoother.C
+    symGaussSeidelSmoother.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,60 +45,61 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                    Class symGaussSeidelSmoother Declaration
+\*---------------------------------------------------------------------------*/
 
 class symGaussSeidelSmoother
 :
-	public lduSmoother
+    public lduSmoother
 {
-	// Private Data
+    // Private Data
 
-		//- Gauss-Seidel preconditioner
-		symGaussSeidelPrecon gs_;
+        //- Gauss-Seidel preconditioner
+        symGaussSeidelPrecon gs_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		symGaussSeidelSmoother(const symGaussSeidelSmoother&);
+        //- Disallow default bitwise copy construct
+        symGaussSeidelSmoother(const symGaussSeidelSmoother&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const symGaussSeidelSmoother&);
+        //- Disallow default bitwise assignment
+        void operator=(const symGaussSeidelSmoother&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("symGaussSeidel");
+    //- Runtime type information
+    TypeName("symGaussSeidel");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		symGaussSeidelSmoother
-		(
-			const lduMatrix& matrix,
-			const FieldField<Field, scalar>& coupleBouCoeffs,
-			const FieldField<Field, scalar>& coupleIntCoeffs,
-			const lduInterfaceFieldPtrsList& interfaces
-		);
-
-
-	// Destructor
-
-		virtual ~symGaussSeidelSmoother()
-		{}
+        //- Construct from components
+        symGaussSeidelSmoother
+        (
+            const lduMatrix& matrix,
+            const FieldField<Field, scalar>& coupleBouCoeffs,
+            const FieldField<Field, scalar>& coupleIntCoeffs,
+            const lduInterfaceFieldPtrsList& interfaces
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~symGaussSeidelSmoother() = default;
 
-		//- Execute smoothing
-		virtual void smooth
-		(
-			scalarField& x,
-			const scalarField& b,
-			const direction cmpt,
-			const label nSweeps
-		) const;
+
+    // Member Functions
+
+        //- Execute smoothing
+        virtual void smooth
+        (
+            scalarField& x,
+            const scalarField& b,
+            const direction cmpt,
+            const label nSweeps
+        ) const;
 };
 
 

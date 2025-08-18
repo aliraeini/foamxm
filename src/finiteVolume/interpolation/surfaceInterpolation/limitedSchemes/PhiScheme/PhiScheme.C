@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -39,111 +39,112 @@ namespace Foam
 template<class Type, class PhiLimiter>
 tmp<surfaceScalarField> PhiScheme<Type, PhiLimiter>::limiter
 (
-	const GeometricField<Type, fvPatchField, volMesh>& phi
+    const GeometricField<Type, fvPatchField, volMesh>& phi
 ) const
 {
-	const fvMesh& mesh = this->mesh();
+    const fvMesh& mesh = this->mesh();
 
-	tmp<surfaceScalarField> tLimiter
-	(
-		new surfaceScalarField
-		(
-			IOobject
-			(
-				"PhiLimiter",
-				mesh.time().timeName(),
-				mesh
-			),
-			mesh,
-			dimless
-		)
-	);
-	surfaceScalarField& Limiter = tLimiter();
+    tmp<surfaceScalarField> tLimiter
+    (
+        new surfaceScalarField
+        (
+            IOobject
+            (
+                "PhiLimiter",
+                mesh.time().timeName(),
+                mesh
+            ),
+            mesh,
+            dimless
+        )
+    );
+    surfaceScalarField& Limiter = tLimiter.ref();
 
-	const surfaceScalarField& CDweights = mesh.surfaceInterpolation::weights();
+    // Make sure coupled patches are synced
+    // HJ and MH, 14/Sep/2021
+    phi.boundaryField().updateCoupledPatchFields();
 
-	const surfaceVectorField& Sf = mesh.Sf();
-	const surfaceScalarField& magSf = mesh.magSf();
+    const surfaceScalarField& CDweights = mesh.surfaceInterpolation::weights();
 
-	const unallocLabelList& owner = mesh.owner();
-	const unallocLabelList& neighbour = mesh.neighbour();
+    const surfaceVectorField& Sf = mesh.Sf();
+    const surfaceScalarField& magSf = mesh.magSf();
 
-	tmp<surfaceScalarField> tUflux = this->faceFlux_;
+    const labelUList& owner = mesh.owner();
+    const labelUList& neighbour = mesh.neighbour();
 
-	if (this->faceFlux_.dimensions() == dimDensity*dimVelocity*dimArea)
-	{
-		const volScalarField& rho =
-			phi.db().objectRegistry::template
-			lookupObject<volScalarField>("rho");
+    tmp<surfaceScalarField> tUflux = this->faceFlux_;
 
-		tUflux = this->faceFlux_/fvc::interpolate(rho);
-	}
-	else if (this->faceFlux_.dimensions() != dimVelocity*dimArea)
-	{
-		FatalErrorIn
-		(
-			"PhiScheme<PhiLimiter>::limiter"
-			"(const GeometricField<Type, fvPatchField, volMesh>& phi)"
-		)   << "dimensions of faceFlux are not correct"
-			<< exit(FatalError);
-	}
+    if (this->faceFlux_.dimensions() == dimDensity*dimVelocity*dimArea)
+    {
+        const volScalarField& rho =
+            phi.db().objectRegistry::template
+            lookupObject<volScalarField>("rho");
 
-	const surfaceScalarField& Uflux = tUflux();
+        tUflux = this->faceFlux_/fvc::interpolate(rho);
+    }
+    else if (this->faceFlux_.dimensions() != dimVelocity*dimArea)
+    {
+        FatalErrorInFunction
+            << "dimensions of faceFlux are not correct"
+            << exit(FatalError);
+    }
 
-	scalarField& pLimiter = Limiter.internalField();
+    const surfaceScalarField& Uflux = tUflux();
 
-	forAll(pLimiter, face)
-	{
-		pLimiter[face] = PhiLimiter::limiter
-		(
-			CDweights[face],
-			Uflux[face],
-			phi[owner[face]],
-			phi[neighbour[face]],
-			Sf[face],
-			magSf[face]
-		);
-	}
+    scalarField& pLimiter = Limiter.internalField();
+
+    forAll(pLimiter, face)
+    {
+        pLimiter[face] = PhiLimiter::limiter
+        (
+            CDweights[face],
+            Uflux[face],
+            phi[owner[face]],
+            phi[neighbour[face]],
+            Sf[face],
+            magSf[face]
+        );
+    }
 
 
-	surfaceScalarField::Boundary& bLimiter =
-		Limiter.boundaryField();
+    surfaceScalarField::GeometricBoundaryField& bLimiter =
+        Limiter.boundaryField();
 
-	forAll(bLimiter, patchI)
-	{
-		scalarField& pLimiter = bLimiter[patchI];
+    forAll(bLimiter, patchI)
+    {
+        scalarField& pLimiter = bLimiter[patchI];
 
-		if (bLimiter[patchI].coupled())
-		{
-			const scalarField& pCDweights = CDweights.boundaryField()[patchI];
-			const vectorField& pSf = Sf.boundaryField()[patchI];
-			const scalarField& pmagSf = magSf.boundaryField()[patchI];
-			const scalarField& pFaceFlux = Uflux.boundaryField()[patchI];
-			Field<Type> pphiP =
-				phi.boundaryField()[patchI].patchInternalField();
-			Field<Type> pphiN =
-				phi.boundaryField()[patchI].patchNeighbourField();
+        if (bLimiter[patchI].coupled())
+        {
+            const scalarField& pCDweights = CDweights.boundaryField()[patchI];
+            const vectorField& pSf = Sf.boundaryField()[patchI];
+            const scalarField& pmagSf = magSf.boundaryField()[patchI];
+            const scalarField& pFaceFlux = Uflux.boundaryField()[patchI];
+            Field<Type> pphiP =
+                phi.boundaryField()[patchI].patchInternalField();
+            Field<Type> pphiN =
+                phi.boundaryField()[patchI].patchNeighbourField();
 
-			forAll(pLimiter, face)
-			{
-				pLimiter[face] = PhiLimiter::limiter
-				(
-					pCDweights[face],
-					pFaceFlux[face],
-					pphiP[face],
-					pphiN[face],
-					pSf[face],
-					pmagSf[face]
-				);
-			}
-		}
-		else
-		{
-			pLimiter = 1.0;
-		}
-	}
+            forAll(pLimiter, face)
+            {
+                pLimiter[face] = PhiLimiter::limiter
+                (
+                    pCDweights[face],
+                    pFaceFlux[face],
+                    pphiP[face],
+                    pphiN[face],
+                    pSf[face],
+                    pmagSf[face]
+                );
+            }
+        }
+        else
+        {
+            pLimiter = 1.0;
+        }
+    }
 
-	return tLimiter;
+    return tLimiter;
 }
 
 

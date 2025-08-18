@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(codedBase, 0);
+    defineTypeNameAndDebug(codedBase, 0);
 }
 
 
@@ -44,124 +44,124 @@ namespace Foam
 
 void* Foam::codedBase::loadLibrary
 (
-	const fileName& libPath,
-	const string& globalFuncName,
-	const dictionary& contextDict
+    const fileName& libPath,
+    const string& globalFuncName,
+    const dictionary& contextDict
 ) const
 {
-	void* lib = 0;
+    void* lib = 0;
 
-	// avoid compilation by loading an existing library
-	if (!libPath.empty())
-	{
-		if (libs().open(libPath, false))
-		{
-			lib = libs().findLibrary(libPath);
+    // avoid compilation by loading an existing library
+    if (!libPath.empty())
+    {
+        if (libs().open(libPath, false))
+        {
+            lib = libs().findLibrary(libPath);
 
-			// verify the loaded version and unload if needed
-			if (lib)
-			{
-				// provision for manual execution of code after loading
-				if (dlSymFound(lib, globalFuncName))
-				{
-					loaderFunctionType function =
-					    reinterpret_cast<loaderFunctionType>
-					    (
-					        dlSym(lib, globalFuncName)
-					    );
+            // verify the loaded version and unload if needed
+            if (lib)
+            {
+                // provision for manual execution of code after loading
+                if (dlSymFound(lib, globalFuncName))
+                {
+                    loaderFunctionType function =
+                        reinterpret_cast<loaderFunctionType>
+                        (
+                            dlSym(lib, globalFuncName)
+                        );
 
-					if (function)
-					{
-					    (*function)(true);    // force load
-					}
-					else
-					{
-					    FatalIOErrorInFunction
-					    (
-					        contextDict
-					    )   << "Failed looking up symbol " << globalFuncName
-					        << nl << "from " << libPath << exit(FatalIOError);
-					}
-				}
-				else
-				{
-					FatalIOErrorInFunction
-					(
-					    contextDict
-					)   << "Failed looking up symbol " << globalFuncName << nl
-					    << "from " << libPath << exit(FatalIOError);
+                    if (function)
+                    {
+                        (*function)(true);    // force load
+                    }
+                    else
+                    {
+                        FatalIOErrorInFunction
+                        (
+                            contextDict
+                        )   << "Failed looking up symbol " << globalFuncName
+                            << nl << "from " << libPath << exit(FatalIOError);
+                    }
+                }
+                else
+                {
+                    FatalIOErrorInFunction
+                    (
+                        contextDict
+                    )   << "Failed looking up symbol " << globalFuncName << nl
+                        << "from " << libPath << exit(FatalIOError);
 
-					lib = 0;
-					if (!libs().close(libPath, false))
-					{
-					    FatalIOErrorInFunction
-					    (
-					        contextDict
-					    )   << "Failed unloading library "
-					        << libPath
-					        << exit(FatalIOError);
-					}
-				}
-			}
-		}
-	}
+                    lib = 0;
+                    if (!libs().close(libPath, false))
+                    {
+                        FatalIOErrorInFunction
+                        (
+                            contextDict
+                        )   << "Failed unloading library "
+                            << libPath
+                            << exit(FatalIOError);
+                    }
+                }
+            }
+        }
+    }
 
-	return lib;
+    return lib;
 }
 
 
 void Foam::codedBase::unloadLibrary
 (
-	const fileName& libPath,
-	const string& globalFuncName,
-	const dictionary& contextDict
+    const fileName& libPath,
+    const string& globalFuncName,
+    const dictionary& contextDict
 ) const
 {
-	void* lib = 0;
+    void* lib = 0;
 
-	if (libPath.empty())
-	{
-		return;
-	}
+    if (libPath.empty())
+    {
+        return;
+    }
 
-	lib = libs().findLibrary(libPath);
+    lib = libs().findLibrary(libPath);
 
-	if (!lib)
-	{
-		return;
-	}
+    if (!lib)
+    {
+        return;
+    }
 
-	// provision for manual execution of code before unloading
-	if (dlSymFound(lib, globalFuncName))
-	{
-		loaderFunctionType function =
-			reinterpret_cast<loaderFunctionType>
-			(
-				dlSym(lib, globalFuncName)
-			);
+    // provision for manual execution of code before unloading
+    if (dlSymFound(lib, globalFuncName))
+    {
+        loaderFunctionType function =
+            reinterpret_cast<loaderFunctionType>
+            (
+                dlSym(lib, globalFuncName)
+            );
 
-		if (function)
-		{
-			(*function)(false);    // force unload
-		}
-		else
-		{
-			FatalIOErrorInFunction
-			(
-				contextDict
-			)   << "Failed looking up symbol " << globalFuncName << nl
-				<< "from " << libPath << exit(FatalIOError);
-		}
-	}
+        if (function)
+        {
+            (*function)(false);    // force unload
+        }
+        else
+        {
+            FatalIOErrorInFunction
+            (
+                contextDict
+            )   << "Failed looking up symbol " << globalFuncName << nl
+                << "from " << libPath << exit(FatalIOError);
+        }
+    }
 
-	if (!libs().close(libPath, false))
-	{
-		FatalIOErrorInFunction
-		(
-			contextDict
-		)   << "Failed unloading library " << libPath
-			<< exit(FatalIOError);
-	}
+    if (!libs().close(libPath, false))
+    {
+        FatalIOErrorInFunction
+        (
+            contextDict
+        )   << "Failed unloading library " << libPath
+            << exit(FatalIOError);
+    }
 }
 
 
@@ -169,172 +169,172 @@ void Foam::codedBase::unloadLibrary
 
 void Foam::codedBase::createLibrary
 (
-	dynamicCode& dynCode,
-	const dynamicCodeContext& context
+    dynamicCode& dynCode,
+    const dynamicCodeContext& context
 ) const
 {
-	bool create =
-		Pstream::master()
-	 || (regIOobject::fileModificationSkew <= 0);   // not NFS
+    bool create =
+        Pstream::master()
+     || (regIOobject::fileModificationSkew <= 0);   // not NFS
 
-	if (create)
-	{
-		// Write files for new library
-		if (!dynCode.upToDate(context))
-		{
-			// filter with this context
-			dynCode.reset(context);
+    if (create)
+    {
+        // Write files for new library
+        if (!dynCode.upToDate(context))
+        {
+            // filter with this context
+            dynCode.reset(context);
 
-			this->prepare(dynCode, context);
+            this->prepare(dynCode, context);
 
-			if (!dynCode.copyOrCreateFiles(true))
-			{
-				FatalIOErrorInFunction
-				(
-					context.dict()
-				)   << "Failed writing files for" << nl
-					<< dynCode.libRelPath() << nl
-					<< exit(FatalIOError);
-			}
-		}
+            if (!dynCode.copyOrCreateFiles(true))
+            {
+                FatalIOErrorInFunction
+                (
+                    context.dict()
+                )   << "Failed writing files for" << nl
+                    << dynCode.libRelPath() << nl
+                    << exit(FatalIOError);
+            }
+        }
 
-		if (!dynCode.wmakeLibso())
-		{
-			FatalIOErrorInFunction
-			(
-				context.dict()
-			)   << "Failed wmake " << dynCode.libRelPath() << nl
-				<< exit(FatalIOError);
-		}
-	}
-
-
-	// all processes must wait for compile to finish
-	if (regIOobject::fileModificationSkew > 0)
-	{
-		//- Since the library has only been compiled on the master the
-		//  other nodes need to pick this library up through NFS
-		//  We do this by just polling a few times using the
-		//  fileModificationSkew.
-
-		const fileName libPath = dynCode.libPath();
-
-		off_t mySize = Foam::fileSize(libPath);
-		off_t masterSize = mySize;
-		Pstream::scatter(masterSize);
-
-		if (debug)
-		{
-			Pout<< endl<< "on processor " << Pstream::myProcNo()
-				<< " have masterSize:" << masterSize
-				<< " and localSize:" << mySize
-				<< endl;
-		}
+        if (!dynCode.wmakeLibso())
+        {
+            FatalIOErrorInFunction
+            (
+                context.dict()
+            )   << "Failed wmake " << dynCode.libRelPath() << nl
+                << exit(FatalIOError);
+        }
+    }
 
 
-		if (mySize < masterSize)
-		{
-			if (debug)
-			{
-				Pout<< "Local file " << libPath
-					<< " not of same size (" << mySize
-					<< ") as master ("
-					<< masterSize << "). Waiting for "
-					<< regIOobject::fileModificationSkew()
-					<< " seconds." << endl;
-			}
-			Foam::sleep(regIOobject::fileModificationSkew());
+    // all processes must wait for compile to finish
+    if (regIOobject::fileModificationSkew > 0)
+    {
+        //- Since the library has only been compiled on the master the
+        //  other nodes need to pick this library up through NFS
+        //  We do this by just polling a few times using the
+        //  fileModificationSkew.
 
-			// Recheck local size
-			mySize = Foam::fileSize(libPath);
+        const fileName libPath = dynCode.libPath();
 
-			if (mySize < masterSize)
-			{
-				FatalIOErrorInFunction
-				(
-					context.dict()
-				)   << "Cannot read (NFS mounted) library " << nl
-					<< libPath << nl
-					<< "on processor " << Pstream::myProcNo()
-					<< " detected size " << mySize
-					<< " whereas master size is " << masterSize
-					<< " bytes." << nl
-					<< "If your case is not NFS mounted"
-					<< " (so distributed) set fileModificationSkew"
-					<< " to 0"
-					<< exit(FatalIOError);
-			}
-		}
+        off_t mySize = Foam::fileSize(libPath);
+        off_t masterSize = mySize;
+        Pstream::scatter(masterSize);
 
-		if (debug)
-		{
-			Pout<< endl<< "on processor " << Pstream::myProcNo()
-				<< " after waiting: have masterSize:" << masterSize
-				<< " and localSize:" << mySize
-				<< endl;
-		}
-	}
-	reduce(create, orOp<bool>());
+        if (debug)
+        {
+            Pout<< endl<< "on processor " << Pstream::myProcNo()
+                << " have masterSize:" << masterSize
+                << " and localSize:" << mySize
+                << endl;
+        }
+
+
+        if (mySize < masterSize)
+        {
+            if (debug)
+            {
+                Pout<< "Local file " << libPath
+                    << " not of same size (" << mySize
+                    << ") as master ("
+                    << masterSize << "). Waiting for "
+                    << regIOobject::fileModificationSkew()
+                    << " seconds." << endl;
+            }
+            Foam::sleep(regIOobject::fileModificationSkew());
+
+            // Recheck local size
+            mySize = Foam::fileSize(libPath);
+
+            if (mySize < masterSize)
+            {
+                FatalIOErrorInFunction
+                (
+                    context.dict()
+                )   << "Cannot read (NFS mounted) library " << nl
+                    << libPath << nl
+                    << "on processor " << Pstream::myProcNo()
+                    << " detected size " << mySize
+                    << " whereas master size is " << masterSize
+                    << " bytes." << nl
+                    << "If your case is not NFS mounted"
+                    << " (so distributed) set fileModificationSkew"
+                    << " to 0"
+                    << exit(FatalIOError);
+            }
+        }
+
+        if (debug)
+        {
+            Pout<< endl<< "on processor " << Pstream::myProcNo()
+                << " after waiting: have masterSize:" << masterSize
+                << " and localSize:" << mySize
+                << endl;
+        }
+    }
+    reduce(create, orOp<bool>());
 }
 
 
 void Foam::codedBase::updateLibrary
 (
-	const word& redirectType
+    const word& redirectType
 ) const
 {
-	const dictionary& dict = this->codeDict();
+    const dictionary& dict = this->codeDict();
 
-	dynamicCode::checkSecurity
-	(
-		"codedBase::updateLibrary()",
-		dict
-	);
+    dynamicCode::checkSecurity
+    (
+        "codedBase::updateLibrary()",
+        dict
+    );
 
-	dynamicCodeContext context(dict);
+    dynamicCodeContext context(dict);
 
-	// codeName: redirectType + _<sha1>
-	// codeDir : redirectType
-	dynamicCode dynCode
-	(
-		redirectType + context.sha1().str(true),
-		redirectType
-	);
-	const fileName libPath = dynCode.libPath();
-
-
-	// the correct library was already loaded => we are done
-	if (libs().findLibrary(libPath))
-	{
-		return;
-	}
-
-	Info<< "Using dynamicCode for " << this->description().c_str()
-		<< " at line " << dict.startLineNumber()
-		<< " in " << dict.name() << endl;
+    // codeName: redirectType + _<sha1>
+    // codeDir : redirectType
+    dynamicCode dynCode
+    (
+        redirectType + context.sha1().str(true),
+        redirectType
+    );
+    const fileName libPath = dynCode.libPath();
 
 
-	// remove instantiation of fvPatchField provided by library
-	this->clearRedirect();
+    // the correct library was already loaded => we are done
+    if (libs().findLibrary(libPath))
+    {
+        return;
+    }
 
-	// may need to unload old library
-	unloadLibrary
-	(
-		oldLibPath_,
-		dynamicCode::libraryBaseName(oldLibPath_),
-		context.dict()
-	);
+    Info<< "Using dynamicCode for " << this->description().c_str()
+        << " at line " << dict.startLineNumber()
+        << " in " << dict.name() << endl;
 
-	// try loading an existing library (avoid compilation when possible)
-	if (!loadLibrary(libPath, dynCode.codeName(), context.dict()))
-	{
-		createLibrary(dynCode, context);
 
-		loadLibrary(libPath, dynCode.codeName(), context.dict());
-	}
+    // remove instantiation of fvPatchField provided by library
+    this->clearRedirect();
 
-	// retain for future reference
-	oldLibPath_ = libPath;
+    // may need to unload old library
+    unloadLibrary
+    (
+        oldLibPath_,
+        dynamicCode::libraryBaseName(oldLibPath_),
+        context.dict()
+    );
+
+    // try loading an existing library (avoid compilation when possible)
+    if (!loadLibrary(libPath, dynCode.codeName(), context.dict()))
+    {
+        createLibrary(dynCode, context);
+
+        loadLibrary(libPath, dynCode.codeName(), context.dict());
+    }
+
+    // retain for future reference
+    oldLibPath_ = libPath;
 }
 
 

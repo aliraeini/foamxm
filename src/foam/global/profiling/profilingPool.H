@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::profilingPool
+    Foam::profilingPool
 
 Description
-	Collects all the data for profiling
+    Collects all the data for profiling
 
 SourceFiles
-	profilingPool.C
+    profilingPool.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,106 +57,109 @@ class Ostream;
 // Ostream& operator<<(Ostream&, const profilingPool&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class profilingPool Declaration
+\*---------------------------------------------------------------------------*/
 
 class profilingPool
 :
-	public regIOobject
+    public regIOobject
 {
-	// Private typedefs
+    // Private typedefs
 
-		typedef std::multimap<Foam::string,Foam::profilingInfo*> mapType;
-		typedef std::pair<Foam::string,Foam::profilingInfo*> mapValues;
-		typedef mapType::iterator mapIterator;
-		typedef mapType::const_iterator mapConstIterator;
-
-
-	// Private data
-
-		mapType allInfo_;
-
-		profilingStack theStack_;
-
-		clockTime globalTime_;
-
-		const Time &owner_;
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		profilingPool(const profilingPool&);
-
-		//- Disallow default bitwise assignment
-		void operator=(const profilingPool&);
+        typedef std::multimap<Foam::string,Foam::profilingInfo*> mapType;
+        typedef std::pair<Foam::string,Foam::profilingInfo*> mapValues;
+        typedef mapType::iterator mapIterator;
+        typedef mapType::const_iterator mapConstIterator;
 
 
-	// Static data members
+    // Private data
 
-		//- The only possible Pool-Object
-		static profilingPool *thePool_;
+        mapType allInfo_;
+
+        profilingStack theStack_;
+
+        clockTime globalTime_;
+
+        const Time &owner_;
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        profilingPool(const profilingPool&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const profilingPool&);
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct null
-		profilingPool
-		(
-			const IOobject&,
-			const Time&
-		);
+        //- The only possible Pool-Object
+        static profilingPool *thePool_;
 
 
-	//- Destructor
-	~profilingPool();
+    // Constructors
+
+        //- Construct null
+        profilingPool
+        (
+            const IOobject&,
+            const Time&
+        );
 
 
-	// Member functions
+    //- Destructor
+    ~profilingPool();
 
-		mapType& map()
-		{
-			return allInfo_;
-		}
 
-		const mapType& map() const
-		{
-			return allInfo_;
-		}
+    // Member functions
 
-		profilingStack& stack()
-		{
-			return theStack_;
-		}
+        mapType& map()
+        {
+            return allInfo_;
+        }
 
-		const profilingStack& stack() const
-		{
-			return theStack_;
-		}
+        const mapType& map() const
+        {
+            return allInfo_;
+        }
 
-		const Time& owner() const
-		{
-			return owner_;
-		}
+        profilingStack& stack()
+        {
+            return theStack_;
+        }
+
+        const profilingStack& stack() const
+        {
+            return theStack_;
+        }
+
+        const Time& owner() const
+        {
+            return owner_;
+        }
 
 protected:
 
-	static void initProfiling
-	(
-		const IOobject&,
-		const Time&
-	);
+    static void initProfiling
+    (
+        const IOobject&,
+        const Time&
+    );
 
-	static void stopProfiling(const Time&);
+    static void stopProfiling(const Time&);
 
 public:
 
-	static profilingInfo& getInfo(const string& name);
+    static profilingInfo& getInfo(const string& name);
 
-	static void remove(const profilingInfo& info);
+    static void remove(const profilingInfo& info);
 
-	static void rememberTimer(const profilingInfo& info, clockTime& timer);
+    static void rememberTimer(const profilingInfo& info, clockTime& timer);
 
-	virtual bool writeData(Ostream&) const;
+    virtual bool writeData(Ostream&) const;
 
-	friend class Time;
+    friend class Time;
 };
 
 

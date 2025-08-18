@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,285 +32,367 @@ License
 
 namespace Foam
 {
-	defineTemplateTypeNameAndDebug(IOPtrList<MRFZone>, 0);
+    defineTemplateTypeNameAndDebug(IOPtrList<MRFZone>, 0);
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::MRFZones::MRFZones(const fvMesh& mesh)
 :
-	IOPtrList<MRFZone>
-	(
-		IOobject
-		(
-			"MRFZones",
-			mesh.time().constant(),
-			mesh,
-			IOobject::MUST_READ,
-			IOobject::NO_WRITE
-		),
-		MRFZone::iNew(mesh)
-	),
-	mesh_(mesh)
+    IOPtrList<MRFZone>
+    (
+        IOobject
+        (
+            "MRFZones",
+            mesh.time().constant(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        ),
+        MRFZone::iNew(mesh)
+    ),
+    mesh_(mesh)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+Foam::wordList Foam::MRFZones::names() const
+{
+    wordList zoneNames(size());
+
+    forAll (*this, zoneI)
+    {
+        zoneNames[zoneI] = this->operator[](zoneI).name();
+    }
+
+    return zoneNames;
+}
+
+
 Foam::tmp<Foam::volVectorField> Foam::MRFZones::omega() const
 {
-	tmp<volVectorField> tMRFZonesOmega
-	(
-		new volVectorField
-		(
-			IOobject
-			(
-				"MRFZonesOmega",
-				mesh_.time().timeName(),
-				mesh_,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh_,
-			dimensionedVector("zero", dimless/dimTime, vector::zero)
-		)
-	);
-	volVectorField& MRFZonesOmega = tMRFZonesOmega();
+    tmp<volVectorField> tMRFZonesOmega
+    (
+        new volVectorField
+        (
+            IOobject
+            (
+                "MRFZonesOmega",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh_,
+            dimensionedVector("zero", dimless/dimTime, vector::zero)
+        )
+    );
+    volVectorField& MRFZonesOmega = tMRFZonesOmega.ref();
 
-	forAll (*this, i)
-	{
-		operator[](i).addOmega(MRFZonesOmega);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).addOmega(MRFZonesOmega);
+    }
 
-	return tMRFZonesOmega;
+    return tMRFZonesOmega;
 }
 
 
-Foam::tmp<Foam::surfaceScalarField> Foam::MRFZones::fluxCorrection() const
-{
-	tmp<surfaceScalarField> tMRFZonesPhiCorr
-	(
-		new surfaceScalarField
-		(
-			IOobject
-			(
-				"MRFZonesPhiCorr",
-				mesh_.time().timeName(),
-				mesh_,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh_,
-			dimensionedScalar("zero", dimVelocity*dimArea, 0)
-		)
-	);
-	surfaceScalarField& MRFZonesPhiCorr = tMRFZonesPhiCorr();
+// Foam::tmp<Foam::surfaceScalarField> Foam::MRFZones::fluxCorrection() const
+// {
+//     tmp<surfaceScalarField> tMRFZonesPhiCorr
+//     (
+//         new surfaceScalarField
+//         (
+//             IOobject
+//             (
+//                 "MRFZonesPhiCorr",
+//                 mesh_.time().timeName(),
+//                 mesh_,
+//                 IOobject::NO_READ,
+//                 IOobject::NO_WRITE
+//             ),
+//             mesh_,
+//             dimensionedScalar("zero", dimVelocity*dimArea, 0)
+//         )
+//     );
+//     surfaceScalarField& MRFZonesPhiCorr = tMRFZonesPhiCorr.ref();
 
-	forAll (*this, i)
-	{
-		operator[](i).relativeFlux(MRFZonesPhiCorr);
-	}
+//     forAll (*this, i)
+//     {
+//         operator[](i).relativeFlux(MRFZonesPhiCorr);
+//     }
 
-	return tMRFZonesPhiCorr;
-}
+//     return tMRFZonesPhiCorr;
+// }
 
 
 Foam::tmp<Foam::surfaceScalarField> Foam::MRFZones::meshPhi() const
 {
-	tmp<surfaceScalarField> tMRFZonesFaceU
-	(
-		new surfaceScalarField
-		(
-			IOobject
-			(
-				"MRFZonesFaceU",
-				mesh_.time().timeName(),
-				mesh_,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh_,
-			dimensionedScalar("zero", dimVolume/dimTime, 0)
-		)
-	);
-	surfaceScalarField& MRFZonesFaceU = tMRFZonesFaceU();
+    tmp<surfaceScalarField> tMRFZonesFaceU
+    (
+        new surfaceScalarField
+        (
+            IOobject
+            (
+                "MRFZonesFaceU",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh_,
+            dimensionedScalar("zero", dimVolume/dimTime, 0)
+        )
+    );
+    surfaceScalarField& MRFZonesFaceU = tMRFZonesFaceU.ref();
 
-	forAll (*this, i)
-	{
-		operator[](i).meshPhi(MRFZonesFaceU);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).meshPhi(MRFZonesFaceU);
+    }
 
-	return tMRFZonesFaceU;
+    return tMRFZonesFaceU;
 }
 
 
 void Foam::MRFZones::addCoriolis(fvVectorMatrix& UEqn) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).addCoriolis(UEqn);
-	}
-}
-
-
-void Foam::MRFZones::relativeFlux(surfaceScalarField& phi) const
-{
-	forAll (*this, i)
-	{
-		operator[](i).relativeFlux(phi);
-	}
-}
-
-
-void Foam::MRFZones::absoluteFlux(surfaceScalarField& phi) const
-{
-	forAll (*this, i)
-	{
-		operator[](i).absoluteFlux(phi);
-	}
-}
-
-
-void Foam::MRFZones::addCoriolis
-(
-	const volScalarField& rho,
-	fvVectorMatrix& UEqn
-) const
-{
-	forAll (*this, i)
-	{
-		operator[](i).addCoriolis(rho, UEqn);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).addCoriolis(UEqn);
+    }
 }
 
 
 void Foam::MRFZones::relativeFlux
 (
-	const surfaceScalarField& rho,
-	surfaceScalarField& phi
+    surfaceScalarField& phi,
+    const volVectorField& U
 ) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).relativeFlux(rho, phi);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).relativeFlux(phi, U);
+    }
 }
 
 
 void Foam::MRFZones::absoluteFlux
 (
-	const surfaceScalarField& rho,
-	surfaceScalarField& phi
+    surfaceScalarField& phi,
+    const volVectorField& U
 ) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).absoluteFlux(rho, phi);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).absoluteFlux(phi, U);
+    }
+}
+
+
+void Foam::MRFZones::addCoriolis
+(
+    const volScalarField& rho,
+    fvVectorMatrix& UEqn
+) const
+{
+    forAll (*this, i)
+    {
+        operator[](i).addCoriolis(rho, UEqn);
+    }
+}
+
+
+void Foam::MRFZones::relativeFlux
+(
+    surfaceScalarField& phi,
+    const volScalarField& rho,
+    const volVectorField& U
+) const
+{
+    forAll (*this, i)
+    {
+        operator[](i).relativeFlux(phi, rho, U);
+    }
+}
+
+
+void Foam::MRFZones::relativeFlux
+(
+    surfaceScalarField& phi,
+    const surfaceScalarField& rho,
+    const volVectorField& U
+) const
+{
+    forAll (*this, i)
+    {
+        operator[](i).relativeFlux(phi, rho, U);
+    }
+}
+
+
+void Foam::MRFZones::absoluteFlux
+(
+    surfaceScalarField& phi,
+    const volScalarField& rho,
+    const volVectorField& U
+) const
+{
+    forAll (*this, i)
+    {
+        operator[](i).absoluteFlux(phi, rho, U);
+    }
+}
+
+
+void Foam::MRFZones::absoluteFlux
+(
+    surfaceScalarField& phi,
+    const surfaceScalarField& rho,
+    const volVectorField& U
+) const
+{
+    forAll (*this, i)
+    {
+        operator[](i).absoluteFlux(phi, rho, U);
+    }
 }
 
 
 void Foam::MRFZones::relativeVelocity(volVectorField& U) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).relativeVelocity(U);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).relativeVelocity(U);
+    }
 }
 
 
 void Foam::MRFZones::absoluteVelocity(volVectorField& U) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).absoluteVelocity(U);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).absoluteVelocity(U);
+    }
 }
 
 
 void Foam::MRFZones::correctBoundaryVelocity(volVectorField& U) const
 {
-	forAll (*this, i)
-	{
-		operator[](i).correctBoundaryVelocity(U);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).correctBoundaryVelocity(U);
+    }
 }
 
 
 Foam::tmp<Foam::volScalarField> Foam::MRFZones::Su
 (
-	const volScalarField& phi
+    const volScalarField& phi
 ) const
 {
-	tmp<volScalarField> tPhiSource
-	(
-		new volScalarField
-		(
-			IOobject
-			(
-				phi.name() + "Source",
-				mesh_.time().timeName(),
-				mesh_,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh_,
-			dimensionedScalar("zero", phi.dimensions()/dimTime, 0),
-			zeroGradientFvPatchScalarField::typeName
-		)
-	);
-	volScalarField& source = tPhiSource();
+    tmp<volScalarField> tPhiSource
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                phi.name() + "Source",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh_,
+            dimensionedScalar("zero", phi.dimensions()/dimTime, 0),
+            zeroGradientFvPatchScalarField::typeName
+        )
+    );
+    volScalarField& source = tPhiSource.ref();
 
-	// Due to gradient cacheing, must take a tmp field
-	// HJ, 22/Apr/2016
-	tmp<volVectorField> tgradPhi = fvc::grad(phi);
-	const volVectorField& gradPhi = tgradPhi();
+    // Due to gradient cacheing, must take a tmp field
+    // HJ, 22/Apr/2016
+    tmp<volVectorField> tgradPhi = fvc::grad(phi);
+    const volVectorField& gradPhi = tgradPhi();
 
-	forAll (*this, i)
-	{
-		operator[](i).Su(phi, gradPhi, source);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).Su(phi, gradPhi, source);
+    }
 
-	return tPhiSource;
+    return tPhiSource;
 }
 
 
 Foam::tmp<Foam::volVectorField> Foam::MRFZones::Su
 (
-	const volVectorField& phi
+    const volVectorField& phi
 ) const
 {
-	tmp<volVectorField> tPhiSource
-	(
-		new volVectorField
-		(
-			IOobject
-			(
-				phi.name() + "Source",
-				mesh_.time().timeName(),
-				mesh_,
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh_,
-			dimensionedVector("zero", phi.dimensions()/dimTime, vector::zero),
-			zeroGradientFvPatchVectorField::typeName
-		)
-	);
-	volVectorField& source = tPhiSource();
+    tmp<volVectorField> tPhiSource
+    (
+        new volVectorField
+        (
+            IOobject
+            (
+                phi.name() + "Source",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh_,
+            dimensionedVector("zero", phi.dimensions()/dimTime, vector::zero),
+            zeroGradientFvPatchVectorField::typeName
+        )
+    );
+    volVectorField& source = tPhiSource.ref();
 
-	// Due to gradient cacheing, must take a tmp field
-	// HJ, 22/Apr/2016
-	tmp<volTensorField> tgradPhi = fvc::grad(phi);
-	const volTensorField& gradPhi = tgradPhi();
+    // Due to gradient cacheing, must take a tmp field
+    // HJ, 22/Apr/2016
+    tmp<volTensorField> tgradPhi = fvc::grad(phi);
+    const volTensorField& gradPhi = tgradPhi.ref();
 
-	forAll (*this, i)
-	{
-		operator[](i).Su(phi, gradPhi, source);
-	}
+    forAll (*this, i)
+    {
+        operator[](i).Su(phi, gradPhi, source);
+    }
 
-	return tPhiSource;
+    return tPhiSource;
 }
 
+
+Foam::tmp<Foam::volScalarField> Foam::MRFZones::calcMagUTheta
+(
+    const volVectorField& U
+)
+{
+    tmp<volScalarField> tMRFZonesUTheta
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                "MRFZonesUTheta",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh_,
+            dimensionedScalar("zero", dimVelocity, 0.0)
+        )
+    );
+    volScalarField& MRFZonesUTheta = tMRFZonesUTheta.ref();
+
+    forAll (*this, i)
+    {
+        operator[](i).calcMagUTheta(U, MRFZonesUTheta);
+    }
+
+    return tMRFZonesUTheta;
+}
 
 // ************************************************************************* //

@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::manualDecomp
+    Foam::manualDecomp
 
 Description
-	Decomposition given a cell-to-processor association in a file
+    Decomposition given a cell-to-processor association in a file
 
 SourceFiles
-	manualDecomp.C
+    manualDecomp.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -40,78 +40,81 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class manualDecomp Declaration
+\*---------------------------------------------------------------------------*/
 
 class manualDecomp
 :
-	public decompositionMethod
+    public decompositionMethod
 {
-	// Private data
+    // Private data
 
-		const polyMesh& mesh_;
+        const polyMesh& mesh_;
 
-		fileName decompDataFile_;
+        fileName decompDataFile_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		manualDecomp(const manualDecomp&);
+        //- Disallow default bitwise copy construct
+        manualDecomp(const manualDecomp&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const manualDecomp&);
+        //- Disallow default bitwise assignment
+        void operator=(const manualDecomp&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("manual");
+    //- Runtime type information
+    TypeName("manual");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct given the decomposition dictionary
-		manualDecomp(const dictionary& decompositionDict);
+        //- Construct given the decomposition dictionary
+        manualDecomp(const dictionary& decompositionDict);
 
-		//- Construct given the decomposition dictionary and mesh
-		manualDecomp
-		(
-			const dictionary& decompositionDict,
-			const polyMesh& mesh
-		);
-
-
-	// Destructor
-
-		virtual ~manualDecomp()
-		{}
+        //- Construct given the decomposition dictionary and mesh
+        manualDecomp
+        (
+            const dictionary& decompositionDict,
+            const polyMesh& mesh
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- manual decompose does not care about proc boundaries - is all
-		//  up to the user.
-		virtual bool parallelAware() const
-		{
-			return true;
-		}
+        virtual ~manualDecomp()
+        {}
 
-		//- Decompose cells with weights
-		virtual labelList decompose
-		(
-			const pointField& points,
-			const scalarField& pointWeights
-		);
 
-		//- Decompose cells with weights with explicitly provided connectivity
-		virtual labelList decompose
-		(
-			const labelListList& globalCellCells,
-			const pointField& cc,
-			const scalarField& cWeights
-		)
-		{
-			return decompose(cc, cWeights);
-		}
+    // Member Functions
+
+        //- manual decompose does not care about proc boundaries - is all
+        //  up to the user.
+        virtual bool parallelAware() const
+        {
+            return true;
+        }
+
+        //- Decompose cells with weights
+        virtual labelList decompose
+        (
+            const pointField& points,
+            const scalarField& pointWeights
+        );
+
+        //- Decompose cells with weights with explicitly provided connectivity
+        virtual labelList decompose
+        (
+            const labelListList& globalCellCells,
+            const pointField& cc,
+            const scalarField& cWeights
+        )
+        {
+            return decompose(cc, cWeights);
+        }
 };
 
 

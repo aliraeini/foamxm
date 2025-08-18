@@ -1,41 +1,41 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fileMonitor
+    Foam::fileMonitor
 
 Description
-	Checking for changes to files.
+    Checking for changes to files.
 
 Note
-	The default is to use stat to get the timestamp.
+    The default is to use stat to get the timestamp.
 
-	Compile with FOAM_USE_INOTIFY to use the inotify
-	(Linux specific, since 2.6.13) framework. The problem is that inotify does
-	not work on nfs3 mounted directories!!
+    Compile with FOAM_USE_INOTIFY to use the inotify
+    (Linux specific, since 2.6.13) framework. The problem is that inotify does
+    not work on nfs3 mounted directories!!
 
 SourceFiles
-	fileMonitor.C
+    fileMonitor.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,96 +55,99 @@ namespace Foam
 class fileMonitor;
 class fileMonitorWatcher;
 
+/*---------------------------------------------------------------------------*\
+                         Class fileMonitor Declaration
+\*---------------------------------------------------------------------------*/
 
 class fileMonitor
 {
 
 public:
 
-	// Public data types
+    // Public data types
 
-		//- Enumeration defining the file state.
-		enum fileState
-		{
-			UNMODIFIED = 0,
-			MODIFIED = 1,
-			DELETED = 2
-		};
+        //- Enumeration defining the file state.
+        enum fileState
+        {
+            UNMODIFIED = 0,
+            MODIFIED = 1,
+            DELETED = 2
+        };
 
-		static const NamedEnum<fileState, 3> fileStateNames_;
+        static const NamedEnum<fileState, 3> fileStateNames_;
 
 private:
-	// Private data
+    // Private data
 
-		//- Whether to use inotify (requires -DFOAM_USE_INOTIFY, see above)
-		const bool useInotify_;
+        //- Whether to use inotify (requires -DFOAM_USE_INOTIFY, see above)
+        const bool useInotify_;
 
-		//- State for all watchFds based on local files
-		mutable DynamicList<fileState> localState_;
+        //- State for all watchFds based on local files
+        mutable DynamicList<fileState> localState_;
 
-		//- State for all watchFds - synchronised
-		mutable DynamicList<fileState> state_;
+        //- State for all watchFds - synchronised
+        mutable DynamicList<fileState> state_;
 
-		//- Filename for all watchFds
-		DynamicList<fileName> watchFile_;
+        //- Filename for all watchFds
+        DynamicList<fileName> watchFile_;
 
-		//- Free watchFds
-		DynamicList<label> freeWatchFds_;
+        //- Free watchFds
+        DynamicList<label> freeWatchFds_;
 
-		//- Watch mechanism (stat or inotify)
-		mutable autoPtr<fileMonitorWatcher> watcher_;
+        //- Watch mechanism (stat or inotify)
+        mutable autoPtr<fileMonitorWatcher> watcher_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Update localState_ from any events.
-		void checkFiles() const;
+        //- Update localState_ from any events.
+        void checkFiles() const;
 
-		//- Disallow default bitwise copy construct
-		fileMonitor(const fileMonitor&);
+        //- Disallow default bitwise copy construct
+        fileMonitor(const fileMonitor&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const fileMonitor&);
+        //- Disallow default bitwise assignment
+        void operator=(const fileMonitor&);
 
 
 public:
 
-	// Declare name of the class and its debug switch
-	ClassName("fileMonitor");
+    // Declare name of the class and its debug switch
+    ClassName("fileMonitor");
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		fileMonitor(const bool useInotify);
-
-
-	//- Destructor
-	~fileMonitor();
+        //- Construct null
+        fileMonitor(const bool useInotify);
 
 
-	// Member Functions
+    //- Destructor
+    ~fileMonitor();
 
-		//- Add file to watch. Return watch descriptor
-		label addWatch(const fileName&);
 
-		//- Remove file to watch. Return true if successful
-		bool removeWatch(const label watchFd);
+    // Member Functions
 
-		//- Get name of file being watched
-		const fileName& getFile(const label watchFd) const;
+        //- Add file to watch. Return watch descriptor
+        label addWatch(const fileName&);
 
-		//- Check state using handle
-		fileState getState(const label watchFd) const;
+        //- Remove file to watch. Return true if successful
+        bool removeWatch(const label watchFd);
 
-		//- Check state of all files. Updates state_.
-		void updateStates
-		(
-			const bool masterOnly,
-			const bool syncPar
-		) const;
+        //- Get name of file being watched
+        const fileName& getFile(const label watchFd) const;
 
-		//- Reset state (e.g. after having read it) using handle
-		void setUnmodified(const label watchFd);
+        //- Check state using handle
+        fileState getState(const label watchFd) const;
+
+        //- Check state of all files. Updates state_.
+        void updateStates
+        (
+            const bool masterOnly,
+            const bool syncPar
+        ) const;
+
+        //- Reset state (e.g. after having read it) using handle
+        void setUnmodified(const label watchFd);
 };
 
 

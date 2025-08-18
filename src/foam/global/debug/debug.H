@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Namespace
-	Foam::debug
+    Foam::debug
 
 Description
-	Namespace for handling debugging switches.
+    Namespace for handling debugging switches.
 
 SourceFiles
-	debug.C
+    debug.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,98 +48,110 @@ class fileName;
 
 namespace debug
 {
-	//- Define central control dictionary switchSet
-	enum globalControlDictSwitchSet
-	{
-		DEBUG_SWITCHES,
-		INFO_SWITCHES,
-		OPTIMISATION_SWITCHES,
-		TOLERANCES,
-		DIMENSIONED_CONSTANTS
-	};
+    //- Define central control dictionary switchSet
+    enum globalControlDictSwitchSet
+    {
+        DEBUG_SWITCHES,
+        INFO_SWITCHES,
+        OPTIMISATION_SWITCHES,
+        TOLERANCES,
+        DIMENSIONED_CONSTANTS
+    };
 
-	// Number of global controlDict switches sets
-	// Currently, we have:
-	//     DebugSwitches
-	//     InfoSwitches
-	//     OptimisationSwitches
-	//     Tolerances,
-	//     DimensionedConstants
-	static const int DIM_GLOBAL_CONTROL_DICT_SWITCH_SET = 5;
+    // enum for selecting which part of the globalControlDict to dump to the console
+    enum globalControlDictSubDict
+    {
+        allDict,
+        debugDict,
+        infoDict,
+        optimisationDict,
+        tolerancesDict,
+        constantsDict
+    };
 
-	//- The central control dictionary.
-	//  Located in ~/.OpenFOAM/VERSION or $WM_PROJECT_DIR/etc
-	//  \sa Foam::findEtcFile()
-	dictionary& controlDict();
+    // Number of global controlDict switches sets
+    // Currently, we have:
+    //     DebugSwitches
+    //     InfoSwitches
+    //     OptimisationSwitches
+    //     Tolerances,
+    //     DimensionedConstants
+    static const int DIM_GLOBAL_CONTROL_DICT_SWITCH_SET = 5;
 
-	//- The DebugSwitches sub-dictionary in the central controlDict.
-	dictionary& debugSwitches();
+    //- The central control dictionary.
+    //  Located in ~/.OpenFOAM/VERSION or $WM_PROJECT_DIR/etc
+    //  \sa Foam::findEtcFile()
+    dictionary& controlDict();
 
-	//- The InfoSwitches sub-dictionary in the central controlDict.
-	dictionary& infoSwitches();
+    //- The DebugSwitches sub-dictionary in the central controlDict.
+    dictionary& debugSwitches();
 
-	//- The OptimisationSwitches sub-dictionary in the central controlDict.
-	dictionary& optimisationSwitches();
+    //- The InfoSwitches sub-dictionary in the central controlDict.
+    dictionary& infoSwitches();
 
-	//- The Tolerances sub-dictionary in the central controlDict.
-	dictionary& tolerances();
+    //- The OptimisationSwitches sub-dictionary in the central controlDict.
+    dictionary& optimisationSwitches();
 
-	//- The DimensionedConstants sub-dictionary in the central controlDict.
-	dictionary& constants();
+    //- The Tolerances sub-dictionary in the central controlDict.
+    dictionary& tolerances();
 
-	//- Lookup debug switch or add default value.
-	int debugSwitchFromDict(const char* name, const int defaultValue = 0);
+    //- The DimensionedConstants sub-dictionary in the central controlDict.
+    dictionary& constants();
 
-	//- Lookup info switch or add default value.
-	int infoSwitchFromDict(const char* name, const int defaultValue = 0);
+    //- Lookup debug switch or add default value.
+    int debugSwitchFromDict(const char* name, const int defaultValue = 0);
 
-	//- Lookup optimisation switch or add default value.
-	int optimisationSwitchFromDict
-	(
-		const char* name,
-		const int defaultValue = 0
-	);
+    //- Lookup info switch or add default value.
+    int infoSwitchFromDict(const char* name, const int defaultValue = 0);
 
-	int optimisationSwitchFromDict
-	(
-		const Foam::string name,
-		const Foam::word defaultValue
-	);
+    //- Lookup optimisation switch or add default value.
+    int optimisationSwitchFromDict
+    (
+        const char* name,
+        const int defaultValue = 0
+    );
 
-	//- Lookup tolerances switch or add default value.
-	double tolerancesFromDict
-	(
-		const char* name,
-		const double defaultValue = 0
-	);
+    int optimisationSwitchFromDict
+    (
+        const Foam::string name,
+        const Foam::word defaultValue
+    );
 
-	//- Lookup dimensionedConstants switch or add default value.
-	double constantsFromDict
-	(
-		const char* name,
-		const double defaultValue = 0
-	);
+    //- Lookup tolerances switch or add default value.
+    double tolerancesFromDict
+    (
+        const char* name,
+        const double defaultValue = 0
+    );
 
-	//- Update central controlDict variables
-	//  supported keyValues format: key1=value1,key2=value2
-	void updateCentralDictVars
-	(
-		const globalControlDictSwitchSet centralDictSwitchSetName,
-		const Foam::string& keyValues,
-		const bool verbose = true
-	);
+    //- Lookup dimensionedConstants switch or add default value.
+    double constantsFromDict
+    (
+        const char* name,
+        const double defaultValue = 0
+    );
 
-	//- Update central controlDict variables from a file
-	void updateCentralDictVars
-	(
-		const Foam::fileName& file,
-		const bool verbose = true
-	);
+    //- Update central controlDict variables
+    //  supported keyValues format: key1=value1,key2=value2
+    void updateCentralDictVars
+    (
+        const globalControlDictSwitchSet centralDictSwitchSetName,
+        const Foam::string& keyValues,
+        const bool verbose = true
+    );
 
-	//- Dump the central controlDict variables to the console using a standard
-	// dictionary format. If a description is available for a given switch, a
-	// comment will be added just besides the switch name and value.
-	void dumpControlSwitchesToConsole();
+    //- Update central controlDict variables from a file
+    void updateCentralDictVars
+    (
+        const Foam::fileName& file,
+        const bool verbose = true
+    );
+
+    //- Dump the central controlDict variables to the console using a standard
+    // dictionary format. If a description is available for a given switch, a
+    // comment will be added just besides the switch name and value.
+    // A subset of the whole controlDict can be specified (debug, info, etc.)
+    void dumpControlSwitchesToConsole(const Foam::string& switchesSubSetName);
 
 } // End namespace debug
 

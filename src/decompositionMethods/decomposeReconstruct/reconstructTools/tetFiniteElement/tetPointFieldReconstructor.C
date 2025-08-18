@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -117,16 +117,8 @@ labelList tetPointFieldReconstructor::procPatchAddressing
 
     if (addr.size() && min(addr) < 0)
     {
-        FatalErrorIn
-        (
-            "labelList tetPointFieldReconstructor::"
-            "patchProcAddressing\n"
-            "(\n"
-            "    const labelList& procToGlobalAddr,\n"
-            "    const label procNo,\n"
-            "    const label patchNo\n"
-            ") const"
-        )   << "error in addressing"
+        FatalErrorInFunction
+            << "error in addressing"
             << abort(FatalError);
     }
 

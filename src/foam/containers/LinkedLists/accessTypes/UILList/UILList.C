@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -32,10 +32,10 @@ Description
 template<class LListBase, class T>
 Foam::UILList<LListBase, T>::UILList(const UILList<LListBase, T>& lst)
 {
-	for (const_iterator iter = lst.begin(); iter != lst.end(); ++iter)
-	{
-		this->append(&iter());
-	}
+    for (const_iterator iter = lst.begin(); iter != lst.end(); ++iter)
+    {
+        this->append(&iter());
+    }
 }
 
 
@@ -44,37 +44,37 @@ Foam::UILList<LListBase, T>::UILList(const UILList<LListBase, T>& lst)
 template<class LListBase, class T>
 void Foam::UILList<LListBase, T>::operator=(const UILList<LListBase, T>& rhs)
 {
-	LListBase::clear();
+    LListBase::clear();
 
-	for (const_iterator iter = rhs.begin(); iter != rhs.end(); ++iter)
-	{
-		this->append(&iter());
-	}
+    for (const_iterator iter = rhs.begin(); iter != rhs.end(); ++iter)
+    {
+        this->append(&iter());
+    }
 }
 
 
 template<class LListBase, class T>
 bool Foam::UILList<LListBase, T>::operator==
 (
-	const UILList<LListBase, T>& rhs
+    const UILList<LListBase, T>& rhs
 ) const
 {
-	if (this->size() != rhs.size())
-	{
-		return false;
-	}
+    if (this->size() != rhs.size())
+    {
+        return false;
+    }
 
-	bool equal = true;
+    bool equal = true;
 
-	const_iterator iter1 = this->begin();
-	const_iterator iter2 = rhs.begin();
+    const_iterator iter1 = this->begin();
+    const_iterator iter2 = rhs.begin();
 
-	for (; iter1 != this->end(); ++iter1, ++iter2)
-	{
-		equal = equal && iter1() == iter2();
-	}
+    for (; iter1 != this->end(); ++iter1, ++iter2)
+    {
+        equal = equal && iter1() == iter2();
+    }
 
-	return equal;
+    return equal;
 }
 
 
@@ -82,10 +82,10 @@ bool Foam::UILList<LListBase, T>::operator==
 template<class LListBase, class T>
 bool Foam::UILList<LListBase, T>::operator!=
 (
-	const UILList<LListBase, T>& rhs
+    const UILList<LListBase, T>& rhs
 ) const
 {
-	return !operator==(rhs);
+    return !operator==(rhs);
 }
 
 

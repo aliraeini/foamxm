@@ -1,41 +1,41 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Namespace
-	Foam::viscosityModels
+    Foam::viscosityModels
 
 Description
-	A namespace for various incompressible viscosityModel implementations.
+    A namespace for various incompressible viscosityModel implementations.
 
 Class
-	Foam::viscosityModel
+    Foam::viscosityModel
 
 Description
-	An abstract base class for incompressible viscosityModels
+    An abstract base class for incompressible viscosityModels
 
 SourceFiles
-	viscosityModel.C
-	newViscosityModel.C
+    viscosityModel.C
+    newViscosityModel.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,102 +56,109 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                         Class viscosityModel Declaration
+\*---------------------------------------------------------------------------*/
 
 class viscosityModel
 {
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		word name_;
-		dictionary viscosityProperties_;
+        //- Model name
+        word name_;
 
-		const volVectorField& U_;
-		const surfaceScalarField& phi_;
+        //- Properties dictionary
+        dictionary viscosityProperties_;
+
+        //- Reference to velocity field
+        const volVectorField& U_;
+
+        //- Reference to face flux field
+        const surfaceScalarField& phi_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow copy construct
-		viscosityModel(const viscosityModel&);
+        //- Disallow copy construct
+        viscosityModel(const viscosityModel&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const viscosityModel&);
+        //- Disallow default bitwise assignment
+        void operator=(const viscosityModel&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("viscosityModel");
+    //- Runtime type information
+    TypeName("viscosityModel");
 
 
-	// Declare run-time constructor selection table
+    // Declare run-time constructor selection table
 
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			viscosityModel,
-			dictionary,
-			(
-				const word& name,
-				const dictionary& viscosityProperties,
-				const volVectorField& U,
-				const surfaceScalarField& phi
-			),
-			(name, viscosityProperties, U, phi)
-		);
-
-
-	// Selectors
-
-		//- Return a reference to the selected viscosity model
-		static autoPtr<viscosityModel> New
-		(
-			const word& name,
-			const dictionary& viscosityProperties,
-			const volVectorField& U,
-			const surfaceScalarField& phi
-		);
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            viscosityModel,
+            dictionary,
+            (
+                const word& name,
+                const dictionary& viscosityProperties,
+                const volVectorField& U,
+                const surfaceScalarField& phi
+            ),
+            (name, viscosityProperties, U, phi)
+        );
 
 
-	// Constructors
+    // Selectors
 
-		//- Construct from components
-		viscosityModel
-		(
-			const word& name,
-			const dictionary& viscosityProperties,
-			const volVectorField& U,
-			const surfaceScalarField& phi
-		);
-
-
-	// Destructor
-
-		virtual ~viscosityModel()
-		{}
+        //- Return a reference to the selected viscosity model
+        static autoPtr<viscosityModel> New
+        (
+            const word& name,
+            const dictionary& viscosityProperties,
+            const volVectorField& U,
+            const surfaceScalarField& phi
+        );
 
 
-	// Member Functions
+    // Constructors
 
-		//- Return the phase transport properties dictionary
-		const dictionary& viscosityProperties() const
-		{
-			return viscosityProperties_;
-		}
+        //- Construct from components
+        viscosityModel
+        (
+            const word& name,
+            const dictionary& viscosityProperties,
+            const volVectorField& U,
+            const surfaceScalarField& phi
+        );
 
-		//- Return the strain rate mag(grad(U))
-		tmp<volScalarField> strainRate() const;
 
-		//- Return the laminar viscosity
-		virtual const volScalarField& nu() const = 0;
+    //- Destructor
+    virtual ~viscosityModel() = default;
 
-		//- Correct the laminar viscosity
-		virtual void correct() = 0;
 
-		//- Read transportProperties dictionary
-		virtual bool read(const dictionary& viscosityProperties) = 0;
+    // Member Functions
+
+        //- Return the phase transport properties dictionary
+        const dictionary& viscosityProperties() const
+        {
+            return viscosityProperties_;
+        }
+
+        //- Return the strain rate mag(grad(U))
+        tmp<volScalarField> strainRate() const;
+
+        //- Return the laminar viscosity
+        virtual const volScalarField& nu() const = 0;
+
+        //- Correct the laminar viscosity
+        virtual void correct() = 0;
+
+        //- Read transportProperties dictionary
+        virtual bool read(const dictionary& viscosityProperties) = 0;
 };
 
 

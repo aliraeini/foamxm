@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Primitive
-	uint32
+    uint32
 
 Description
-	32bit uinteger
+    32bit uinteger
 
 SourceFiles
-	uint32.C
-	uint32IO.C
+    uint32.C
+    uint32IO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -73,57 +73,57 @@ Ostream& operator<<(Ostream&, const uint32_t);
 template<>
 class pTraits<uint32_t>
 {
-	uint32_t p_;
+    uint32_t p_;
 
 public:
 
-	//- Component type
-	typedef uint32_t cmptType;
+    //- Component type
+    typedef uint32_t cmptType;
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			dim = 3,         //!< Dimensionality of space
-			rank = 0,        //!< Rank of uint32_t is 0
-			nComponents = 1  //!< Number of components in uint32_t is 1
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
-		static const char* componentNames[];
-		static const uint32_t zero;
-		static const uint32_t one;
-		static const uint32_t min;
-		static const uint32_t max;
-		static const uint32_t rootMax;
-		static const uint32_t rootMin;
+        enum
+        {
+            dim = 3,         //!< Dimensionality of space
+            rank = 0,        //!< Rank of uint32_t is 0
+            nComponents = 1  //!< Number of components in uint32_t is 1
+        };
 
 
-	// Constructors
+    // Static data members
 
-		//- Construct from primitive
-		explicit pTraits(const uint32_t&);
+        static const char* const typeName;
+        static const char* componentNames[];
+        static const uint32_t zero;
+        static const uint32_t one;
+        static const uint32_t min;
+        static const uint32_t max;
+        static const uint32_t rootMax;
+        static const uint32_t rootMin;
 
-		//- Construct from Istream
-		pTraits(Istream&);
+
+    // Constructors
+
+        //- Construct from primitive
+        explicit pTraits(const uint32_t&);
+
+        //- Construct from Istream
+        pTraits(Istream&);
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Access to the uint32_t value
-		operator uint32_t() const
-		{
-			return p_;
-		}
+        //- Access to the uint32_t value
+        operator uint32_t() const
+        {
+            return p_;
+        }
 
-		//- Access to the uint32_t value
-		operator uint32_t&()
-		{
-			return p_;
-		}
+        //- Access to the uint32_t value
+        operator uint32_t&()
+        {
+            return p_;
+        }
 };
 
 

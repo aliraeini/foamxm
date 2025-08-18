@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Vector-matrix multiplication operations for a block matrix
+    Vector-matrix multiplication operations for a block matrix
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,380 +33,383 @@ Description
 template<class Type>
 void Foam::BlockLduMatrix<Type>::Amul
 (
-	TypeField& Ax,
-	const TypeField& x
+    TypeField& Ax,
+    const TypeField& x
 ) const
 {
-	Ax = pTraits<Type>::zero;
+    Ax = pTraits<Type>::zero;
 
-	// Note: changed order of interface update: init after core
-	// HJ, 14/Mar/2016
+    // Note: changed order of interface update: init after core
+    // HJ, 14/Mar/2016
 
-	AmulCore(Ax, x);
+    AmulCore(Ax, x);
 
-	// Initialise the update of coupled interfaces
-	initInterfaces(coupleUpper_, Ax, x);
+    // Initialise the update of coupled interfaces
+    initInterfaces(coupleUpper_, Ax, x);
 
-	// Update coupled interfaces
-	updateInterfaces(coupleUpper_, Ax, x);
+    // Update coupled interfaces
+    updateInterfaces(coupleUpper_, Ax, x);
 }
 
 
 template<class Type>
 void Foam::BlockLduMatrix<Type>::AmulCore
 (
-	TypeField& Ax,
-	const TypeField& x
+    TypeField& Ax,
+    const TypeField& x
 ) const
 {
-	typedef typename TypeCoeffField::scalarTypeField scalarTypeField;
-	typedef typename TypeCoeffField::linearTypeField linearTypeField;
-	typedef typename TypeCoeffField::squareTypeField squareTypeField;
+    typedef typename TypeCoeffField::scalarTypeField scalarTypeField;
+    typedef typename TypeCoeffField::linearTypeField linearTypeField;
+    typedef typename TypeCoeffField::squareTypeField squareTypeField;
 
-	const unallocLabelList& u = lduAddr().upperAddr();
-	const unallocLabelList& l = lduAddr().lowerAddr();
+    const labelUList& u = lduAddr().upperAddr();
+    const labelUList& l = lduAddr().lowerAddr();
 
-	const TypeCoeffField& Diag = this->diag();
-	const TypeCoeffField& Upper = this->upper();
+    const TypeCoeffField& Diag = this->diag();
+    const TypeCoeffField& Upper = this->upper();
 
-	// Create multiplication function object
-	typename BlockCoeff<Type>::multiply mult;
+    // Create multiplication function object
+    typename BlockCoeff<Type>::multiply mult;
 
-	// Diagonal multiplication, no indirection
-	multiply(Ax, Diag, x);
+    // Diagonal multiplication, no indirection
+    multiply(Ax, Diag, x);
 
-	// Lower multiplication
+    // Lower multiplication
 
-	if (symmetric())
-	{
-		if (Upper.activeType() == blockCoeffBase::SCALAR)
-		{
-			const scalarTypeField& activeUpper = Upper.asScalar();
+    if (symmetric())
+    {
+        if (Upper.activeType() == blockCoeffBase::SCALAR)
+        {
+            const scalarTypeField& activeUpper = Upper.asScalar();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Ax[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
-			}
-		}
-		else if (Upper.activeType() == blockCoeffBase::LINEAR)
-		{
-			const linearTypeField& activeUpper = Upper.asLinear();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Ax[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
+            }
+        }
+        else if (Upper.activeType() == blockCoeffBase::LINEAR)
+        {
+            const linearTypeField& activeUpper = Upper.asLinear();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Ax[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
-			}
-		}
-		else if (Upper.activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeUpper = Upper.asSquare();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Ax[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
+            }
+        }
+        else if (Upper.activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeUpper = Upper.asSquare();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				// Use transpose upper coefficient
-				Ax[u[coeffI]] +=
-					mult(activeUpper[coeffI].T(), x[l[coeffI]]);
-			}
-		}
-	}
-	else // Asymmetric matrix
-	{
-		const TypeCoeffField& Lower = this->lower();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                // Use transpose upper coefficient
+                Ax[u[coeffI]] +=
+                    mult(activeUpper[coeffI].T(), x[l[coeffI]]);
+            }
+        }
+    }
+    else // Asymmetric matrix
+    {
+        const TypeCoeffField& Lower = this->lower();
 
-		if (Lower.activeType() == blockCoeffBase::SCALAR)
-		{
-			const scalarTypeField& activeLower = Lower.asScalar();
+        if (Lower.activeType() == blockCoeffBase::SCALAR)
+        {
+            const scalarTypeField& activeLower = Lower.asScalar();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
-			}
-		}
-		else if (Lower.activeType() == blockCoeffBase::LINEAR)
-		{
-			const linearTypeField& activeLower = Lower.asLinear();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
+            }
+        }
+        else if (Lower.activeType() == blockCoeffBase::LINEAR)
+        {
+            const linearTypeField& activeLower = Lower.asLinear();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
-			}
-		}
-		else if (Lower.activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeLower = Lower.asSquare();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
+            }
+        }
+        else if (Lower.activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeLower = Lower.asSquare();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
-			}
-		}
-	}
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Ax[u[coeffI]] += mult(activeLower[coeffI], x[l[coeffI]]);
+            }
+        }
+    }
 
-	// Upper multiplication
+    // Upper multiplication
 
-	if (Upper.activeType() == blockCoeffBase::SCALAR)
-	{
-		const scalarTypeField& activeUpper = Upper.asScalar();
+    if (Upper.activeType() == blockCoeffBase::SCALAR)
+    {
+        const scalarTypeField& activeUpper = Upper.asScalar();
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
-		}
-	}
-	else if (Upper.activeType() == blockCoeffBase::LINEAR)
-	{
-		const linearTypeField& activeUpper = Upper.asLinear();
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
+        }
+    }
+    else if (Upper.activeType() == blockCoeffBase::LINEAR)
+    {
+        const linearTypeField& activeUpper = Upper.asLinear();
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
-		}
-	}
-	else if (Upper.activeType() == blockCoeffBase::SQUARE)
-	{
-		const squareTypeField& activeUpper = Upper.asSquare();
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
+        }
+    }
+    else if (Upper.activeType() == blockCoeffBase::SQUARE)
+    {
+        const squareTypeField& activeUpper = Upper.asSquare();
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
-		}
-	}
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            Ax[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
+        }
+    }
 }
 
 
 template<class Type>
 void Foam::BlockLduMatrix<Type>::Tmul
 (
-	TypeField& Ax,
-	const TypeField& x
+    TypeField& Ax,
+    const TypeField& x
 ) const
 {
-	Ax = pTraits<Type>::zero;
+    Ax = pTraits<Type>::zero;
 
-	TmulCore(Ax, x);
+    TmulCore(Ax, x);
 
-	// Note: changed order of interface update: init after core
-	// HJ, 14/Mar/2016
+    // Note: changed order of interface update: init after core
+    // HJ, 14/Mar/2016
 
-	// Initialise the update of coupled interfaces
-	initInterfaces(coupleLower_, Ax, x);
+    // Initialise the update of coupled interfaces
+    initInterfaces(coupleLower_, Ax, x);
 
-	// Update coupled interfaces
-	updateInterfaces(coupleLower_, Ax, x);
+    // Update coupled interfaces
+    updateInterfaces(coupleLower_, Ax, x);
 }
 
 
 template<class Type>
 void Foam::BlockLduMatrix<Type>::TmulCore
 (
-	TypeField& Tx,
-	const TypeField& x
+    TypeField& Tx,
+    const TypeField& x
 ) const
 {
-	typedef typename TypeCoeffField::scalarTypeField scalarTypeField;
-	typedef typename TypeCoeffField::linearTypeField linearTypeField;
-	typedef typename TypeCoeffField::squareTypeField squareTypeField;
+    typedef typename TypeCoeffField::scalarTypeField scalarTypeField;
+    typedef typename TypeCoeffField::linearTypeField linearTypeField;
+    typedef typename TypeCoeffField::squareTypeField squareTypeField;
 
-	const unallocLabelList& u = lduAddr().upperAddr();
-	const unallocLabelList& l = lduAddr().lowerAddr();
+    const labelUList& u = lduAddr().upperAddr();
+    const labelUList& l = lduAddr().lowerAddr();
 
-	const TypeCoeffField& Diag = this->diag();
-	const TypeCoeffField& Upper = this->upper();
+    const TypeCoeffField& Diag = this->diag();
+    const TypeCoeffField& Upper = this->upper();
 
-	// Diagonal multiplication, no indirection
-	multiply(Tx, Diag, x);
+    // Create multiplication function object
+    typename BlockCoeff<Type>::multiply mult;
 
-	// Upper multiplication
+    // Diagonal multiplication, no indirection
+    multiply(Tx, Diag, x);
 
-	if (Upper.activeType() == blockCoeffBase::SCALAR)
-	{
-		const scalarTypeField& activeUpper = Upper.asScalar();
+    // Upper multiplication
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			Tx[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
-		}
-	}
-	else if (Upper.activeType() == blockCoeffBase::LINEAR)
-	{
-		const linearTypeField& activeUpper = Upper.asLinear();
+    if (Upper.activeType() == blockCoeffBase::SCALAR)
+    {
+        const scalarTypeField& activeUpper = Upper.asScalar();
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			Tx[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
-		}
-	}
-	else if (Upper.activeType() == blockCoeffBase::SQUARE)
-	{
-		const squareTypeField& activeUpper = Upper.asSquare();
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            Tx[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
+        }
+    }
+    else if (Upper.activeType() == blockCoeffBase::LINEAR)
+    {
+        const linearTypeField& activeUpper = Upper.asLinear();
 
-		for (label coeffI = 0; coeffI < u.size(); coeffI++)
-		{
-			// Bug fix: Missing transpose. VV, 31/Aug/2015.
-			Tx[u[coeffI]] += mult(activeUpper[coeffI].T(), x[l[coeffI]]);
-		}
-	}
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            Tx[u[coeffI]] += mult(activeUpper[coeffI], x[l[coeffI]]);
+        }
+    }
+    else if (Upper.activeType() == blockCoeffBase::SQUARE)
+    {
+        const squareTypeField& activeUpper = Upper.asSquare();
 
-	// Lower multiplication
+        for (label coeffI = 0; coeffI < u.size(); coeffI++)
+        {
+            // Bug fix: Missing transpose. VV, 31/Aug/2015.
+            Tx[u[coeffI]] += mult(activeUpper[coeffI].T(), x[l[coeffI]]);
+        }
+    }
 
-	if (symmetric())
-	{
-		if (Upper.activeType() == blockCoeffBase::SCALAR)
-		{
-			const scalarTypeField& activeUpper = Upper.asScalar();
+    // Lower multiplication
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Tx[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
-			}
-		}
-		else if (Upper.activeType() == blockCoeffBase::LINEAR)
-		{
-			const linearTypeField& activeUpper = Upper.asLinear();
+    if (symmetric())
+    {
+        if (Upper.activeType() == blockCoeffBase::SCALAR)
+        {
+            const scalarTypeField& activeUpper = Upper.asScalar();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Tx[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
-			}
-		}
-		else if (Upper.activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeUpper = Upper.asSquare();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Tx[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
+            }
+        }
+        else if (Upper.activeType() == blockCoeffBase::LINEAR)
+        {
+            const linearTypeField& activeUpper = Upper.asLinear();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				// Use transpose upper coefficient
-				Tx[l[coeffI]] +=
-					mult(activeUpper[coeffI].T(), x[u[coeffI]]);
-			}
-		}
-	}
-	else // Asymmetric matrix
-	{
-		const TypeCoeffField& Lower = this->lower();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Tx[l[coeffI]] += mult(activeUpper[coeffI], x[u[coeffI]]);
+            }
+        }
+        else if (Upper.activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeUpper = Upper.asSquare();
 
-		if (Lower.activeType() == blockCoeffBase::SCALAR)
-		{
-			const scalarTypeField& activeLower = Lower.asScalar();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                // Use transpose upper coefficient
+                Tx[l[coeffI]] +=
+                    mult(activeUpper[coeffI].T(), x[u[coeffI]]);
+            }
+        }
+    }
+    else // Asymmetric matrix
+    {
+        const TypeCoeffField& Lower = this->lower();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Tx[l[coeffI]] += mult(activeLower[coeffI], x[u[coeffI]]);
-			}
-		}
-		else if (Lower.activeType() == blockCoeffBase::LINEAR)
-		{
-			const linearTypeField& activeLower = Lower.asLinear();
+        if (Lower.activeType() == blockCoeffBase::SCALAR)
+        {
+            const scalarTypeField& activeLower = Lower.asScalar();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				Tx[l[coeffI]] += mult(activeLower[coeffI], x[u[coeffI]]);
-			}
-		}
-		else if (Lower.activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeLower = Lower.asSquare();
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Tx[l[coeffI]] += mult(activeLower[coeffI], x[u[coeffI]]);
+            }
+        }
+        else if (Lower.activeType() == blockCoeffBase::LINEAR)
+        {
+            const linearTypeField& activeLower = Lower.asLinear();
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				// Bug fix: Missing transpose. VV, 31/Aug/2015.
-				Tx[l[coeffI]] += mult(activeLower[coeffI].T(), x[u[coeffI]]);
-			}
-		}
-	}
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                Tx[l[coeffI]] += mult(activeLower[coeffI], x[u[coeffI]]);
+            }
+        }
+        else if (Lower.activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeLower = Lower.asSquare();
+
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                // Bug fix: Missing transpose. VV, 31/Aug/2015.
+                Tx[l[coeffI]] += mult(activeLower[coeffI].T(), x[u[coeffI]]);
+            }
+        }
+    }
 }
 
 
 template<class Type>
 void Foam::BlockLduMatrix<Type>::segregateB
 (
-	TypeField& sMul,
-	const TypeField& x
+    TypeField& sMul,
+    const TypeField& x
 ) const
 {
-	typedef typename TypeCoeffField::linearType linearType;
-	typedef typename TypeCoeffField::squareType squareType;
+    typedef typename TypeCoeffField::linearType linearType;
+    typedef typename TypeCoeffField::squareType squareType;
 
-	typedef typename TypeCoeffField::linearTypeField linearTypeField;
-	typedef typename TypeCoeffField::squareTypeField squareTypeField;
+    typedef typename TypeCoeffField::linearTypeField linearTypeField;
+    typedef typename TypeCoeffField::squareTypeField squareTypeField;
 
-	const unallocLabelList& u = lduAddr().upperAddr();
-	const unallocLabelList& l = lduAddr().lowerAddr();
+    const labelUList& u = lduAddr().upperAddr();
+    const labelUList& l = lduAddr().lowerAddr();
 
-	// Diagonal multiplication
-	if (thereIsDiag())
-	{
-		if (diag().activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeDiag = this->diag().asSquare();
-			linearTypeField lf(activeDiag.size());
-			squareTypeField sf(activeDiag.size());
+    // Diagonal multiplication
+    if (thereIsDiag())
+    {
+        if (diag().activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeDiag = this->diag().asSquare();
+            linearTypeField lf(activeDiag.size());
+            squareTypeField sf(activeDiag.size());
 
-			// Expand and contract
-			contractLinear(lf, activeDiag);
-			expandLinear(sf, lf);
+            // Expand and contract
+            contractLinear(lf, activeDiag);
+            expandLinear(sf, lf);
 
-			sMul -= (activeDiag - sf) & x;
-		}
-	}
+            sMul -= (activeDiag - sf) & x;
+        }
+    }
 
-	// Lower multiplication
+    // Lower multiplication
 
-	if (thereIsLower())
-	{
-		if (lower().activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeLower = this->lower().asSquare();
+    if (thereIsLower())
+    {
+        if (lower().activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeLower = this->lower().asSquare();
 
-			// Auxiliary variables used in expand/contract
-			linearType lt;
-			squareType st;
+            // Auxiliary variables used in expand/contract
+            linearType lt;
+            squareType st;
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				contractLinear(lt, activeLower[coeffI]);
-				expandLinear(st, lt);
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                contractLinear(lt, activeLower[coeffI]);
+                expandLinear(st, lt);
 
-				sMul[u[coeffI]] -= (activeLower[coeffI] - st) & x[l[coeffI]];
-			}
-		}
-	}
+                sMul[u[coeffI]] -= (activeLower[coeffI] - st) & x[l[coeffI]];
+            }
+        }
+    }
 
-	// Upper multiplication
+    // Upper multiplication
 
-	if (thereIsUpper())
-	{
-		if (upper().activeType() == blockCoeffBase::SQUARE)
-		{
-			const squareTypeField& activeUpper = this->upper().asSquare();
+    if (thereIsUpper())
+    {
+        if (upper().activeType() == blockCoeffBase::SQUARE)
+        {
+            const squareTypeField& activeUpper = this->upper().asSquare();
 
-			// Auxiliary variables used in expand/contract
-			linearType lt;
-			squareType st;
+            // Auxiliary variables used in expand/contract
+            linearType lt;
+            squareType st;
 
-			for (label coeffI = 0; coeffI < u.size(); coeffI++)
-			{
-				contractLinear(lt, activeUpper[coeffI]);
-				expandLinear(st, lt);
+            for (label coeffI = 0; coeffI < u.size(); coeffI++)
+            {
+                contractLinear(lt, activeUpper[coeffI]);
+                expandLinear(st, lt);
 
-				sMul[l[coeffI]] -= (activeUpper[coeffI] - st) & x[u[coeffI]];
-			}
+                sMul[l[coeffI]] -= (activeUpper[coeffI] - st) & x[u[coeffI]];
+            }
 
-			// If the matrix is symmetric, the lower triangular product
-			// is also needed
-			if (symmetric())
-			{
-				for (label coeffI = 0; coeffI < u.size(); coeffI++)
-				{
-					// Use transpose upper coefficient
-					contractLinear(lt, activeUpper[coeffI]);
-					expandLinear(st, lt);
-					sMul[u[coeffI]] -=
-					    (activeUpper[coeffI].T() - st) & x[l[coeffI]];
-				}
-			}
-		}
-	}
+            // If the matrix is symmetric, the lower triangular product
+            // is also needed
+            if (symmetric())
+            {
+                for (label coeffI = 0; coeffI < u.size(); coeffI++)
+                {
+                    // Use transpose upper coefficient
+                    contractLinear(lt, activeUpper[coeffI]);
+                    expandLinear(st, lt);
+                    sMul[u[coeffI]] -=
+                        (activeUpper[coeffI].T() - st) & x[l[coeffI]];
+                }
+            }
+        }
+    }
 }
 
 

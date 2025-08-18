@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::cyclicFvPatch
+    Foam::cyclicFvPatch
 
 Description
-	Cyclic-plane patch.
+    Cyclic-plane patch.
 
 SourceFiles
-	cyclicFvPatch.C
+    cyclicFvPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,102 +44,106 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class cyclicFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class cyclicFvPatch
 :
-	public coupledFvPatch,
-	public cyclicLduInterface
+    public coupledFvPatch,
+    public cyclicLduInterface
 {
-	// Private data
+    // Private data
 
-		//- Reference to cyclicPolyPatch
-		const cyclicPolyPatch& cyclicPolyPatch_;
+        //- Reference to cyclicPolyPatch
+        const cyclicPolyPatch& cyclicPolyPatch_;
 
 
 protected:
 
-	// Protected Member functions
+    // Protected Member functions
 
-		// Geometry correction functions
+        // Geometry correction functions
 
-			//- Make mesh cell centres.  Moved from fvMeshGeometry
-			virtual void makeC(slicedSurfaceVectorField&) const;
+            //- Make mesh cell centres.  Moved from fvMeshGeometry
+            virtual void makeC(slicedSurfaceVectorField&) const;
 
 
-	// Discretisation correction functions
+        // Discretisation correction functions
 
-			//- Make patch weighting factors
-			void makeWeights(fvsPatchScalarField&) const;
+            //- Make patch weighting factors
+            void makeWeights(fvsPatchScalarField&) const;
 
-			//- Make patch face - neighbour cell distances
-			void makeDeltaCoeffs(fvsPatchScalarField&) const;
+            //- Make patch face - neighbour cell distances
+            void makeDeltaCoeffs(fvsPatchScalarField&) const;
+
+            //- Construct long distance factors
+            virtual void makeMagLongDeltas(fvsPatchScalarField&) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName(cyclicPolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(cyclicPolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from polyPatch
-		cyclicFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
-		:
-			coupledFvPatch(patch, bm),
-			cyclicPolyPatch_(refCast<const cyclicPolyPatch>(patch))
-		{}
-
-
-	// Destructor
-
-		virtual ~cyclicFvPatch()
-		{}
+        //- Construct from polyPatch
+        cyclicFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
+        :
+            coupledFvPatch(patch, bm),
+            cyclicPolyPatch_(refCast<const cyclicPolyPatch>(patch))
+        {}
 
 
-	// Member functions
-
-		// Access
-
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return coupledFvPatch::forwardT();
-			}
-
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return coupledFvPatch::reverseT();
-			}
+    //- Destructor
+    virtual ~cyclicFvPatch() = default;
 
 
-			//- Return delta (P to N) vectors across coupled patch
-			virtual tmp<vectorField> delta() const;
+    // Member functions
+
+        // Access
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return coupledFvPatch::forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return coupledFvPatch::reverseT();
+            }
 
 
-		// Interface transfer functions
+            //- Return delta (P to N) vectors across coupled patch
+            virtual tmp<vectorField> delta() const;
 
-			//- Return the values of the given internal data adjacent to
-			//  the interface as a field
-			virtual tmp<labelField> interfaceInternalField
-			(
-				const unallocLabelList& internalData
-			) const;
 
-			//- Transfer and return neighbour field
-			virtual tmp<labelField> transfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+        // Interface transfer functions
 
-			//- Return neighbour field
-			virtual tmp<labelField> internalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& internalData
-			) const;
+            //- Return the values of the given internal data adjacent to
+            //  the interface as a field
+            virtual tmp<labelField> interfaceInternalField
+            (
+                const labelUList& internalData
+            ) const;
+
+            //- Transfer and return neighbour field
+            virtual tmp<labelField> transfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Return neighbour field
+            virtual tmp<labelField> internalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& internalData
+            ) const;
 };
 
 

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,8 +30,8 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(IMQB, 0);
-	addToRunTimeSelectionTable(RBFFunction, IMQB, dictionary);
+    defineTypeNameAndDebug(IMQB, 0);
+    addToRunTimeSelectionTable(RBFFunction, IMQB, dictionary);
 }
 
 
@@ -39,16 +39,16 @@ namespace Foam
 
 Foam::IMQB::IMQB(const scalar radius)
 :
-	RBFFunction(),
-	radius_(radius)
+    RBFFunction(),
+    radius_(radius)
 {}
 
 
 // Construct from dictionary
 Foam::IMQB::IMQB(const dictionary& dict)
 :
-	RBFFunction(),
-	radius_(readScalar(dict.lookup("radius")))
+    RBFFunction(),
+    radius_(readScalar(dict.lookup("radius")))
 {}
 
 
@@ -62,14 +62,14 @@ Foam::IMQB::~IMQB()
 
 Foam::tmp<Foam::scalarField> Foam::IMQB::weights
 (
-	const vectorField& controlPoints,
-	const vector& dataPoint
+    const vectorField& controlPoints,
+    const vector& dataPoint
 ) const
 {
-	// Algorithmic improvement, Matteo Lombardi.  21/Mar/2011
-	scalarField sqrDist = magSqr(controlPoints - dataPoint);
+    // Algorithmic improvement, Matteo Lombardi.  21/Mar/2011
+    scalarField sqrDist = magSqr(controlPoints - dataPoint);
 
-	return 1/sqrt(sqrDist + sqr(radius_));
+    return 1/sqrt(sqrDist + sqr(radius_));
 }
 
 

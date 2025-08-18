@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::objectHit
+    Foam::objectHit
 
 Description
-	This class describes a combination of target object index and success flag.
+    This class describes a combination of target object index and success flag.
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,78 +48,81 @@ inline bool operator!=(const objectHit& a, const objectHit& b);
 inline Ostream& operator<<(Ostream& os, const objectHit& b);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class objectHit Declaration
+\*---------------------------------------------------------------------------*/
 
 class objectHit
 {
-	// Private data
+    // Private data
 
-		//- Hit success
-		bool hit_;
+        //- Hit success
+        bool hit_;
 
-		//- Object of hit
-		label hitObject_;
+        //- Object of hit
+        label hitObject_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		objectHit()
-		:
-			hit_(false),
-			hitObject_(-1)
-		{}
+        //- Construct null
+        objectHit()
+        :
+            hit_(false),
+            hitObject_(-1)
+        {}
 
-		//- Construct from components
-		objectHit(const bool success, const label& obj)
-		:
-			hit_(success),
-			hitObject_(obj)
-		{}
+        //- Construct from components
+        objectHit(const bool success, const label& obj)
+        :
+            hit_(success),
+            hitObject_(obj)
+        {}
 
-		//- Construct from Istream
-		objectHit(Istream& is)
-		:
-			hit_(readBool(is)),
-			hitObject_(readLabel(is))
-		{}
-
-
-	// Member Functions
-
-		//- Is there a hit
-		bool hit() const
-		{
-			return hit_;
-		}
-
-		//- Return hit object
-		label hitObject() const
-		{
-			return hitObject_;
-		}
+        //- Construct from Istream
+        objectHit(Istream& is)
+        :
+            hit_(readBool(is)),
+            hitObject_(readLabel(is))
+        {}
 
 
-	// Friend Operators
+    // Member Functions
 
-		friend bool operator==(const objectHit& a, const objectHit& b)
-		{
-			return ((a.hit_ == b.hit_) && (a.hitObject_ == b.hitObject_));
-		}
+        //- Is there a hit
+        bool hit() const
+        {
+            return hit_;
+        }
 
-		friend bool operator!=(const objectHit& a, const objectHit& b)
-		{
-			return (!(a == b));
-		}
+        //- Return hit object
+        label hitObject() const
+        {
+            return hitObject_;
+        }
 
 
-	// Ostream operator
+    // Friend Operators
 
-		friend Ostream& operator<<(Ostream& os, const objectHit& b)
-		{
-			 return os << b.hit() << token::SPACE << b.hitObject();
-		}
+        friend bool operator==(const objectHit& a, const objectHit& b)
+        {
+            return ((a.hit_ == b.hit_) && (a.hitObject_ == b.hitObject_));
+        }
+
+        friend bool operator!=(const objectHit& a, const objectHit& b)
+        {
+            return (!(a == b));
+        }
+
+
+    // Ostream operator
+
+        friend Ostream& operator<<(Ostream& os, const objectHit& b)
+        {
+             return os << b.hit() << token::SPACE << b.hitObject();
+        }
 };
 
 

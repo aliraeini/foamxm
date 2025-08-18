@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::tolerances
+    Foam::tolerances
 
 Description
-	Selector class for solution tolerances.
+    Selector class for solution tolerances.
 
 SourceFiles
-	tolerances.C
+    tolerances.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,50 +42,53 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class tolerances Declaration
+\*---------------------------------------------------------------------------*/
 
 class tolerances
 :
-	public IOdictionary
+    public IOdictionary
 {
-	// Private data
+    // Private data
 
-		dictionary relaxationFactors_;
-		dictionary solverTolerances_;
-		dictionary solverRelativeTolerances_;
+        dictionary relaxationFactors_;
+        dictionary solverTolerances_;
+        dictionary solverRelativeTolerances_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct and assignment
-		tolerances(const tolerances&);
-		void operator=(const tolerances&);
+        //- Disallow default bitwise copy construct and assignment
+        tolerances(const tolerances&);
+        void operator=(const tolerances&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from time
-		tolerances(const Time& t, const fileName& dictName);
-
-
-	// Member Functions
-
-		// Access
-
-			bool relax(const word& name) const;
-			scalar relaxationFactor(const word& name) const;
-
-			scalar solverTolerance(const word& name) const;
-
-			bool solverRelativeTolerances() const;
-			scalar solverRelativeTolerance(const word& name) const;
+        //- Construct from time
+        tolerances(const Time& t, const fileName& dictName);
 
 
-		// Read
+    // Member Functions
 
-			//- Read the tolerances
-			bool read();
+        // Access
+
+            bool relax(const word& name) const;
+            scalar relaxationFactor(const word& name) const;
+
+            scalar solverTolerance(const word& name) const;
+
+            bool solverRelativeTolerances() const;
+            scalar solverRelativeTolerance(const word& name) const;
+
+
+        // Read
+
+            //- Read the tolerances
+            bool read();
 };
 
 

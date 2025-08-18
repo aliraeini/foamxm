@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,21 +30,21 @@ License
 
 inline Foam::SHA1::SHA1()
 {
-	clear();
+    clear();
 }
 
 
 inline Foam::SHA1::SHA1(const std::string& str)
 {
-	clear();
-	append(str);
+    clear();
+    append(str);
 }
 
 
 inline Foam::SHA1::SHA1(const char* str)
 {
-	clear();
-	append(str);
+    clear();
+    append(str);
 }
 
 
@@ -55,25 +55,25 @@ inline Foam::SHA1::SHA1(const char* str)
 
 inline Foam::SHA1& Foam::SHA1::append(const char* data, size_t len)
 {
-	processBytes(data, len);
-	return *this;
+    processBytes(data, len);
+    return *this;
 }
 
 
 inline Foam::SHA1& Foam::SHA1::append(const std::string& str)
 {
-	processBytes(str.data(), str.size());
-	return *this;
+    processBytes(str.data(), str.size());
+    return *this;
 }
 
 
 inline Foam::SHA1& Foam::SHA1::append(const char* str)
 {
-	if (str)
-	{
-		processBytes(str, strlen(str));
-	}
-	return *this;
+    if (str)
+    {
+        processBytes(str, strlen(str));
+    }
+    return *this;
 }
 
 
@@ -81,55 +81,55 @@ inline Foam::SHA1& Foam::SHA1::append(const char* str)
 
 inline bool Foam::SHA1::operator==(const SHA1& rhs) const
 {
-	return this->digest() == rhs.digest();
+    return this->digest() == rhs.digest();
 }
 
 
 inline bool Foam::SHA1::operator==(const SHA1Digest& rhs) const
 {
-	return this->digest() == rhs;
+    return this->digest() == rhs;
 }
 
 
 inline bool Foam::SHA1::operator==(const std::string& hexdigits) const
 {
-	return this->digest() == hexdigits;
+    return this->digest() == hexdigits;
 }
 
 
 inline bool Foam::SHA1::operator==(const char* hexdigits) const
 {
-	return this->digest() == hexdigits;
+    return this->digest() == hexdigits;
 }
 
 
 inline bool Foam::SHA1::operator!=(const SHA1& rhs) const
 {
-	return !this->operator==(rhs);
+    return !this->operator==(rhs);
 }
 
 
 inline bool Foam::SHA1::operator!=(const SHA1Digest& rhs) const
 {
-	return !this->operator==(rhs);
+    return !this->operator==(rhs);
 }
 
 
 inline bool Foam::SHA1::operator!=(const std::string& rhs) const
 {
-	return !this->operator==(rhs);
+    return !this->operator==(rhs);
 }
 
 
 inline bool Foam::SHA1::operator!=(const char* rhs) const
 {
-	return !this->operator==(rhs);
+    return !this->operator==(rhs);
 }
 
 
 inline Foam::SHA1::operator Foam::SHA1Digest() const
 {
-	return digest();
+    return digest();
 }
 
 
@@ -137,7 +137,7 @@ inline Foam::SHA1::operator Foam::SHA1Digest() const
 
 inline Foam::Ostream& Foam::operator<<(Ostream& os, const SHA1& sha)
 {
-	return os  << sha.digest();
+    return os  << sha.digest();
 }
 
 

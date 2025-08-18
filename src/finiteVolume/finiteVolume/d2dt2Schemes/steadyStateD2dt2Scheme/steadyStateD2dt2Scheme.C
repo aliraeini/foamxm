@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,30 +43,30 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 steadyStateD2dt2Scheme<Type>::fvcD2dt2
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf
-)
+    const GeometricField<Type, fvPatchField, volMesh>& vf
+) const
 {
-	return tmp<GeometricField<Type, fvPatchField, volMesh> >
-	(
-		new GeometricField<Type, fvPatchField, volMesh>
-		(
-			IOobject
-			(
-				"d2dt2("+vf.name()+')',
-				mesh().time().timeName(),
-				mesh(),
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh(),
-			dimensioned<Type>
-			(
-				"0",
-				vf.dimensions()/dimTime/dimTime,
-				pTraits<Type>::zero
-			)
-		)
-	);
+    return tmp<GeometricField<Type, fvPatchField, volMesh> >
+    (
+        new GeometricField<Type, fvPatchField, volMesh>
+        (
+            IOobject
+            (
+                "d2dt2("+vf.name()+')',
+                this->mesh().time().timeName(),
+                this->mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            this->mesh(),
+            dimensioned<Type>
+            (
+                "zero",
+                vf.dimensions()/dimTime/dimTime,
+                pTraits<Type>::zero
+            )
+        )
+    );
 }
 
 
@@ -74,31 +74,31 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 steadyStateD2dt2Scheme<Type>::fvcD2dt2
 (
-	const volScalarField& rho,
-	const GeometricField<Type, fvPatchField, volMesh>& vf
-)
+    const volScalarField& rho,
+    const GeometricField<Type, fvPatchField, volMesh>& vf
+) const
 {
-	return tmp<GeometricField<Type, fvPatchField, volMesh> >
-	(
-		new GeometricField<Type, fvPatchField, volMesh>
-		(
-			IOobject
-			(
-				"d2dt2("+rho.name()+','+vf.name()+')',
-				mesh().time().timeName(),
-				mesh(),
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			mesh(),
-			dimensioned<Type>
-			(
-				"0",
-				rho.dimensions()*vf.dimensions()/dimTime/dimTime,
-				pTraits<Type>::zero
-			)
-		)
-	);
+    return tmp<GeometricField<Type, fvPatchField, volMesh> >
+    (
+        new GeometricField<Type, fvPatchField, volMesh>
+        (
+            IOobject
+            (
+                "d2dt2("+rho.name()+','+vf.name()+')',
+                this->mesh().time().timeName(),
+                this->mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            this->mesh(),
+            dimensioned<Type>
+            (
+                "zero",
+                rho.dimensions()*vf.dimensions()/dimTime/dimTime,
+                pTraits<Type>::zero
+            )
+        )
+    );
 }
 
 
@@ -106,19 +106,19 @@ template<class Type>
 tmp<fvMatrix<Type> >
 steadyStateD2dt2Scheme<Type>::fvmD2dt2
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf
-)
+    const GeometricField<Type, fvPatchField, volMesh>& vf
+) const
 {
-	tmp<fvMatrix<Type> > tfvm
-	(
-		new fvMatrix<Type>
-		(
-			vf,
-			vf.dimensions()*dimVol/dimTime/dimTime
-		)
-	);
+    tmp<fvMatrix<Type> > tfvm
+    (
+        new fvMatrix<Type>
+        (
+            vf,
+            vf.dimensions()*dimVol/dimTime/dimTime
+        )
+    );
 
-	return tfvm;
+    return tfvm;
 }
 
 
@@ -126,20 +126,20 @@ template<class Type>
 tmp<fvMatrix<Type> >
 steadyStateD2dt2Scheme<Type>::fvmD2dt2
 (
-	const dimensionedScalar& rho,
-	const GeometricField<Type, fvPatchField, volMesh>& vf
-)
+    const dimensionedScalar& rho,
+    const GeometricField<Type, fvPatchField, volMesh>& vf
+) const
 {
-	tmp<fvMatrix<Type> > tfvm
-	(
-		new fvMatrix<Type>
-		(
-			vf,
-			rho.dimensions()*vf.dimensions()*dimVol/dimTime/dimTime
-		)
-	);
+    tmp<fvMatrix<Type> > tfvm
+    (
+        new fvMatrix<Type>
+        (
+            vf,
+            rho.dimensions()*vf.dimensions()*dimVol/dimTime/dimTime
+        )
+    );
 
-	return tfvm;
+    return tfvm;
 }
 
 
@@ -147,20 +147,20 @@ template<class Type>
 tmp<fvMatrix<Type> >
 steadyStateD2dt2Scheme<Type>::fvmD2dt2
 (
-	const volScalarField& rho,
-	const GeometricField<Type, fvPatchField, volMesh>& vf
-)
+    const volScalarField& rho,
+    const GeometricField<Type, fvPatchField, volMesh>& vf
+) const
 {
-	tmp<fvMatrix<Type> > tfvm
-	(
-		new fvMatrix<Type>
-		(
-			vf,
-			rho.dimensions()*vf.dimensions()*dimVol/dimTime/dimTime
-		)
-	);
+    tmp<fvMatrix<Type> > tfvm
+    (
+        new fvMatrix<Type>
+        (
+            vf,
+            rho.dimensions()*vf.dimensions()*dimVol/dimTime/dimTime
+        )
+    );
 
-	return tfvm;
+    return tfvm;
 }
 
 

@@ -1,58 +1,58 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::TimeActivatedExplicitSource
+    Foam::TimeActivatedExplicitSource
 
 Description
-	Time activated explicit source.
+    Time activated explicit source.
 
-	Sources described by:
+    Sources described by:
 
-	{
-		active		  true;	  // on/off switch
-		timeStart	   0.2;	   // start time
-		duration		2.0;	   // duration
-		selectionMode   points;	// cellSet
-		volumeMode	  absolute;  // specific
+    {
+        active          true;      // on/off switch
+        timeStart       0.2;       // start time
+        duration        2.0;       // duration
+        selectionMode   points;    // cellSet
+        volumeMode      absolute;  // specific
 
-		fieldData				  // field data - usage for multiple fields
-		(
-			(H2O 0.005)
-		);
+        fieldData                  // field data - usage for multiple fields
+        (
+            (H2O 0.005)
+        );
 
-		fieldData	   0.005;	 // field data - usage for single field
+        fieldData       0.005;     // field data - usage for single field
 
-		points					 // list of points when selectionMode = points
-		(
-			(2.75 0.5 0)
-		);
+        points                     // list of points when selectionMode = points
+        (
+            (2.75 0.5 0)
+        );
 
-		cellSet		 c0;		// cellSet name when selectionMode = cellSet
-	}
+        cellSet         c0;        // cellSet name when selectionMode = cellSet
+    }
 
 SourceFiles
-	TimeActivatedExplicitSource.C
+    TimeActivatedExplicitSource.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -81,288 +81,309 @@ class TimeActivatedExplicitSource;
 template<class Type>
 Ostream& operator<<
 (
-	Ostream&,
-	const TimeActivatedExplicitSource<Type>&
+    Ostream&,
+    const TimeActivatedExplicitSource<Type>&
 );
 
+/*---------------------------------------------------------------------------*\
+               Class TimeActivatedExplicitSource Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class TimeActivatedExplicitSource
 {
 public:
 
-	// Public data
+    // Public data
 
-		//- Enumeration for selection mode types
-		enum selectionModeType
-		{
-			smPoints,
-			smCellSet
-		};
+        //- Enumeration for selection mode types
+        enum selectionModeType
+        {
+            smPoints,
+            smCellSet
+        };
 
-		//- Word list of selection mode type names
-		static const wordList selectionModeTypeNames_;
+        //- Word list of selection mode type names
+        static const wordList selectionModeTypeNames_;
 
-		//- Enumeration for volume types
-		enum volumeModeType
-		{
-			vmAbsolute,
-			vmSpecific
-		};
+        //- Enumeration for volume types
+        enum volumeModeType
+        {
+            vmAbsolute,
+            vmSpecific
+        };
 
-		//- Word list of volume mode type names
-		static const wordList volumeModeTypeNames_;
+        //- Word list of volume mode type names
+        static const wordList volumeModeTypeNames_;
 
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		typedef Tuple2<word, Type> fieldNameValuePair;
+        typedef Tuple2<word, Type> fieldNameValuePair;
 
-		//- Source name
-		word name_;
+        //- Source name
+        word name_;
 
-		//- Reference to the mesh database
-		const fvMesh& mesh_;
+        //- Reference to the mesh database
+        const fvMesh& mesh_;
 
-		//- Source active flag
-		bool active_;
+        //- Source active flag
+        bool active_;
 
-		//- Time start
-		scalar timeStart_;
+        //- Time start
+        scalar timeStart_;
 
-		//- Duration
-		scalar duration_;
+        //- Duration
+        scalar duration_;
 
-		//- Volume mode
-		volumeModeType volumeMode_;
+        //- Volume mode
+        volumeModeType volumeMode_;
 
-		//- Cell selection mode
-		selectionModeType selectionMode_;
+        //- Cell selection mode
+        selectionModeType selectionMode_;
 
-		//- List of points for "points" selectionMode
-		List<point> points_;
+        //- List of points for "points" selectionMode
+        List<point> points_;
 
-		//- Name of cell set for "cellSet" selectionMode
-		word cellSetName_;
+        //- Name of cell set for "cellSet" selectionMode
+        word cellSetName_;
 
-		//- Field of cell volumes according to cell set cells
-		scalarList V_;
+        //- Field of cell volumes according to cell set cells
+        mutable scalarList V_;
 
-		//- Cell set
-		autoPtr<cellSet> cellsPtr_;
+        //- Cell set
+        mutable autoPtr<cellSet> cellsPtr_;
 
-		//- List of source field name vs value pairs
-		List<fieldNameValuePair> fieldData_;
+        //- List of source field name vs value pairs
+        List<fieldNameValuePair> fieldData_;
 
-		//- Map of fields ids from supplied fields to local field source ids
-		labelList fieldIds_;
+        //- List of source field name vs limit pairs
+        List<fieldNameValuePair> limitData_;
+
+        //- Map of fields ids from supplied fields to local field source ids
+        labelList fieldIds_;
 
 
-	// Protected functions
+    // Protected functions
 
-		//- Helper function to convert from a word to a selectionModeType
-		selectionModeType wordToSelectionModeType(const word& smtName) const;
+        //- Helper function to convert from a word to a selectionModeType
+        selectionModeType wordToSelectionModeType(const word& smtName) const;
 
-		//- Helper function to convert from a word to a volumeModeType
-		volumeModeType wordToVolumeModeType(const word& vtName) const;
+        //- Helper function to convert from a word to a volumeModeType
+        volumeModeType wordToVolumeModeType(const word& vtName) const;
 
-		//- Helper function to convert from a selectionModeType to a word
-		word selectionModeTypeToWord(const selectionModeType& smtType) const;
+        //- Helper function to convert from a selectionModeType to a word
+        word selectionModeTypeToWord(const selectionModeType& smtType) const;
 
-		//- Helper function to convert from a volumeModeType to a word
-		word volumeModeTypeToWord(const volumeModeType& vtType) const;
+        //- Helper function to convert from a volumeModeType to a word
+        word volumeModeTypeToWord(const volumeModeType& vtType) const;
 
-		//- Set the cellSet or points selection
-		void setSelection(const dictionary& dict);
+        //- Set the cellSet or points selection
+        void setSelection(const dictionary& dict);
 
-		//- Set the local field data
-		void setFieldData(const dictionary& dict, const wordList& fieldNames);
+        //- Set the local field data
+        void setFieldData(const dictionary& dict, const wordList& fieldNames);
 
-		//- Set the cell set based on the user input selection mode
-		void setCellSet();
+        //- Set the local limit data
+        void setLimitData(const dictionary& dict, const wordList& fieldNames);
+
+        //- Set the cell set based on the user input selection mode
+        void setCellSet() const;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		TimeActivatedExplicitSource
-		(
-			const word& name,
-			const dictionary& dict,
-			const fvMesh& mesh,
-			const wordList& fieldNames
-		);
+        //- Construct from components
+        TimeActivatedExplicitSource
+        (
+            const word& name,
+            const dictionary& dict,
+            const fvMesh& mesh,
+            const wordList& fieldNames
+        );
 
-		//- Return clone
-		autoPtr<TimeActivatedExplicitSource> clone() const
-		{
-			notImplemented
-			(
-				"autoPtr<TimeActivatedExplicitSource> clone() const"
-			);
-			return autoPtr<TimeActivatedExplicitSource>(nullptr);
-		}
+        //- Return clone
+        autoPtr<TimeActivatedExplicitSource> clone() const
+        {
+            notImplemented
+            (
+                "autoPtr<TimeActivatedExplicitSource> clone() const"
+            );
 
-		//- Return pointer to new TimeActivatedExplicitSource object created
-		//  on the freestore from an Istream
-		class iNew
-		{
-			//- Reference to the mesh database
-			const fvMesh& mesh_;
+            return autoPtr<TimeActivatedExplicitSource>(nullptr);
+        }
 
-			//- List of field names
-			const wordList& fieldNames_;
+        //- Return pointer to new TimeActivatedExplicitSource object created
+        //  on the freestore from an Istream
+        class iNew
+        {
+            //- Reference to the mesh database
+            const fvMesh& mesh_;
 
-
-		public:
-
-			iNew
-			(
-				const fvMesh& mesh,
-				const wordList& fieldNames
-			)
-			:
-				mesh_(mesh),
-				fieldNames_(fieldNames)
-			{}
-
-			autoPtr<TimeActivatedExplicitSource> operator()(Istream& is) const
-			{
-				const word name(is);
-				const dictionary dict(is);
-
-				return autoPtr<TimeActivatedExplicitSource>
-				(
-					new TimeActivatedExplicitSource
-					(
-						name,
-						dict,
-						mesh_,
-						fieldNames_
-					)
-				);
-			}
-		};
+            //- List of field names
+            const wordList& fieldNames_;
 
 
-	// Member Functions
+        public:
 
-		// Access
+            iNew
+            (
+                const fvMesh& mesh,
+                const wordList& fieldNames
+            )
+            :
+                mesh_(mesh),
+                fieldNames_(fieldNames)
+            {}
 
-			//- Return const access to the source name
-			inline const word& name() const;
+            autoPtr<TimeActivatedExplicitSource> operator()(Istream& is) const
+            {
+                const word name(is);
+                const dictionary dict(is);
 
-			//- Return const access to the mesh database
-			inline const fvMesh& mesh() const;
+                return autoPtr<TimeActivatedExplicitSource>
+                (
+                    new TimeActivatedExplicitSource
+                    (
+                        name,
+                        dict,
+                        mesh_,
+                        fieldNames_
+                    )
+                );
+            }
+        };
 
-			//- Return const access to the source active flag
-			inline bool active() const;
-
-			//- Return const access to the time start
-			inline scalar timeStart() const;
-
-			//- Return const access to the duration
-			inline scalar duration() const;
-
-			//- Return const access to the time end
-			inline scalar timeEnd() const;
-
-			//- Return const access to the volume mode
-			inline const volumeModeType& volumeMode() const;
-
-			//- Return const access to the cell selection mode
-			inline const selectionModeType& selectionMode() const;
-
-			//- Return const access to the list of points for "points"
-			//  selectionMode
-			inline const List<point>& points() const;
-
-			//- Return const access to the name of cell set for "cellSet"
-			//  selectionMode
-			inline const word& cellSetName() const;
-
-			//- Return const access to the field of cell volumes according to
-			//  cell set cells
-			inline const scalarList& V() const;
-
-			//- Return const access to the cell set
-			inline const cellSet& cells() const;
-
-			//- Return const access to the source field name vs value pairs
-			inline const List<fieldNameValuePair>& fieldData() const;
-
-			//- Return const access to the the map of fields ids from supplied
-			//  fields to local field source ids
-			inline const labelList& fieldIds() const;
+    //- Destructor
+    ~TimeActivatedExplicitSource() = default;
 
 
-		// Edit
+    // Member Functions
 
-			//- Return access to the source name
-			inline word& name();
+        // Access
 
-			//- Return access to the source active flag
-			inline bool& active();
+            //- Return const access to the source name
+            inline const word& name() const;
 
-			//- Return access to the time start
-			inline scalar& timeStart();
+            //- Return const access to the mesh database
+            inline const fvMesh& mesh() const;
 
-			//- Return access to the duration
-			inline scalar& duration();
+            //- Return const access to the source active flag
+            inline bool active() const;
 
-			//- Return access to the volume mode
-			inline volumeModeType& volumeMode();
+            //- Return const access to the time start
+            inline scalar timeStart() const;
 
-			//- Return access to the cell selection mode
-			inline selectionModeType& selectionMode();
+            //- Return const access to the duration
+            inline scalar duration() const;
 
-			//- Return access to the list of points for "points" selectionMode
-			inline List<point>& points();
+            //- Return const access to the time end
+            inline scalar timeEnd() const;
 
-			//- Return access to the name of cell set for "cellSet"
-			//  selectionMode
-			inline word& cellSetName();
+            //- Return const access to the volume mode
+            inline const volumeModeType& volumeMode() const;
 
-			//- Return access to the field of cell volumes according to
-			//  cell set cells
-			inline scalarList& V();
+            //- Return const access to the cell selection mode
+            inline const selectionModeType& selectionMode() const;
 
-			//- Return access to the cell set
-			inline cellSet& cells();
+            //- Return const access to the list of points for "points"
+            //  selectionMode
+            inline const List<point>& points() const;
 
-			//- Return access to the source field name vs value pairs
-			inline List<fieldNameValuePair>& fieldData();
+            //- Return const access to the name of cell set for "cellSet"
+            //  selectionMode
+            inline const word& cellSetName() const;
 
-			//- Return access to the the map of fields ids from supplied
-			//  fields to local field source ids
-			inline labelList& fieldIds();
+            //- Return const access to the field of cell volumes according to
+            //  cell set cells
+            inline const scalarList& V() const;
+
+            //- Return const access to the cell set
+            inline const cellSet& cells() const;
+
+            //- Return const access to the source field name vs value pairs
+            inline const List<fieldNameValuePair>& fieldData() const;
+
+            //- Return const access to the the map of fields ids from supplied
+            //  fields to local field source ids
+            inline const labelList& fieldIds() const;
 
 
-		// Evaluation
+        // Edit
 
-			//- Add the source contribution to field Su
-			void addToField
-			(
-				DimensionedField<Type, volMesh>& Su,
-				const label fieldI
-			);
+            //- Return access to the source name
+            inline word& name();
+
+            //- Return access to the source active flag
+            inline bool& active();
+
+            //- Return access to the time start
+            inline scalar& timeStart();
+
+            //- Return access to the duration
+            inline scalar& duration();
+
+            //- Return access to the volume mode
+            inline volumeModeType& volumeMode();
+
+            //- Return access to the cell selection mode
+            inline selectionModeType& selectionMode();
+
+            //- Return access to the list of points for "points" selectionMode
+            inline List<point>& points();
+
+            //- Return access to the name of cell set for "cellSet"
+            //  selectionMode
+            inline word& cellSetName();
+
+            //- Return access to the field of cell volumes according to
+            //  cell set cells
+            inline scalarList& V();
+
+            //- Return access to the cell set
+            inline cellSet& cells();
+
+            //- Return access to the source field name vs value pairs
+            inline List<fieldNameValuePair>& fieldData();
+
+            //- Return access to the the map of fields ids from supplied
+            //  fields to local field source ids
+            inline labelList& fieldIds();
 
 
-		// I-O
+        // Evaluation
 
-			//- Write the source properties
-			void writeData(Ostream&) const;
+            //- Add the source contribution to field Su
+            void addToField
+            (
+                DimensionedField<Type, volMesh>& Su,
+                const label fieldI
+            ) const;
 
-			//- Ostream operator
-			friend Ostream& operator<< <Type>
-			(
-				Ostream& os,
-				const TimeActivatedExplicitSource& source
-			);
+
+            //- Limit field
+            void limitField
+            (
+                GeometricField<Type, fvPatchField, volMesh>& psi,
+                const label fieldI
+            ) const;
+
+
+        // I-O
+
+            //- Write the source properties
+            void writeData(Ostream&) const;
+
+            //- Ostream operator
+            friend Ostream& operator<< <Type>
+            (
+                Ostream& os,
+                const TimeActivatedExplicitSource& source
+            );
 };
 
 
@@ -373,8 +394,8 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "TimeActivatedExplicitSourceTemplate.C"
-#	include "TimeActivatedExplicitSourceIO.C"
+#   include "TimeActivatedExplicitSourceTemplate.C"
+#   include "TimeActivatedExplicitSourceIO.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::Callback
+    Foam::Callback
 
 Description
-	Abstract class to handle automatic call-back registration with the
-	CallbackRegistry.  Derive from this class and extend by adding the
-	appropriate callback functions.
+    Abstract class to handle automatic call-back registration with the
+    CallbackRegistry.  Derive from this class and extend by adding the
+    appropriate callback functions.
 
 SourceFiles
-	Callback.C
+    Callback.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,49 +44,52 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class Callback Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class CallbackType>
 class Callback
 :
-	public CallbackRegistry<CallbackType>::link
+    public CallbackRegistry<CallbackType>::link
 {
-	// Private data
+    // Private data
 
-		//- CallbackRegistry reference
-		CallbackRegistry<CallbackType>& cbr_;
+        //- CallbackRegistry reference
+        CallbackRegistry<CallbackType>& cbr_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise assignment
-		void operator=(const Callback<CallbackType>&);
+        //- Disallow default bitwise assignment
+        void operator=(const Callback<CallbackType>&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct and register with CallbackRegistry
-		Callback(CallbackRegistry<CallbackType>&);
+        //- Construct and register with CallbackRegistry
+        Callback(CallbackRegistry<CallbackType>&);
 
-		//- Construct as copy
-		Callback(const Callback<CallbackType>&);
-
-
-	// Destructor
-
-		virtual ~Callback();
+        //- Construct as copy
+        Callback(const Callback<CallbackType>&);
 
 
-	// Member functions
+    // Destructor
 
-		// Registration
+        virtual ~Callback();
 
-			//- Register Callback with CallbackRegistry
-			bool checkIn();
 
-			//- Check-out Callback from CallbackRegistry
-			bool checkOut();
+    // Member functions
+
+        // Registration
+
+            //- Register Callback with CallbackRegistry
+            bool checkIn();
+
+            //- Check-out Callback from CallbackRegistry
+            bool checkOut();
 };
 
 
@@ -97,7 +100,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "Callback.C"
+#   include "Callback.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

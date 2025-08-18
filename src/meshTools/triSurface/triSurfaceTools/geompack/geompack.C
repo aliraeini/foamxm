@@ -41,14 +41,14 @@ double d_epsilon ( void )
 //    Output, double D_EPSILON, the floating point round-off unit.
 //
 {
-	double r = 1.0;
+    double r = 1.0;
 
-	while (1.0 < 1.0 + r)
-	{
-		r = r/2.0;
-	}
+    while (1.0 < 1.0 + r)
+    {
+        r = r/2.0;
+    }
 
-	return 2.0*r;
+    return 2.0*r;
 }
 
 
@@ -79,11 +79,11 @@ double d_max ( double x, double y )
 {
   if ( y < x )
   {
-	return x;
+    return x;
   }
   else
   {
-	return y;
+    return y;
   }
 }
 //*********************************************************************
@@ -113,11 +113,11 @@ double d_min ( double x, double y )
 {
   if ( y < x )
   {
-	return y;
+    return y;
   }
   else
   {
-	return x;
+    return x;
   }
 }
 //******************************************************************************
@@ -183,17 +183,17 @@ void d2vec_part_quick_a ( int n, double a[], int *l, int *r )
 
   if ( n < 1 )
   {
-	cout << "\n";
-	cout << "D2VEC_PART_QUICK_A - Fatal error!\n";
-	cout << "  N < 1.\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "D2VEC_PART_QUICK_A - Fatal error!\n";
+    cout << "  N < 1.\n";
+    exit ( 1 );
   }
 
   if ( n == 1 )
   {
-	*l = 0;
-	*r = 2;
-	return;
+    *l = 0;
+    *r = 2;
+    return;
   }
 
   key[0] = a[2*0+0];
@@ -207,21 +207,21 @@ void d2vec_part_quick_a ( int n, double a[], int *l, int *r )
 
   for ( i = 2; i <= n; i++ )
   {
-	if ( dvec_gt ( 2, a+2*ll, key ) )
-	{
-	  rr = rr - 1;
-	  dvec_swap ( 2, a+2*(rr-1), a+2*ll );
-	}
-	else if ( dvec_eq ( 2, a+2*ll, key ) )
-	{
-	  m = m + 1;
-	  dvec_swap ( 2, a+2*(m-1), a+2*ll );
-	  ll = ll + 1;
-	}
-	else if ( dvec_lt ( 2, a+2*ll, key ) )
-	{
-	  ll = ll + 1;
-	}
+    if ( dvec_gt ( 2, a+2*ll, key ) )
+    {
+      rr = rr - 1;
+      dvec_swap ( 2, a+2*(rr-1), a+2*ll );
+    }
+    else if ( dvec_eq ( 2, a+2*ll, key ) )
+    {
+      m = m + 1;
+      dvec_swap ( 2, a+2*(m-1), a+2*ll );
+      ll = ll + 1;
+    }
+    else if ( dvec_lt ( 2, a+2*ll, key ) )
+    {
+      ll = ll + 1;
+    }
 
   }
 //
@@ -229,20 +229,20 @@ void d2vec_part_quick_a ( int n, double a[], int *l, int *r )
 //
   for ( i = 0; i < ll - m; i++ )
   {
-	for ( j = 0; j < 2; j++ )
-	{
-	  a[2*i+j] = a[2*(i+m)+j];
-	}
+    for ( j = 0; j < 2; j++ )
+    {
+      a[2*i+j] = a[2*(i+m)+j];
+    }
   }
 
   ll = ll - m;
 
   for ( i = ll; i < ll+m; i++ )
   {
-	for ( j = 0; j < 2; j++ )
-	{
-	  a[2*i+j] = key[j];
-	}
+    for ( j = 0; j < 2; j++ )
+    {
+      a[2*i+j] = key[j];
+    }
   }
 
   *l = ll;
@@ -312,65 +312,65 @@ void d2vec_permute ( int n, double a[], int p[] )
 
   if ( !perm_check ( n, p ) )
   {
-	cout << "\n";
-	cout << "D2VEC_PERMUTE - Fatal error!\n";
-	cout << "  The input array does not represent\n";
-	cout << "  a proper permutation.\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "D2VEC_PERMUTE - Fatal error!\n";
+    cout << "  The input array does not represent\n";
+    cout << "  a proper permutation.\n";
+    exit ( 1 );
   }
 //
 //  Search for the next element of the permutation that has not been used.
 //
   for ( istart = 1; istart <= n; istart++ )
   {
-	if ( p[istart-1] < 0 )
-	{
-	  continue;
-	}
-	else if ( p[istart-1] == istart )
-	{
-	  p[istart-1] = -p[istart-1];
-	  continue;
-	}
-	else
-	{
-	  a_temp[0] = a[0+(istart-1)*2];
-	  a_temp[1] = a[1+(istart-1)*2];
-	  iget = istart;
+    if ( p[istart-1] < 0 )
+    {
+      continue;
+    }
+    else if ( p[istart-1] == istart )
+    {
+      p[istart-1] = -p[istart-1];
+      continue;
+    }
+    else
+    {
+      a_temp[0] = a[0+(istart-1)*2];
+      a_temp[1] = a[1+(istart-1)*2];
+      iget = istart;
 //
 //  Copy the new value into the vacated entry.
 //
-	  for ( ; ; )
-	  {
-		iput = iget;
-		iget = p[iget-1];
+      for ( ; ; )
+      {
+        iput = iget;
+        iget = p[iget-1];
 
-		p[iput-1] = -p[iput-1];
+        p[iput-1] = -p[iput-1];
 
-		if ( iget < 1 || n < iget )
-		{
-		  cout << "\n";
-		  cout << "D2VEC_PERMUTE - Fatal error!\n";
-		  exit ( 1 );
-		}
+        if ( iget < 1 || n < iget )
+        {
+          cout << "\n";
+          cout << "D2VEC_PERMUTE - Fatal error!\n";
+          exit ( 1 );
+        }
 
-		if ( iget == istart )
-		{
-		  a[0+(iput-1)*2] = a_temp[0];
-		  a[1+(iput-1)*2] = a_temp[1];
-		  break;
-		}
-		a[0+(iput-1)*2] = a[0+(iget-1)*2];
-		a[1+(iput-1)*2] = a[1+(iget-1)*2];
-	  }
-	}
+        if ( iget == istart )
+        {
+          a[0+(iput-1)*2] = a_temp[0];
+          a[1+(iput-1)*2] = a_temp[1];
+          break;
+        }
+        a[0+(iput-1)*2] = a[0+(iget-1)*2];
+        a[1+(iput-1)*2] = a[1+(iget-1)*2];
+      }
+    }
   }
 //
 //  Restore the signs of the entries.
 //
   for ( i = 0; i < n; i++ )
   {
-	p[i] = -p[i];
+    p[i] = -p[i];
   }
 
   return;
@@ -431,14 +431,14 @@ int *d2vec_sort_heap_index_a ( int n, double a[] )
 
   if ( n < 1 )
   {
-	return nullptr;
+    return nullptr;
   }
 
   if ( n == 1 )
   {
-	indx = new int[1];
-	indx[0] = 1;
-	return indx;
+    indx = new int[1];
+    indx[0] = 1;
+    return indx;
   }
 
   indx = ivec_indicator ( n );
@@ -448,58 +448,58 @@ int *d2vec_sort_heap_index_a ( int n, double a[] )
 
   for ( ; ; )
   {
-	if ( 1 < l )
-	{
-	  l = l - 1;
-	  indxt = indx[l-1];
-	  aval[0] = a[0+(indxt-1)*2];
-	  aval[1] = a[1+(indxt-1)*2];
-	}
-	else
-	{
-	  indxt = indx[ir-1];
-	  aval[0] = a[0+(indxt-1)*2];
-	  aval[1] = a[1+(indxt-1)*2];
-	  indx[ir-1] = indx[0];
-	  ir = ir - 1;
+    if ( 1 < l )
+    {
+      l = l - 1;
+      indxt = indx[l-1];
+      aval[0] = a[0+(indxt-1)*2];
+      aval[1] = a[1+(indxt-1)*2];
+    }
+    else
+    {
+      indxt = indx[ir-1];
+      aval[0] = a[0+(indxt-1)*2];
+      aval[1] = a[1+(indxt-1)*2];
+      indx[ir-1] = indx[0];
+      ir = ir - 1;
 
-	  if ( ir == 1 )
-	  {
-		indx[0] = indxt;
-		break;
-	  }
+      if ( ir == 1 )
+      {
+        indx[0] = indxt;
+        break;
+      }
 
-	}
+    }
 
-	i = l;
-	j = l + l;
+    i = l;
+    j = l + l;
 
-	while ( j <= ir )
-	{
-	  if ( j < ir )
-	  {
-		if (   a[0+(indx[j-1]-1)*2] <  a[0+(indx[j]-1)*2] ||
-			 ( a[0+(indx[j-1]-1)*2] == a[0+(indx[j]-1)*2] &&
-			   a[1+(indx[j-1]-1)*2] <  a[1+(indx[j]-1)*2] ) )
-		{
-		  j = j + 1;
-		}
-	  }
+    while ( j <= ir )
+    {
+      if ( j < ir )
+      {
+        if (   a[0+(indx[j-1]-1)*2] <  a[0+(indx[j]-1)*2] ||
+             ( a[0+(indx[j-1]-1)*2] == a[0+(indx[j]-1)*2] &&
+               a[1+(indx[j-1]-1)*2] <  a[1+(indx[j]-1)*2] ) )
+        {
+          j = j + 1;
+        }
+      }
 
-	  if (   aval[0] <  a[0+(indx[j-1]-1)*2] ||
-		   ( aval[0] == a[0+(indx[j-1]-1)*2] &&
-			 aval[1] <  a[1+(indx[j-1]-1)*2] ) )
-	  {
-		indx[i-1] = indx[j-1];
-		i = j;
-		j = j + j;
-	  }
-	  else
-	  {
-		j = ir + 1;
-	  }
-	}
-	indx[i-1] = indxt;
+      if (   aval[0] <  a[0+(indx[j-1]-1)*2] ||
+           ( aval[0] == a[0+(indx[j-1]-1)*2] &&
+             aval[1] <  a[1+(indx[j-1]-1)*2] ) )
+      {
+        indx[i-1] = indx[j-1];
+        i = j;
+        j = j + j;
+      }
+      else
+      {
+        j = ir + 1;
+      }
+    }
+    indx[i-1] = indxt;
   }
 
   return indx;
@@ -547,15 +547,15 @@ void d2vec_sort_quick_a ( int n, double a[] )
 
   if ( n < 1 )
   {
-	cout << "\n";
-	cout << "D2VEC_SORT_QUICK_A - Fatal error!\n";
-	cout << "  N < 1.\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "D2VEC_SORT_QUICK_A - Fatal error!\n";
+    cout << "  N < 1.\n";
+    exit ( 1 );
   }
 
   if ( n == 1 )
   {
-	return;
+    return;
   }
 
   level = 1;
@@ -568,56 +568,56 @@ void d2vec_sort_quick_a ( int n, double a[] )
 //
 //  Partition the segment.
 //
-	d2vec_part_quick_a ( n_segment, a+2*(base-1)+0, &l_segment, &r_segment );
+    d2vec_part_quick_a ( n_segment, a+2*(base-1)+0, &l_segment, &r_segment );
 //
 //  If the left segment has more than one element, we need to partition it.
 //
-	if ( 1 < l_segment )
-	{
-	  if ( LEVEL_MAX < level )
-	  {
-		cout << "\n";
-		cout << "D2VEC_SORT_QUICK_A - Fatal error!\n";
-		cout << "  Exceeding recursion maximum of " << LEVEL_MAX << "\n";
-		exit ( 1 );
-	  }
+    if ( 1 < l_segment )
+    {
+      if ( LEVEL_MAX < level )
+      {
+        cout << "\n";
+        cout << "D2VEC_SORT_QUICK_A - Fatal error!\n";
+        cout << "  Exceeding recursion maximum of " << LEVEL_MAX << "\n";
+        exit ( 1 );
+      }
 
-	  level = level + 1;
-	  n_segment = l_segment;
-	  rsave[level-1] = r_segment + base - 1;
-	}
+      level = level + 1;
+      n_segment = l_segment;
+      rsave[level-1] = r_segment + base - 1;
+    }
 //
 //  The left segment and the middle segment are sorted.
 //  Must the right segment be partitioned?
 //
-	else if ( r_segment < n_segment )
-	{
-	  n_segment = n_segment + 1 - r_segment;
-	  base = base + r_segment - 1;
-	}
+    else if ( r_segment < n_segment )
+    {
+      n_segment = n_segment + 1 - r_segment;
+      base = base + r_segment - 1;
+    }
 //
 //  Otherwise, we back up a level if there is an earlier one.
 //
-	else
-	{
-	  for ( ; ; )
-	  {
-		if ( level <= 1 )
-		{
-		  n_segment = 0;
-		  break;
-		}
+    else
+    {
+      for ( ; ; )
+      {
+        if ( level <= 1 )
+        {
+          n_segment = 0;
+          break;
+        }
 
-		base = rsave[level-1];
-		n_segment = rsave[level-2] - rsave[level-1];
-		level = level - 1;
+        base = rsave[level-1];
+        n_segment = rsave[level-2] - rsave[level-1];
+        level = level - 1;
 
-		if ( 0 < n_segment )
-		{
-		  break;
-		}
-	  }
-	}
+        if ( 0 < n_segment )
+        {
+          break;
+        }
+      }
+    }
   }
   return;
 # undef LEVEL_MAX
@@ -698,42 +698,42 @@ int diaedg ( double x0, double y0, double x1, double y1, double x2, double y2,
   dy32 = y3 - y2;
 
   tola = tol * d_max ( fabs ( dx10 ),
-			   d_max ( fabs ( dy10 ),
-			   d_max ( fabs ( dx30 ), fabs ( dy30 ) ) ) );
+               d_max ( fabs ( dy10 ),
+               d_max ( fabs ( dx30 ), fabs ( dy30 ) ) ) );
 
   tolb = tol * d_max ( fabs ( dx12 ),
-			   d_max ( fabs ( dy12 ),
-			   d_max ( fabs ( dx32 ), fabs ( dy32 ) ) ) );
+               d_max ( fabs ( dy12 ),
+               d_max ( fabs ( dx32 ), fabs ( dy32 ) ) ) );
 
   ca = dx10 * dx30 + dy10 * dy30;
   cb = dx12 * dx32 + dy12 * dy32;
 
   if ( tola < ca && tolb < cb )
   {
-	value = -1;
+    value = -1;
   }
   else if ( ca < -tola && cb < -tolb )
   {
-	value = 1;
+    value = 1;
   }
   else
   {
-	tola = d_max ( tola, tolb );
-	s = ( dx10 * dy30 - dx30 * dy10 ) * cb
-	  + ( dx32 * dy12 - dx12 * dy32 ) * ca;
+    tola = d_max ( tola, tolb );
+    s = ( dx10 * dy30 - dx30 * dy10 ) * cb
+      + ( dx32 * dy12 - dx12 * dy32 ) * ca;
 
-	if ( tola < s )
-	{
-	  value = -1;
-	}
-	else if ( s < -tola )
-	{
-	  value = 1;
-	}
-	else
-	{
-	  value = 0;
-	}
+    if ( tola < s )
+    {
+      value = -1;
+    }
+    else if ( s < -tola )
+    {
+      value = 1;
+    }
+    else
+    {
+      value = 0;
+    }
 
   }
 
@@ -815,41 +815,41 @@ void dmat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
 
   if ( 0 < s_len_trim ( title ) )
   {
-	cout << "\n";
-	cout << title << "\n";
+    cout << "\n";
+    cout << title << "\n";
   }
 
   for ( i2lo = i_max ( ilo, 1 ); i2lo <= i_min ( ihi, m ); i2lo = i2lo + INCX )
   {
-	i2hi = i2lo + INCX - 1;
-	i2hi = i_min ( i2hi, m );
-	i2hi = i_min ( i2hi, ihi );
+    i2hi = i2lo + INCX - 1;
+    i2hi = i_min ( i2hi, m );
+    i2hi = i_min ( i2hi, ihi );
 
-	inc = i2hi + 1 - i2lo;
+    inc = i2hi + 1 - i2lo;
 
-	cout << "\n";
-	cout << "  Row: ";
-	for ( i = i2lo; i <= i2hi; i++ )
-	{
-	  cout << setw(7) << i << "       ";
-	}
-	cout << "\n";
-	cout << "  Col\n";
-	cout << "\n";
+    cout << "\n";
+    cout << "  Row: ";
+    for ( i = i2lo; i <= i2hi; i++ )
+    {
+      cout << setw(7) << i << "       ";
+    }
+    cout << "\n";
+    cout << "  Col\n";
+    cout << "\n";
 
-	j2lo = i_max ( jlo, 1 );
-	j2hi = i_min ( jhi, n );
+    j2lo = i_max ( jlo, 1 );
+    j2hi = i_min ( jhi, n );
 
-	for ( j = j2lo; j <= j2hi; j++ )
-	{
-	  cout << setw(5) << j << " ";
-	  for ( i2 = 1; i2 <= inc; i2++ )
-	  {
-		i = i2lo - 1 + i2;
-		cout << setw(14) << a[(i-1)+(j-1)*m];
-	  }
-	  cout << "\n";
-	}
+    for ( j = j2lo; j <= j2hi; j++ )
+    {
+      cout << setw(5) << j << " ";
+      for ( i2 = 1; i2 <= inc; i2++ )
+      {
+        i = i2lo - 1 + i2;
+        cout << setw(14) << a[(i-1)+(j-1)*m];
+      }
+      cout << "\n";
+    }
   }
   cout << "\n";
 
@@ -922,22 +922,22 @@ void dmat_uniform ( int m, int n, double b, double c, int *seed, double r[] )
 
   for ( j = 0; j < n; j++ )
   {
-	for ( i = 0; i < m; i++ )
-	{
-	  k = *seed / 127773;
+    for ( i = 0; i < m; i++ )
+    {
+      k = *seed / 127773;
 
-	  *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
+      *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
 
-	  if ( *seed < 0 )
-	  {
-		*seed = *seed + 2147483647;
-	  }
+      if ( *seed < 0 )
+      {
+        *seed = *seed + 2147483647;
+      }
 //
 //  Although SEED can be represented exactly as a 32 bit integer,
 //  it generally cannot be represented exactly as a 32 bit real number!
 //
-	  r[i+j*m] = b + ( c - b ) * double( *seed ) * 4.656612875E-10;
-	}
+      r[i+j*m] = b + ( c - b ) * double( *seed ) * 4.656612875E-10;
+    }
   }
 
   return;
@@ -1040,39 +1040,39 @@ int dtris2 ( int point_num, double point_xy[], int *tri_num,
 
   for ( i = 2; i <= point_num; i++ )
   {
-	m = m1;
-	m1 = i;
+    m = m1;
+    m1 = i;
 
-	k = -1;
+    k = -1;
 
-	for ( j = 0; j <= 1; j++ )
-	{
-	  cmax = d_max ( fabs ( point_xy[2*(m-1)+j] ),
-					 fabs ( point_xy[2*(m1-1)+j] ) );
+    for ( j = 0; j <= 1; j++ )
+    {
+      cmax = d_max ( fabs ( point_xy[2*(m-1)+j] ),
+                     fabs ( point_xy[2*(m1-1)+j] ) );
 
-	  if ( tol * ( cmax + 1.0 )
-		   < fabs ( point_xy[2*(m-1)+j] - point_xy[2*(m1-1)+j] ) )
-	  {
-		k = j;
-		break;
-	  }
+      if ( tol * ( cmax + 1.0 )
+           < fabs ( point_xy[2*(m-1)+j] - point_xy[2*(m1-1)+j] ) )
+      {
+        k = j;
+        break;
+      }
 
-	}
+    }
 
-	if ( k == -1 )
-	{
-	  cout << "\n";
-	  cout << "DTRIS2 - Fatal error!\n";
-	  cout << "  Fails for point number I = " << i << "\n";
-	  cout << "  M =  " << m  << "\n";
-	  cout << "  M1 = " << m1 << "\n";
-	  cout << "  X,Y(M)  = " << point_xy[2*(m-1)+0] << "  "
-					         << point_xy[2*(m-1)+1] << "\n";
-	  cout << "  X,Y(M1) = " << point_xy[2*(m1-1)+0] << "  "
-					         << point_xy[2*(m1-1)+1] << "\n";
-	  delete [] stack;
-	  return 224;
-	}
+    if ( k == -1 )
+    {
+      cout << "\n";
+      cout << "DTRIS2 - Fatal error!\n";
+      cout << "  Fails for point number I = " << i << "\n";
+      cout << "  M =  " << m  << "\n";
+      cout << "  M1 = " << m1 << "\n";
+      cout << "  X,Y(M)  = " << point_xy[2*(m-1)+0] << "  "
+                             << point_xy[2*(m-1)+1] << "\n";
+      cout << "  X,Y(M1) = " << point_xy[2*(m1-1)+0] << "  "
+                             << point_xy[2*(m1-1)+1] << "\n";
+      delete [] stack;
+      return 224;
+    }
 
   }
 //
@@ -1085,26 +1085,26 @@ int dtris2 ( int point_num, double point_xy[], int *tri_num,
 
   for ( ; ; )
   {
-	if ( point_num < j )
-	{
-	  cout << "\n";
-	  cout << "DTRIS2 - Fatal error!\n";
-	  delete [] stack;
-	  return 225;
-	}
+    if ( point_num < j )
+    {
+      cout << "\n";
+      cout << "DTRIS2 - Fatal error!\n";
+      delete [] stack;
+      return 225;
+    }
 
-	m = j;
+    m = j;
 
-	lr = lrline ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1],
-	  point_xy[2*(m1-1)+0], point_xy[2*(m1-1)+1],
-	  point_xy[2*(m2-1)+0], point_xy[2*(m2-1)+1], 0.0 );
+    lr = lrline ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1],
+      point_xy[2*(m1-1)+0], point_xy[2*(m1-1)+1],
+      point_xy[2*(m2-1)+0], point_xy[2*(m2-1)+1], 0.0 );
 
-	if ( lr != 0 )
-	{
-	  break;
-	}
+    if ( lr != 0 )
+    {
+      break;
+    }
 
-	j = j + 1;
+    j = j + 1;
 
   }
 //
@@ -1115,52 +1115,52 @@ int dtris2 ( int point_num, double point_xy[], int *tri_num,
 
   if ( lr == -1 )
   {
-	tri_vert[3*0+0] = m1;
-	tri_vert[3*0+1] = m2;
-	tri_vert[3*0+2] = m;
-	tri_nabe[3*0+2] = -3;
+    tri_vert[3*0+0] = m1;
+    tri_vert[3*0+1] = m2;
+    tri_vert[3*0+2] = m;
+    tri_nabe[3*0+2] = -3;
 
-	for ( i = 2; i <= *tri_num; i++ )
-	{
-	  m1 = m2;
-	  m2 = i+1;
-	  tri_vert[3*(i-1)+0] = m1;
-	  tri_vert[3*(i-1)+1] = m2;
-	  tri_vert[3*(i-1)+2] = m;
-	  tri_nabe[3*(i-1)+0] = -3 * i;
-	  tri_nabe[3*(i-1)+1] = i;
-	  tri_nabe[3*(i-1)+2] = i - 1;
+    for ( i = 2; i <= *tri_num; i++ )
+    {
+      m1 = m2;
+      m2 = i+1;
+      tri_vert[3*(i-1)+0] = m1;
+      tri_vert[3*(i-1)+1] = m2;
+      tri_vert[3*(i-1)+2] = m;
+      tri_nabe[3*(i-2)+0] = -3 * i;
+      tri_nabe[3*(i-2)+1] = i;
+      tri_nabe[3*(i-1)+2] = i - 1;
 
-	}
+    }
 
-	tri_nabe[3*(*tri_num-1)+0] = -3 * (*tri_num) - 1;
-	tri_nabe[3*(*tri_num-1)+1] = -5;
-	ledg = 2;
-	ltri = *tri_num;
+    tri_nabe[3*(*tri_num-1)+0] = -3 * (*tri_num) - 1;
+    tri_nabe[3*(*tri_num-1)+1] = -5;
+    ledg = 2;
+    ltri = *tri_num;
   }
   else
   {
-	tri_vert[3*0+0] = m2;
-	tri_vert[3*0+1] = m1;
-	tri_vert[3*0+2] = m;
-	tri_nabe[3*0+0] = -4;
+    tri_vert[3*0+0] = m2;
+    tri_vert[3*0+1] = m1;
+    tri_vert[3*0+2] = m;
+    tri_nabe[3*0+0] = -4;
 
-	for ( i = 2; i <= *tri_num; i++ )
-	{
-	  m1 = m2;
-	  m2 = i+1;
-	  tri_vert[3*(i-1)+0] = m2;
-	  tri_vert[3*(i-1)+1] = m1;
-	  tri_vert[3*(i-1)+2] = m;
-	  tri_nabe[3*(i-2)+2] = i;
-	  tri_nabe[3*(i-1)+0] = -3 * i - 3;
-	  tri_nabe[3*(i-1)+1] = i - 1;
-	}
+    for ( i = 2; i <= *tri_num; i++ )
+    {
+      m1 = m2;
+      m2 = i+1;
+      tri_vert[3*(i-1)+0] = m2;
+      tri_vert[3*(i-1)+1] = m1;
+      tri_vert[3*(i-1)+2] = m;
+      tri_nabe[3*(i-2)+2] = i;
+      tri_nabe[3*(i-1)+0] = -3 * i - 3;
+      tri_nabe[3*(i-1)+1] = i - 1;
+    }
 
-	tri_nabe[3*(*tri_num-1)+2] = -3 * (*tri_num);
-	tri_nabe[3*0+1] = -3 * (*tri_num) - 2;
-	ledg = 2;
-	ltri = 1;
+    tri_nabe[3*(*tri_num-1)+2] = -3 * (*tri_num);
+    tri_nabe[3*0+1] = -3 * (*tri_num) - 2;
+    ledg = 2;
+    ltri = 1;
   }
 //
 //  Insert the vertices one at a time from outside the convex hull,
@@ -1171,102 +1171,102 @@ int dtris2 ( int point_num, double point_xy[], int *tri_num,
 
   for ( i = j+1; i <= point_num; i++ )
   {
-	m = i;
-	m1 = tri_vert[3*(ltri-1)+ledg-1];
+    m = i;
+    m1 = tri_vert[3*(ltri-1)+ledg-1];
 
-	if ( ledg <= 2 )
-	{
-	  m2 = tri_vert[3*(ltri-1)+ledg];
-	}
-	else
-	{
-	  m2 = tri_vert[3*(ltri-1)+0];
-	}
+    if ( ledg <= 2 )
+    {
+      m2 = tri_vert[3*(ltri-1)+ledg];
+    }
+    else
+    {
+      m2 = tri_vert[3*(ltri-1)+0];
+    }
 
-	lr = lrline ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1],
-	  point_xy[2*(m1-1)+0], point_xy[2*(m1-1)+1],
-	  point_xy[2*(m2-1)+0], point_xy[2*(m2-1)+1], 0.0 );
+    lr = lrline ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1],
+      point_xy[2*(m1-1)+0], point_xy[2*(m1-1)+1],
+      point_xy[2*(m2-1)+0], point_xy[2*(m2-1)+1], 0.0 );
 
-	if ( 0 < lr )
-	{
-	  rtri = ltri;
-	  redg = ledg;
-	  ltri = 0;
-	}
-	else
-	{
-	  l = -tri_nabe[3*(ltri-1)+ledg-1];
-	  rtri = l / 3;
-	  redg = (l % 3) + 1;
-	}
+    if ( 0 < lr )
+    {
+      rtri = ltri;
+      redg = ledg;
+      ltri = 0;
+    }
+    else
+    {
+      l = -tri_nabe[3*(ltri-1)+ledg-1];
+      rtri = l / 3;
+      redg = (l % 3) + 1;
+    }
 
-	vbedg ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1], point_num,
-	  point_xy, *tri_num, tri_vert, tri_nabe, &ltri, &ledg, &rtri, &redg );
+    vbedg ( point_xy[2*(m-1)+0], point_xy[2*(m-1)+1], point_num,
+      point_xy, *tri_num, tri_vert, tri_nabe, &ltri, &ledg, &rtri, &redg );
 
-	n = *tri_num + 1;
-	l = -tri_nabe[3*(ltri-1)+ledg-1];
+    n = *tri_num + 1;
+    l = -tri_nabe[3*(ltri-1)+ledg-1];
 
-	for ( ; ; )
-	{
-	  t = l / 3;
-	  e = ( l % 3 ) + 1;
-	  l = -tri_nabe[3*(t-1)+e-1];
-	  m2 = tri_vert[3*(t-1)+e-1];
+    for ( ; ; )
+    {
+      t = l / 3;
+      e = ( l % 3 ) + 1;
+      l = -tri_nabe[3*(t-1)+e-1];
+      m2 = tri_vert[3*(t-1)+e-1];
 
-	  if ( e <= 2 )
-	  {
-		m1 = tri_vert[3*(t-1)+e];
-	  }
-	  else
-	  {
-		m1 = tri_vert[3*(t-1)+0];
-	  }
+      if ( e <= 2 )
+      {
+        m1 = tri_vert[3*(t-1)+e];
+      }
+      else
+      {
+        m1 = tri_vert[3*(t-1)+0];
+      }
 
-	  *tri_num = *tri_num + 1;
-	  tri_nabe[3*(t-1)+e-1] = *tri_num;
-	  tri_vert[3*(*tri_num-1)+0] = m1;
-	  tri_vert[3*(*tri_num-1)+1] = m2;
-	  tri_vert[3*(*tri_num-1)+2] = m;
-	  tri_nabe[3*(*tri_num-1)+0] = t;
-	  tri_nabe[3*(*tri_num-1)+1] = *tri_num - 1;
-	  tri_nabe[3*(*tri_num-1)+2] = *tri_num + 1;
-	  top = top + 1;
+      *tri_num = *tri_num + 1;
+      tri_nabe[3*(t-1)+e-1] = *tri_num;
+      tri_vert[3*(*tri_num-1)+0] = m1;
+      tri_vert[3*(*tri_num-1)+1] = m2;
+      tri_vert[3*(*tri_num-1)+2] = m;
+      tri_nabe[3*(*tri_num-1)+0] = t;
+      tri_nabe[3*(*tri_num-1)+1] = *tri_num - 1;
+      tri_nabe[3*(*tri_num-1)+2] = *tri_num + 1;
+      top = top + 1;
 
-	  if ( point_num < top )
-	  {
-		cout << "\n";
-		cout << "DTRIS2 - Fatal error!\n";
-		cout << "  Stack overflow.\n";
-		delete [] stack;
-		return 8;
-	  }
+      if ( point_num < top )
+      {
+        cout << "\n";
+        cout << "DTRIS2 - Fatal error!\n";
+        cout << "  Stack overflow.\n";
+        delete [] stack;
+        return 8;
+      }
 
-	  stack[top-1] = *tri_num;
+      stack[top-1] = *tri_num;
 
-	  if ( t == rtri && e == redg )
-	  {
-		break;
-	  }
+      if ( t == rtri && e == redg )
+      {
+        break;
+      }
 
-	}
+    }
 
-	tri_nabe[3*(ltri-1)+ledg-1] = -3 * n - 1;
-	tri_nabe[3*(n-1)+1] = -3 * (*tri_num) - 2;
-	tri_nabe[3*(*tri_num-1)+2] = -l;
-	ltri = n;
-	ledg = 2;
+    tri_nabe[3*(ltri-1)+ledg-1] = -3 * n - 1;
+    tri_nabe[3*(n-1)+1] = -3 * (*tri_num) - 2;
+    tri_nabe[3*(*tri_num-1)+2] = -l;
+    ltri = n;
+    ledg = 2;
 
-	error = swapec ( m, &top, &ltri, &ledg, point_num, point_xy, *tri_num,
-	  tri_vert, tri_nabe, stack );
+    error = swapec ( m, &top, &ltri, &ledg, point_num, point_xy, *tri_num,
+      tri_vert, tri_nabe, stack );
 
-	if ( error != 0 )
-	{
-	  cout << "\n";
-	  cout << "DTRIS2 - Fatal error!\n";
-	  cout << "  Error return from SWAPEC.\n";
-	  delete [] stack;
-	  return error;
-	}
+    if ( error != 0 )
+    {
+      cout << "\n";
+      cout << "DTRIS2 - Fatal error!\n";
+      cout << "  Error return from SWAPEC.\n";
+      delete [] stack;
+      return error;
+    }
 
   }
 //
@@ -1274,10 +1274,10 @@ int dtris2 ( int point_num, double point_xy[], int *tri_num,
 //
   for ( i = 0; i < 3; i++ )
   {
-	for ( j = 0; j < *tri_num; j++ )
-	{
-	  tri_vert[i+j*3] = indx [ tri_vert[i+j*3] - 1 ];
-	}
+    for ( j = 0; j < *tri_num; j++ )
+    {
+      tri_vert[i+j*3] = indx [ tri_vert[i+j*3] - 1 ];
+    }
   }
 
   perm_inv ( point_num, indx );
@@ -1322,10 +1322,10 @@ bool dvec_eq ( int n, double a1[], double a2[] )
 
   for ( i = 0; i < n; i++ )
   {
-	if ( a1[i] != a2[i] )
-	{
-	  return false;
-	}
+    if ( a1[i] != a2[i] )
+    {
+      return false;
+    }
   }
   return true;
 
@@ -1371,14 +1371,14 @@ bool dvec_gt ( int n, double a1[], double a2[] )
   for ( i = 0; i < n; i++ )
   {
 
-	if ( a2[i] < a1[i] )
-	{
-	   return true;
-	}
-	else if ( a1[i] < a2[i] )
-	{
-	  return false;
-	}
+    if ( a2[i] < a1[i] )
+    {
+       return true;
+    }
+    else if ( a1[i] < a2[i] )
+    {
+      return false;
+    }
 
   }
 
@@ -1424,14 +1424,14 @@ bool dvec_lt ( int n, double a1[], double a2[] )
 
   for ( i = 0; i < n; i++ )
   {
-	if ( a1[i] < a2[i] )
-	{
-	  return true;
-	}
-	else if ( a2[i] < a1[i] )
-	{
-	  return false;
-	}
+    if ( a1[i] < a2[i] )
+    {
+      return true;
+    }
+    else if ( a2[i] < a1[i] )
+    {
+      return false;
+    }
 
   }
 
@@ -1469,15 +1469,15 @@ void dvec_print ( int n, double a[], const char *title )
 
   if ( 0 < s_len_trim ( title ) )
   {
-	cout << "\n";
-	cout << title << "\n";
+    cout << "\n";
+    cout << title << "\n";
   }
 
   cout << "\n";
   for ( i = 0; i <= n-1; i++ )
   {
-	cout << setw(6)  << i + 1 << "  "
-		 << setw(14) << a[i]  << "\n";
+    cout << setw(6)  << i + 1 << "  "
+         << setw(14) << a[i]  << "\n";
   }
 
   return;
@@ -1512,9 +1512,9 @@ void dvec_swap ( int n, double a1[], double a2[] )
 
   for ( i = 0; i < n; i++ )
   {
-	temp  = a1[i];
-	a1[i] = a2[i];
-	a2[i] = temp;
+    temp  = a1[i];
+    a1[i] = a2[i];
+    a2[i] = temp;
   }
 
   return;
@@ -1546,11 +1546,11 @@ int i_max ( int i1, int i2 )
 {
   if ( i2 < i1 )
   {
-	return i1;
+    return i1;
   }
   else
   {
-	return i2;
+    return i2;
   }
 
 }
@@ -1581,11 +1581,11 @@ int i_min ( int i1, int i2 )
 {
   if ( i1 < i2 )
   {
-	return i1;
+    return i1;
   }
   else
   {
-	return i2;
+    return i2;
   }
 
 }
@@ -1649,17 +1649,17 @@ int i_modp ( int i, int j )
 
   if ( j == 0 )
   {
-	cout << "\n";
-	cout << "I_MODP - Fatal error!\n";
-	cout << "  I_MODP ( I, J ) called with J = " << j << "\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "I_MODP - Fatal error!\n";
+    cout << "  I_MODP ( I, J ) called with J = " << j << "\n";
+    exit ( 1 );
   }
 
   value = i % j;
 
   if ( value < 0 )
   {
-	value = value + abs ( j );
+    value = value + abs ( j );
   }
 
   return value;
@@ -1695,11 +1695,11 @@ int i_sign ( int i )
 {
   if ( i < 0 )
   {
-	return (-1);
+    return (-1);
   }
   else
   {
-	return 1;
+    return 1;
   }
 
 }
@@ -1766,11 +1766,11 @@ int i_wrap ( int ival, int ilo, int ihi )
 
   if ( wide == 1 )
   {
-	value = jlo;
+    value = jlo;
   }
   else
   {
-	value = jlo + i_modp ( ival - jlo, wide );
+    value = jlo + i_modp ( ival - jlo, wide );
   }
 
   return value;
@@ -1853,50 +1853,50 @@ void imat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
 
   if ( 0 < s_len_trim ( title ) )
   {
-	cout << "\n";
-	cout << title << "\n";
+    cout << "\n";
+    cout << title << "\n";
   }
 //
 //  Print the columns of the matrix, in strips of INCX.
 //
   for ( i2lo = ilo; i2lo <= ihi; i2lo = i2lo + INCX )
   {
-	i2hi = i2lo + INCX - 1;
-	i2hi = i_min ( i2hi, m );
-	i2hi = i_min ( i2hi, ihi );
+    i2hi = i2lo + INCX - 1;
+    i2hi = i_min ( i2hi, m );
+    i2hi = i_min ( i2hi, ihi );
 
-	cout << "\n";
+    cout << "\n";
 //
 //  For each row I in the current range...
 //
 //  Write the header.
 //
-	cout << "  Row:    ";
-	for ( i = i2lo; i <= i2hi; i++ )
-	{
-	  cout << setw(7) << i << "       ";
-	}
-	cout << "\n";
-	cout << "  Col\n";
-	cout << "\n";
+    cout << "  Row:    ";
+    for ( i = i2lo; i <= i2hi; i++ )
+    {
+      cout << setw(7) << i << "       ";
+    }
+    cout << "\n";
+    cout << "  Col\n";
+    cout << "\n";
 //
 //  Determine the range of the rows in this strip.
 //
-	j2lo = i_max ( jlo, 1 );
-	j2hi = i_min ( jhi, n );
+    j2lo = i_max ( jlo, 1 );
+    j2hi = i_min ( jhi, n );
 
-	for ( j = j2lo; j <= j2hi; j++ )
-	{
+    for ( j = j2lo; j <= j2hi; j++ )
+    {
 //
 //  Print out (up to INCX) entries in column J, that lie in the current strip.
 //
-	  cout << setw(5) << j << "  ";
-	  for ( i = i2lo; i <= i2hi; i++ )
-	  {
-		cout << setw(6) << a[i-1+(j-1)*m] << "  ";
-	  }
-	  cout << "\n";
-	}
+      cout << setw(5) << j << "  ";
+      for ( i = i2lo; i <= i2hi; i++ )
+      {
+        cout << setw(6) << a[i-1+(j-1)*m] << "  ";
+      }
+      cout << "\n";
+    }
 
   }
 
@@ -1968,62 +1968,62 @@ void ivec_heap_d ( int n, int a[] )
 //  Copy the value out of the parent node.
 //  Position IFREE is now "open".
 //
-	key = a[i];
-	ifree = i;
+    key = a[i];
+    ifree = i;
 
-	for ( ;; )
-	{
+    for ( ;; )
+    {
 //
 //  Positions 2*IFREE + 1 and 2*IFREE + 2 are the descendants of position
 //  IFREE.  (One or both may not exist because they equal or exceed N.)
 //
-	  m = 2 * ifree + 1;
+      m = 2 * ifree + 1;
 //
 //  Does the first position exist?
 //
-	  if ( n <= m )
-	  {
-		break;
-	  }
-	  else
-	  {
+      if ( n <= m )
+      {
+        break;
+      }
+      else
+      {
 //
 //  Does the second position exist?
 //
-		if ( m + 1 < n )
-		{
+        if ( m + 1 < n )
+        {
 //
 //  If both positions exist, take the larger of the two values,
 //  and update M if necessary.
 //
-		  if ( a[m] < a[m+1] )
-		  {
-			m = m + 1;
-		  }
-		}
+          if ( a[m] < a[m+1] )
+          {
+            m = m + 1;
+          }
+        }
 //
 //  If the large descendant is larger than KEY, move it up,
 //  and update IFREE, the location of the free position, and
 //  consider the descendants of THIS position.
 //
-		if ( key < a[m] )
-		{
-		  a[ifree] = a[m];
-		  ifree = m;
-		}
-		else
-		{
-		  break;
-		}
+        if ( key < a[m] )
+        {
+          a[ifree] = a[m];
+          ifree = m;
+        }
+        else
+        {
+          break;
+        }
 
-	  }
+      }
 
-	}
+    }
 //
 //  When you have stopped shifting items up, return the item you
 //  pulled out back to the heap.
 //
-	a[ifree] = key;
+    a[ifree] = key;
 
   }
 
@@ -2061,7 +2061,7 @@ int *ivec_indicator ( int n )
 
   for ( i = 0; i < n; i++ )
   {
-	a[i] = i + 1;
+    a[i] = i + 1;
   }
 
   return a;
@@ -2105,7 +2105,7 @@ void ivec_sort_heap_a ( int n, int a[] )
 
   if ( n <= 1 )
   {
-	return;
+    return;
   }
 //
 //  1: Put A into descending heap form.
@@ -2128,13 +2128,13 @@ void ivec_sort_heap_a ( int n, int a[] )
 //
 //  Restore the heap structure of the initial N1 entries of A.
 //
-	ivec_heap_d ( n1, a );
+    ivec_heap_d ( n1, a );
 //
 //  Take the largest object from A[0] and move it to A[N1-1].
 //
-	temp = a[0];
-	a[0] = a[n1-1];
-	a[n1-1] = temp;
+    temp = a[0];
+    a[0] = a[n1-1];
+    a[n1-1] = temp;
 
   }
 
@@ -2174,18 +2174,18 @@ void ivec_sorted_unique ( int n, int a[], int *nuniq )
 
   if ( n <= 0 )
   {
-	return;
+    return;
   }
 
   *nuniq = 1;
 
   for ( i = 1; i < n; i++ )
   {
-	if ( a[i] != a[*nuniq] )
-	{
-	  *nuniq = *nuniq + 1;
-	  a[*nuniq] = a[i];
-	}
+    if ( a[i] != a[*nuniq] )
+    {
+      *nuniq = *nuniq + 1;
+      a[*nuniq] = a[i];
+    }
 
   }
 
@@ -2255,23 +2255,23 @@ int lrline ( double xu, double yu, double xv1, double yv1, double xv2,
   dyu = yu - yv1;
 
   tolabs = tol * d_max ( fabs ( dx ),
-				 d_max ( fabs ( dy ),
-				 d_max ( fabs ( dxu ),
-				 d_max ( fabs ( dyu ), fabs ( dv ) ) ) ) );
+                 d_max ( fabs ( dy ),
+                 d_max ( fabs ( dxu ),
+                 d_max ( fabs ( dyu ), fabs ( dv ) ) ) ) );
 
   t = dy * dxu - dx * dyu + dv * sqrt ( dx * dx + dy * dy );
 
   if ( tolabs < t )
   {
-	value = 1;
+    value = 1;
   }
   else if ( -tolabs <= t )
   {
-	value = 0;
+    value = 0;
   }
   else if ( t < -tolabs )
   {
-	value = -1;
+    value = -1;
   }
 
   return value;
@@ -2314,21 +2314,21 @@ bool perm_check ( int n, int p[] )
 
   for ( seek = 1; seek <= n; seek++ )
   {
-	found = false;
+    found = false;
 
-	for ( i = 0; i < n; i++ )
-	{
-	  if ( p[i] == seek )
-	  {
-		found = true;
-		break;
-	  }
-	}
+    for ( i = 0; i < n; i++ )
+    {
+      if ( p[i] == seek )
+      {
+        found = true;
+        break;
+      }
+    }
 
-	if ( !found )
-	{
-	  return false;
-	}
+    if ( !found )
+    {
+      return false;
+    }
 
   }
 
@@ -2364,59 +2364,59 @@ void perm_inv ( int n, int p[] )
 
   if ( n <= 0 )
   {
-	cout << "\n";
-	cout << "PERM_INV - Fatal error!\n";
-	cout << "  Input value of N = " << n << "\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "PERM_INV - Fatal error!\n";
+    cout << "  Input value of N = " << n << "\n";
+    exit ( 1 );
   }
 
   if ( !perm_check ( n, p ) )
   {
-	cout << "\n";
-	cout << "PERM_INV - Fatal error!\n";
-	cout << "  The input array does not represent\n";
-	cout << "  a proper permutation.\n";
-	exit ( 1 );
+    cout << "\n";
+    cout << "PERM_INV - Fatal error!\n";
+    cout << "  The input array does not represent\n";
+    cout << "  a proper permutation.\n";
+    exit ( 1 );
   }
 
   is = 1;
 
   for ( i = 1; i <= n; i++ )
   {
-	i1 = p[i-1];
+    i1 = p[i-1];
 
-	while ( i < i1 )
-	{
-	  i2 = p[i1-1];
-	  p[i1-1] = -i2;
-	  i1 = i2;
-	}
+    while ( i < i1 )
+    {
+      i2 = p[i1-1];
+      p[i1-1] = -i2;
+      i1 = i2;
+    }
 
-	is = - i_sign ( p[i-1] );
-	p[i-1] = i_sign ( is ) * abs ( p[i-1] );
+    is = - i_sign ( p[i-1] );
+    p[i-1] = i_sign ( is ) * abs ( p[i-1] );
   }
 
   for ( i = 1; i <= n; i++ )
   {
-	i1 = -p[i-1];
+    i1 = -p[i-1];
 
-	if ( 0 <= i1 )
-	{
-	  i0 = i;
+    if ( 0 <= i1 )
+    {
+      i0 = i;
 
-	  for ( ; ; )
-	  {
-		i2 = p[i1-1];
-		p[i1-1] = i0;
+      for ( ; ; )
+      {
+        i2 = p[i1-1];
+        p[i1-1] = i0;
 
-		if ( i2 < 0 )
-		{
-		  break;
-		}
-		i0 = i1;
-		i1 = i2;
-	  }
-	}
+        if ( i2 < 0 )
+        {
+          break;
+        }
+        i0 = i1;
+        i1 = i2;
+      }
+    }
   }
 
   return;
@@ -2491,7 +2491,7 @@ int *points_delaunay_naive_2d ( int n, double p[], int *ntri )
 
   for ( i = 0; i < n; i++ )
   {
-	z[i] = p[0+i*2] * p[0+i*2] + p[1+i*2] * p[1+i*2];
+    z[i] = p[0+i*2] * p[0+i*2] + p[1+i*2] * p[1+i*2];
   }
 //
 //  First pass counts triangles,
@@ -2499,56 +2499,56 @@ int *points_delaunay_naive_2d ( int n, double p[], int *ntri )
 //
   for ( pass = 1; pass <= 2; pass++ )
   {
-	if ( pass == 2 )
-	{
-	  tri = new int[3*count];
-	}
-	count = 0;
+    if ( pass == 2 )
+    {
+      tri = new int[3*count];
+    }
+    count = 0;
 //
 //  For each triple (I,J,K):
 //
-	for ( i = 0; i < n - 2; i++ )
-	{
-	  for ( j = i+1; j < n; j++ )
-	  {
-		for ( k = i+1; k < n; k++ )
-		{
-		  if ( j != k )
-		  {
-			xn = ( p[1+j*2] - p[1+i*2] ) * ( z[k] - z[i] )
-			   - ( p[1+k*2] - p[1+i*2] ) * ( z[j] - z[i] );
-			yn = ( p[0+k*2] - p[0+i*2] ) * ( z[j] - z[i] )
-			   - ( p[0+j*2] - p[0+i*2] ) * ( z[k] - z[i] );
-			zn = ( p[0+j*2] - p[0+i*2] ) * ( p[1+k*2] - p[1+i*2] )
-			   - ( p[0+k*2] - p[0+i*2] ) * ( p[1+j*2] - p[1+i*2] );
+    for ( i = 0; i < n - 2; i++ )
+    {
+      for ( j = i+1; j < n; j++ )
+      {
+        for ( k = i+1; k < n; k++ )
+        {
+          if ( j != k )
+          {
+            xn = ( p[1+j*2] - p[1+i*2] ) * ( z[k] - z[i] )
+               - ( p[1+k*2] - p[1+i*2] ) * ( z[j] - z[i] );
+            yn = ( p[0+k*2] - p[0+i*2] ) * ( z[j] - z[i] )
+               - ( p[0+j*2] - p[0+i*2] ) * ( z[k] - z[i] );
+            zn = ( p[0+j*2] - p[0+i*2] ) * ( p[1+k*2] - p[1+i*2] )
+               - ( p[0+k*2] - p[0+i*2] ) * ( p[1+j*2] - p[1+i*2] );
 
-			flag = ( zn < 0 );
+            flag = ( zn < 0 );
 
-			if ( flag )
-			{
-			  for ( m = 0; m < n; m++ )
-			  {
-				flag = flag && ( ( p[0+m*2] - p[0+i*2] ) * xn
-					           + ( p[1+m*2] - p[1+i*2] ) * yn
-					           + ( z[m] - z[i] ) * zn <= 0 );
-			  }
-			}
+            if ( flag )
+            {
+              for ( m = 0; m < n; m++ )
+              {
+                flag = flag && ( ( p[0+m*2] - p[0+i*2] ) * xn
+                               + ( p[1+m*2] - p[1+i*2] ) * yn
+                               + ( z[m] - z[i] ) * zn <= 0 );
+              }
+            }
 
-			if ( flag )
-			{
-			  if ( pass == 2 )
-			  {
-				tri[0+count*3] = i;
-				tri[1+count*3] = j;
-				tri[2+count*3] = k;
-			  }
-			  count = count + 1;
-			}
+            if ( flag )
+            {
+              if ( pass == 2 )
+              {
+                tri[0+count*3] = i;
+                tri[1+count*3] = j;
+                tri[2+count*3] = k;
+              }
+              count = count + 1;
+            }
 
-		  }
-		}
-	  }
-	}
+          }
+        }
+      }
+    }
   }
 
   *ntri = count;
@@ -2590,12 +2590,12 @@ int s_len_trim ( const char *s )
 
   while ( 0 < n )
   {
-	if ( *t != ' ' )
-	{
-	  return n;
-	}
-	t--;
-	n--;
+    if ( *t != ' ' )
+    {
+      return n;
+    }
+    t--;
+    n--;
   }
 
   return n;
@@ -2699,182 +2699,182 @@ int swapec ( int i, int *top, int *btri, int *bedg, int point_num,
 
   for ( ; ; )
   {
-	if ( *top <= 0 )
-	{
-	  break;
-	}
+    if ( *top <= 0 )
+    {
+      break;
+    }
 
-	t = stack[(*top)-1];
-	*top = *top - 1;
+    t = stack[(*top)-1];
+    *top = *top - 1;
 
-	if ( tri_vert[3*(t-1)+0] == i )
-	{
-	  e = 2;
-	  b = tri_vert[3*(t-1)+2];
-	}
-	else if ( tri_vert[3*(t-1)+1] == i )
-	{
-	  e = 3;
-	  b = tri_vert[3*(t-1)+0];
-	}
-	else
-	{
-	  e = 1;
-	  b = tri_vert[3*(t-1)+1];
-	}
+    if ( tri_vert[3*(t-1)+0] == i )
+    {
+      e = 2;
+      b = tri_vert[3*(t-1)+2];
+    }
+    else if ( tri_vert[3*(t-1)+1] == i )
+    {
+      e = 3;
+      b = tri_vert[3*(t-1)+0];
+    }
+    else
+    {
+      e = 1;
+      b = tri_vert[3*(t-1)+1];
+    }
 
-	a = tri_vert[3*(t-1)+e-1];
-	u = tri_nabe[3*(t-1)+e-1];
+    a = tri_vert[3*(t-1)+e-1];
+    u = tri_nabe[3*(t-1)+e-1];
 
-	if ( tri_nabe[3*(u-1)+0] == t )
-	{
-	  f = 1;
-	  c = tri_vert[3*(u-1)+2];
-	}
-	else if ( tri_nabe[3*(u-1)+1] == t )
-	{
-	  f = 2;
-	  c = tri_vert[3*(u-1)+0];
-	}
-	else
-	{
-	  f = 3;
-	  c = tri_vert[3*(u-1)+1];
-	}
+    if ( tri_nabe[3*(u-1)+0] == t )
+    {
+      f = 1;
+      c = tri_vert[3*(u-1)+2];
+    }
+    else if ( tri_nabe[3*(u-1)+1] == t )
+    {
+      f = 2;
+      c = tri_vert[3*(u-1)+0];
+    }
+    else
+    {
+      f = 3;
+      c = tri_vert[3*(u-1)+1];
+    }
 
-	swap = diaedg ( x, y,
-	  point_xy[2*(a-1)+0], point_xy[2*(a-1)+1],
-	  point_xy[2*(c-1)+0], point_xy[2*(c-1)+1],
-	  point_xy[2*(b-1)+0], point_xy[2*(b-1)+1] );
+    swap = diaedg ( x, y,
+      point_xy[2*(a-1)+0], point_xy[2*(a-1)+1],
+      point_xy[2*(c-1)+0], point_xy[2*(c-1)+1],
+      point_xy[2*(b-1)+0], point_xy[2*(b-1)+1] );
 
-	if ( swap == 1 )
-	{
-	  em1 = i_wrap ( e - 1, 1, 3 );
-	  ep1 = i_wrap ( e + 1, 1, 3 );
-	  fm1 = i_wrap ( f - 1, 1, 3 );
-	  fp1 = i_wrap ( f + 1, 1, 3 );
+    if ( swap == 1 )
+    {
+      em1 = i_wrap ( e - 1, 1, 3 );
+      ep1 = i_wrap ( e + 1, 1, 3 );
+      fm1 = i_wrap ( f - 1, 1, 3 );
+      fp1 = i_wrap ( f + 1, 1, 3 );
 
-	  tri_vert[3*(t-1)+ep1-1] = c;
-	  tri_vert[3*(u-1)+fp1-1] = i;
-	  r = tri_nabe[3*(t-1)+ep1-1];
-	  s = tri_nabe[3*(u-1)+fp1-1];
-	  tri_nabe[3*(t-1)+ep1-1] = u;
-	  tri_nabe[3*(u-1)+fp1-1] = t;
-	  tri_nabe[3*(t-1)+e-1] = s;
-	  tri_nabe[3*(u-1)+f-1] = r;
+      tri_vert[3*(t-1)+ep1-1] = c;
+      tri_vert[3*(u-1)+fp1-1] = i;
+      r = tri_nabe[3*(t-1)+ep1-1];
+      s = tri_nabe[3*(u-1)+fp1-1];
+      tri_nabe[3*(t-1)+ep1-1] = u;
+      tri_nabe[3*(u-1)+fp1-1] = t;
+      tri_nabe[3*(t-1)+e-1] = s;
+      tri_nabe[3*(u-1)+f-1] = r;
 
-	  if ( 0 < tri_nabe[3*(u-1)+fm1-1] )
-	  {
-		*top = *top + 1;
-		stack[(*top)-1] = u;
-	  }
+      if ( 0 < tri_nabe[3*(u-1)+fm1-1] )
+      {
+        *top = *top + 1;
+        stack[(*top)-1] = u;
+      }
 
-	  if ( 0 < s )
-	  {
-		if ( tri_nabe[3*(s-1)+0] == u )
-		{
-		  tri_nabe[3*(s-1)+0] = t;
-		}
-		else if ( tri_nabe[3*(s-1)+1] == u )
-		{
-		  tri_nabe[3*(s-1)+1] = t;
-		}
-		else
-		{
-		  tri_nabe[3*(s-1)+2] = t;
-		}
+      if ( 0 < s )
+      {
+        if ( tri_nabe[3*(s-1)+0] == u )
+        {
+          tri_nabe[3*(s-1)+0] = t;
+        }
+        else if ( tri_nabe[3*(s-1)+1] == u )
+        {
+          tri_nabe[3*(s-1)+1] = t;
+        }
+        else
+        {
+          tri_nabe[3*(s-1)+2] = t;
+        }
 
-		*top = *top + 1;
+        *top = *top + 1;
 
-		if ( point_num < *top )
-		{
-		  return 8;
-		}
+        if ( point_num < *top )
+        {
+          return 8;
+        }
 
-		stack[(*top)-1] = t;
-	  }
-	  else
-	  {
-		if ( u == *btri && fp1 == *bedg )
-		{
-		  *btri = t;
-		  *bedg = e;
-		}
+        stack[(*top)-1] = t;
+      }
+      else
+      {
+        if ( u == *btri && fp1 == *bedg )
+        {
+          *btri = t;
+          *bedg = e;
+        }
 
-		l = - ( 3 * t + e - 1 );
-		tt = t;
-		ee = em1;
+        l = - ( 3 * t + e - 1 );
+        tt = t;
+        ee = em1;
 
-		while ( 0 < tri_nabe[3*(tt-1)+ee-1] )
-		{
-		  tt = tri_nabe[3*(tt-1)+ee-1];
+        while ( 0 < tri_nabe[3*(tt-1)+ee-1] )
+        {
+          tt = tri_nabe[3*(tt-1)+ee-1];
 
-		  if ( tri_vert[3*(tt-1)+0] == a )
-		  {
-			ee = 3;
-		  }
-		  else if ( tri_vert[3*(tt-1)+1] == a )
-		  {
-			ee = 1;
-		  }
-		  else
-		  {
-			ee = 2;
-		  }
+          if ( tri_vert[3*(tt-1)+0] == a )
+          {
+            ee = 3;
+          }
+          else if ( tri_vert[3*(tt-1)+1] == a )
+          {
+            ee = 1;
+          }
+          else
+          {
+            ee = 2;
+          }
 
-		}
+        }
 
-		tri_nabe[3*(tt-1)+ee-1] = l;
+        tri_nabe[3*(tt-1)+ee-1] = l;
 
-	  }
+      }
 
-	  if ( 0 < r )
-	  {
-		if ( tri_nabe[3*(r-1)+0] == t )
-		{
-		  tri_nabe[3*(r-1)+0] = u;
-		}
-		else if ( tri_nabe[3*(r-1)+1] == t )
-		{
-		  tri_nabe[3*(r-1)+1] = u;
-		}
-		else
-		{
-		  tri_nabe[3*(r-1)+2] = u;
-		}
-	  }
-	  else
-	  {
-		if ( t == *btri && ep1 == *bedg )
-		{
-		  *btri = u;
-		  *bedg = f;
-		}
+      if ( 0 < r )
+      {
+        if ( tri_nabe[3*(r-1)+0] == t )
+        {
+          tri_nabe[3*(r-1)+0] = u;
+        }
+        else if ( tri_nabe[3*(r-1)+1] == t )
+        {
+          tri_nabe[3*(r-1)+1] = u;
+        }
+        else
+        {
+          tri_nabe[3*(r-1)+2] = u;
+        }
+      }
+      else
+      {
+        if ( t == *btri && ep1 == *bedg )
+        {
+          *btri = u;
+          *bedg = f;
+        }
 
-		l = - ( 3 * u + f - 1 );
-		tt = u;
-		ee = fm1;
+        l = - ( 3 * u + f - 1 );
+        tt = u;
+        ee = fm1;
 
-		while ( 0 < tri_nabe[3*(tt-1)+ee-1] )
-		{
-		  tt = tri_nabe[3*(tt-1)+ee-1];
+        while ( 0 < tri_nabe[3*(tt-1)+ee-1] )
+        {
+          tt = tri_nabe[3*(tt-1)+ee-1];
 
-		  if ( tri_vert[3*(tt-1)+0] == b )
-		  {
-			ee = 3;
-		  }
-		  else if ( tri_vert[3*(tt-1)+1] == b )
-		  {
-			ee = 1;
-		  }
-		  else
-		  {
-			ee = 2;
-		  }
-		}
-		tri_nabe[3*(tt-1)+ee-1] = l;
-	  }
-	}
+          if ( tri_vert[3*(tt-1)+0] == b )
+          {
+            ee = 3;
+          }
+          else if ( tri_vert[3*(tt-1)+1] == b )
+          {
+            ee = 1;
+          }
+          else
+          {
+            ee = 2;
+          }
+        }
+        tri_nabe[3*(tt-1)+ee-1] = l;
+      }
+    }
   }
   return 0;
 }
@@ -2919,7 +2919,7 @@ void timestamp ( void )
 
   if ( len != 0 )
   {
-	cout << time_buffer << "\n";
+    cout << time_buffer << "\n";
   }
 
   return;
@@ -3022,16 +3022,16 @@ double *triangle_circumcenter_2d ( double t[] )
   center = new double[DIM_NUM];
 
   asq = ( t[0+1*2] - t[0+0*2] ) * ( t[0+1*2] - t[0+0*2] )
-	  + ( t[1+1*2] - t[1+0*2] ) * ( t[1+1*2] - t[1+0*2] );
+      + ( t[1+1*2] - t[1+0*2] ) * ( t[1+1*2] - t[1+0*2] );
 
   csq = ( t[0+2*2] - t[0+0*2] ) * ( t[0+2*2] - t[0+0*2] )
-	  + ( t[1+2*2] - t[1+0*2] ) * ( t[1+2*2] - t[1+0*2] );
+      + ( t[1+2*2] - t[1+0*2] ) * ( t[1+2*2] - t[1+0*2] );
 
   top1 =  ( t[1+1*2] - t[1+0*2] ) * csq - ( t[1+2*2] - t[1+0*2] ) * asq;
   top2 =  ( t[0+1*2] - t[0+0*2] ) * csq - ( t[0+2*2] - t[0+0*2] ) * asq;
 
   bot  =  ( t[1+1*2] - t[1+0*2] ) * ( t[0+2*2] - t[0+0*2] )
-		- ( t[1+2*2] - t[1+0*2] ) * ( t[0+1*2] - t[0+0*2] );
+        - ( t[1+2*2] - t[1+0*2] ) * ( t[0+1*2] - t[0+0*2] );
 
   center[0] = t[0+0*2] + 0.5 * top1 / bot;
   center[1] = t[1+0*2] + 0.5 * top2 / bot;
@@ -3114,10 +3114,10 @@ bool triangulation_plot_eps ( const char *file_out_name, int g_num, double g_xy[
 
   for ( g = 0; g < g_num; g++ )
   {
-	x_max = d_max ( x_max, g_xy[0+g*2] );
-	x_min = d_min ( x_min, g_xy[0+g*2] );
-	y_max = d_max ( y_max, g_xy[1+g*2] );
-	y_min = d_min ( y_min, g_xy[1+g*2] );
+    x_max = d_max ( x_max, g_xy[0+g*2] );
+    x_min = d_min ( x_min, g_xy[0+g*2] );
+    y_max = d_max ( y_max, g_xy[1+g*2] );
+    y_min = d_min ( y_min, g_xy[1+g*2] );
   }
 //
 //  Plot the Delaunay triangulation.
@@ -3129,10 +3129,10 @@ bool triangulation_plot_eps ( const char *file_out_name, int g_num, double g_xy[
 
   if ( !file_out )
   {
-	cout << "\n";
-	cout << "TRIANGULATION_PLOT_EPS - Fatal error!\n";
-	cout << "  Cannot open the output file \"" << file_out_name << "\".\n";
-	return false;
+    cout << "\n";
+    cout << "TRIANGULATION_PLOT_EPS - Fatal error!\n";
+    cout << "  Cannot open the output file \"" << file_out_name << "\".\n";
+    return false;
   }
 
   file_out << "%!PS-Adobe-3.0 EPSF-3.0\n";
@@ -3141,7 +3141,7 @@ bool triangulation_plot_eps ( const char *file_out_name, int g_num, double g_xy[
   file_out << "%%CreationDate: " << date_time << "\n";
   file_out << "%%Pages: 1\n";
   file_out << "%%Bounding Box: " << x_ps_min << "  " << y_ps_min << "  "
-		   << x_ps_max << "  " << y_ps_max << "\n";
+           << x_ps_max << "  " << y_ps_max << "\n";
   file_out << "%%Document-Fonts: Times-Roman\n";
   file_out << "%%LanguageLevel: 1\n";
   file_out << "%%EndComments\n";
@@ -3199,18 +3199,18 @@ bool triangulation_plot_eps ( const char *file_out_name, int g_num, double g_xy[
 
   for ( g = 0; g < g_num; g++ )
   {
-	x_ps = int(
-	  ( ( x_max - g_xy[0+g*2] ) * double( x_ps_min )
-	  + ( g_xy[0+g*2] - x_min ) * double( x_ps_max ) )
-	  / ( x_max - x_min ) );
+    x_ps = int(
+      ( ( x_max - g_xy[0+g*2] ) * double( x_ps_min )
+      + ( g_xy[0+g*2] - x_min ) * double( x_ps_max ) )
+      / ( x_max - x_min ) );
 
-	y_ps = int(
-	  ( ( y_max - g_xy[1+g*2] ) * double( y_ps_min )
-	  + ( g_xy[1+g*2] - y_min ) * double( y_ps_max ) )
-	  / ( y_max - y_min ) );
+    y_ps = int(
+      ( ( y_max - g_xy[1+g*2] ) * double( y_ps_min )
+      + ( g_xy[1+g*2] - y_min ) * double( y_ps_max ) )
+      / ( y_max - y_min ) );
 
-	file_out << "newpath " << x_ps << "  "
-			 << y_ps << " 5 0 360 arc closepath fill\n";
+    file_out << "newpath " << x_ps << "  "
+             << y_ps << " 5 0 360 arc closepath fill\n";
   }
 
   file_out << "%\n";
@@ -3223,36 +3223,36 @@ bool triangulation_plot_eps ( const char *file_out_name, int g_num, double g_xy[
 
   for ( t = 1; t <= tri_num; t++ )
   {
-	file_out << "newpath\n";
+    file_out << "newpath\n";
 
-	for ( j = 1; j <= 4; j++ )
-	{
-	  e = i_wrap ( j, 1, 3 );
+    for ( j = 1; j <= 4; j++ )
+    {
+      e = i_wrap ( j, 1, 3 );
 
-	  k = nod_tri[3*(t-1)+e-1];
+      k = nod_tri[3*(t-1)+e-1];
 
-	  x_ps = int(
-		( ( x_max - g_xy[0+(k-1)*2] ) * double( x_ps_min )
-		+ ( g_xy[0+(k-1)*2] - x_min ) * double( x_ps_max ) )
-		/ ( x_max - x_min ) );
+      x_ps = int(
+        ( ( x_max - g_xy[0+(k-1)*2] ) * double( x_ps_min )
+        + ( g_xy[0+(k-1)*2] - x_min ) * double( x_ps_max ) )
+        / ( x_max - x_min ) );
 
-	  y_ps = int(
-		( ( y_max - g_xy[1+(k-1)*2] ) * double( y_ps_min )
-		+ ( g_xy[1+(k-1)*2] - y_min ) * double( y_ps_max ) )
-		/ ( y_max - y_min ) );
+      y_ps = int(
+        ( ( y_max - g_xy[1+(k-1)*2] ) * double( y_ps_min )
+        + ( g_xy[1+(k-1)*2] - y_min ) * double( y_ps_max ) )
+        / ( y_max - y_min ) );
 
-	  if ( j == 1 )
-	  {
-		file_out << x_ps << "  " << y_ps << " moveto\n";
-	  }
-	  else
-	  {
-		file_out << x_ps << "  " << y_ps << " lineto\n";
-	  }
+      if ( j == 1 )
+      {
+        file_out << x_ps << "  " << y_ps << " moveto\n";
+      }
+      else
+      {
+        file_out << x_ps << "  " << y_ps << " lineto\n";
+      }
 
-	}
+    }
 
-	file_out << "stroke\n";
+    file_out << "stroke\n";
 
   }
 
@@ -3364,11 +3364,11 @@ void triangulation_print ( int point_num, double xc[], int tri_num,
   k = 0;
   for ( t = 0; t < tri_num; t++ )
   {
-	for ( s = 0; s < 3; s++ )
-	{
-	  vertex_list[k] = tri_vert[s+t*3];
-	  k = k + 1;
-	}
+    for ( s = 0; s < 3; s++ )
+    {
+      vertex_list[k] = tri_vert[s+t*3];
+      k = k + 1;
+    }
   }
 
   ivec_sort_heap_a ( 3*tri_num, vertex_list );
@@ -3397,40 +3397,40 @@ void triangulation_print ( int point_num, double xc[], int tri_num,
 
   for ( i = 0; i < tri_num; i++ )
   {
-	for ( j = 0; j < 3; j++ )
-	{
-	  if ( tri_nabe[j+i*3] < 0 )
-	  {
-		s = -tri_nabe[j+i*3];
-		t = s / 3;
+    for ( j = 0; j < 3; j++ )
+    {
+      if ( tri_nabe[j+i*3] < 0 )
+      {
+        s = -tri_nabe[j+i*3];
+        t = s / 3;
 
-		if ( t < 1 || tri_num < t )
-		{
-		  cout << "\n";
-		  cout << "  Sorry, this data does not use the DTRIS2\n";
-		  cout << "  convention for convex hull segments.\n";
-		  skip = true;
-		  break;
-		}
+        if ( t < 1 || tri_num < t )
+        {
+          cout << "\n";
+          cout << "  Sorry, this data does not use the DTRIS2\n";
+          cout << "  convention for convex hull segments.\n";
+          skip = true;
+          break;
+        }
 
-		s1 = ( s % 3 ) + 1;
-		s2 = i_wrap ( s1+1, 1, 3 );
-		k = k + 1;
-		n1 = tri_vert[s1-1+(t-1)*3];
-		n2 = tri_vert[s2-1+(t-1)*3];
-		cout << setw(4) << k  << "  "
-			 << setw(4) << t  << "  "
-			 << setw(4) << s1 << "  "
-			 << setw(4) << n1 << "  "
-			 << setw(4) << n2 << "\n";
-	  }
+        s1 = ( s % 3 ) + 1;
+        s2 = i_wrap ( s1+1, 1, 3 );
+        k = k + 1;
+        n1 = tri_vert[s1-1+(t-1)*3];
+        n2 = tri_vert[s2-1+(t-1)*3];
+        cout << setw(4) << k  << "  "
+             << setw(4) << t  << "  "
+             << setw(4) << s1 << "  "
+             << setw(4) << n1 << "  "
+             << setw(4) << n2 << "\n";
+      }
 
-	}
+    }
 
-	if ( skip )
-	{
-	  break;
-	}
+    if ( skip )
+    {
+      break;
+    }
 
   }
 
@@ -3522,52 +3522,52 @@ void vbedg ( double x, double y, int point_num, double point_xy[], int tri_num,
 //
   if ( *ltri == 0 )
   {
-	done = false;
-	*ltri = *rtri;
-	*ledg = *redg;
+    done = false;
+    *ltri = *rtri;
+    *ledg = *redg;
   }
   else
   {
-	done = true;
+    done = true;
   }
 
   for ( ; ; )
   {
-	l = -tri_nabe[3*((*rtri)-1)+(*redg)-1];
-	t = l / 3;
-	e = 1 + l % 3;
-	a = tri_vert[3*(t-1)+e-1];
+    l = -tri_nabe[3*((*rtri)-1)+(*redg)-1];
+    t = l / 3;
+    e = 1 + l % 3;
+    a = tri_vert[3*(t-1)+e-1];
 
-	if ( e <= 2 )
-	{
-	  b = tri_vert[3*(t-1)+e];
-	}
-	else
-	{
-	  b = tri_vert[3*(t-1)+0];
-	}
+    if ( e <= 2 )
+    {
+      b = tri_vert[3*(t-1)+e];
+    }
+    else
+    {
+      b = tri_vert[3*(t-1)+0];
+    }
 
-	ax = point_xy[2*(a-1)+0];
-	ay = point_xy[2*(a-1)+1];
+    ax = point_xy[2*(a-1)+0];
+    ay = point_xy[2*(a-1)+1];
 
-	bx = point_xy[2*(b-1)+0];
-	by = point_xy[2*(b-1)+1];
+    bx = point_xy[2*(b-1)+0];
+    by = point_xy[2*(b-1)+1];
 
-	lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
+    lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
 
-	if ( lr <= 0 )
-	{
-	  break;
-	}
+    if ( lr <= 0 )
+    {
+      break;
+    }
 
-	*rtri = t;
-	*redg = e;
+    *rtri = t;
+    *redg = e;
 
   }
 
   if ( done )
   {
-	return;
+    return;
   }
 
   t = *ltri;
@@ -3575,41 +3575,41 @@ void vbedg ( double x, double y, int point_num, double point_xy[], int tri_num,
 
   for ( ; ; )
   {
-	b = tri_vert[3*(t-1)+e-1];
-	e = i_wrap ( e-1, 1, 3 );
+    b = tri_vert[3*(t-1)+e-1];
+    e = i_wrap ( e-1, 1, 3 );
 
-	while ( 0 < tri_nabe[3*(t-1)+e-1] )
-	{
-	  t = tri_nabe[3*(t-1)+e-1];
+    while ( 0 < tri_nabe[3*(t-1)+e-1] )
+    {
+      t = tri_nabe[3*(t-1)+e-1];
 
-	  if ( tri_vert[3*(t-1)+0] == b )
-	  {
-		e = 3;
-	  }
-	  else if ( tri_vert[3*(t-1)+1] == b )
-	  {
-		e = 1;
-	  }
-	  else
-	  {
-		e = 2;
-	  }
+      if ( tri_vert[3*(t-1)+0] == b )
+      {
+        e = 3;
+      }
+      else if ( tri_vert[3*(t-1)+1] == b )
+      {
+        e = 1;
+      }
+      else
+      {
+        e = 2;
+      }
 
-	}
+    }
 
-	a = tri_vert[3*(t-1)+e-1];
-	ax = point_xy[2*(a-1)+0];
-	ay = point_xy[2*(a-1)+1];
+    a = tri_vert[3*(t-1)+e-1];
+    ax = point_xy[2*(a-1)+0];
+    ay = point_xy[2*(a-1)+1];
 
-	bx = point_xy[2*(b-1)+0];
-	by = point_xy[2*(b-1)+1];
+    bx = point_xy[2*(b-1)+0];
+    by = point_xy[2*(b-1)+1];
 
-	lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
+    lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
 
-	if ( lr <= 0 )
-	{
-	  break;
-	}
+    if ( lr <= 0 )
+    {
+      break;
+    }
 
   }
 

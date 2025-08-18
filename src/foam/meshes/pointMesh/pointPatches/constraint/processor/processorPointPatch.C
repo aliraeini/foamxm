@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,9 +43,9 @@ defineTypeNameAndDebug(processorPointPatch, 0);
 
 addToRunTimeSelectionTable
 (
-	facePointPatch,
-	processorPointPatch,
-	polyPatch
+    facePointPatch,
+    processorPointPatch,
+    polyPatch
 );
 
 
@@ -53,33 +53,33 @@ addToRunTimeSelectionTable
 
 void Foam::processorPointPatch::initGeometry()
 {
-	// Algorithm:
-	// Depending on whether the patch is a master or a slave, get the primitive
-	// patch points and filter away the points from the global patch.
+    // Algorithm:
+    // Depending on whether the patch is a master or a slave, get the primitive
+    // patch points and filter away the points from the global patch.
 
-	if (isMaster())
-	{
-		meshPoints_ = procPolyPatch_.meshPoints();
-	}
-	else
-	{
-		// Slave side.  Create the reversed patch and pick up its points
-		// so that the order is correct
-		const polyPatch& pp = patch();
+    if (isMaster())
+    {
+        meshPoints_ = procPolyPatch_.meshPoints();
+    }
+    else
+    {
+        // Slave side.  Create the reversed patch and pick up its points
+        // so that the order is correct
+        const polyPatch& pp = patch();
 
-		faceList masterFaces(pp.size());
+        faceList masterFaces(pp.size());
 
-		forAll (pp, faceI)
-		{
-			masterFaces[faceI] = pp[faceI].reverseFace();
-		}
+        forAll (pp, faceI)
+        {
+            masterFaces[faceI] = pp[faceI].reverseFace();
+        }
 
-		meshPoints_ = primitiveFacePatch
-		(
-			masterFaces,
-			pp.points()
-		).meshPoints();
-	}
+        meshPoints_ = primitiveFacePatch
+        (
+            masterFaces,
+            pp.points()
+        ).meshPoints();
+    }
 }
 
 
@@ -89,15 +89,15 @@ void Foam::processorPointPatch::calcGeometry()
 
 void processorPointPatch::initUpdateMesh()
 {
-	facePointPatch::initUpdateMesh();
-	processorPointPatch::initGeometry();
+    facePointPatch::initUpdateMesh();
+    processorPointPatch::initGeometry();
 }
 
 
 void processorPointPatch::updateMesh()
 {
-	facePointPatch::updateMesh();
-	processorPointPatch::calcGeometry();
+    facePointPatch::updateMesh();
+    processorPointPatch::calcGeometry();
 }
 
 
@@ -105,13 +105,13 @@ void processorPointPatch::updateMesh()
 
 processorPointPatch::processorPointPatch
 (
-	const polyPatch& patch,
-	const pointBoundaryMesh& bm
+    const polyPatch& patch,
+    const pointBoundaryMesh& bm
 )
 :
-	coupledFacePointPatch(patch, bm),
-	procPolyPatch_(refCast<const processorPolyPatch>(patch)),
-	meshPoints_()
+    coupledFacePointPatch(patch, bm),
+    procPolyPatch_(refCast<const processorPolyPatch>(patch)),
+    meshPoints_()
 {}
 
 
@@ -125,95 +125,95 @@ processorPointPatch::~processorPointPatch()
 
 const labelList& processorPointPatch::meshPoints() const
 {
-	return meshPoints_;
+    return meshPoints_;
 }
 
 
 const pointField& processorPointPatch::localPoints() const
 {
-	notImplemented("processorPointPatch::localPoints() const");
-	return Field<point>::null();
+    notImplemented("processorPointPatch::localPoints() const");
+    return Field<point>::null();
 }
 
 
 const vectorField& processorPointPatch::pointNormals() const
 {
-	notImplemented("processorPointPatch::pointNormals() const");
-	return Field<vector>::null();
+    notImplemented("processorPointPatch::pointNormals() const");
+    return Field<vector>::null();
 }
 
 
 const labelList& processorPointPatch::localEdgeIndices() const
 {
-	notImplemented("processorPointPatch::localEdgeIndices() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::localEdgeIndices() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::cutEdgeIndices() const
 {
-	notImplemented("processorPointPatch::cutEdgeIndices() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::cutEdgeIndices() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::cutEdgeOwnerIndices() const
 {
-	notImplemented
-	(
-		"processorPointPatch::cutEdgeOwnerIndices() const"
-	);
-	return labelList::null();
+    notImplemented
+    (
+        "processorPointPatch::cutEdgeOwnerIndices() const"
+    );
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::cutEdgeOwnerStart() const
 {
-	notImplemented("processorPointPatch::cutEdgeOwnerStart() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::cutEdgeOwnerStart() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::
 cutEdgeNeighbourIndices() const
 {
-	notImplemented("processorPointPatch::cutEdgeNeighbourIndices() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::cutEdgeNeighbourIndices() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::cutEdgeNeighbourStart() const
 {
-	notImplemented("processorPointPatch::cutEdgeNeighbourStart() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::cutEdgeNeighbourStart() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::doubleCutEdgeIndices() const
 {
-	notImplemented("processorPointPatch::doubleCutEdgeIndices() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::doubleCutEdgeIndices() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::doubleCutOwner() const
 {
-	notImplemented("processorPointPatch::doubleCutOwner() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::doubleCutOwner() const");
+    return labelList::null();
 }
 
 
 const labelList& processorPointPatch::doubleCutNeighbour() const
 {
-	notImplemented("processorPointPatch::doubleCutNeighbour() const");
-	return labelList::null();
+    notImplemented("processorPointPatch::doubleCutNeighbour() const");
+    return labelList::null();
 }
 
 
 const scalarField& processorPointPatch::ownNeiDoubleMask() const
 {
-	notImplemented("processorPointPatch::ownNeiDoubleMask() const");
-	return scalarField::null();
+    notImplemented("processorPointPatch::ownNeiDoubleMask() const");
+    return scalarField::null();
 }
 
 

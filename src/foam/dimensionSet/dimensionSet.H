@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::dimensionSet
+    Foam::dimensionSet
 
 Description
-	Dimension set for the base types.
-	This type may be used to implement rigorous dimension checking
-	for algebraic manipulation.
+    Dimension set for the base types.
+    This type may be used to implement rigorous dimension checking
+    for algebraic manipulation.
 
 SourceFiles
-	dimensionSet.C
-	dimensionSetIO.C
-	dimensionSets.C
+    dimensionSet.C
+    dimensionSetIO.C
+    dimensionSets.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,6 +43,7 @@ SourceFiles
 #include "bool.H"
 #include "dimensionedScalarFwd.H"
 #include "className.H"
+#include "autoPtr.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -104,197 +105,207 @@ Istream& operator>>(Istream&, dimensionSet&);
 Ostream& operator<<(Ostream&, const dimensionSet&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class dimensionSet Declaration
+\*---------------------------------------------------------------------------*/
 
 class dimensionSet
 {
 
 public:
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			nDimensions = 7    // Number of dimensions in SI is 7
-		};
+        enum
+        {
+            nDimensions = 7    // Number of dimensions in SI is 7
+        };
 
-		//- Define an enumeration for the names of the dimension exponents
-		enum dimensionType
-		{
-			MASS,               // kilogram   kg
-			LENGTH,             // metre      m
-			TIME,               // second     s
-			TEMPERATURE,        // Kelvin     K
-			MOLES,              // mole       mol
-			CURRENT,            // Ampere     A
-			LUMINOUS_INTENSITY  // Candela    Cd
-		};
+        //- Define an enumeration for the names of the dimension exponents
+        enum dimensionType
+        {
+            MASS,               // kilogram   kg
+            LENGTH,             // metre      m
+            TIME,               // second     s
+            TEMPERATURE,        // Kelvin     K
+            MOLES,              // mole       mol
+            CURRENT,            // Ampere     A
+            LUMINOUS_INTENSITY  // Candela    Cd
+        };
 
 
-	// Static data members
+    // Static data members
 
-		static const scalar smallExponent;
+        static const scalar smallExponent;
 
 
 private:
 
-	// private data
+    // Private data
 
-		// dimensionSet stored as an array of dimension exponents
-		scalar exponents_[nDimensions];
+        // dimensionSet stored as an array of dimension exponents
+        scalar exponents_[nDimensions];
 
 
 public:
 
-	// Declare name of the class and its debug switch
-	ClassName("dimensionSet");
+    // Declare name of the class and its debug switch
+    ClassName("dimensionSet");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct given individual dimension exponents for all
-		//  seven dimensions
-		dimensionSet
-		(
-			const scalar mass,
-			const scalar length,
-			const scalar time,
-			const scalar temperature,
-			const scalar moles,
-			const scalar current,
-			const scalar luminousIntensity
-		);
+        //- Construct given individual dimension exponents for all
+        //  seven dimensions
+        dimensionSet
+        (
+            const scalar mass,
+            const scalar length,
+            const scalar time,
+            const scalar temperature,
+            const scalar moles,
+            const scalar current,
+            const scalar luminousIntensity
+        );
 
-		//- Construct given individual dimension exponents for first
-		//  five dimensions
-		dimensionSet
-		(
-			const scalar mass,
-			const scalar length,
-			const scalar time,
-			const scalar temperature,
-			const scalar moles
-		);
+        //- Construct given individual dimension exponents for first
+        //  five dimensions
+        dimensionSet
+        (
+            const scalar mass,
+            const scalar length,
+            const scalar time,
+            const scalar temperature,
+            const scalar moles
+        );
 
-		dimensionSet(const dimensionSet&) = default; // needed to suppress compiler warning
+        //- Construct from Istream
+        dimensionSet(Istream&);
 
-		//- Construct from Istream
-		dimensionSet(Istream&);
+        //- Construct as copy
+        dimensionSet(const dimensionSet& ds);
 
-
-	// Member functions
-
-		bool dimensionless() const;
-		void reset(const dimensionSet&);
-
-
-	// Member operators
-
-		scalar operator[](const dimensionType) const;
-		scalar& operator[](const dimensionType);
-		bool operator==(const dimensionSet&) const;
-		bool operator!=(const dimensionSet&) const;
-
-		bool operator=(const dimensionSet&) const;
-
-		bool operator+=(const dimensionSet&) const;
-		bool operator-=(const dimensionSet&) const;
-		bool operator*=(const dimensionSet&);
-		bool operator/=(const dimensionSet&);
+        //- Construct and return a clone
+        autoPtr<dimensionSet> clone() const
+        {
+            return autoPtr<dimensionSet>(new dimensionSet(*this));
+        }
 
 
-	// Friend functions
+    // Member functions
 
-		friend dimensionSet max(const dimensionSet&, const dimensionSet&);
-		friend dimensionSet min(const dimensionSet&, const dimensionSet&);
-		friend dimensionSet cmptMultiply
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-		friend dimensionSet cmptDivide
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet pow(const dimensionSet&, const scalar);
-		friend dimensionSet pow(const dimensionSet&, const dimensionedScalar&);
-		friend dimensionSet pow(const dimensionedScalar&, const dimensionSet&);
-
-		friend dimensionSet sqr(const dimensionSet&);
-		friend dimensionSet pow3(const dimensionSet&);
-		friend dimensionSet pow4(const dimensionSet&);
-		friend dimensionSet pow5(const dimensionSet&);
-		friend dimensionSet pow6(const dimensionSet&);
-
-		friend dimensionSet sqrt(const dimensionSet&);
-		friend dimensionSet cbrt(const dimensionSet&);
-		friend dimensionSet magSqr(const dimensionSet&);
-		friend dimensionSet mag(const dimensionSet&);
-		friend dimensionSet sign(const dimensionSet&);
-		friend dimensionSet pos(const dimensionSet&);
-		friend dimensionSet neg(const dimensionSet&);
-		friend dimensionSet inv(const dimensionSet&);
-
-		//- Function to check the argument is dimensionless
-		//  for transcendental functions
-		friend dimensionSet trans(const dimensionSet&);
-
-		//- Return the argument; transformations do not change the dimensions
-		friend dimensionSet transform(const dimensionSet&);
+        bool dimensionless() const;
+        void reset(const dimensionSet&);
 
 
-	// Friend operators
+    // Member operators
 
-		friend dimensionSet operator-(const dimensionSet&);
+        scalar operator[](const dimensionType) const;
+        scalar& operator[](const dimensionType);
+        bool operator==(const dimensionSet&) const;
+        bool operator!=(const dimensionSet&) const;
 
-		friend dimensionSet operator+
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
+        bool operator=(const dimensionSet&) const;
 
-		friend dimensionSet operator-
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet operator*
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet operator/
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet operator&
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet operator^
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
-
-		friend dimensionSet operator&&
-		(
-			const dimensionSet&,
-			const dimensionSet&
-		);
+        bool operator+=(const dimensionSet&) const;
+        bool operator-=(const dimensionSet&) const;
+        bool operator*=(const dimensionSet&);
+        bool operator/=(const dimensionSet&);
 
 
-	// IOstream operators
+    // Friend functions
 
-		friend Istream& operator>>(Istream&, dimensionSet&);
-		friend Ostream& operator<<(Ostream&, const dimensionSet&);
+        friend dimensionSet max(const dimensionSet&, const dimensionSet&);
+        friend dimensionSet min(const dimensionSet&, const dimensionSet&);
+        friend dimensionSet cmptMultiply
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+        friend dimensionSet cmptDivide
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet pow(const dimensionSet&, const scalar);
+        friend dimensionSet pow(const dimensionSet&, const dimensionedScalar&);
+        friend dimensionSet pow(const dimensionedScalar&, const dimensionSet&);
+
+        friend dimensionSet sqr(const dimensionSet&);
+        friend dimensionSet pow3(const dimensionSet&);
+        friend dimensionSet pow4(const dimensionSet&);
+        friend dimensionSet pow5(const dimensionSet&);
+        friend dimensionSet pow6(const dimensionSet&);
+
+        friend dimensionSet sqrt(const dimensionSet&);
+        friend dimensionSet cbrt(const dimensionSet&);
+        friend dimensionSet magSqr(const dimensionSet&);
+        friend dimensionSet mag(const dimensionSet&);
+        friend dimensionSet sign(const dimensionSet&);
+        friend dimensionSet pos(const dimensionSet&);
+        friend dimensionSet neg(const dimensionSet&);
+        friend dimensionSet inv(const dimensionSet&);
+
+        //- Function to check the argument is dimensionless
+        //  for transcendental functions
+        friend dimensionSet trans(const dimensionSet&);
+
+        //- Return the argument; transformations do not change the dimensions
+        friend dimensionSet transform(const dimensionSet&);
+
+
+    // Friend operators
+
+        friend dimensionSet operator-(const dimensionSet&);
+
+        friend dimensionSet operator+
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator-
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator*
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator/
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator&
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator^
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+        friend dimensionSet operator&&
+        (
+            const dimensionSet&,
+            const dimensionSet&
+        );
+
+
+    // IOstream operators
+
+        friend Istream& operator>>(Istream&, dimensionSet&);
+        friend Ostream& operator<<(Ostream&, const dimensionSet&);
 };
 
 

@@ -4,8 +4,9 @@ solidBodyMotionFunction/newSolidBodyMotionFunction.C
 noMotion/noMotion.C
 translation/translation.C
 graphMotion/graphMotion.C
-
 linearOscillation/linearOscillation.C
+
+rotation/rotation.C
 rotatingOscillation/rotatingOscillation.C
 harmonicOscillation/harmonicOscillation.C
 
@@ -14,5 +15,7 @@ SKA/SKA.C
 
 constantVelocity/constantVelocity.C
 graphVelocity/graphVelocity.C
+
+constantAcceleration/constantAcceleration.C
 
 LIB = $(FOAM_LIBBIN)/libsolidBodyMotion

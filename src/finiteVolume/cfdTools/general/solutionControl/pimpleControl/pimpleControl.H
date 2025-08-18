@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::pimpleControl
+    Foam::pimpleControl
 
 Description
-	PIMPLE control class to supply convergence information/checks for
-	the PIMPLE loop.
+    PIMPLE control class to supply convergence information/checks for
+    the PIMPLE loop.
 
-	May also be used to for PISO-based algorithms as PISO controls are a
-	sub-set of PIMPLE controls.
+    May also be used to for PISO-based algorithms as PISO controls are a
+    sub-set of PIMPLE controls.
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,114 +43,121 @@ Description
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class pimpleControl Declaration
+\*---------------------------------------------------------------------------*/
 
 class pimpleControl
 :
-	public solutionControl
+    public solutionControl
 {
-	// Private member functions
+    // Private member functions
 
-		//- Disallow default bitwise copy construct
-		pimpleControl(const pimpleControl&);
+        //- Disallow default bitwise copy construct
+        pimpleControl(const pimpleControl&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const pimpleControl&);
+        //- Disallow default bitwise assignment
+        void operator=(const pimpleControl&) = delete;
 
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		// Solution controls
+        // Solution controls
 
-			//- Maximum number of PIMPLE correctors
-			label nCorrPIMPLE_;
+            //- Maximum number of PIMPLE correctors
+            label nCorrPIMPLE_;
 
-			//- Maximum number of PISO correctors
-			label nCorrPISO_;
+            //- Maximum number of PISO correctors
+            label nCorrPISO_;
 
-			//- Current PISO corrector
-			label corrPISO_;
+            //- Current PISO corrector
+            label corrPISO_;
 
-			//- Flag to indicate whether to only solve turbulence on final iter
-			bool turbOnFinalIterOnly_;
+            //- Flag to indicate whether to only solve turbulence on final iter
+            bool turbOnFinalIterOnly_;
 
-			//- Converged flag
-			bool converged_;
-
-
-	// Protected Member Functions
-
-		//- Read controls from fvSolution dictionary
-		virtual void read();
-
-		//- Return true if all convergence checks are satisfied
-		virtual bool criteriaSatisfied();
+            //- Converged flag
+            bool converged_;
 
 
-		// Time and under-relaxation consistency
+    // Protected Member Functions
 
-			//- Get relaxation factor for velocity field
-			virtual const dimensionedScalar relaxFactor
-			(
-				const volVectorField& U
-			) const;
+        //- Read controls from fvSolution dictionary
+        virtual void read();
+
+        //- Return true if all convergence checks are satisfied
+        virtual bool criteriaSatisfied();
+
+
+        // Time and under-relaxation consistency
+
+            //- Get relaxation factor for velocity field
+            virtual const dimensionedScalar relaxFactor
+            (
+                const volVectorField& U
+            ) const;
 
 
 public:
 
-	// Static Data Members
+    // Static Data Members
 
-		//- Run-time type information
-		TypeName("pimpleControl");
-
-
-	// Constructors
-
-		//- Construct from mesh and the name of control sub-dictionary
-		pimpleControl(fvMesh& mesh, const word& dictName="PIMPLE");
+        //- Run-time type information
+        TypeName("pimpleControl");
 
 
-	//- Destructor
-	virtual ~pimpleControl();
+    // Constructors
+
+        //- Construct from mesh and the name of control sub-dictionary
+        pimpleControl(fvMesh& mesh, const word& dictName = "PIMPLE");
 
 
-	// Member Functions
-
-		// Access
-
-			//- Maximum number of PIMPLE correctors
-			inline label nCorrPIMPLE() const;
-
-			//- Maximum number of PISO correctors
-			inline label nCorrPiso() const;
-
-			//- Current PISO corrector index
-			inline label corrPiso() const;
+    //- Destructor
+    virtual ~pimpleControl() = default;
 
 
-		// Solution control
+    // Member Functions
 
-			//- PIMPLE loop
-			virtual bool loop();
+        // Access
 
-			//- Pressure corrector loop
-			inline bool correct();
+            //- Maximum number of PIMPLE correctors
+            inline label nCorrPIMPLE() const;
 
-			//- Helper function to identify when to store the intial residuals
-			inline bool storeInitialResiduals() const;
+            //- Maximum number of PISO correctors
+            inline label nCorrPISO() const;
 
-			//- Helper function to identify first PIMPLE (outer) iteration
-			inline bool firstIter() const;
+            //- Current PISO corrector index
+            inline label corrPISO() const;
 
-			//- Helper function to identify final PIMPLE (outer) iteration
-			inline bool finalIter() const;
+			     //- OFCommpat
+			     inline label nCorrPiso() const { return nCorrPISO(); }
+			     inline label corrPiso() const  { return corrPiso(); }
 
-			//- Helper function to identify final inner iteration
-			inline bool finalInnerIter() const;
 
-			//- Helper function to identify whether to solve for turbulence
-			inline bool turbCorr() const;
+        // Solution control
+
+            //- PIMPLE loop
+            virtual bool loop();
+
+            //- Pressure corrector loop
+            inline bool correct();
+
+            //- Helper function to identify when to store the intial residuals
+            inline bool storeInitialResiduals() const;
+
+            //- Helper function to identify first PIMPLE (outer) iteration
+            inline bool firstIter() const;
+
+            //- Helper function to identify final PIMPLE (outer) iteration
+            inline bool finalIter() const;
+
+            //- Helper function to identify final inner iteration
+            inline bool finalInnerIter() const;
+
+            //- Helper function to identify whether to solve for turbulence
+            inline bool turbCorr() const;
 };
 
 

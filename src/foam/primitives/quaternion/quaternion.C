@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,7 +37,7 @@ const Foam::quaternion Foam::quaternion::I(1, vector::zero);
 
 Foam::quaternion::quaternion(Istream& is)
 {
-	operator>>(is, *this);
+    operator>>(is, *this);
 }
 
 
@@ -45,9 +45,9 @@ Foam::quaternion::quaternion(Istream& is)
 
 Foam::word Foam::name(const quaternion& q)
 {
-	OStringStream buf;
-	buf << '(' << q.w() << ',' << q.v() << ')';
-	return buf.str();
+    OStringStream buf;
+    buf << '(' << q.w() << ',' << q.v() << ')';
+    return buf.str();
 }
 
 
@@ -55,28 +55,28 @@ Foam::word Foam::name(const quaternion& q)
 
 Foam::Istream& Foam::operator>>(Istream& is, quaternion& q)
 {
-	// Read beginning of quaternion
-	is.readBegin("quaternion");
+    // Read beginning of quaternion
+    is.readBegin("quaternion");
 
-	is  >> q.w() >> q.v();
+    is  >> q.w() >> q.v();
 
-	// Read end of quaternion
-	is.readEnd("quaternion");
+    // Read end of quaternion
+    is.readEnd("quaternion");
 
-	// Check state of Istream
-	is.check("operator>>(Istream&, quaternion&)");
+    // Check state of Istream
+    is.check("operator>>(Istream&, quaternion&)");
 
-	return is;
+    return is;
 }
 
 
 Foam::Ostream& Foam::operator<<(Ostream& os, const quaternion& q)
 {
-	os  << token::BEGIN_LIST
-		<< q.w() << token::SPACE << q.v()
-		<< token::END_LIST;
+    os  << token::BEGIN_LIST
+        << q.w() << token::SPACE << q.v()
+        << token::END_LIST;
 
-	return os;
+    return os;
 }
 
 

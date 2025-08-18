@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
         {
             if (cellToProc_[celli] >= nProcs_)
             {
-                FatalErrorIn("domainDecomposition::decomposeMesh()")
+                FatalErrorInFunction
                     << "Impossible processor label " << cellToProc_[celli]
                     << "for cell " << celli
                     << abort(FatalError);
@@ -443,11 +443,11 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
                 const bool isSlave = !procPatch.master();
 
                 // Get face cells on this side
-                const unallocLabelList& fc = patches[patchI].faceCells();
+                const labelUList& fc = patches[patchI].faceCells();
 
                 // Get face cells on the other side (communicated during
                 // distributeCells() call)
-                const unallocLabelList& nfc = patchNbrFaceCells_[patchI];
+                const labelUList& nfc = patchNbrFaceCells_[patchI];
 
                 // Get neighbour cellToProc addressing across the interface
                 const labelList& curNbrPtc = patchNbrCellToProc_[patchI];
@@ -648,7 +648,7 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
                             (
                                 ownerProc,     // Processor to append to
                                 neighbourProc, // Processor to append
-                                
+
                                 patchStart + patchFaceI, // Face index to append
 
                                 interProcBoundaries,
@@ -663,7 +663,7 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
                             (
                                 neighbourProc, // Processor to append to
                                 ownerProc,     // Processor to append
-                                
+
                                 // Face index with offset to append
                                 patchStart + cycOffset + patchFaceI,
 
@@ -673,10 +673,8 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
 
                         if (ownerInterProcFound && !neighbourInterProcFound)
                         {
-                            FatalErrorIn
-                            (
-                                "domainDecomposition::decomposeMesh()"
-                            )   << "Inconsistency in inter-processor "
+                            FatalErrorInFunction
+                                << "Inconsistency in inter-processor "
                                 << "boundary lists for processors "
                                 << ownerProc << " and "
                                 << neighbourProc
@@ -727,7 +725,7 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
             {
                 // Normal patch. Add faces to processor where the cell
                 // next to the face lives
-                const unallocLabelList& fc = patches[patchI].faceCells();
+                const labelUList& fc = patches[patchI].faceCells();
 
                 forAll (fc, patchFaceI)
                 {
@@ -762,7 +760,7 @@ void Foam::domainDecomposition::decomposeMesh(const bool filterEmptyPatches)
 
                 if (zoneID == -1)
                 {
-                    FatalErrorIn("domainDecomposition::decomposeMesh()")
+                    FatalErrorInFunction
                         << "Unknown global face zone " << fzNames[nameI]
                         << nl << "Valid face zones are" << fz.names()
                         << exit(FatalError);

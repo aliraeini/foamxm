@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,398 +45,398 @@ namespace Foam
 template<class Type>
 void leastSquaresVolPointInterpolation::interpolate
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf,
-	GeometricField<Type, pointPatchField, pointMesh>& pf
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    GeometricField<Type, pointPatchField, pointMesh>& pf
 ) const
 {
 //     Info << "leastSquaresVolPointInterpolation::interpolate-1" << endl;
 
-	if (debug)
-	{
-		Info<< "leastSquaresVolPointInterpolation::interpolate("
-			<< "const GeometricField<Type, fvPatchField, volMesh>&, "
-			<< "GeometricField<Type, pointPatchField, pointMesh>&) : "
-			<< "interpolating field from cells to points"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "leastSquaresVolPointInterpolation::interpolate("
+            << "const GeometricField<Type, fvPatchField, volMesh>&, "
+            << "GeometricField<Type, pointPatchField, pointMesh>&) : "
+            << "interpolating field from cells to points"
+            << endl;
+    }
 
-	const Field<Type>& vfI = vf.internalField();
-	Field<Type>& pfI = pf.internalField();
+    const Field<Type>& vfI = vf.internalField();
+    Field<Type>& pfI = pf.internalField();
 
-	const vectorField& points = mesh().points();
+    const vectorField& points = mesh().points();
 
-	const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
+    const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
 
-	label nCoeffs = 3;
-	const labelListList& ptCells = mesh().pointCells();
-	const labelListList& ptBndFaces = pointBndFaces();
-	const labelListList& ptCyclicFaces = pointCyclicFaces();
-	const labelListList& ptCyclicBndFaces = pointCyclicBndFaces();
-	const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
-	const labelListList& ptCyclicGgiBndFaces = pointCyclicGgiBndFaces();
-	const labelListList& ptProcFaces = pointProcFaces();
+    label nCoeffs = 3;
+    const labelListList& ptCells = mesh().pointCells();
+    const labelListList& ptBndFaces = pointBndFaces();
+    const labelListList& ptCyclicFaces = pointCyclicFaces();
+    const labelListList& ptCyclicBndFaces = pointCyclicBndFaces();
+    const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
+    const labelListList& ptCyclicGgiBndFaces = pointCyclicGgiBndFaces();
+    const labelListList& ptProcFaces = pointProcFaces();
 
-	Map<Field<Type> > gPtNgbProcBndFaceFieldData;
-	globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
+    Map<Field<Type> > gPtNgbProcBndFaceFieldData;
+    globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
 
-	Map<Field<Type> > gPtNgbProcCellFieldData;
-	globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
+    Map<Field<Type> > gPtNgbProcCellFieldData;
+    globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
 
-	// Cyclic GGI neighbour fields
-	FieldField<Field, Type> cyclicGgiNgbFields(mesh().boundary().size());
-	forAll(vf.boundaryField(), patchI)
-	{
-		if (isA<cyclicGgiFvPatchField<Type> >(vf.boundaryField()[patchI]))
-		{
-			cyclicGgiNgbFields.set
-			(
-				patchI,
-				vf.boundaryField()[patchI].patchNeighbourField()
-			);
-		}
-	}
+    // Cyclic GGI neighbour fields
+    FieldField<Field, Type> cyclicGgiNgbFields(mesh().boundary().size());
+    forAll(vf.boundaryField(), patchI)
+    {
+        if (isA<cyclicGgiFvPatchField<Type> >(vf.boundaryField()[patchI]))
+        {
+            cyclicGgiNgbFields.set
+            (
+                patchI,
+                vf.boundaryField()[patchI].patchNeighbourField()
+            );
+        }
+    }
 
-	const Map<List<labelPair> >& ptProcCells = pointProcCells();
+    const Map<List<labelPair> >& ptProcCells = pointProcCells();
 
-	const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
+    const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 //     const Map<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 
-	const FieldField<Field, scalar>& w = weights();
-	const vectorField& o = origins();
-	const scalarField& L = refL();
+    const FieldField<Field, scalar>& w = weights();
+    const vectorField& o = origins();
+    const scalarField& L = refL();
 
-	FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
-	FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
+    FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
+    FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
 
-	forAll(pfI, pointI)
-	{
-		const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
+    forAll(pfI, pointI)
+    {
+        const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
 
-		const scalarField& W = w[pointI];
+        const scalarField& W = w[pointI];
 
-		const labelList& interpCells = ptCells[pointI];
-		const labelList& interpBndFaces = ptBndFaces[pointI];
-		const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
-		const labelList& interpCyclicBndFaces = ptCyclicBndFaces[pointI];
-		const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
-		const labelList& interpCyclicGgiBndFaces = ptCyclicGgiBndFaces[pointI];
-		const labelList& interpProcFaces = ptProcFaces[pointI];
+        const labelList& interpCells = ptCells[pointI];
+        const labelList& interpBndFaces = ptBndFaces[pointI];
+        const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
+        const labelList& interpCyclicBndFaces = ptCyclicBndFaces[pointI];
+        const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
+        const labelList& interpCyclicGgiBndFaces = ptCyclicGgiBndFaces[pointI];
+        const labelList& interpProcFaces = ptProcFaces[pointI];
 
-		Field<Type> glInterpNgbProcBndFaceData(0);
-		if (gPtNgbProcBndFaceFieldData.found(pointI))
-		{
-			glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcBndFaceData(0);
+        if (gPtNgbProcBndFaceFieldData.found(pointI))
+        {
+            glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
+        }
 
-		Field<Type> glInterpNgbProcCellData(0);
-		if (gPtNgbProcCellFieldData.found(pointI))
-		{
-			glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcCellData(0);
+        if (gPtNgbProcCellFieldData.found(pointI))
+        {
+            glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
+        }
 
-		Field<Type> interpNgbProcCellData(0);
-		if (ptProcCells.found(pointI))
-		{
-			const List<labelPair>& pc = ptProcCells[pointI];
+        Field<Type> interpNgbProcCellData(0);
+        if (ptProcCells.found(pointI))
+        {
+            const List<labelPair>& pc = ptProcCells[pointI];
 
-			interpNgbProcCellData.setSize(pc.size());
+            interpNgbProcCellData.setSize(pc.size());
 
-			forAll(pc, cI)
-			{
-				interpNgbProcCellData[cI] =
-					procCellVfI
-					[
-					    pc[cI].first()
-					]
-					[
-					    pc[cI].second()
-					];
-			}
-		}
+            forAll(pc, cI)
+            {
+                interpNgbProcCellData[cI] =
+                    procCellVfI
+                    [
+                        pc[cI].first()
+                    ]
+                    [
+                        pc[cI].second()
+                    ];
+            }
+        }
 
-		Field<Type> interpNgbProcBndFaceData(0);
-		if (ptProcBndFaces[pointI].size())
+        Field<Type> interpNgbProcBndFaceData(0);
+        if (ptProcBndFaces[pointI].size())
 //         if (ptProcBndFaces.found(pointI))
-		{
-			const List<labelPair>& pf = ptProcBndFaces[pointI];
+        {
+            const List<labelPair>& pf = ptProcBndFaces[pointI];
 
-			interpNgbProcBndFaceData.setSize(pf.size());
+            interpNgbProcBndFaceData.setSize(pf.size());
 
-			forAll(pf, fI)
-			{
-				interpNgbProcBndFaceData[fI] =
-					procBndFaceVf
-					[
-					    pf[fI].first()
-					]
-					[
-					    pf[fI].second()
-					];
-			}
-		}
+            forAll(pf, fI)
+            {
+                interpNgbProcBndFaceData[fI] =
+                    procBndFaceVf
+                    [
+                        pf[fI].first()
+                    ]
+                    [
+                        pf[fI].second()
+                    ];
+            }
+        }
 
-		Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
-		Field<Type> source
-		(
-			interpCells.size()
-		  + interpBndFaces.size()
-		  + interpCyclicFaces.size()
-		  + interpCyclicBndFaces.size()
-		  + interpCyclicGgiFaces.size()
-		  + interpCyclicGgiBndFaces.size()
-		  + interpProcFaces.size()
-		  + glInterpNgbProcBndFaceData.size()
-		  + glInterpNgbProcCellData.size()
-		  + interpNgbProcCellData.size()
-		  + interpNgbProcBndFaceData.size(),
-			pTraits<Type>::zero
-		);
+        Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
+        Field<Type> source
+        (
+            interpCells.size()
+          + interpBndFaces.size()
+          + interpCyclicFaces.size()
+          + interpCyclicBndFaces.size()
+          + interpCyclicGgiFaces.size()
+          + interpCyclicGgiBndFaces.size()
+          + interpProcFaces.size()
+          + glInterpNgbProcBndFaceData.size()
+          + glInterpNgbProcCellData.size()
+          + interpNgbProcCellData.size()
+          + interpNgbProcBndFaceData.size(),
+            pTraits<Type>::zero
+        );
 
-		label pointID = 0;
+        label pointID = 0;
 
-		Type avg = pTraits<Type>::zero;
+        Type avg = pTraits<Type>::zero;
 
-		for (label i=0; i<interpCells.size(); i++)
-		{
-			source[pointID] = vfI[interpCells[i]];
-			avg += sqr(W[pointID])*vfI[interpCells[i]];
-			pointID++;
-		}
+        for (label i=0; i<interpCells.size(); i++)
+        {
+            source[pointID] = vfI[interpCells[i]];
+            avg += sqr(W[pointID])*vfI[interpCells[i]];
+            pointID++;
+        }
 
-		for (label i=0; i<interpBndFaces.size(); i++)
-		{
-			label faceID = interpBndFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpBndFaces.size(); i++)
+        {
+            label faceID = interpBndFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<interpCyclicFaces.size(); i++)
-		{
-			label faceID = interpCyclicFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpCyclicFaces.size(); i++)
+        {
+            label faceID = interpCyclicFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			const unallocLabelList& faceCells =
-				mesh().boundary()[patchID].faceCells();
+            const labelUList& faceCells =
+                mesh().boundary()[patchID].faceCells();
 
-			const cyclicFvPatch& cycPatch =
-				refCast<const cyclicFvPatch>(mesh().boundary()[patchID]);
+            const cyclicFvPatch& cycPatch =
+                refCast<const cyclicFvPatch>(mesh().boundary()[patchID]);
 
-			label sizeby2 = faceCells.size()/2;
+            label sizeby2 = faceCells.size()/2;
 
-			if (!(cycPatch.parallel() || pTraits<Type>::rank == 0))
-			{
-				if (localFaceID < sizeby2)
-				{
-					source[pointID] =
-					    transform
-					    (
-					        cycPatch.forwardT()[0],
-					        vfI[faceCells[localFaceID + sizeby2]]
-					    );
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-				else
-				{
-					source[pointID] =
-					    transform
-					    (
-					        cycPatch.reverseT()[0],
-					        vfI[faceCells[localFaceID - sizeby2]]
-					    );
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-			}
-			else
-			{
-				if (localFaceID < sizeby2)
-				{
-					source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-				else
-				{
-					source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-			}
-		}
+            if (!(cycPatch.parallel() || pTraits<Type>::rank == 0))
+            {
+                if (localFaceID < sizeby2)
+                {
+                    source[pointID] =
+                        transform
+                        (
+                            cycPatch.forwardT()[0],
+                            vfI[faceCells[localFaceID + sizeby2]]
+                        );
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+                else
+                {
+                    source[pointID] =
+                        transform
+                        (
+                            cycPatch.reverseT()[0],
+                            vfI[faceCells[localFaceID - sizeby2]]
+                        );
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+            }
+            else
+            {
+                if (localFaceID < sizeby2)
+                {
+                    source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+                else
+                {
+                    source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+            }
+        }
 
-		for (label i=0; i<interpCyclicBndFaces.size(); i++)
-		{
-			label cycFaceID = interpCyclicFaces[0];
-			label cycPatchID = mesh().boundaryMesh().whichPatch(cycFaceID);
-			label cycStart = mesh().boundaryMesh()[cycPatchID].start();
-			label cycLocalFaceID = cycFaceID - cycStart;
+        for (label i=0; i<interpCyclicBndFaces.size(); i++)
+        {
+            label cycFaceID = interpCyclicFaces[0];
+            label cycPatchID = mesh().boundaryMesh().whichPatch(cycFaceID);
+            label cycStart = mesh().boundaryMesh()[cycPatchID].start();
+            label cycLocalFaceID = cycFaceID - cycStart;
 
-			const cyclicPolyPatch& cycPolyPatch =
-				refCast<const cyclicPolyPatch>
-				(
-					mesh().boundaryMesh()[cycPatchID]
-				);
+            const cyclicPolyPatch& cycPolyPatch =
+                refCast<const cyclicPolyPatch>
+                (
+                    mesh().boundaryMesh()[cycPatchID]
+                );
 
-			label faceID = interpCyclicBndFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label faceID = interpCyclicBndFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			label sizeby2 = cycPolyPatch.size()/2;
+            label sizeby2 = cycPolyPatch.size()/2;
 
-			if (!cycPolyPatch.parallel())
-			{
-				if (cycLocalFaceID < sizeby2)
-				{
-					source[pointID] =
-					    transform
-					    (
-					        cycPolyPatch.forwardT()[0],
-					        vf.boundaryField()[patchID][localFaceID]
-					    );
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-				else
-				{
-					source[pointID] =
-					    transform
-					    (
-					        cycPolyPatch.reverseT()[0],
-					        vf.boundaryField()[patchID][localFaceID]
-					    );
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-			}
-			else
-			{
-				if (cycLocalFaceID < sizeby2)
-				{
-					source[pointID] =
-					    vf.boundaryField()[patchID][localFaceID];
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-				else
-				{
-					source[pointID] =
-					    vf.boundaryField()[patchID][localFaceID];
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-			}
-		}
+            if (!cycPolyPatch.parallel())
+            {
+                if (cycLocalFaceID < sizeby2)
+                {
+                    source[pointID] =
+                        transform
+                        (
+                            cycPolyPatch.forwardT()[0],
+                            vf.boundaryField()[patchID][localFaceID]
+                        );
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+                else
+                {
+                    source[pointID] =
+                        transform
+                        (
+                            cycPolyPatch.reverseT()[0],
+                            vf.boundaryField()[patchID][localFaceID]
+                        );
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+            }
+            else
+            {
+                if (cycLocalFaceID < sizeby2)
+                {
+                    source[pointID] =
+                        vf.boundaryField()[patchID][localFaceID];
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+                else
+                {
+                    source[pointID] =
+                        vf.boundaryField()[patchID][localFaceID];
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+            }
+        }
 
-		for (label i=0; i<interpCyclicGgiFaces.size(); i++)
-		{
-			label faceID = interpCyclicGgiFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpCyclicGgiFaces.size(); i++)
+        {
+            label faceID = interpCyclicGgiFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = cyclicGgiNgbFields[patchID][localFaceID];
-			avg += sqr(W[pointID])*cyclicGgiNgbFields[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = cyclicGgiNgbFields[patchID][localFaceID];
+            avg += sqr(W[pointID])*cyclicGgiNgbFields[patchID][localFaceID];
+            pointID++;
+        }
 
-		if (interpCyclicGgiBndFaces.size())
-		{
-			label cycGgiFaceID = interpCyclicGgiFaces[0];
-			label cycGgiPatchID =
-				mesh().boundaryMesh().whichPatch(cycGgiFaceID);
-			label cycGgiStart = mesh().boundaryMesh()[cycGgiPatchID].start();
-			label cycGgiLocalFaceID = cycGgiFaceID - cycGgiStart;
+        if (interpCyclicGgiBndFaces.size())
+        {
+            label cycGgiFaceID = interpCyclicGgiFaces[0];
+            label cycGgiPatchID =
+                mesh().boundaryMesh().whichPatch(cycGgiFaceID);
+            label cycGgiStart = mesh().boundaryMesh()[cycGgiPatchID].start();
+            label cycGgiLocalFaceID = cycGgiFaceID - cycGgiStart;
 
-			const cyclicGgiPolyPatch& cycGgiPatch =
-				refCast<const cyclicGgiPolyPatch>
-				(
-					mesh().boundaryMesh()[cycGgiPatchID]
-				);
+            const cyclicGgiPolyPatch& cycGgiPatch =
+                refCast<const cyclicGgiPolyPatch>
+                (
+                    mesh().boundaryMesh()[cycGgiPatchID]
+                );
 
-			const labelListList& addr
-				(
-					cycGgiPatch.master() ?
-					cycGgiPatch.patchToPatch().masterAddr()
-				  : cycGgiPatch.patchToPatch().slaveAddr()
-				);
+            const labelListList& addr
+                (
+                    cycGgiPatch.master() ?
+                    cycGgiPatch.patchToPatch().masterAddr()
+                  : cycGgiPatch.patchToPatch().slaveAddr()
+                );
 
-			const labelList& zoneAddr =
-				cycGgiPatch.zoneAddressing();
+            const labelList& zoneAddr =
+                cycGgiPatch.zoneAddressing();
 
-			label zoneLocalFaceID = zoneAddr[cycGgiLocalFaceID];
+            label zoneLocalFaceID = zoneAddr[cycGgiLocalFaceID];
 
-			label ngbZoneLocalFaceID = addr[zoneLocalFaceID][0];
+            label ngbZoneLocalFaceID = addr[zoneLocalFaceID][0];
 
-			label ngbLocalFaceID =
-				findIndex
-				(
-					cycGgiPatch.shadow().zoneAddressing(),
-					ngbZoneLocalFaceID
-				);
-			if (ngbLocalFaceID == -1)
-			{
-				FatalErrorIn
-				(
-					"leastSquaresVolPointInterpolation"
-					"::makePointFaces() const"
-				)
-					<< "Can not find cyclic ggi patch ngb face id"
-					    << abort(FatalError);
-			}
+            label ngbLocalFaceID =
+                findIndex
+                (
+                    cycGgiPatch.shadow().zoneAddressing(),
+                    ngbZoneLocalFaceID
+                );
+            if (ngbLocalFaceID == -1)
+            {
+                FatalErrorIn
+                (
+                    "leastSquaresVolPointInterpolation"
+                    "::makePointFaces() const"
+                )
+                    << "Can not find cyclic ggi patch ngb face id"
+                        << abort(FatalError);
+            }
 
-			const face& ngbFace =
-				cycGgiPatch.shadow().localFaces()[ngbLocalFaceID];
+            const face& ngbFace =
+                cycGgiPatch.shadow().localFaces()[ngbLocalFaceID];
 
-			const vectorField& p =
-				cycGgiPatch.shadow().localPoints();
-			const labelList& meshPoints =
-				cycGgiPatch.shadow().meshPoints();
+            const vectorField& p =
+                cycGgiPatch.shadow().localPoints();
+            const labelList& meshPoints =
+                cycGgiPatch.shadow().meshPoints();
 
-			scalar S = ngbFace.mag(p);
-			scalar L = ::sqrt(S);
+            scalar S = ngbFace.mag(p);
+            scalar L = ::sqrt(S);
 
-			label ngbPointI = -1;
-			forAll(ngbFace, pI)
-			{
-				vector transCurPoint = points[pointI];
+            label ngbPointI = -1;
+            forAll(ngbFace, pI)
+            {
+                vector transCurPoint = points[pointI];
 
-				if (!cycGgiPatch.parallel())
-				{
-					transCurPoint =
-					    transform
-					    (
-					        cycGgiPatch.reverseT()[0],
-					        transCurPoint
-					    );
-				}
+                if (!cycGgiPatch.parallel())
+                {
+                    transCurPoint =
+                        transform
+                        (
+                            cycGgiPatch.reverseT()[0],
+                            transCurPoint
+                        );
+                }
 
-				if (cycGgiPatch.separated())
-				{
-					transCurPoint += cycGgiPatch.separationOffset();
-				}
+                if (cycGgiPatch.separated())
+                {
+                    transCurPoint += cycGgiPatch.separationOffset();
+                }
 
-				scalar dist =
-					mag
-					(
-					    p[ngbFace[pI]]
-					  - transCurPoint
-					);
+                scalar dist =
+                    mag
+                    (
+                        p[ngbFace[pI]]
+                      - transCurPoint
+                    );
 
 //                 scalar dist =
 //                     mag
@@ -449,469 +449,469 @@ void leastSquaresVolPointInterpolation::interpolate
 //                         )
 //                     );
 
-				if (dist < 1e-2*L)
-				{
-					ngbPointI = meshPoints[ngbFace[pI]];
-					break;
-				}
-			}
-			if (ngbPointI == -1)
-			{
-				FatalErrorIn
-				(
-					"leastSquaresVolPointInterpolation"
-					"::makePointFaces() const"
-				)
-					<< "Can not find cyclic ggi patch ngb point"
-					    << abort(FatalError);
-			}
+                if (dist < 1e-2*L)
+                {
+                    ngbPointI = meshPoints[ngbFace[pI]];
+                    break;
+                }
+            }
+            if (ngbPointI == -1)
+            {
+                FatalErrorIn
+                (
+                    "leastSquaresVolPointInterpolation"
+                    "::makePointFaces() const"
+                )
+                    << "Can not find cyclic ggi patch ngb point"
+                        << abort(FatalError);
+            }
 
-			for (label i=0; i<interpCyclicGgiBndFaces.size(); i++)
-			{
-				label faceID = interpCyclicGgiBndFaces[i];
-				label patchID =
-					mesh().boundaryMesh().whichPatch(faceID);
-				label start = mesh().boundaryMesh()[patchID].start();
-				label localFaceID = faceID - start;
+            for (label i=0; i<interpCyclicGgiBndFaces.size(); i++)
+            {
+                label faceID = interpCyclicGgiBndFaces[i];
+                label patchID =
+                    mesh().boundaryMesh().whichPatch(faceID);
+                label start = mesh().boundaryMesh()[patchID].start();
+                label localFaceID = faceID - start;
 
-				if (cycGgiPatch.parallel())
-				{
-					source[pointID] =
-					    vf.boundaryField()[patchID][localFaceID];
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-				else
-				{
-					source[pointID] =
-					    transform
-					    (
-					        cycGgiPatch.forwardT()[0],
-					        vf.boundaryField()[patchID][localFaceID]
-					    );
-					avg += sqr(W[pointID])*source[pointID];
-					pointID++;
-				}
-			}
-		}
+                if (cycGgiPatch.parallel())
+                {
+                    source[pointID] =
+                        vf.boundaryField()[patchID][localFaceID];
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+                else
+                {
+                    source[pointID] =
+                        transform
+                        (
+                            cycGgiPatch.forwardT()[0],
+                            vf.boundaryField()[patchID][localFaceID]
+                        );
+                    avg += sqr(W[pointID])*source[pointID];
+                    pointID++;
+                }
+            }
+        }
 
-		for (label i=0; i<interpProcFaces.size(); i++)
-		{
-			label faceID = interpProcFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpProcFaces.size(); i++)
+        {
+            label faceID = interpProcFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcCellData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcCellData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = interpNgbProcCellData[i];
-			avg += sqr(W[pointID])*interpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = interpNgbProcCellData[i];
+            avg += sqr(W[pointID])*interpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = interpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = interpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
+        if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
 //         if (mirrorPlaneTransformation().found(pointI))
-		{
-			const tensor& T = mirrorPlaneTransformation()[pointI].second();
+        {
+            const tensor& T = mirrorPlaneTransformation()[pointI].second();
 
-			label oldSize = source.size();
+            label oldSize = source.size();
 
-			source.setSize(2*oldSize);
+            source.setSize(2*oldSize);
 
-			for (label i=oldSize; i<source.size(); i++)
-			{
-				source[i] = transform(T, source[i-oldSize]);
-			}
+            for (label i=oldSize; i<source.size(); i++)
+            {
+                source[i] = transform(T, source[i-oldSize]);
+            }
 
-			avg += transform(T, avg);
-		}
+            avg += transform(T, avg);
+        }
 
 //         avg /= source.size() + SMALL;
-		avg /= sum(sqr(W));
+        avg /= sum(sqr(W));
 
-		source -= avg;
+        source -= avg;
 
-		for (label i=0; i<nCoeffs; i++)
-		{
-			for (label j=0; j<source.size(); j++)
-			{
-				coeffs[i] += curInvMatrix[i][j]*source[j];
-			}
-		}
+        for (label i=0; i<nCoeffs; i++)
+        {
+            for (label j=0; j<source.size(); j++)
+            {
+                coeffs[i] += curInvMatrix[i][j]*source[j];
+            }
+        }
 
-		vector dr = (points[pointI] - o[pointI])/L[pointI];
+        vector dr = (points[pointI] - o[pointI])/L[pointI];
 
-		pfI[pointI] =
-			avg
-		  + coeffs[0]*dr.x()
-		  + coeffs[1]*dr.y()
-		  + coeffs[2]*dr.z();
-	}
+        pfI[pointI] =
+            avg
+          + coeffs[0]*dr.x()
+          + coeffs[1]*dr.y()
+          + coeffs[2]*dr.z();
+    }
 
-	pf.correctBoundaryConditions();
+    pf.correctBoundaryConditions();
 
 
-	// Correct wedge (axis) point values
-	forAll(mesh().boundaryMesh(), patchI)
-	{
-		if
-		(
-			mesh().boundaryMesh()[patchI].type()
-		 == wedgePolyPatch::typeName
-		)
-		{
-			const labelList& meshPoints =
-				mesh().boundaryMesh()[patchI].meshPoints();
+    // Correct wedge (axis) point values
+    forAll(mesh().boundaryMesh(), patchI)
+    {
+        if
+        (
+            mesh().boundaryMesh()[patchI].type()
+         == wedgePolyPatch::typeName
+        )
+        {
+            const labelList& meshPoints =
+                mesh().boundaryMesh()[patchI].meshPoints();
 
-			const wedgePolyPatch& wedge =
-				refCast<const wedgePolyPatch>
-				(
-					mesh().boundaryMesh()[patchI]
-				);
+            const wedgePolyPatch& wedge =
+                refCast<const wedgePolyPatch>
+                (
+                    mesh().boundaryMesh()[patchI]
+                );
 
-			vector n =
-				transform
-				(
-					wedge.faceT(),
-					wedge.centreNormal()
-				);
-			n /= mag(n);
+            vector n =
+                transform
+                (
+                    wedge.faceT(),
+                    wedge.centreNormal()
+                );
+            n /= mag(n);
 
-			forAll(meshPoints, pointI)
-			{
-				label curMeshPoint = meshPoints[pointI];
+            forAll(meshPoints, pointI)
+            {
+                label curMeshPoint = meshPoints[pointI];
 
-				if (pointAxisEdges().found(curMeshPoint))
-				{
-					// Keep only component along axis
-					pfI[curMeshPoint] =
-					    transform
-					    (
-					        sqr(wedge.axis()),
-					        pfI[curMeshPoint]
-					    );
-				}
-				else
-				{
-					pfI[curMeshPoint] =
-					    transform
-					    (
-					        I-sqr(n),
-					        pfI[curMeshPoint]
-					    );
-				}
-			}
-		}
-	}
+                if (pointAxisEdges().found(curMeshPoint))
+                {
+                    // Keep only component along axis
+                    pfI[curMeshPoint] =
+                        transform
+                        (
+                            sqr(wedge.axis()),
+                            pfI[curMeshPoint]
+                        );
+                }
+                else
+                {
+                    pfI[curMeshPoint] =
+                        transform
+                        (
+                            I-sqr(n),
+                            pfI[curMeshPoint]
+                        );
+                }
+            }
+        }
+    }
 }
 
 
 template<class Type>
 tmp<Field<Type> > leastSquaresVolPointInterpolation::interpolate
 (
-	const polyPatch& patch,
-	const GeometricField<Type, fvPatchField, volMesh>& vf
+    const polyPatch& patch,
+    const GeometricField<Type, fvPatchField, volMesh>& vf
 ) const
 {
-	Info << "leastSquaresVolPointInterpolation::interpolate-2" << endl;
+    Info << "leastSquaresVolPointInterpolation::interpolate-2" << endl;
 
-	if (debug)
-	{
-		Info<< "leastSquaresVolPointInterpolation::interpolate("
-			<< "const GeometricField<Type, fvPatchField, volMesh>&, "
-			<< "GeometricField<Type, pointPatchField, pointMesh>&) : "
-			<< "interpolating field from cells to points"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "leastSquaresVolPointInterpolation::interpolate("
+            << "const GeometricField<Type, fvPatchField, volMesh>&, "
+            << "GeometricField<Type, pointPatchField, pointMesh>&) : "
+            << "interpolating field from cells to points"
+            << endl;
+    }
 
-	const Field<Type>& vfI = vf.internalField();
+    const Field<Type>& vfI = vf.internalField();
 
-	tmp<Field<Type> > tppf
-	(
-		new Field<Type>
-		(
-			patch.nPoints(),
-			pTraits<Type>::zero
-		)
-	);
-	Field<Type>& ppf = tppf();
+    tmp<Field<Type> > tppf
+    (
+        new Field<Type>
+        (
+            patch.nPoints(),
+            pTraits<Type>::zero
+        )
+    );
+    Field<Type>& ppf = tppf();
 
-	const labelList& meshPoints = patch.meshPoints();
+    const labelList& meshPoints = patch.meshPoints();
 
-	const vectorField& points = mesh().points();
+    const vectorField& points = mesh().points();
 
-	const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
+    const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
 
-	label nCoeffs = 3;
-	const labelListList& ptCells = mesh().pointCells();
-	const labelListList& ptBndFaces = pointBndFaces();
-	const labelListList& ptCyclicFaces = pointCyclicFaces();
-	const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
-	const labelListList& ptProcFaces = pointProcFaces();
+    label nCoeffs = 3;
+    const labelListList& ptCells = mesh().pointCells();
+    const labelListList& ptBndFaces = pointBndFaces();
+    const labelListList& ptCyclicFaces = pointCyclicFaces();
+    const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
+    const labelListList& ptProcFaces = pointProcFaces();
 
-	Map<Field<Type> > gPtNgbProcBndFaceFieldData;
-	globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
+    Map<Field<Type> > gPtNgbProcBndFaceFieldData;
+    globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
 
-	Map<Field<Type> > gPtNgbProcCellFieldData;
-	globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
+    Map<Field<Type> > gPtNgbProcCellFieldData;
+    globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
 
-	const Map<List<labelPair> >& ptProcCells = pointProcCells();
+    const Map<List<labelPair> >& ptProcCells = pointProcCells();
 
-	const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
+    const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 //     const Map<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 
-	const FieldField<Field, scalar>& w = weights();
-	const vectorField& o = origins();
-	const scalarField& L = refL();
+    const FieldField<Field, scalar>& w = weights();
+    const vectorField& o = origins();
+    const scalarField& L = refL();
 
-	FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
-	FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
+    FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
+    FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
 
-	forAll(ppf, pI)
-	{
-		label pointI = meshPoints[pI];
+    forAll(ppf, pI)
+    {
+        label pointI = meshPoints[pI];
 
-		const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
+        const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
 
-		const scalarField& W = w[pointI];
+        const scalarField& W = w[pointI];
 
-		const labelList& interpCells = ptCells[pointI];
-		const labelList& interpBndFaces = ptBndFaces[pointI];
-		const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
-		const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
-		const labelList& interpProcFaces = ptProcFaces[pointI];
+        const labelList& interpCells = ptCells[pointI];
+        const labelList& interpBndFaces = ptBndFaces[pointI];
+        const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
+        const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
+        const labelList& interpProcFaces = ptProcFaces[pointI];
 
-		Field<Type> glInterpNgbProcBndFaceData(0);
-		if (gPtNgbProcBndFaceFieldData.found(pointI))
-		{
-			glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcBndFaceData(0);
+        if (gPtNgbProcBndFaceFieldData.found(pointI))
+        {
+            glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
+        }
 
-		Field<Type> glInterpNgbProcCellData(0);
-		if (gPtNgbProcCellFieldData.found(pointI))
-		{
-			glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcCellData(0);
+        if (gPtNgbProcCellFieldData.found(pointI))
+        {
+            glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
+        }
 
-		Field<Type> interpNgbProcCellData(0);
-		if (ptProcCells.found(pointI))
-		{
-			const List<labelPair>& pc = ptProcCells[pointI];
+        Field<Type> interpNgbProcCellData(0);
+        if (ptProcCells.found(pointI))
+        {
+            const List<labelPair>& pc = ptProcCells[pointI];
 
-			interpNgbProcCellData.setSize(pc.size());
+            interpNgbProcCellData.setSize(pc.size());
 
-			forAll(pc, cI)
-			{
-				interpNgbProcCellData[cI] =
-					procCellVfI
-					[
-					    pc[cI].first()
-					]
-					[
-					    pc[cI].second()
-					];
-			}
-		}
+            forAll(pc, cI)
+            {
+                interpNgbProcCellData[cI] =
+                    procCellVfI
+                    [
+                        pc[cI].first()
+                    ]
+                    [
+                        pc[cI].second()
+                    ];
+            }
+        }
 
-		Field<Type> interpNgbProcBndFaceData(0);
-		if (ptProcBndFaces[pointI].size())
+        Field<Type> interpNgbProcBndFaceData(0);
+        if (ptProcBndFaces[pointI].size())
 //         if (ptProcBndFaces.found(pointI))
-		{
-			const List<labelPair>& pf = ptProcBndFaces[pointI];
+        {
+            const List<labelPair>& pf = ptProcBndFaces[pointI];
 
-			interpNgbProcBndFaceData.setSize(pf.size());
+            interpNgbProcBndFaceData.setSize(pf.size());
 
-			forAll(pf, fI)
-			{
-				interpNgbProcBndFaceData[fI] =
-					procBndFaceVf
-					[
-					    pf[fI].first()
-					]
-					[
-					    pf[fI].second()
-					];
-			}
-		}
+            forAll(pf, fI)
+            {
+                interpNgbProcBndFaceData[fI] =
+                    procBndFaceVf
+                    [
+                        pf[fI].first()
+                    ]
+                    [
+                        pf[fI].second()
+                    ];
+            }
+        }
 
-		Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
-		Field<Type> source
-		(
-			interpCells.size()
-		  + interpBndFaces.size()
-		  + interpCyclicFaces.size()
-		  + interpCyclicGgiFaces.size()
-		  + interpProcFaces.size()
-		  + glInterpNgbProcBndFaceData.size()
-		  + glInterpNgbProcCellData.size()
-		  + interpNgbProcCellData.size()
-		  + interpNgbProcBndFaceData.size(),
-			pTraits<Type>::zero
-		);
+        Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
+        Field<Type> source
+        (
+            interpCells.size()
+          + interpBndFaces.size()
+          + interpCyclicFaces.size()
+          + interpCyclicGgiFaces.size()
+          + interpProcFaces.size()
+          + glInterpNgbProcBndFaceData.size()
+          + glInterpNgbProcCellData.size()
+          + interpNgbProcCellData.size()
+          + interpNgbProcBndFaceData.size(),
+            pTraits<Type>::zero
+        );
 
-		label pointID = 0;
+        label pointID = 0;
 
-		Type avg = pTraits<Type>::zero;
+        Type avg = pTraits<Type>::zero;
 
-		for (label i=0; i<interpCells.size(); i++)
-		{
-			source[pointID] = vfI[interpCells[i]];
-			avg += sqr(W[pointID])*vfI[interpCells[i]];
-			pointID++;
-		}
+        for (label i=0; i<interpCells.size(); i++)
+        {
+            source[pointID] = vfI[interpCells[i]];
+            avg += sqr(W[pointID])*vfI[interpCells[i]];
+            pointID++;
+        }
 
-		for (label i=0; i<interpBndFaces.size(); i++)
-		{
-			label faceID = interpBndFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpBndFaces.size(); i++)
+        {
+            label faceID = interpBndFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<interpCyclicFaces.size(); i++)
-		{
-			label faceID = interpCyclicFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpCyclicFaces.size(); i++)
+        {
+            label faceID = interpCyclicFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			const unallocLabelList& faceCells =
-				mesh().boundary()[patchID].faceCells();
+            const labelUList& faceCells =
+                mesh().boundary()[patchID].faceCells();
 
-			label sizeby2 = faceCells.size()/2;
+            label sizeby2 = faceCells.size()/2;
 
-			if (localFaceID < sizeby2)
-			{
-				source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
-				avg += sqr(W[pointID])*vfI[faceCells[localFaceID + sizeby2]];
-				pointID++;
-			}
-			else
-			{
-				source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
-				avg += sqr(W[pointID])*vfI[faceCells[localFaceID - sizeby2]];
-				pointID++;
-			}
-		}
+            if (localFaceID < sizeby2)
+            {
+                source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
+                avg += sqr(W[pointID])*vfI[faceCells[localFaceID + sizeby2]];
+                pointID++;
+            }
+            else
+            {
+                source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
+                avg += sqr(W[pointID])*vfI[faceCells[localFaceID - sizeby2]];
+                pointID++;
+            }
+        }
 
-		for (label i=0; i<interpProcFaces.size(); i++)
-		{
-			label faceID = interpProcFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpProcFaces.size(); i++)
+        {
+            label faceID = interpProcFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcCellData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcCellData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = interpNgbProcCellData[i];
-			avg += sqr(W[pointID])*interpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = interpNgbProcCellData[i];
+            avg += sqr(W[pointID])*interpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = interpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = interpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
+        if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
 //         if (mirrorPlaneTransformation().found(pointI))
-		{
-			const tensor& T = mirrorPlaneTransformation()[pointI].second();
+        {
+            const tensor& T = mirrorPlaneTransformation()[pointI].second();
 
-			label oldSize = source.size();
+            label oldSize = source.size();
 
-			source.setSize(2*oldSize);
+            source.setSize(2*oldSize);
 
-			for (label i=oldSize; i<source.size(); i++)
-			{
-				source[i] = transform(T, source[i-oldSize]);
-			}
+            for (label i=oldSize; i<source.size(); i++)
+            {
+                source[i] = transform(T, source[i-oldSize]);
+            }
 
-			avg += transform(T, avg);
-		}
+            avg += transform(T, avg);
+        }
 
 //         avg /= source.size() + SMALL;
-		avg /= sum(sqr(W));
+        avg /= sum(sqr(W));
 
-		source -= avg;
+        source -= avg;
 
-		for (label i=0; i<nCoeffs; i++)
-		{
-			for (label j=0; j<source.size(); j++)
-			{
-				coeffs[i] += curInvMatrix[i][j]*source[j];
-			}
-		}
+        for (label i=0; i<nCoeffs; i++)
+        {
+            for (label j=0; j<source.size(); j++)
+            {
+                coeffs[i] += curInvMatrix[i][j]*source[j];
+            }
+        }
 
-		vector dr = (points[pointI] - o[pointI])/L[pointI];
+        vector dr = (points[pointI] - o[pointI])/L[pointI];
 
-		ppf[pI] =
-			avg
-		  + coeffs[0]*dr.x()
-		  + coeffs[1]*dr.y()
-		  + coeffs[2]*dr.z();
-	}
+        ppf[pI] =
+            avg
+          + coeffs[0]*dr.x()
+          + coeffs[1]*dr.y()
+          + coeffs[2]*dr.z();
+    }
 
-	return tppf;
+    return tppf;
 }
 
 
@@ -1129,269 +1129,269 @@ tmp<Field<Type> > leastSquaresVolPointInterpolation::interpolate
 template<class Type>
 Type leastSquaresVolPointInterpolation::interpolate
 (
-	const label pointIndex,
-	const GeometricField<Type, fvPatchField, volMesh>& vf
+    const label pointIndex,
+    const GeometricField<Type, fvPatchField, volMesh>& vf
 ) const
 {
-	if (debug)
-	{
-		Info<< "leastSquaresVolPointInterpolation::interpolate("
-			<< "const label, "
-			<< "const GeometricField<Type, fvPatchField, volMesh>&) : "
-			<< "interpolating field from cells to points"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "leastSquaresVolPointInterpolation::interpolate("
+            << "const label, "
+            << "const GeometricField<Type, fvPatchField, volMesh>&) : "
+            << "interpolating field from cells to points"
+            << endl;
+    }
 
-	const Field<Type>& vfI = vf.internalField();
+    const Field<Type>& vfI = vf.internalField();
 
-	Type pf = pTraits<Type>::zero;
+    Type pf = pTraits<Type>::zero;
 
-	const vectorField& points = mesh().points();
+    const vectorField& points = mesh().points();
 
-	const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
+    const PtrList<scalarRectangularMatrix>& invMatrices = invLsMatrices();
 
-	label nCoeffs = 3;
-	const labelListList& ptCells = mesh().pointCells();
-	const labelListList& ptBndFaces = pointBndFaces();
-	const labelListList& ptCyclicFaces = pointCyclicFaces();
-	const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
-	const labelListList& ptProcFaces = pointProcFaces();
+    label nCoeffs = 3;
+    const labelListList& ptCells = mesh().pointCells();
+    const labelListList& ptBndFaces = pointBndFaces();
+    const labelListList& ptCyclicFaces = pointCyclicFaces();
+    const labelListList& ptCyclicGgiFaces = pointCyclicGgiFaces();
+    const labelListList& ptProcFaces = pointProcFaces();
 
-	Map<Field<Type> > gPtNgbProcBndFaceFieldData;
-	globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
+    Map<Field<Type> > gPtNgbProcBndFaceFieldData;
+    globalPointNgbProcBndFaceFieldData(vf, gPtNgbProcBndFaceFieldData);
 
-	Map<Field<Type> > gPtNgbProcCellFieldData;
-	globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
+    Map<Field<Type> > gPtNgbProcCellFieldData;
+    globalPointNgbProcCellFieldData(vf, gPtNgbProcCellFieldData);
 
-	const Map<List<labelPair> >& ptProcCells = pointProcCells();
+    const Map<List<labelPair> >& ptProcCells = pointProcCells();
 
-	const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
+    const List<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 //     const Map<List<labelPair> >& ptProcBndFaces = pointProcBndFaces();
 
-	const FieldField<Field, scalar>& w = weights();
-	const vectorField& o = origins();
-	const scalarField& L = refL();
+    const FieldField<Field, scalar>& w = weights();
+    const vectorField& o = origins();
+    const scalarField& L = refL();
 
-	FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
-	FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
+    FieldField<Field, Type> procCellVfI = procCellsFieldData(vfI);
+    FieldField<Field, Type> procBndFaceVf = procBndFacesFieldData(vf);
 
-	// Calc point field value
-	{
-		label pointI = pointIndex;
+    // Calc point field value
+    {
+        label pointI = pointIndex;
 
-		const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
+        const scalarRectangularMatrix& curInvMatrix = invMatrices[pointI];
 
-		const scalarField& W = w[pointI];
+        const scalarField& W = w[pointI];
 
-		const labelList& interpCells = ptCells[pointI];
-		const labelList& interpBndFaces = ptBndFaces[pointI];
-		const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
-		const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
-		const labelList& interpProcFaces = ptProcFaces[pointI];
+        const labelList& interpCells = ptCells[pointI];
+        const labelList& interpBndFaces = ptBndFaces[pointI];
+        const labelList& interpCyclicFaces = ptCyclicFaces[pointI];
+        const labelList& interpCyclicGgiFaces = ptCyclicGgiFaces[pointI];
+        const labelList& interpProcFaces = ptProcFaces[pointI];
 
-		Field<Type> glInterpNgbProcBndFaceData(0);
-		if (gPtNgbProcBndFaceFieldData.found(pointI))
-		{
-			glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcBndFaceData(0);
+        if (gPtNgbProcBndFaceFieldData.found(pointI))
+        {
+            glInterpNgbProcBndFaceData = gPtNgbProcBndFaceFieldData[pointI];
+        }
 
-		Field<Type> glInterpNgbProcCellData(0);
-		if (gPtNgbProcCellFieldData.found(pointI))
-		{
-			glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
-		}
+        Field<Type> glInterpNgbProcCellData(0);
+        if (gPtNgbProcCellFieldData.found(pointI))
+        {
+            glInterpNgbProcCellData = gPtNgbProcCellFieldData[pointI];
+        }
 
-		Field<Type> interpNgbProcCellData(0);
-		if (ptProcCells.found(pointI))
-		{
-			const List<labelPair>& pc = ptProcCells[pointI];
+        Field<Type> interpNgbProcCellData(0);
+        if (ptProcCells.found(pointI))
+        {
+            const List<labelPair>& pc = ptProcCells[pointI];
 
-			interpNgbProcCellData.setSize(pc.size());
+            interpNgbProcCellData.setSize(pc.size());
 
-			forAll(pc, cI)
-			{
-				interpNgbProcCellData[cI] =
-					procCellVfI
-					[
-					    pc[cI].first()
-					]
-					[
-					    pc[cI].second()
-					];
-			}
-		}
+            forAll(pc, cI)
+            {
+                interpNgbProcCellData[cI] =
+                    procCellVfI
+                    [
+                        pc[cI].first()
+                    ]
+                    [
+                        pc[cI].second()
+                    ];
+            }
+        }
 
-		Field<Type> interpNgbProcBndFaceData(0);
-		if (ptProcBndFaces[pointI].size())
+        Field<Type> interpNgbProcBndFaceData(0);
+        if (ptProcBndFaces[pointI].size())
 //         if (ptProcBndFaces.found(pointI))
-		{
-			const List<labelPair>& pf = ptProcBndFaces[pointI];
+        {
+            const List<labelPair>& pf = ptProcBndFaces[pointI];
 
-			interpNgbProcBndFaceData.setSize(pf.size());
+            interpNgbProcBndFaceData.setSize(pf.size());
 
-			forAll(pf, fI)
-			{
-				interpNgbProcBndFaceData[fI] =
-					procBndFaceVf
-					[
-					    pf[fI].first()
-					]
-					[
-					    pf[fI].second()
-					];
-			}
-		}
+            forAll(pf, fI)
+            {
+                interpNgbProcBndFaceData[fI] =
+                    procBndFaceVf
+                    [
+                        pf[fI].first()
+                    ]
+                    [
+                        pf[fI].second()
+                    ];
+            }
+        }
 
-		Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
-		Field<Type> source
-		(
-			interpCells.size()
-		  + interpBndFaces.size()
-		  + interpCyclicFaces.size()
-		  + interpCyclicGgiFaces.size()
-		  + interpProcFaces.size()
-		  + glInterpNgbProcBndFaceData.size()
-		  + glInterpNgbProcCellData.size()
-		  + interpNgbProcCellData.size()
-		  + interpNgbProcBndFaceData.size(),
-			pTraits<Type>::zero
-		);
+        Field<Type> coeffs(nCoeffs, pTraits<Type>::zero);
+        Field<Type> source
+        (
+            interpCells.size()
+          + interpBndFaces.size()
+          + interpCyclicFaces.size()
+          + interpCyclicGgiFaces.size()
+          + interpProcFaces.size()
+          + glInterpNgbProcBndFaceData.size()
+          + glInterpNgbProcCellData.size()
+          + interpNgbProcCellData.size()
+          + interpNgbProcBndFaceData.size(),
+            pTraits<Type>::zero
+        );
 
-		label pointID = 0;
+        label pointID = 0;
 
-		Type avg = pTraits<Type>::zero;
+        Type avg = pTraits<Type>::zero;
 
-		for (label i=0; i<interpCells.size(); i++)
-		{
-			source[pointID] = vfI[interpCells[i]];
-			avg += sqr(W[pointID])*vfI[interpCells[i]];
-			pointID++;
-		}
+        for (label i=0; i<interpCells.size(); i++)
+        {
+            source[pointID] = vfI[interpCells[i]];
+            avg += sqr(W[pointID])*vfI[interpCells[i]];
+            pointID++;
+        }
 
-		for (label i=0; i<interpBndFaces.size(); i++)
-		{
-			label faceID = interpBndFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpBndFaces.size(); i++)
+        {
+            label faceID = interpBndFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<interpCyclicFaces.size(); i++)
-		{
-			label faceID = interpCyclicFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpCyclicFaces.size(); i++)
+        {
+            label faceID = interpCyclicFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			const unallocLabelList& faceCells =
-				mesh().boundary()[patchID].faceCells();
+            const labelUList& faceCells =
+                mesh().boundary()[patchID].faceCells();
 
-			label sizeby2 = faceCells.size()/2;
+            label sizeby2 = faceCells.size()/2;
 
-			if (localFaceID < sizeby2)
-			{
-				source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
-				avg += sqr(W[pointID])*vfI[faceCells[localFaceID + sizeby2]];
-				pointID++;
-			}
-			else
-			{
-				source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
-				avg += sqr(W[pointID])*vfI[faceCells[localFaceID - sizeby2]];
-				pointID++;
-			}
-		}
+            if (localFaceID < sizeby2)
+            {
+                source[pointID] = vfI[faceCells[localFaceID + sizeby2]];
+                avg += sqr(W[pointID])*vfI[faceCells[localFaceID + sizeby2]];
+                pointID++;
+            }
+            else
+            {
+                source[pointID] = vfI[faceCells[localFaceID - sizeby2]];
+                avg += sqr(W[pointID])*vfI[faceCells[localFaceID - sizeby2]];
+                pointID++;
+            }
+        }
 
-		for (label i=0; i<interpProcFaces.size(); i++)
-		{
-			label faceID = interpProcFaces[i];
-			label patchID =
-				mesh().boundaryMesh().whichPatch(faceID);
+        for (label i=0; i<interpProcFaces.size(); i++)
+        {
+            label faceID = interpProcFaces[i];
+            label patchID =
+                mesh().boundaryMesh().whichPatch(faceID);
 
-			label start = mesh().boundaryMesh()[patchID].start();
-			label localFaceID = faceID - start;
+            label start = mesh().boundaryMesh()[patchID].start();
+            label localFaceID = faceID - start;
 
-			source[pointID] = vf.boundaryField()[patchID][localFaceID];
-			avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
-			pointID++;
-		}
+            source[pointID] = vf.boundaryField()[patchID][localFaceID];
+            avg += sqr(W[pointID])*vf.boundaryField()[patchID][localFaceID];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<glInterpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = glInterpNgbProcCellData[i];
-			avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<glInterpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = glInterpNgbProcCellData[i];
+            avg += sqr(W[pointID])*glInterpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcCellData.size(); i++)
-		{
-			source[pointID] = interpNgbProcCellData[i];
-			avg += sqr(W[pointID])*interpNgbProcCellData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcCellData.size(); i++)
+        {
+            source[pointID] = interpNgbProcCellData[i];
+            avg += sqr(W[pointID])*interpNgbProcCellData[i];
+            pointID++;
+        }
 
-		for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
-		{
-			source[pointID] = interpNgbProcBndFaceData[i];
-			avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
-			pointID++;
-		}
+        for (label i=0; i<interpNgbProcBndFaceData.size(); i++)
+        {
+            source[pointID] = interpNgbProcBndFaceData[i];
+            avg += sqr(W[pointID])*interpNgbProcBndFaceData[i];
+            pointID++;
+        }
 
-		if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
+        if (mag(mirrorPlaneTransformation()[pointI].first()) > SMALL)
 //         if (mirrorPlaneTransformation().found(pointI))
-		{
-			const tensor& T = mirrorPlaneTransformation()[pointI].second();
+        {
+            const tensor& T = mirrorPlaneTransformation()[pointI].second();
 
-			label oldSize = source.size();
+            label oldSize = source.size();
 
-			source.setSize(2*oldSize);
+            source.setSize(2*oldSize);
 
-			for (label i=oldSize; i<source.size(); i++)
-			{
-				source[i] = transform(T, source[i-oldSize]);
-			}
+            for (label i=oldSize; i<source.size(); i++)
+            {
+                source[i] = transform(T, source[i-oldSize]);
+            }
 
-			avg += transform(T, avg);
-		}
+            avg += transform(T, avg);
+        }
 
 //         avg /= source.size() + SMALL;
-		avg /= sum(sqr(W));
+        avg /= sum(sqr(W));
 
-		source -= avg;
+        source -= avg;
 
-		for (label i=0; i<nCoeffs; i++)
-		{
-			for (label j=0; j<source.size(); j++)
-			{
-				coeffs[i] += curInvMatrix[i][j]*source[j];
-			}
-		}
+        for (label i=0; i<nCoeffs; i++)
+        {
+            for (label j=0; j<source.size(); j++)
+            {
+                coeffs[i] += curInvMatrix[i][j]*source[j];
+            }
+        }
 
-		vector dr = (points[pointI] - o[pointI])/L[pointI];
+        vector dr = (points[pointI] - o[pointI])/L[pointI];
 
-		pf =
-			avg
-		  + coeffs[0]*dr.x()
-		  + coeffs[1]*dr.y()
-		  + coeffs[2]*dr.z();
-	}
+        pf =
+            avg
+          + coeffs[0]*dr.x()
+          + coeffs[1]*dr.y()
+          + coeffs[2]*dr.z();
+    }
 
-	return pf;
+    return pf;
 }
 
 
@@ -1812,211 +1812,211 @@ Type leastSquaresVolPointInterpolation::interpolate
 template<class Type>
 void leastSquaresVolPointInterpolation::globalPointNgbProcBndFaceFieldData
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf,
-	Map<Field<Type> >& fieldData
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    Map<Field<Type> >& fieldData
 ) const
 {
-	if (debug)
-	{
-		Info<< "leastSquaresVolPointInterpolation::"
-			<< "globalPointNgbProcBndFaceFieldData("
-			<< "const GeometricField<Type, fvPatchField, volMesh>&) : "
-			<< "extracting bnd face data from ngb processors"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "leastSquaresVolPointInterpolation::"
+            << "globalPointNgbProcBndFaceFieldData("
+            << "const GeometricField<Type, fvPatchField, volMesh>&) : "
+            << "extracting bnd face data from ngb processors"
+            << endl;
+    }
 
 //     const labelListList& ptCells = mesh().pointCells();
 
-	const labelListList& ptBndFaces = pointBndFaces();
+    const labelListList& ptBndFaces = pointBndFaces();
 
 //     const Field<Type>& vfI = vf.internalField();
 
-	if (Pstream::parRun())
-	{
-		// Global points
-		if (mesh().globalData().nGlobalPoints())
-		{
-			const labelList& spLabels =
-				mesh().globalData().sharedPointLabels();
+    if (Pstream::parRun())
+    {
+        // Global points
+        if (mesh().globalData().nGlobalPoints())
+        {
+            const labelList& spLabels =
+                mesh().globalData().sharedPointLabels();
 
-			const labelList& spAddressing =
-				mesh().globalData().sharedPointAddr();
+            const labelList& spAddressing =
+                mesh().globalData().sharedPointAddr();
 
-			for (label k=0; k<mesh().globalData().nGlobalPoints(); k++)
-			{
-				List<List<Type> > procBndFaceData(Pstream::nProcs());
+            for (label k=0; k<mesh().globalData().nGlobalPoints(); k++)
+            {
+                List<List<Type> > procBndFaceData(Pstream::nProcs());
 
-				label curSpIndex = findIndex(spAddressing, k);
+                label curSpIndex = findIndex(spAddressing, k);
 
-				if (curSpIndex != -1)
-				{
-					label curMeshPoint = spLabels[curSpIndex];
+                if (curSpIndex != -1)
+                {
+                    label curMeshPoint = spLabels[curSpIndex];
 
-					const labelList& curBndFaces = ptBndFaces[curMeshPoint];
+                    const labelList& curBndFaces = ptBndFaces[curMeshPoint];
 
-					procBndFaceData[Pstream::myProcNo()] =
-					    List<Type>(curBndFaces.size());
+                    procBndFaceData[Pstream::myProcNo()] =
+                        List<Type>(curBndFaces.size());
 
-					forAll (curBndFaces, faceI)
-					{
-					    label faceID = curBndFaces[faceI];
-					    label patchID =
-					        mesh().boundaryMesh().whichPatch(faceID);
-					    label start = mesh().boundaryMesh()[patchID].start();
-					    label localFaceID = faceID - start;
+                    forAll (curBndFaces, faceI)
+                    {
+                        label faceID = curBndFaces[faceI];
+                        label patchID =
+                            mesh().boundaryMesh().whichPatch(faceID);
+                        label start = mesh().boundaryMesh()[patchID].start();
+                        label localFaceID = faceID - start;
 
-					    procBndFaceData[Pstream::myProcNo()][faceI] =
-					        vf.boundaryField()[patchID][localFaceID];
-					}
-				}
-				else
-				{
-					procBndFaceData[Pstream::myProcNo()] = List<Type>(0);
-				}
+                        procBndFaceData[Pstream::myProcNo()][faceI] =
+                            vf.boundaryField()[patchID][localFaceID];
+                    }
+                }
+                else
+                {
+                    procBndFaceData[Pstream::myProcNo()] = List<Type>(0);
+                }
 
-				Pstream::gatherList(procBndFaceData);
-				Pstream::scatterList(procBndFaceData);
+                Pstream::gatherList(procBndFaceData);
+                Pstream::scatterList(procBndFaceData);
 
-				if (curSpIndex != -1)
-				{
-					label curMeshPoint = spLabels[curSpIndex];
+                if (curSpIndex != -1)
+                {
+                    label curMeshPoint = spLabels[curSpIndex];
 
-					label nAllBndFaces = 0;
-					forAll(procBndFaceData, procI)
-					{
-					    if (procI != Pstream::myProcNo())
-					    {
-					        nAllBndFaces += procBndFaceData[procI].size();
-					    }
-					}
+                    label nAllBndFaces = 0;
+                    forAll(procBndFaceData, procI)
+                    {
+                        if (procI != Pstream::myProcNo())
+                        {
+                            nAllBndFaces += procBndFaceData[procI].size();
+                        }
+                    }
 
-					Field<Type> allBndFaceData
-					(
-					    nAllBndFaces,
-					    pTraits<Type>::zero
-					);
+                    Field<Type> allBndFaceData
+                    (
+                        nAllBndFaces,
+                        pTraits<Type>::zero
+                    );
 
-					label counter = 0;
-					forAll(procBndFaceData, procI)
-					{
-					    if (procI != Pstream::myProcNo())
-					    {
-					        forAll(procBndFaceData[procI], faceI)
-					        {
-					            allBndFaceData[counter++] =
-					                procBndFaceData[procI][faceI];
-					        }
-					    }
-					}
+                    label counter = 0;
+                    forAll(procBndFaceData, procI)
+                    {
+                        if (procI != Pstream::myProcNo())
+                        {
+                            forAll(procBndFaceData[procI], faceI)
+                            {
+                                allBndFaceData[counter++] =
+                                    procBndFaceData[procI][faceI];
+                            }
+                        }
+                    }
 
-					fieldData.insert
-					(
-					    curMeshPoint,
-					    allBndFaceData
-					);
-				}
-			}
-		}
-	}
+                    fieldData.insert
+                    (
+                        curMeshPoint,
+                        allBndFaceData
+                    );
+                }
+            }
+        }
+    }
 }
 
 template<class Type>
 void leastSquaresVolPointInterpolation::globalPointNgbProcCellFieldData
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf,
-	Map<Field<Type> >& fieldData
+    const GeometricField<Type, fvPatchField, volMesh>& vf,
+    Map<Field<Type> >& fieldData
 ) const
 {
-	if (debug)
-	{
-		Info<< "leastSquaresVolPointInterpolation::"
-			<< "globalPointNgbProcCellFieldData("
-			<< "const GeometricField<Type, fvPatchField, volMesh>&) : "
-			<< "extracting cell data from ngb processors"
-			<< endl;
-	}
+    if (debug)
+    {
+        Info<< "leastSquaresVolPointInterpolation::"
+            << "globalPointNgbProcCellFieldData("
+            << "const GeometricField<Type, fvPatchField, volMesh>&) : "
+            << "extracting cell data from ngb processors"
+            << endl;
+    }
 
-	const labelListList& ptCells = mesh().pointCells();
+    const labelListList& ptCells = mesh().pointCells();
 
-	const Field<Type>& vfI = vf.internalField();
+    const Field<Type>& vfI = vf.internalField();
 
-	if (Pstream::parRun())
-	{
-		// Global points
-		if (mesh().globalData().nGlobalPoints())
-		{
-			const labelList& spLabels =
-				mesh().globalData().sharedPointLabels();
+    if (Pstream::parRun())
+    {
+        // Global points
+        if (mesh().globalData().nGlobalPoints())
+        {
+            const labelList& spLabels =
+                mesh().globalData().sharedPointLabels();
 
-			const labelList& spAddressing =
-				mesh().globalData().sharedPointAddr();
+            const labelList& spAddressing =
+                mesh().globalData().sharedPointAddr();
 
-			for (label k=0; k<mesh().globalData().nGlobalPoints(); k++)
-			{
-				List<List<Type> > procCellData(Pstream::nProcs());
+            for (label k=0; k<mesh().globalData().nGlobalPoints(); k++)
+            {
+                List<List<Type> > procCellData(Pstream::nProcs());
 
-				label curSpIndex = findIndex(spAddressing, k);
+                label curSpIndex = findIndex(spAddressing, k);
 
-				if (curSpIndex != -1)
-				{
-					label curMeshPoint = spLabels[curSpIndex];
+                if (curSpIndex != -1)
+                {
+                    label curMeshPoint = spLabels[curSpIndex];
 
-					const labelList& curCells = ptCells[curMeshPoint];
+                    const labelList& curCells = ptCells[curMeshPoint];
 
-					procCellData[Pstream::myProcNo()] =
-					    List<Type>(curCells.size());
+                    procCellData[Pstream::myProcNo()] =
+                        List<Type>(curCells.size());
 
-					forAll (curCells, cellI)
-					{
-					    procCellData[Pstream::myProcNo()][cellI] =
-					        vfI[curCells[cellI]];
-					}
-				}
-				else
-				{
-					procCellData[Pstream::myProcNo()] = List<Type>(0);
-				}
+                    forAll (curCells, cellI)
+                    {
+                        procCellData[Pstream::myProcNo()][cellI] =
+                            vfI[curCells[cellI]];
+                    }
+                }
+                else
+                {
+                    procCellData[Pstream::myProcNo()] = List<Type>(0);
+                }
 
-				Pstream::gatherList(procCellData);
-				Pstream::scatterList(procCellData);
+                Pstream::gatherList(procCellData);
+                Pstream::scatterList(procCellData);
 
-				if (curSpIndex != -1)
-				{
-					label curMeshPoint = spLabels[curSpIndex];
+                if (curSpIndex != -1)
+                {
+                    label curMeshPoint = spLabels[curSpIndex];
 
-					label nAllCells = 0;
-					forAll(procCellData, procI)
-					{
-					    if (procI != Pstream::myProcNo())
-					    {
-					        nAllCells += procCellData[procI].size();
-					    }
-					}
+                    label nAllCells = 0;
+                    forAll(procCellData, procI)
+                    {
+                        if (procI != Pstream::myProcNo())
+                        {
+                            nAllCells += procCellData[procI].size();
+                        }
+                    }
 
-					Field<Type> allCellData(nAllCells, pTraits<Type>::zero);
+                    Field<Type> allCellData(nAllCells, pTraits<Type>::zero);
 
-					label counter = 0;
-					forAll(procCellData, procI)
-					{
-					    if (procI != Pstream::myProcNo())
-					    {
-					        forAll(procCellData[procI], cellI)
-					        {
-					            allCellData[counter++] =
-					                procCellData[procI][cellI];
-					        }
-					    }
-					}
+                    label counter = 0;
+                    forAll(procCellData, procI)
+                    {
+                        if (procI != Pstream::myProcNo())
+                        {
+                            forAll(procCellData[procI], cellI)
+                            {
+                                allCellData[counter++] =
+                                    procCellData[procI][cellI];
+                            }
+                        }
+                    }
 
-					fieldData.insert
-					(
-					    curMeshPoint,
-					    allCellData
-					);
-				}
-			}
-		}
-	}
+                    fieldData.insert
+                    (
+                        curMeshPoint,
+                        allCellData
+                    );
+                }
+            }
+        }
+    }
 }
 
 
@@ -2024,48 +2024,48 @@ template<class Type>
 Foam::tmp<Foam::FieldField<Foam::Field, Type> >
 leastSquaresVolPointInterpolation::procCellsFieldData
 (
-	const Field<Type>& psi
+    const Field<Type>& psi
 ) const
 {
-	tmp<FieldField<Field, Type> > tprocPsi
-	(
-		new FieldField<Field, Type>(Pstream::nProcs())
-	);
-	FieldField<Field, Type>& procPsi = tprocPsi();
+    tmp<FieldField<Field, Type> > tprocPsi
+    (
+        new FieldField<Field, Type>(Pstream::nProcs())
+    );
+    FieldField<Field, Type>& procPsi = tprocPsi.ref();
 
-	forAll (procPsi, procI)
-	{
-		procPsi.set
-		(
-			procI,
-			new Field<Type>
-			(
-				procCellCentres()[procI].size(),
-				pTraits<Type>::zero
-			)
-		);
-	}
+    forAll (procPsi, procI)
+    {
+        procPsi.set
+        (
+            procI,
+            new Field<Type>
+            (
+                procCellCentres()[procI].size(),
+                pTraits<Type>::zero
+            )
+        );
+    }
 
-	if (Pstream::parRun())
-	{
-		// Send
-		for (label procI = 0; procI < Pstream::nProcs(); procI++)
-		{
-			if (procI != Pstream::myProcNo())
-			{
-				// Do not send empty lists
-				if (!procCells()[procI].empty())
-				{
-					Field<Type> curPsi(psi, procCells()[procI]);
+    if (Pstream::parRun())
+    {
+        // Send
+        for (label procI = 0; procI < Pstream::nProcs(); procI++)
+        {
+            if (procI != Pstream::myProcNo())
+            {
+                // Do not send empty lists
+                if (!procCells()[procI].empty())
+                {
+                    Field<Type> curPsi(psi, procCells()[procI]);
 
-					// Parallel data exchange
-					OPstream::write
-					(
-					    Pstream::blocking,
-					    procI,
-					    reinterpret_cast<const char*>(curPsi.begin()),
-					    curPsi.byteSize()
-					);
+                    // Parallel data exchange
+                    OPstream::write
+                    (
+                        Pstream::blocking,
+                        procI,
+                        reinterpret_cast<const char*>(curPsi.begin()),
+                        curPsi.byteSize()
+                    );
 
 //                     OPstream toProc
 //                     (
@@ -2075,26 +2075,26 @@ leastSquaresVolPointInterpolation::procCellsFieldData
 //                     );
 
 //                     toProc << curPsi;
-				}
-			}
-		}
+                }
+            }
+        }
 
-		// Receive
-		for (label procI = 0; procI < Pstream::nProcs(); procI++)
-		{
-			if (procI != Pstream::myProcNo())
-			{
-				// Do not receive empty lists
-				if (!procPsi[procI].empty())
-				{
-					// Parallel data exchange
-					IPstream::read
-					(
-					    Pstream::blocking,
-					    procI,
-					    reinterpret_cast<char*>(procPsi[procI].begin()),
-					    procPsi[procI].byteSize()
-					);
+        // Receive
+        for (label procI = 0; procI < Pstream::nProcs(); procI++)
+        {
+            if (procI != Pstream::myProcNo())
+            {
+                // Do not receive empty lists
+                if (!procPsi[procI].empty())
+                {
+                    // Parallel data exchange
+                    IPstream::read
+                    (
+                        Pstream::blocking,
+                        procI,
+                        reinterpret_cast<char*>(procPsi[procI].begin()),
+                        procPsi[procI].byteSize()
+                    );
 
 //                     IPstream fromProc
 //                     (
@@ -2104,12 +2104,12 @@ leastSquaresVolPointInterpolation::procCellsFieldData
 //                     );
 
 //                     fromProc >> procPsi[procI];
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 
-	return tprocPsi;
+    return tprocPsi;
 }
 
 
@@ -2117,61 +2117,61 @@ template<class Type>
 Foam::tmp<Foam::FieldField<Foam::Field, Type> >
 leastSquaresVolPointInterpolation::procBndFacesFieldData
 (
-	const GeometricField<Type, fvPatchField, volMesh>& vf
+    const GeometricField<Type, fvPatchField, volMesh>& vf
 ) const
 {
-	tmp<FieldField<Field, Type> > tprocPsi
-	(
-		new FieldField<Field, Type>(Pstream::nProcs())
-	);
-	FieldField<Field, Type>& procPsi = tprocPsi();
+    tmp<FieldField<Field, Type> > tprocPsi
+    (
+        new FieldField<Field, Type>(Pstream::nProcs())
+    );
+    FieldField<Field, Type>& procPsi = tprocPsi.ref();
 
-	forAll (procPsi, procI)
-	{
-		procPsi.set
-		(
-			procI,
-			new Field<Type>
-			(
-				procBndFaceCentres()[procI].size(),
-				pTraits<Type>::zero
-			)
-		);
-	}
+    forAll (procPsi, procI)
+    {
+        procPsi.set
+        (
+            procI,
+            new Field<Type>
+            (
+                procBndFaceCentres()[procI].size(),
+                pTraits<Type>::zero
+            )
+        );
+    }
 
-	if (Pstream::parRun())
-	{
-		// Send
-		for (label procI = 0; procI < Pstream::nProcs(); procI++)
-		{
-			if (procI != Pstream::myProcNo())
-			{
-				// Do not send empty lists
-				if (!procBndFaces()[procI].empty())
-				{
+    if (Pstream::parRun())
+    {
+        // Send
+        for (label procI = 0; procI < Pstream::nProcs(); procI++)
+        {
+            if (procI != Pstream::myProcNo())
+            {
+                // Do not send empty lists
+                if (!procBndFaces()[procI].empty())
+                {
 //                     Field<Type> curPsi(psi, procBndFaces()[procI]);
-					const labelList& curBndFaces = procBndFaces()[procI];
-					Field<Type> curPsi(curBndFaces.size());
-					forAll(curPsi, faceI)
-					{
-					    label faceID = curBndFaces[faceI];
-					    label patchID =
-					        mesh().boundaryMesh().whichPatch(faceID);
-					    label start = mesh().boundaryMesh()[patchID].start();
-					    label localFaceID = faceID - start;
+                    const labelList& curBndFaces = procBndFaces()[procI];
+                    Field<Type> curPsi(curBndFaces.size());
+                    forAll(curPsi, faceI)
+                    {
+                        label faceID = curBndFaces[faceI];
+                        label patchID =
+                            mesh().boundaryMesh().whichPatch(faceID);
+                        label start = mesh().boundaryMesh()[patchID].start();
+                        label localFaceID = faceID - start;
 
-					    curPsi[faceI] =
-					        vf.boundaryField()[patchID][localFaceID];
-					}
+                        curPsi[faceI] =
+                            vf.boundaryField()[patchID][localFaceID];
+                    }
 
-					// Parallel data exchange
-					OPstream::write
-					(
-					    Pstream::blocking,
-					    procI,
-					    reinterpret_cast<const char*>(curPsi.begin()),
-					    curPsi.byteSize()
-					);
+                    // Parallel data exchange
+                    OPstream::write
+                    (
+                        Pstream::blocking,
+                        procI,
+                        reinterpret_cast<const char*>(curPsi.begin()),
+                        curPsi.byteSize()
+                    );
 
 //                     OPstream toProc
 //                     (
@@ -2181,26 +2181,26 @@ leastSquaresVolPointInterpolation::procBndFacesFieldData
 //                     );
 
 //                     toProc << curPsi;
-				}
-			}
-		}
+                }
+            }
+        }
 
-		// Receive
-		for (label procI = 0; procI < Pstream::nProcs(); procI++)
-		{
-			if (procI != Pstream::myProcNo())
-			{
-				// Do not receive empty lists
-				if (!procPsi[procI].empty())
-				{
-					// Parallel data exchange
-					IPstream::read
-					(
-					    Pstream::blocking,
-					    procI,
-					    reinterpret_cast<char*>(procPsi[procI].begin()),
-					    procPsi[procI].byteSize()
-					);
+        // Receive
+        for (label procI = 0; procI < Pstream::nProcs(); procI++)
+        {
+            if (procI != Pstream::myProcNo())
+            {
+                // Do not receive empty lists
+                if (!procPsi[procI].empty())
+                {
+                    // Parallel data exchange
+                    IPstream::read
+                    (
+                        Pstream::blocking,
+                        procI,
+                        reinterpret_cast<char*>(procPsi[procI].begin()),
+                        procPsi[procI].byteSize()
+                    );
 
 //                     IPstream fromProc
 //                     (
@@ -2210,12 +2210,12 @@ leastSquaresVolPointInterpolation::procBndFacesFieldData
 //                     );
 
 //                     fromProc >> procPsi[procI];
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 
-	return tprocPsi;
+    return tprocPsi;
 }
 
 

@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::mapSubsetMesh
+    Foam::mapSubsetMesh
 
 Description
-	Class containing mesh-to-mesh mapping information after a subset operation
+    Class containing mesh-to-mesh mapping information after a subset operation
 
 SourceFiles
 
@@ -42,152 +42,155 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class mapSubsetMesh Declaration
+\*---------------------------------------------------------------------------*/
 
 class mapSubsetMesh
 :
-	public refCount
+    public refCount
 {
-	// Private data
+    // Private data
 
-		//- Number of old live points
-		label nOldPoints_;
+        //- Number of old live points
+        label nOldPoints_;
 
-		//- Number of old live faces
-		label nOldFaces_;
+        //- Number of old live faces
+        label nOldFaces_;
 
-		//- Number of old live cells
-		label nOldCells_;
+        //- Number of old live cells
+        label nOldCells_;
 
-		//- Point mapping array
-		const labelList pointMap_;
+        //- Point mapping array
+        const labelList pointMap_;
 
-		//- Face mapping array
-		const labelList faceMap_;
+        //- Face mapping array
+        const labelList faceMap_;
 
-		//- Cell mapping array
-		const labelList cellMap_;
+        //- Cell mapping array
+        const labelList cellMap_;
 
-		//- Patch for exposed faces
-		const label exposedPatchID_;
+        //- Patch for exposed faces
+        const label exposedPatchID_;
 
-		//- List of the old patch sizes
-		labelList oldPatchSizes_;
+        //- List of the old patch sizes
+        labelList oldPatchSizes_;
 
-		//- List of the old patch start labels
-		const labelList oldPatchStarts_;
+        //- List of the old patch start labels
+        const labelList oldPatchStarts_;
 
-		//- List of numbers of mesh points per old patch
-		const labelList oldPatchNMeshPoints_;
+        //- List of numbers of mesh points per old patch
+        const labelList oldPatchNMeshPoints_;
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		mapSubsetMesh
-		(
-			const label nOldPoints,
-			const label nOldFaces,
-			const label nOldCells,
-			const labelList& pointMap,
-			const labelList& faceMap,
-			const labelList& cellMap,
-			const label exposedPatchID,
-			const labelList& oldPatchStarts,
-			const labelList& oldPatchNMeshPoints
-		);
+        //- Construct from components
+        mapSubsetMesh
+        (
+            const label nOldPoints,
+            const label nOldFaces,
+            const label nOldCells,
+            const labelList& pointMap,
+            const labelList& faceMap,
+            const labelList& cellMap,
+            const label exposedPatchID,
+            const labelList& oldPatchStarts,
+            const labelList& oldPatchNMeshPoints
+        );
 
-		//- Construct from components and optionally reuse storage
-		mapSubsetMesh
-		(
-			const label nOldPoints,
-			const label nOldFaces,
-			const label nOldCells,
-			labelList& pointMap,
-			labelList& faceMap,
-			labelList& cellMap,
-			const label exposedPatchID,
-			labelList& oldPatchStarts,
-			labelList& oldPatchNMeshPoints,
-			const bool reUse
-		);
+        //- Construct from components and optionally reuse storage
+        mapSubsetMesh
+        (
+            const label nOldPoints,
+            const label nOldFaces,
+            const label nOldCells,
+            labelList& pointMap,
+            labelList& faceMap,
+            labelList& cellMap,
+            const label exposedPatchID,
+            labelList& oldPatchStarts,
+            labelList& oldPatchNMeshPoints,
+            const bool reUse
+        );
 
 
-	// Member Functions
+    // Member Functions
 
-		// Access
+        // Access
 
-			//- Number of old points
-			label nOldPoints() const
-			{
-				return nOldPoints_;
-			}
+            //- Number of old points
+            label nOldPoints() const
+            {
+                return nOldPoints_;
+            }
 
-			//- Number of old internal faces
-			label nOldInternalFaces() const
-			{
-				return oldPatchStarts_[0];
-			}
+            //- Number of old internal faces
+            label nOldInternalFaces() const
+            {
+                return oldPatchStarts_[0];
+            }
 
-			//- Number of old faces
-			label nOldFaces() const
-			{
-				return nOldFaces_;
-			}
+            //- Number of old faces
+            label nOldFaces() const
+            {
+                return nOldFaces_;
+            }
 
-			//- Number of old cells
-			label nOldCells() const
-			{
-				return nOldCells_;
-			}
+            //- Number of old cells
+            label nOldCells() const
+            {
+                return nOldCells_;
+            }
 
-			//- Patch that exposed faces were put into
-			label exposedPatchID() const
-			{
-				return exposedPatchID_;
-			}
+            //- Patch that exposed faces were put into
+            label exposedPatchID() const
+            {
+                return exposedPatchID_;
+            }
 
-			//- Old point map.
-			//  Contains the old point label for all points of the subsetted
-			//  mesh
-			const labelList& pointMap() const
-			{
-				return pointMap_;
-			}
+            //- Old point map.
+            //  Contains the old point label for all points of the subsetted
+            //  mesh
+            const labelList& pointMap() const
+            {
+                return pointMap_;
+            }
 
-			//- Old face map.
-			//  Contains the old point label for all faces of the subsetted
-			//  mesh
-			const labelList& faceMap() const
-			{
-				return faceMap_;
-			}
+            //- Old face map.
+            //  Contains the old point label for all faces of the subsetted
+            //  mesh
+            const labelList& faceMap() const
+            {
+                return faceMap_;
+            }
 
-			//- Old cell map.
-			//  Contains the old point label for all cells of the subsetted
-			//  mesh
-			const labelList& cellMap() const
-			{
-				return cellMap_;
-			}
+            //- Old cell map.
+            //  Contains the old point label for all cells of the subsetted
+            //  mesh
+            const labelList& cellMap() const
+            {
+                return cellMap_;
+            }
 
-			//- Return list of the old patch sizes
-			const labelList& oldPatchSizes() const
-			{
-				return oldPatchSizes_;
-			}
+            //- Return list of the old patch sizes
+            const labelList& oldPatchSizes() const
+            {
+                return oldPatchSizes_;
+            }
 
-			//- Return list of the old patch start labels
-			const labelList& oldPatchStarts() const
-			{
-				return oldPatchStarts_;
-			}
+            //- Return list of the old patch start labels
+            const labelList& oldPatchStarts() const
+            {
+                return oldPatchStarts_;
+            }
 
-			//- Return numbers of mesh points per old patch
-			const labelList& oldPatchNMeshPoints() const
-			{
-				return oldPatchNMeshPoints_;
-			}
+            //- Return numbers of mesh points per old patch
+            const labelList& oldPatchNMeshPoints() const
+            {
+                return oldPatchNMeshPoints_;
+            }
 };
 
 

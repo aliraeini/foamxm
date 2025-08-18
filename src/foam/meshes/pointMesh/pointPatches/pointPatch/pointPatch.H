@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::pointPatch
+    Foam::pointPatch
 
 Description
-	Basic pointPatch represents a set of points from the mesh.
+    Basic pointPatch represents a set of points from the mesh.
 
 SourceFiles
-	pointPatch.C
+    pointPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,114 +49,117 @@ namespace Foam
 class pointBoundaryMesh;
 class pointConstraint;
 
+/*---------------------------------------------------------------------------*\
+                      Class pointPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class pointPatch
 {
-	// Private data
+    // Private data
 
-		//- Reference to boundary mesh
-		const pointBoundaryMesh& boundaryMesh_;
+        //- Reference to boundary mesh
+        const pointBoundaryMesh& boundaryMesh_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		pointPatch(const pointPatch&);
+        //- Disallow default bitwise copy construct
+        pointPatch(const pointPatch&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const pointPatch&);
+        //- Disallow default bitwise assignment
+        void operator=(const pointPatch&);
 
 
 protected:
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		// The geometry initialisation is called by pointBoundaryMesh
-		friend class pointBoundaryMesh;
+        // The geometry initialisation is called by pointBoundaryMesh
+        friend class pointBoundaryMesh;
 
-		//- Initialise the calculation of the patch geometry
-		virtual void initGeometry()
-		{}
+        //- Initialise the calculation of the patch geometry
+        virtual void initGeometry()
+        {}
 
-		//- Calculate the patch geometry
-		virtual void calcGeometry()
-		{}
+        //- Calculate the patch geometry
+        virtual void calcGeometry()
+        {}
 
-		//- Correct patches after moving points
-		virtual void movePoints()
-		{}
+        //- Correct patches after moving points
+        virtual void movePoints()
+        {}
 
-		//- Initialise update of the patch topology
-		virtual void initUpdateMesh()
-		{}
+        //- Initialise update of the patch topology
+        virtual void initUpdateMesh()
+        {}
 
-		//- Update of the patch topology
-		virtual void updateMesh()
-		{}
+        //- Update of the patch topology
+        virtual void updateMesh()
+        {}
 
 
 public:
 
-	//- Runtime type information
-	TypeName("basePatch");
+    //- Runtime type information
+    TypeName("basePatch");
 
 
-	// Constructor
+    // Constructor
 
-		pointPatch
-		(
-			const pointBoundaryMesh& bm
-		)
-		:
-			boundaryMesh_(bm)
-		{}
-
-
-	// Destructor
-
-		virtual ~pointPatch()
-		{}
+        pointPatch
+        (
+            const pointBoundaryMesh& bm
+        )
+        :
+            boundaryMesh_(bm)
+        {}
 
 
-	// Member Functions
+    // Destructor
 
-		//- Return name
-		virtual const word& name() const = 0;
+        virtual ~pointPatch()
+        {}
 
-		//- Return size
-		virtual label size() const = 0;
 
-		//- Return the index of this patch in the pointBoundaryMesh
-		virtual label index() const = 0;
+    // Member Functions
 
-		//- Return boundaryMesh reference
-		const pointBoundaryMesh& boundaryMesh() const
-		{
-			return boundaryMesh_;
-		}
+        //- Return name
+        virtual const word& name() const = 0;
 
-		//- Return true if this patch field is coupled
-		virtual bool coupled() const
-		{
-			return false;
-		}
+        //- Return size
+        virtual label size() const = 0;
 
-		//- Return mesh points
-		virtual const labelList& meshPoints() const = 0;
+        //- Return the index of this patch in the pointBoundaryMesh
+        virtual label index() const = 0;
 
-		//- Return mesh points
-		virtual const vectorField& localPoints() const = 0;
+        //- Return boundaryMesh reference
+        const pointBoundaryMesh& boundaryMesh() const
+        {
+            return boundaryMesh_;
+        }
 
-		//- Return  point normals
-		virtual const vectorField& pointNormals() const = 0;
+        //- Return true if this patch field is coupled
+        virtual bool coupled() const
+        {
+            return false;
+        }
 
-		//- Accumulate the effect of constraint direction of this patch
-		virtual void applyConstraint
-		(
-			const label pointi,
-			pointConstraint&
-		) const
-		{}
+        //- Return mesh points
+        virtual const labelList& meshPoints() const = 0;
+
+        //- Return mesh points
+        virtual const vectorField& localPoints() const = 0;
+
+        //- Return  point normals
+        virtual const vectorField& pointNormals() const = 0;
+
+        //- Accumulate the effect of constraint direction of this patch
+        virtual void applyConstraint
+        (
+            const label pointi,
+            pointConstraint&
+        ) const
+        {}
 };
 
 

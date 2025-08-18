@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -48,6 +48,9 @@ namespace Foam
 {
 
 
+/*---------------------------------------------------------------------------*\
+                    Class fvFieldReconstructor Declaration
+\*---------------------------------------------------------------------------*/
 
 class fvFieldReconstructor
 {
@@ -125,9 +128,9 @@ public:
                     return true;
                 }
 
-                virtual const unallocLabelList& directAddressing() const
+                virtual const labelUList& directAddressing() const
                 {
-                    return unallocLabelList::null();
+                    return labelUList::null();
                 }
         };
 

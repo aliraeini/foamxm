@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	BlockGaussSeidelPrecon
+    BlockGaussSeidelPrecon
 
 Description
-	Template specialisation for scalar block Gauss-Seidel preconditioning
+    Template specialisation for scalar block Gauss-Seidel preconditioning
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,66 +46,66 @@ namespace Foam
 template<>
 void BlockGaussSeidelPrecon<scalar>::calcInvDiag()
 {
-	// Direct inversion of diagonal is sufficient, as the diagonal
-	// is linear.  HJ, 20/Aug/2015
-	invDiag_ = 1/this->matrix_.diag();
+    // Direct inversion of diagonal is sufficient, as the diagonal
+    // is linear.  HJ, 20/Aug/2015
+    invDiag_ = 1/this->matrix_.diag();
 }
 
 
 template<>
 void BlockGaussSeidelPrecon<scalar>::precondition
 (
-	scalarField& x,
-	const scalarField& b
+    scalarField& x,
+    const scalarField& b
 ) const
 {
-	if (matrix_.diagonal())
-	{
-		x = b*invDiag_;
-	}
-	else if (matrix_.symmetric() || matrix_.asymmetric())
-	{
-		const scalarField& LowerCoeff = matrix_.lower();
-		const scalarField& UpperCoeff = matrix_.upper();
+    if (matrix_.diagonal())
+    {
+        x = b*invDiag_;
+    }
+    else if (matrix_.symmetric() || matrix_.asymmetric())
+    {
+        const scalarField& LowerCoeff = matrix_.lower();
+        const scalarField& UpperCoeff = matrix_.upper();
 
-		BlockSweep
-		(
-			x,
-			invDiag_,
-			LowerCoeff,
-			UpperCoeff,
-			b
-		);
-	}
+        BlockSweep
+        (
+            x,
+            invDiag_,
+            LowerCoeff,
+            UpperCoeff,
+            b
+        );
+    }
 }
 
 
 template<>
 void BlockGaussSeidelPrecon<scalar>::preconditionT
 (
-	scalarField& xT,
-	const scalarField& bT
+    scalarField& xT,
+    const scalarField& bT
 ) const
 {
-	if (matrix_.diagonal())
-	{
-		xT = bT*invDiag_;
-	}
-	else if (matrix_.symmetric() || matrix_.asymmetric())
-	{
-		const scalarField& LowerCoeff = matrix_.lower();
-		const scalarField& UpperCoeff = matrix_.upper();
+    if (matrix_.diagonal())
+    {
+        xT = bT*invDiag_;
+    }
+    else if (matrix_.symmetric() || matrix_.asymmetric())
+    {
+        const scalarField& LowerCoeff = matrix_.lower();
+        const scalarField& UpperCoeff = matrix_.upper();
 
-		// Swap lower and upper coefficients, transposed matrix
-		BlockSweep
-		(
-			xT,
-			invDiag_,
-			UpperCoeff,
-			LowerCoeff,
-			bT
-		);
-	}
+        // Swap lower and upper coefficients, transposed matrix
+        BlockSweep
+        (
+            xT,
+            invDiag_,
+            UpperCoeff,
+            LowerCoeff,
+            bT
+        );
+    }
 }
 
 

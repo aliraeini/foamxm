@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,256 +32,256 @@ License
 
 void Foam::lduAddressing::calcLosort() const
 {
-	if (losortPtr_)
-	{
-		FatalErrorIn("lduAddressing::calcLosort() const")
-			<< "losort already calculated"
-			<< abort(FatalError);
-	}
+    if (losortPtr_)
+    {
+        FatalErrorInFunction
+            << "losort already calculated"
+            << abort(FatalError);
+    }
 
-	// Scan the neighbour list to find out how many times the cell
-	// appears as a neighbour of the face. Done this way to avoid guessing
-	// and resizing list
-	labelList nNbrOfFace(size(), 0);
+    // Scan the neighbour list to find out how many times the cell
+    // appears as a neighbour of the face. Done this way to avoid guessing
+    // and resizing list
+    labelList nNbrOfFace(size(), 0);
 
-	const unallocLabelList& nbr = upperAddr();
+    const labelUList& nbr = upperAddr();
 
-	forAll (nbr, nbrI)
-	{
-		nNbrOfFace[nbr[nbrI]]++;
-	}
+    forAll (nbr, nbrI)
+    {
+        nNbrOfFace[nbr[nbrI]]++;
+    }
 
-	// Create temporary neighbour addressing
-	labelListList cellNbrFaces(size());
+    // Create temporary neighbour addressing
+    labelListList cellNbrFaces(size());
 
-	forAll (cellNbrFaces, cellI)
-	{
-		cellNbrFaces[cellI].setSize(nNbrOfFace[cellI]);
-	}
+    forAll (cellNbrFaces, cellI)
+    {
+        cellNbrFaces[cellI].setSize(nNbrOfFace[cellI]);
+    }
 
-	// Reset the list of number of neighbours to zero
-	nNbrOfFace = 0;
+    // Reset the list of number of neighbours to zero
+    nNbrOfFace = 0;
 
-	// Scatter the neighbour faces
-	forAll (nbr, nbrI)
-	{
-		cellNbrFaces[nbr[nbrI]][nNbrOfFace[nbr[nbrI]]] = nbrI;
+    // Scatter the neighbour faces
+    forAll (nbr, nbrI)
+    {
+        cellNbrFaces[nbr[nbrI]][nNbrOfFace[nbr[nbrI]]] = nbrI;
 
-		nNbrOfFace[nbr[nbrI]]++;
-	}
+        nNbrOfFace[nbr[nbrI]]++;
+    }
 
-	// Gather the neighbours into the losort array
-	losortPtr_ = new labelList(nbr.size(), -1);
+    // Gather the neighbours into the losort array
+    losortPtr_ = new labelList(nbr.size(), -1);
 
-	labelList& lst = *losortPtr_;
+    labelList& lst = *losortPtr_;
 
-	// Set counter for losort
-	label lstI = 0;
+    // Set counter for losort
+    label lstI = 0;
 
-	forAll (cellNbrFaces, cellI)
-	{
-		const labelList& curNbr = cellNbrFaces[cellI];
+    forAll (cellNbrFaces, cellI)
+    {
+        const labelList& curNbr = cellNbrFaces[cellI];
 
-		forAll (curNbr, curNbrI)
-		{
-			lst[lstI] = curNbr[curNbrI];
-			lstI++;
-		}
-	}
+        forAll (curNbr, curNbrI)
+        {
+            lst[lstI] = curNbr[curNbrI];
+            lstI++;
+        }
+    }
 }
 
 
 void Foam::lduAddressing::calcOwnerStart() const
 {
-	if (ownerStartPtr_)
-	{
-		FatalErrorIn("lduAddressing::calcOwnerStart() const")
-			<< "owner start already calculated"
-			<< abort(FatalError);
-	}
+    if (ownerStartPtr_)
+    {
+        FatalErrorInFunction
+            << "owner start already calculated"
+            << abort(FatalError);
+    }
 
-	const labelList& own = lowerAddr();
+    const labelList& own = lowerAddr();
 
-	ownerStartPtr_ = new labelList(size() + 1, own.size());
+    ownerStartPtr_ = new labelList(size() + 1, own.size());
 
-	labelList& ownStart = *ownerStartPtr_;
+    labelList& ownStart = *ownerStartPtr_;
 
-	// Set up first lookup by hand
-	ownStart[0] = 0;
-	label nOwnStart = 0;
-	label i = 1;
+    // Set up first lookup by hand
+    ownStart[0] = 0;
+    label nOwnStart = 0;
+    label i = 1;
 
-	forAll (own, faceI)
-	{
-		label curOwn = own[faceI];
+    forAll (own, faceI)
+    {
+        label curOwn = own[faceI];
 
-		if (curOwn > nOwnStart)
-		{
-			while (i <= curOwn)
-			{
-				ownStart[i++] = faceI;
-			}
+        if (curOwn > nOwnStart)
+        {
+            while (i <= curOwn)
+            {
+                ownStart[i++] = faceI;
+            }
 
-			nOwnStart = curOwn;
-		}
-	}
+            nOwnStart = curOwn;
+        }
+    }
 }
 
 
 void Foam::lduAddressing::calcLosortStart() const
 {
-	if (losortStartPtr_)
-	{
-		FatalErrorIn("lduAddressing::calcLosortStart() const")
-			<< "losort start already calculated"
-			<< abort(FatalError);
-	}
+    if (losortStartPtr_)
+    {
+        FatalErrorInFunction
+            << "losort start already calculated"
+            << abort(FatalError);
+    }
 
-	const labelList& nbr = upperAddr();
+    const labelList& nbr = upperAddr();
 
-	losortStartPtr_ = new labelList(size() + 1, nbr.size());
+    losortStartPtr_ = new labelList(size() + 1, nbr.size());
 
-	labelList& lsrtStart = *losortStartPtr_;
+    labelList& lsrtStart = *losortStartPtr_;
 
-	const labelList& lsrt = losortAddr();
+    const labelList& lsrt = losortAddr();
 
-	// Set up first lookup by hand
-	lsrtStart[0] = 0;
-	label nLsrtStart = 0;
-	label i = 0;
+    // Set up first lookup by hand
+    lsrtStart[0] = 0;
+    label nLsrtStart = 0;
+    label i = 0;
 
-	forAll (lsrt, faceI)
-	{
-		// Get neighbour
-		const label curNbr = nbr[lsrt[faceI]];
+    forAll (lsrt, faceI)
+    {
+        // Get neighbour
+        const label curNbr = nbr[lsrt[faceI]];
 
-		if (curNbr > nLsrtStart)
-		{
-			while (i <= curNbr)
-			{
-				lsrtStart[i++] = faceI;
-			}
+        if (curNbr > nLsrtStart)
+        {
+            while (i <= curNbr)
+            {
+                lsrtStart[i++] = faceI;
+            }
 
-			nLsrtStart = curNbr;
-		}
-	}
+            nLsrtStart = curNbr;
+        }
+    }
 
-	// Set up last lookup by hand
-	lsrtStart[size()] = nbr.size();
+    // Set up last lookup by hand
+    lsrtStart[size()] = nbr.size();
 }
 
 
 void Foam::lduAddressing::calcInternalBoundaryEqnCoeffs
 (
-	const lduInterfaceFieldPtrsList& lduInterfaces
+    const lduInterfaceFieldPtrsList& lduInterfaces
 ) const
 {
-	if
-	(
-		internalEqnCoeffsPtr_
-	 || flippedInternalEqnCoeffsPtr_
-	 || boundaryEqnCoeffs_.size()
-	)
-	{
-		FatalErrorIn("lduAddressing::calcInternalBoundaryCoeffs() const")
-			<< "Internal/boundary equation coefficients already calculated."
-			<< abort(FatalError);
-	}
+    if
+    (
+        internalEqnCoeffsPtr_
+     || flippedInternalEqnCoeffsPtr_
+     || boundaryEqnCoeffs_.size()
+    )
+    {
+        FatalErrorInFunction
+            << "Internal/boundary equation coefficients already calculated."
+            << abort(FatalError);
+    }
 
-	// Get number of internal coefficients (number of faces)
-	const label nInternalCoeffs = upperAddr().size();
+    // Get number of internal coefficients (number of faces)
+    const label nInternalCoeffs = upperAddr().size();
 
-	// Allocate insertion-friendly storage with enough memory
-	dynamicLabelList internalCoeffs(nInternalCoeffs);
-	dynamicLabelList flippedInternalCoeffs(nInternalCoeffs);
+    // Allocate insertion-friendly storage with enough memory
+    dynamicLabelList internalCoeffs(nInternalCoeffs);
+    dynamicLabelList flippedInternalCoeffs(nInternalCoeffs);
 
-	// Initialise boundary equation coefficients for all coupled patches with
-	// enough storage
-	boundaryEqnCoeffs_.setSize(lduInterfaces.size());
-	forAll (lduInterfaces, intI)
-	{
-		if (lduInterfaces.set(intI))
-		{
-			boundaryEqnCoeffs_.set
-			(
-				intI,
-				new dynamicLabelList
-				(
-					lduInterfaces[intI].coupledInterface().faceCells().size()
-				)
-			);
-		}
-	}
+    // Initialise boundary equation coefficients for all coupled patches with
+    // enough storage
+    boundaryEqnCoeffs_.setSize(lduInterfaces.size());
+    forAll (lduInterfaces, intI)
+    {
+        if (lduInterfaces.set(intI))
+        {
+            boundaryEqnCoeffs_.set
+            (
+                intI,
+                new dynamicLabelList
+                (
+                    lduInterfaces[intI].coupledInterface().faceCells().size()
+                )
+            );
+        }
+    }
 
-	// First, we need to mark boundary equations with associated interface
-	// index. Note: this does not take into account corner cells that have
-	// faces on more than one coupled interface. Don't care about them during
-	// preconditioning at the moment. VV, 23/Jun/2017.
-	labelList boundaryEqnInterfaceIndex(size_, -1);
+    // First, we need to mark boundary equations with associated interface
+    // index. Note: this does not take into account corner cells that have
+    // faces on more than one coupled interface. Don't care about them during
+    // preconditioning at the moment. VV, 23/Jun/2017.
+    labelList boundaryEqnInterfaceIndex(size_, -1);
 
-	// Loop through interfaces
-	forAll (lduInterfaces, intI)
-	{
-		// Check whether the interface is set
-		if (lduInterfaces.set(intI))
-		{
-			// Get boundary equations/rows (face cells)
-			const unallocLabelList& boundaryEqns =
-				lduInterfaces[intI].coupledInterface().faceCells();
+    // Loop through interfaces
+    forAll (lduInterfaces, intI)
+    {
+        // Check whether the interface is set
+        if (lduInterfaces.set(intI))
+        {
+            // Get boundary equations/rows (face cells)
+            const labelUList& boundaryEqns =
+                lduInterfaces[intI].coupledInterface().faceCells();
 
-			// Loop through boundary equations and mark them
-			forAll (boundaryEqns, beI)
-			{
-				boundaryEqnInterfaceIndex[boundaryEqns[beI]] = intI;
-			}
-		}
-	}
+            // Loop through boundary equations and mark them
+            forAll (boundaryEqns, beI)
+            {
+                boundaryEqnInterfaceIndex[boundaryEqns[beI]] = intI;
+            }
+        }
+    }
 
-	// Get lower/upper (owner/neighbour) addressing
-	const unallocLabelList& own = lowerAddr();
-	const unallocLabelList& nei = upperAddr();
+    // Get lower/upper (owner/neighbour) addressing
+    const labelUList& own = lowerAddr();
+    const labelUList& nei = upperAddr();
 
-	// Loop through upper triangle and filter coefficients (faces)
-	forAll (own, coeffI)
-	{
-		// Get owner/neighbour (row/column) for this coefficient
-		const label& ownI = own[coeffI];
-		const label& neiI = nei[coeffI];
+    // Loop through upper triangle and filter coefficients (faces)
+    forAll (own, coeffI)
+    {
+        // Get owner/neighbour (row/column) for this coefficient
+        const label& ownI = own[coeffI];
+        const label& neiI = nei[coeffI];
 
-		if
-		(
-			boundaryEqnInterfaceIndex[ownI] != -1
-		 && boundaryEqnInterfaceIndex[neiI] != -1
-		)
-		{
-			// Both owner and neigbour are at the boundary, append to boundary
-			// coeffs list. Note: it is possible that owner/neighbour do not
-			// have the same interface index since we ignored corner cells. Take
-			// the owner index
-			boundaryEqnCoeffs_[boundaryEqnInterfaceIndex[ownI]].append(coeffI);
-		}
-		else
-		{
-			// If owner is a boundary cell and neighbour is not a boundary cell,
-			// we need to mark this face for flipping
-			if
-			(
-				boundaryEqnInterfaceIndex[ownI] != -1
-			 && boundaryEqnInterfaceIndex[neiI] == -1
-			)
-			{
-				flippedInternalCoeffs.append(coeffI);
-			}
-			else
-			{
-				internalCoeffs.append(coeffI);
-			}
-		}
-	}
+        if
+        (
+            boundaryEqnInterfaceIndex[ownI] != -1
+         && boundaryEqnInterfaceIndex[neiI] != -1
+        )
+        {
+            // Both owner and neigbour are at the boundary, append to boundary
+            // coeffs list. Note: it is possible that owner/neighbour do not
+            // have the same interface index since we ignored corner cells. Take
+            // the owner index
+            boundaryEqnCoeffs_[boundaryEqnInterfaceIndex[ownI]].append(coeffI);
+        }
+        else
+        {
+            // If owner is a boundary cell and neighbour is not a boundary cell,
+            // we need to mark this face for flipping
+            if
+            (
+                boundaryEqnInterfaceIndex[ownI] != -1
+             && boundaryEqnInterfaceIndex[neiI] == -1
+            )
+            {
+                flippedInternalCoeffs.append(coeffI);
+            }
+            else
+            {
+                internalCoeffs.append(coeffI);
+            }
+        }
+    }
 
-	// Reuse dynamic lists to initialise data members
-	internalEqnCoeffsPtr_ = new labelList(internalCoeffs.xfer());
-	flippedInternalEqnCoeffsPtr_ = new labelList(flippedInternalCoeffs.xfer());
+    // Reuse dynamic lists to initialise data members
+    internalEqnCoeffsPtr_ = new labelList(internalCoeffs.xfer());
+    flippedInternalEqnCoeffsPtr_ = new labelList(flippedInternalCoeffs.xfer());
 }
 
 
@@ -289,14 +289,14 @@ void Foam::lduAddressing::calcInternalBoundaryEqnCoeffs
 
 Foam::lduAddressing::lduAddressing(const label nEqns)
 :
-	size_(nEqns),
-	losortPtr_(nullptr),
-	ownerStartPtr_(nullptr),
-	losortStartPtr_(nullptr),
-	extendedAddr_(5),
-	internalEqnCoeffsPtr_(nullptr),
-	flippedInternalEqnCoeffsPtr_(nullptr),
-	boundaryEqnCoeffs_()
+    size_(nEqns),
+    losortPtr_(nullptr),
+    ownerStartPtr_(nullptr),
+    losortStartPtr_(nullptr),
+    extendedAddr_(5),
+    internalEqnCoeffsPtr_(nullptr),
+    flippedInternalEqnCoeffsPtr_(nullptr),
+    boundaryEqnCoeffs_()
 {}
 
 
@@ -304,161 +304,170 @@ Foam::lduAddressing::lduAddressing(const label nEqns)
 
 Foam::lduAddressing::~lduAddressing()
 {
-	deleteDemandDrivenData(losortPtr_);
-	deleteDemandDrivenData(ownerStartPtr_);
-	deleteDemandDrivenData(losortStartPtr_);
-	deleteDemandDrivenData(internalEqnCoeffsPtr_);
-	deleteDemandDrivenData(flippedInternalEqnCoeffsPtr_);
+    deleteDemandDrivenData(losortPtr_);
+    deleteDemandDrivenData(ownerStartPtr_);
+    deleteDemandDrivenData(losortStartPtr_);
+    deleteDemandDrivenData(internalEqnCoeffsPtr_);
+    deleteDemandDrivenData(flippedInternalEqnCoeffsPtr_);
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-const Foam::unallocLabelList& Foam::lduAddressing::losortAddr() const
+const Foam::labelUList& Foam::lduAddressing::losortAddr() const
 {
-	if (!losortPtr_)
-	{
-		calcLosort();
-	}
+    if (!losortPtr_)
+    {
+        calcLosort();
+    }
 
-	return *losortPtr_;
+    return *losortPtr_;
 }
 
 
-const Foam::unallocLabelList& Foam::lduAddressing::ownerStartAddr() const
+const Foam::labelUList& Foam::lduAddressing::ownerStartAddr() const
 {
-	if (!ownerStartPtr_)
-	{
-		calcOwnerStart();
-	}
+    if (!ownerStartPtr_)
+    {
+        calcOwnerStart();
+    }
 
-	return *ownerStartPtr_;
+    return *ownerStartPtr_;
 }
 
 
-const Foam::unallocLabelList& Foam::lduAddressing::losortStartAddr() const
+const Foam::labelUList& Foam::lduAddressing::losortStartAddr() const
 {
-	if (!losortStartPtr_)
-	{
-		calcLosortStart();
-	}
+    if (!losortStartPtr_)
+    {
+        calcLosortStart();
+    }
 
-	return *losortStartPtr_;
+    return *losortStartPtr_;
 }
 
 
 // Return edge index given owner and neighbour label
 Foam::label Foam::lduAddressing::triIndex(const label a, const label b) const
 {
-	label own = min(a, b);
+    label own = min(a, b);
 
-	label nbr = max(a, b);
+    label nbr = max(a, b);
 
-	label startLabel = ownerStartAddr()[own];
+    label startLabel = ownerStartAddr()[own];
 
-	label endLabel = ownerStartAddr()[own + 1];
+    label endLabel = ownerStartAddr()[own + 1];
 
-	const unallocLabelList& neighbour = upperAddr();
+    const labelUList& neighbour = upperAddr();
 
-	for (label i = startLabel; i < endLabel; i++)
-	{
-		if (neighbour[i] == nbr)
-		{
-			return i;
-		}
-	}
+    for (label i = startLabel; i < endLabel; i++)
+    {
+        if (neighbour[i] == nbr)
+        {
+            return i;
+        }
+    }
 
-	// If neighbour has not been found, something has gone seriously
-	// wrong with the addressing mechanism
-	FatalErrorIn
-	(
-		"lduAddressing::triIndex(const label owner, const label nbr) const"
-	)   << "neighbour " << nbr << " not found for owner " << own << ". "
-		<< "Problem with addressing"
-		<< abort(FatalError);
+    // If neighbour has not been found, something has gone seriously
+    // wrong with the addressing mechanism
+    FatalErrorInFunction
+        << "neighbour " << nbr << " not found for owner " << own << ". "
+        << "Problem with addressing"
+        << abort(FatalError);
 
-	return -1;
+    return -1;
 }
 
 
 const Foam::extendedLduAddressing&
 Foam::lduAddressing::extendedAddr(const label p) const
 {
-	if (p == 0 || p > 4)
-	{
-		FatalErrorIn
-		(
-			"const Foam::extendedLduAddressing& "
-			"Foam::lduAddressing::extendedAddr(const label p) const"
-		)   << "Currently supported extended addressing fill-in only "
-			<< "between order 1 and 4"
-			<< abort(FatalError);
-	}
+    if (p == 0 || p > 4)
+    {
+        FatalErrorInFunction
+            << "Currently supported extended addressing fill-in only "
+            << "between order 1 and 4"
+            << abort(FatalError);
+    }
 
-	if (!extendedAddr_.set(p))
-	{
-		extendedAddr_.set(p, new extendedLduAddressing(*this, p));
-	}
+    if (!extendedAddr_.set(p))
+    {
+        extendedAddr_.set(p, new extendedLduAddressing(*this, p));
+    }
 
-	return extendedAddr_[p];
+    return extendedAddr_[p];
 }
 
 
-const Foam::unallocLabelList& Foam::lduAddressing::internalEqnCoeffs
+const Foam::labelUList& Foam::lduAddressing::internalEqnCoeffs
 (
-	const lduInterfaceFieldPtrsList& lduInterfaces
+    const lduInterfaceFieldPtrsList& lduInterfaces
 ) const
 {
-	if (!internalEqnCoeffsPtr_)
-	{
-		calcInternalBoundaryEqnCoeffs(lduInterfaces);
-	}
+    if (!internalEqnCoeffsPtr_)
+    {
+        calcInternalBoundaryEqnCoeffs(lduInterfaces);
+    }
 
-	return *internalEqnCoeffsPtr_;
+    return *internalEqnCoeffsPtr_;
 }
 
 
-const Foam::unallocLabelList& Foam::lduAddressing::flippedInternalEqnCoeffs
+const Foam::labelUList& Foam::lduAddressing::flippedInternalEqnCoeffs
 (
-	const lduInterfaceFieldPtrsList& lduInterfaces
+    const lduInterfaceFieldPtrsList& lduInterfaces
 ) const
 {
-	if (!flippedInternalEqnCoeffsPtr_)
-	{
-		calcInternalBoundaryEqnCoeffs(lduInterfaces);
-	}
+    if (!flippedInternalEqnCoeffsPtr_)
+    {
+        calcInternalBoundaryEqnCoeffs(lduInterfaces);
+    }
 
-	return *flippedInternalEqnCoeffsPtr_;
+    return *flippedInternalEqnCoeffsPtr_;
 }
 
 
 const Foam::dynamicLabelList& Foam::lduAddressing::boundaryEqnCoeffs
 (
-	const lduInterfaceFieldPtrsList& lduInterfaces,
-	const label intI
+    const lduInterfaceFieldPtrsList& lduInterfaces,
+    const label intI
 ) const
 {
-	if (intI > lduInterfaces.size() - 1 || intI < 0)
-	{
-		FatalErrorIn
-		(
-			"const Foam::PtrList<labelList>& "
-			"Foam::lduAddressing::boundaryEqnCoeffs"
-			"\n("
-			"\n    const lduInterfaceFieldPtrsList& lduInterfaces,"
-			"\n    const label p"
-			"\n) const"
-		)   << "Invalid interface index specified: " << intI << nl
-			<< "Number of coupled interfaces: " << lduInterfaces.size()
-			<< abort(FatalError);
-	}
+    if (intI > lduInterfaces.size() - 1 || intI < 0)
+    {
+        FatalErrorInFunction
+            << "Invalid interface index specified: " << intI << nl
+            << "Number of coupled interfaces: " << lduInterfaces.size()
+            << abort(FatalError);
+    }
 
-	if (!boundaryEqnCoeffs_.set(intI))
-	{
-		calcInternalBoundaryEqnCoeffs(lduInterfaces);
-	}
+    if (!boundaryEqnCoeffs_.set(intI))
+    {
+        calcInternalBoundaryEqnCoeffs(lduInterfaces);
+    }
 
-	return boundaryEqnCoeffs_[intI];
+    return boundaryEqnCoeffs_[intI];
+}
+
+
+// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
+
+Foam::Ostream& Foam::operator<<(Ostream& os, const lduAddressing& ldua)
+{
+    os  << "lowerAddr: " << nl << ldua.lowerAddr() << nl
+        << "upperAddr: " << nl << ldua.upperAddr() << nl;
+
+    for (label patchI = 0; patchI < ldua.nPatches(); patchI++)
+    {
+        os  << "patchAddr for patch " << patchI << ": " << nl
+            << ldua.patchAddr(patchI) << nl;
+    }
+
+    os  << endl << endl;
+
+    os.check("Ostream& operator<<(Ostream&, const lduAddressing&");
+
+    return os;
 }
 
 

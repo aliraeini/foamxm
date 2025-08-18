@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,121 +35,121 @@ License
 template<class Type>
 void Foam::motionSmoother::checkConstraints
 (
-	GeometricField<Type, pointPatchField, pointMesh>& pf
+    GeometricField<Type, pointPatchField, pointMesh>& pf
 )
 {
-	typedef GeometricField<Type, pointPatchField, pointMesh> FldType;
+    typedef GeometricField<Type, pointPatchField, pointMesh> FldType;
 
-	const polyMesh& mesh = pf.mesh();
+    const polyMesh& mesh = pf.mesh();
 
-	const polyBoundaryMesh& bm = mesh.boundaryMesh();
+    const polyBoundaryMesh& bm = mesh.boundaryMesh();
 
-	// first count the total number of patch-patch points
+    // first count the total number of patch-patch points
 
-	label nPatchPatchPoints = 0;
+    label nPatchPatchPoints = 0;
 
-	forAll(bm, patchi)
-	{
-		if(!isA<emptyPolyPatch>(bm[patchi]))
-		{
-			nPatchPatchPoints += bm[patchi].boundaryPoints().size();
-		}
-	}
-
-
-	typename FldType::Boundary& bFld = pf.boundaryField();
+    forAll(bm, patchi)
+    {
+        if(!isA<emptyPolyPatch>(bm[patchi]))
+        {
+            nPatchPatchPoints += bm[patchi].boundaryPoints().size();
+        }
+    }
 
 
-	// Evaluate in reverse order
-
-	forAllReverse(bFld, patchi)
-	{
-		bFld[patchi].initEvaluate(Pstream::blocking);   // buffered
-	}
-
-	forAllReverse(bFld, patchi)
-	{
-		bFld[patchi].evaluate(Pstream::blocking);
-	}
+    typename FldType::GeometricBoundaryField& bFld = pf.boundaryField();
 
 
-	// Save the values
+    // Evaluate in reverse order
 
-	Field<Type> boundaryPointValues(nPatchPatchPoints);
-	nPatchPatchPoints = 0;
+    forAllReverse(bFld, patchi)
+    {
+        bFld[patchi].initEvaluate(Pstream::blocking);   // buffered
+    }
 
-	forAll(bm, patchi)
-	{
-		if(!isA<emptyPolyPatch>(bm[patchi]))
-		{
-			const labelList& bp = bm[patchi].boundaryPoints();
-			const labelList& meshPoints = bm[patchi].meshPoints();
-
-			forAll(bp, pointi)
-			{
-				label ppp = meshPoints[bp[pointi]];
-				boundaryPointValues[nPatchPatchPoints++] = pf[ppp];
-			}
-		}
-	}
+    forAllReverse(bFld, patchi)
+    {
+        bFld[patchi].evaluate(Pstream::blocking);
+    }
 
 
-	// Forward evaluation
+    // Save the values
 
-	bFld.evaluate();
+    Field<Type> boundaryPointValues(nPatchPatchPoints);
+    nPatchPatchPoints = 0;
+
+    forAll(bm, patchi)
+    {
+        if(!isA<emptyPolyPatch>(bm[patchi]))
+        {
+            const labelList& bp = bm[patchi].boundaryPoints();
+            const labelList& meshPoints = bm[patchi].meshPoints();
+
+            forAll(bp, pointi)
+            {
+                label ppp = meshPoints[bp[pointi]];
+                boundaryPointValues[nPatchPatchPoints++] = pf[ppp];
+            }
+        }
+    }
 
 
-	// Check
+    // Forward evaluation
 
-	nPatchPatchPoints = 0;
+    bFld.evaluate();
 
-	forAll(bm, patchi)
-	{
-		if(!isA<emptyPolyPatch>(bm[patchi]))
-		{
-			const labelList& bp = bm[patchi].boundaryPoints();
-			const labelList& meshPoints = bm[patchi].meshPoints();
 
-			forAll(bp, pointi)
-			{
-				label ppp = meshPoints[bp[pointi]];
+    // Check
 
-				const Type& savedVal = boundaryPointValues[nPatchPatchPoints++];
+    nPatchPatchPoints = 0;
 
-				if (savedVal != pf[ppp])
-				{
-					FatalErrorIn
-					(
-					    "motionSmoother::checkConstraints"
-					    "(GeometricField<Type, pointPatchField, pointMesh>&)"
-					)   << "Patch fields are not consistent on mesh point "
-					    << ppp << " coordinate " << mesh.points()[ppp]
-					    << " at patch " << bm[patchi].name() << '.'
-					    << endl
-					    << "Reverse evaluation gives value " << savedVal
-					    << " , forward evaluation gives value " << pf[ppp]
-					    << abort(FatalError);
-				}
-			}
-		}
-	}
+    forAll(bm, patchi)
+    {
+        if(!isA<emptyPolyPatch>(bm[patchi]))
+        {
+            const labelList& bp = bm[patchi].boundaryPoints();
+            const labelList& meshPoints = bm[patchi].meshPoints();
+
+            forAll(bp, pointi)
+            {
+                label ppp = meshPoints[bp[pointi]];
+
+                const Type& savedVal = boundaryPointValues[nPatchPatchPoints++];
+
+                if (savedVal != pf[ppp])
+                {
+                    FatalErrorIn
+                    (
+                        "motionSmoother::checkConstraints"
+                        "(GeometricField<Type, pointPatchField, pointMesh>&)"
+                    )   << "Patch fields are not consistent on mesh point "
+                        << ppp << " coordinate " << mesh.points()[ppp]
+                        << " at patch " << bm[patchi].name() << '.'
+                        << endl
+                        << "Reverse evaluation gives value " << savedVal
+                        << " , forward evaluation gives value " << pf[ppp]
+                        << abort(FatalError);
+                }
+            }
+        }
+    }
 }
 
 
 template<class Type>
 void Foam::motionSmoother::applyCornerConstraints
 (
-	GeometricField<Type, pointPatchField, pointMesh>& pf
+    GeometricField<Type, pointPatchField, pointMesh>& pf
 ) const
 {
-	forAll(patchPatchPointConstraintPoints_, pointi)
-	{
-		pf[patchPatchPointConstraintPoints_[pointi]] = transform
-		(
-			patchPatchPointConstraintTensors_[pointi],
-			pf[patchPatchPointConstraintPoints_[pointi]]
-		);
-	}
+    forAll(patchPatchPointConstraintPoints_, pointi)
+    {
+        pf[patchPatchPointConstraintPoints_[pointi]] = transform
+        (
+            patchPatchPointConstraintTensors_[pointi],
+            pf[patchPatchPointConstraintPoints_[pointi]]
+        );
+    }
 }
 
 
@@ -158,100 +158,100 @@ template <class Type>
 Foam::tmp<Foam::GeometricField<Type, Foam::pointPatchField, Foam::pointMesh> >
  Foam::motionSmoother::avg
 (
-	const GeometricField<Type, pointPatchField, pointMesh>& fld,
-	const scalarField& edgeWeight,
-	const bool separation
+    const GeometricField<Type, pointPatchField, pointMesh>& fld,
+    const scalarField& edgeWeight,
+    const bool separation
 ) const
 {
-	tmp<GeometricField<Type, pointPatchField, pointMesh> > tres
-	(
-		new GeometricField<Type, pointPatchField, pointMesh>
-		(
-			IOobject
-			(
-				"avg("+fld.name()+')',
-				fld.time().timeName(),
-				fld.db(),
-				IOobject::NO_READ,
-				IOobject::NO_WRITE
-			),
-			fld.mesh(),
-			dimensioned<Type>("zero", fld.dimensions(), pTraits<Type>::zero)
-		)
-	);
-	GeometricField<Type, pointPatchField, pointMesh>& res = tres();
+    tmp<GeometricField<Type, pointPatchField, pointMesh> > tres
+    (
+        new GeometricField<Type, pointPatchField, pointMesh>
+        (
+            IOobject
+            (
+                "avg("+fld.name()+')',
+                fld.time().timeName(),
+                fld.db(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            fld.mesh(),
+            dimensioned<Type>("zero", fld.dimensions(), pTraits<Type>::zero)
+        )
+    );
+    GeometricField<Type, pointPatchField, pointMesh>& res = tres.ref();
 
-	const polyMesh& mesh = fld.mesh()();
-
-
-	// Sum local weighted values and weights
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	// Note: on coupled edges use only one edge (through isMasterEdge)
-	// This is done so coupled edges do not get counted double.
-
-	scalarField sumWeight(mesh.nPoints(), 0.0);
-
-	const edgeList& edges = mesh.edges();
-
-	forAll(edges, edgeI)
-	{
-		if (isMasterEdge_.get(edgeI) == 1)
-		{
-			const edge& e = edges[edgeI];
-			const scalar w = edgeWeight[edgeI];
-
-			res[e[0]] += w*fld[e[1]];
-			sumWeight[e[0]] += w;
-
-			res[e[1]] += w*fld[e[0]];
-			sumWeight[e[1]] += w;
-		}
-	}
+    const polyMesh& mesh = fld.mesh()();
 
 
-	// Add coupled contributions
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Sum local weighted values and weights
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	syncTools::syncPointList
-	(
-		mesh,
-		res,
-		plusEqOp<Type>(),
-		pTraits<Type>::zero,    // null value
-		separation              // separation
-	);
+    // Note: on coupled edges use only one edge (through isMasterEdge)
+    // This is done so coupled edges do not get counted double.
 
-	syncTools::syncPointList
-	(
-		mesh,
-		sumWeight,
-		plusEqOp<scalar>(),
-		scalar(0),              // null value
-		false                   // separation
-	);
+    scalarField sumWeight(mesh.nPoints(), 0.0);
+
+    const edgeList& edges = mesh.edges();
+
+    forAll(edges, edgeI)
+    {
+        if (isMasterEdge_.get(edgeI) == 1)
+        {
+            const edge& e = edges[edgeI];
+            const scalar w = edgeWeight[edgeI];
+
+            res[e[0]] += w*fld[e[1]];
+            sumWeight[e[0]] += w;
+
+            res[e[1]] += w*fld[e[0]];
+            sumWeight[e[1]] += w;
+        }
+    }
 
 
-	// Average
-	// ~~~~~~~
+    // Add coupled contributions
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	forAll(res, pointI)
-	{
-		if (mag(sumWeight[pointI]) < VSMALL)
-		{
-			// Unconnected point. Take over original value
-			res[pointI] = fld[pointI];
-		}
-		else
-		{
-			res[pointI] /= sumWeight[pointI];
-		}
-	}
+    syncTools::syncPointList
+    (
+        mesh,
+        res,
+        plusEqOp<Type>(),
+        pTraits<Type>::zero,    // null value
+        separation              // separation
+    );
 
-	res.correctBoundaryConditions();
-	applyCornerConstraints(res);
+    syncTools::syncPointList
+    (
+        mesh,
+        sumWeight,
+        plusEqOp<scalar>(),
+        scalar(0),              // null value
+        false                   // separation
+    );
 
-	return tres;
+
+    // Average
+    // ~~~~~~~
+
+    forAll(res, pointI)
+    {
+        if (mag(sumWeight[pointI]) < VSMALL)
+        {
+            // Unconnected point. Take over original value
+            res[pointI] = fld[pointI];
+        }
+        else
+        {
+            res[pointI] /= sumWeight[pointI];
+        }
+    }
+
+    res.correctBoundaryConditions();
+    applyCornerConstraints(res);
+
+    return tres;
 }
 
 
@@ -259,30 +259,30 @@ Foam::tmp<Foam::GeometricField<Type, Foam::pointPatchField, Foam::pointMesh> >
 template <class Type>
 void Foam::motionSmoother::smooth
 (
-	const GeometricField<Type, pointPatchField, pointMesh>& fld,
-	const scalarField& edgeWeight,
-	const bool separation,
-	GeometricField<Type, pointPatchField, pointMesh>& newFld
+    const GeometricField<Type, pointPatchField, pointMesh>& fld,
+    const scalarField& edgeWeight,
+    const bool separation,
+    GeometricField<Type, pointPatchField, pointMesh>& newFld
 ) const
 {
-	tmp<pointVectorField> tavgFld = avg
-	(
-		fld,
-		edgeWeight, // weighting
-		separation  // whether to apply separation vector
-	);
-	const pointVectorField& avgFld = tavgFld();
+    tmp<pointVectorField> tavgFld = avg
+    (
+        fld,
+        edgeWeight, // weighting
+        separation  // whether to apply separation vector
+    );
+    const pointVectorField& avgFld = tavgFld();
 
-	forAll(fld, pointI)
-	{
-		if (isInternalPoint(pointI))
-		{
-			newFld[pointI] = 0.5*fld[pointI] + 0.5*avgFld[pointI];
-		}
-	}
+    forAll(fld, pointI)
+    {
+        if (isInternalPoint(pointI))
+        {
+            newFld[pointI] = 0.5*fld[pointI] + 0.5*avgFld[pointI];
+        }
+    }
 
-	newFld.correctBoundaryConditions();
-	applyCornerConstraints(newFld);
+    newFld.correctBoundaryConditions();
+    applyCornerConstraints(newFld);
 }
 
 
@@ -290,44 +290,44 @@ void Foam::motionSmoother::smooth
 template<class Type, class CombineOp>
 void Foam::motionSmoother::testSyncField
 (
-	const Field<Type>& fld,
-	const CombineOp& cop,
-	const Type& zero,
-	const bool separation,
-	const scalar maxMag
+    const Field<Type>& fld,
+    const CombineOp& cop,
+    const Type& zero,
+    const bool separation,
+    const scalar maxMag
 ) const
 {
-	if (debug)
-	{
-		Pout<< "testSyncField : testing synchronisation of Field<Type>."
-			<< endl;
-	}
+    if (debug)
+    {
+        Pout<< "testSyncField : testing synchronisation of Field<Type>."
+            << endl;
+    }
 
-	Field<Type> syncedFld(fld);
+    Field<Type> syncedFld(fld);
 
-	syncTools::syncPointList
-	(
-		mesh_,
-		syncedFld,
-		cop,
-		zero,       // null value
-		separation  // separation
-	);
+    syncTools::syncPointList
+    (
+        mesh_,
+        syncedFld,
+        cop,
+        zero,       // null value
+        separation  // separation
+    );
 
-	forAll(syncedFld, i)
-	{
-		if (mag(syncedFld[i] - fld[i]) > maxMag)
-		{
-			FatalErrorIn
-			(
-				"motionSmoother::testSyncField"
-				"(const Field<Type>&, const CombineOp&"
-				", const Type&, const bool)"
-			)   << "On element " << i << " value:" << fld[i]
-				<< " synchronised value:" << syncedFld[i]
-				<< abort(FatalError);
-		}
-	}
+    forAll(syncedFld, i)
+    {
+        if (mag(syncedFld[i] - fld[i]) > maxMag)
+        {
+            FatalErrorIn
+            (
+                "motionSmoother::testSyncField"
+                "(const Field<Type>&, const CombineOp&"
+                ", const Type&, const bool)"
+            )   << "On element " << i << " value:" << fld[i]
+                << " synchronised value:" << syncedFld[i]
+                << abort(FatalError);
+        }
+    }
 }
 
 

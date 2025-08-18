@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::interfaceProperties
+    Foam::interfaceProperties
 
 Description
-	Contains the interface properties.
+    Contains the interface properties.
 
-	Properties to aid interFoam:
-	-# Correct the alpha boundary condition for dynamic contact angle.
-	-# Calculate interface curvature.
+    Properties to aid interFoam:
+    -# Correct the alpha boundary condition for dynamic contact angle.
+    -# Calculate interface curvature.
 
 SourceFiles
-	interfaceProperties.C
+    interfaceProperties.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,100 +48,103 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                    Class interfaceProperties Declaration
+\*---------------------------------------------------------------------------*/
 
 class interfaceProperties
 {
-	// Private data
+    // Private data
 
-		//- Keep a reference to the transportProperties dictionary
-		const dictionary& transportPropertiesDict_;
+        //- Keep a reference to the transportProperties dictionary
+        const dictionary& transportPropertiesDict_;
 
-		//- Compression coefficient
-		scalar cAlpha_;
+        //- Compression coefficient
+        scalar cAlpha_;
 
-		//- Surface tension
-		dimensionedScalar sigma_;
+        //- Surface tension
+        dimensionedScalar sigma_;
 
-		//- Stabilisation for normalisation of the interface normal
-		const dimensionedScalar deltaN_;
+        //- Stabilisation for normalisation of the interface normal
+        const dimensionedScalar deltaN_;
 
-		const volScalarField& alpha1_;
-		const volVectorField& U_;
-		surfaceScalarField nHatf_;
-		volScalarField K_;
+        const volScalarField& alpha1_;
+        const volVectorField& U_;
+        surfaceScalarField nHatf_;
+        volScalarField K_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct and assignment
-		interfaceProperties(const interfaceProperties&);
-		void operator=(const interfaceProperties&);
+        //- Disallow default bitwise copy construct and assignment
+        interfaceProperties(const interfaceProperties&);
+        void operator=(const interfaceProperties&);
 
-		//- Correction for the boundary condition on the unit normal nHat on
-		//  walls to produce the correct contact dynamic angle
-		//  calculated from the component of U parallel to the wall
-		void correctContactAngle
-		(
-			surfaceVectorField::Boundary& nHat
-		) const;
+        //- Correction for the boundary condition on the unit normal nHat on
+        //  walls to produce the correct contact dynamic angle
+        //  calculated from the component of U parallel to the wall
+        void correctContactAngle
+        (
+            surfaceVectorField::GeometricBoundaryField& nHat
+        ) const;
 
-		//- Re-calculate the interface curvature
-		void calculateK();
+        //- Re-calculate the interface curvature
+        void calculateK();
 
 
 public:
 
-	//- Conversion factor for degrees into radians
-	static const scalar convertToRad;
+    //- Conversion factor for degrees into radians
+    static const scalar convertToRad;
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from volume fraction field gamma and IOdictionary
-		interfaceProperties
-		(
-			const volScalarField& alpha1,
-			const volVectorField& U,
-			const IOdictionary&
-		);
+        //- Construct from volume fraction field gamma and IOdictionary
+        interfaceProperties
+        (
+            const volScalarField& alpha1,
+            const volVectorField& U,
+            const IOdictionary&
+        );
 
 
-	// Member Functions
+    // Member Functions
 
-		scalar cAlpha() const
-		{
-			return cAlpha_;
-		}
+        scalar cAlpha() const
+        {
+            return cAlpha_;
+        }
 
-		const dimensionedScalar& deltaN() const
-		{
-			return deltaN_;
-		}
+        const dimensionedScalar& deltaN() const
+        {
+            return deltaN_;
+        }
 
-		const surfaceScalarField& nHatf() const
-		{
-			return nHatf_;
-		}
+        const surfaceScalarField& nHatf() const
+        {
+            return nHatf_;
+        }
 
-		const volScalarField& K() const
-		{
-			return K_;
-		}
+        const volScalarField& K() const
+        {
+            return K_;
+        }
 
-		const dimensionedScalar& sigma() const
-		{
-			return sigma_;
-		}
+        const dimensionedScalar& sigma() const
+        {
+            return sigma_;
+        }
 
-		tmp<volScalarField> sigmaK() const
-		{
-			return sigma_*K_;
-		}
+        tmp<volScalarField> sigmaK() const
+        {
+            return sigma_*K_;
+        }
 
-		void correct()
-		{
-			calculateK();
-		}
+        void correct()
+        {
+            calculateK();
+        }
 };
 
 

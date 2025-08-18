@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	BlockLduSolver
+    BlockLduSolver
 
 Description
-	Linear equation solver for BlockLduMatrix.
+    Linear equation solver for BlockLduMatrix.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	BlockLduSolver.C
+    BlockLduSolver.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,163 +51,174 @@ namespace Foam
 template<class Type>
 class BlockSolverPerformance;
 
+/*---------------------------------------------------------------------------*\
+                        Class BlockLduSolver Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class BlockLduSolver
 {
-	// Private data
+    // Private data
 
-		//- Name of field being solved for
-		word fieldName_;
+        //- Name of field being solved for
+        word fieldName_;
 
-		//- Control data dictionary
-		dictionary dict_;
+        //- Control data dictionary
+        dictionary dict_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        BlockLduSolver(const BlockLduSolver&) = delete;
+
+        //- Disallow default bitwise assignment
+        void operator=(const BlockLduSolver&) = delete;
 
 
 protected:
 
-	// Protected data types
+    // Protected data types
 
-	typedef Field<Type> TypeField;
-
-
-	// Protected data
-
-		//- Matrix
-		const BlockLduMatrix<Type>& matrix_;
+    typedef Field<Type> TypeField;
 
 
-	// Protected Member Functions
+    // Protected data
 
-		//- Return dictionary
-		const dictionary& dict() const
-		{
-			return dict_;
-		}
+        //- Matrix
+        const BlockLduMatrix<Type>& matrix_;
 
-		//- Read a control parameter from the dictionary
-		template<class T>
-		void readControl
-		(
-			const dictionary& dict,
-			T& control,
-			const word& controlName
-		);
+
+    // Protected Member Functions
+
+        //- Return dictionary
+        const dictionary& dict() const
+        {
+            return dict_;
+        }
+
+        //- Read a control parameter from the dictionary
+        template<class T>
+        void readControl
+        (
+            const dictionary& dict,
+            T& control,
+            const word& controlName
+        );
 
 
 public:
 
-	//- Runtime type information
-	TypeName("BlockLduSolver");
+    //- Runtime type information
+    TypeName("BlockLduSolver");
 
 
-	// Static data
+    // Static data
 
-		//- Large value for the use in solvers
-		static const scalar great_;
+        //- Large value for the use in solvers
+        static const scalar great_;
 
-		//- Small value for the use in solvers
-		static const scalar small_;
-
-
-	// Declare run-time constructor selection tables
-
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			BlockLduSolver,
-			symMatrix,
-			(
-				const word& fieldName,
-				BlockLduMatrix<Type>& matrix,
-				const dictionary& dict
-			),
-			(
-				fieldName,
-				matrix,
-				dict
-			)
-		);
-
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			BlockLduSolver,
-			asymMatrix,
-			(
-				const word& fieldName,
-				BlockLduMatrix<Type>& matrix,
-				const dictionary& dict
-			),
-			(
-				fieldName,
-				matrix,
-				dict
-			)
-		);
+        //- Small value for the use in solvers
+        static const scalar small_;
 
 
+    // Declare run-time constructor selection tables
 
-	// Constructors
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            BlockLduSolver,
+            symMatrix,
+            (
+                const word& fieldName,
+                const BlockLduMatrix<Type>& matrix,
+                const dictionary& dict
+            ),
+            (
+                fieldName,
+                matrix,
+                dict
+            )
+        );
 
-		//- Construct from field name and matrix
-		BlockLduSolver
-		(
-			const word& fieldName,
-			const BlockLduMatrix<Type>& matrix
-		);
-
-		//- Construct from dictionary
-		BlockLduSolver
-		(
-			const word& fieldName,
-			const BlockLduMatrix<Type>& matrix,
-			const dictionary& dict
-		);
-
-
-	// Selectors
-
-		//- Return a new solver from a dictionary
-		static autoPtr<BlockLduSolver<Type> > New
-		(
-			const word& fieldName,
-			BlockLduMatrix<Type>& matrix,
-			const dictionary& dict
-		);
-
-		//- Return a new solver given type
-		static autoPtr<BlockLduSolver<Type> > New
-		(
-			const word& solverName,
-			const word& fieldName,
-			BlockLduMatrix<Type>& matrix,
-			const dictionary& dict
-		);
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            BlockLduSolver,
+            asymMatrix,
+            (
+                const word& fieldName,
+                const BlockLduMatrix<Type>& matrix,
+                const dictionary& dict
+            ),
+            (
+                fieldName,
+                matrix,
+                dict
+            )
+        );
 
 
-	//- Destructor
-	virtual ~BlockLduSolver()
-	{}
+
+    // Constructors
+
+        //- Construct from field name and matrix
+        BlockLduSolver
+        (
+            const word& fieldName,
+            const BlockLduMatrix<Type>& matrix
+        );
+
+        //- Construct from dictionary
+        BlockLduSolver
+        (
+            const word& fieldName,
+            const BlockLduMatrix<Type>& matrix,
+            const dictionary& dict
+        );
 
 
-	// Member functions
+    // Selectors
 
-		//- Return field name
-		const word& fieldName() const
-		{
-			return fieldName_;
-		}
+        //- Return a new solver from a dictionary
+        static autoPtr<BlockLduSolver<Type> > New
+        (
+            const word& fieldName,
+            const BlockLduMatrix<Type>& matrix,
+            const dictionary& dict
+        );
 
-		//- Solve
-		virtual BlockSolverPerformance<Type> solve
-		(
-			TypeField& x,
-			const TypeField& b
-		) = 0;
+        //- Return a new solver given type
+        static autoPtr<BlockLduSolver<Type> > New
+        (
+            const word& solverName,
+            const word& fieldName,
+            const BlockLduMatrix<Type>& matrix,
+            const dictionary& dict
+        );
 
-		//- Re-initialise solver after matrix coefficient update
-		virtual void initMatrix() = 0;
+
+    //- Destructor
+    virtual ~BlockLduSolver() = default;
+
+
+    // Member functions
+
+        //- Return field name
+        const word& fieldName() const
+        {
+            return fieldName_;
+        }
+
+        //- Solve
+        virtual BlockSolverPerformance<Type> solve
+        (
+            TypeField& x,
+            const TypeField& b
+        ) const = 0;
+
+        //- Re-initialise solver after matrix coefficient update
+        virtual void initMatrix() = 0;
 };
 
 
@@ -218,37 +229,37 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "BlockLduSolver.C"
+#   include "BlockLduSolver.C"
 #endif
 
 
 #define makeBlockSolverTypeName(typeSolverType)                              \
-					                                                         \
+                                                                             \
 defineNamedTemplateTypeNameAndDebug(typeSolverType, 0);
 
 #define makeBlockSolvers(solverType)                                         \
-					                                                         \
+                                                                             \
 makeBlockSolverTypeName(solverType##Scalar);                                 \
 makeBlockSolverTypeName(solverType##Vector);                                 \
 makeBlockSolverTypeName(solverType##Tensor);
 
 
 #define addSolverToBlockMatrix(Type, typeSolverType, typeMatrix)             \
-					                                                         \
+                                                                             \
 addToRunTimeSelectionTable(block##Type##Solver, typeSolverType, typeMatrix);
 
 #define addSolversToBlockMatrix(solverType, typeMatrix)                      \
-					                                                         \
+                                                                             \
 addSolverToBlockMatrix(Scalar, solverType##Scalar, typeMatrix);              \
 addSolverToBlockMatrix(Vector, solverType##Vector, typeMatrix);              \
 addSolverToBlockMatrix(Tensor, solverType##Tensor, typeMatrix);
 
 #define addSymSolverToBlockMatrix(solverType)                                \
-					                                                         \
+                                                                             \
 addSolversToBlockMatrix(solverType, symMatrix);
 
 #define addAsymSolverToBlockMatrix(solverType)                               \
-					                                                         \
+                                                                             \
 addSolversToBlockMatrix(solverType, asymMatrix);
 
 

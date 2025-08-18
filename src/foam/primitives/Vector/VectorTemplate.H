@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::Vector
+    Foam::Vector
 
 Description
-	Templated 3D Vector derived from VectorSpace adding construction from
-	3 components, element access using x(), y() and z() member functions and
-	the inner-product (dot-product) and cross product operators.
+    Templated 3D Vector derived from VectorSpace adding construction from
+    3 components, element access using x(), y() and z() member functions and
+    the inner-product (dot-product) and cross product operators.
 
-	A centre() member function which returns the Vector for which it is called
-	is defined so that point which is a typedef to Vector\<scalar\> behaves as
-	other shapes in the shape hierachy.
+    A centre() member function which returns the Vector for which it is called
+    is defined so that point which is a typedef to Vector\<scalar\> behaves as
+    other shapes in the shape hierachy.
 
 SourceFiles
-	VectorTemplateI.H
+    VectorTemplateI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,86 +50,89 @@ namespace Foam
 
 template<class T> class List;
 
+/*---------------------------------------------------------------------------*\
+                           Class Vector Declaration
+\*---------------------------------------------------------------------------*/
 
 template <class Cmpt>
 class Vector
 :
-	public VectorSpace<Vector<Cmpt>, Cmpt, 3>
+    public VectorSpace<Vector<Cmpt>, Cmpt, 3>
 {
 
 public:
 
-	//- Equivalent type of labels used for valid component indexing
-	typedef Vector<label> labelType;
+    //- Equivalent type of labels used for valid component indexing
+    typedef Vector<label> labelType;
 
 
-	// Member constants
+    // Member constants
 
-		enum
-		{
-			rank = 1 // Rank of Vector is 1
-		};
-
-
-	// Static data members
-
-		static const char* const typeName;
-		static const char* componentNames[];
-		static const Vector zero;
-		static const Vector one;
-		static const Vector max;
-		static const Vector min;
+        enum
+        {
+            rank = 1 // Rank of Vector is 1
+        };
 
 
-	//- Component labeling enumeration
-	enum components { X, Y, Z };
+    // Static data members
+
+        static const char* const typeName;
+        static const char* componentNames[];
+        static const Vector zero;
+        static const Vector one;
+        static const Vector max;
+        static const Vector min;
 
 
-	// Constructors
-
-		//- Construct null
-		inline Vector();
-
-		//- Construct given VectorSpace
-		inline Vector(const VectorSpace<Vector<Cmpt>, Cmpt, 3>&);
-
-		//- Construct given three components
-		inline Vector(const Cmpt& vx, const Cmpt& vy, const Cmpt& vz);
-
-		//- Construct from Istream
-		inline Vector(Istream&);
+    //- Component labeling enumeration
+    enum components { X, Y, Z };
 
 
-	// Member Functions
+    // Constructors
 
-		// Access
+        //- Construct null
+        inline Vector();
 
-			inline const Cmpt& x() const;
-			inline const Cmpt& y() const;
-			inline const Cmpt& z() const;
+        //- Construct given VectorSpace
+        inline Vector(const VectorSpace<Vector<Cmpt>, Cmpt, 3>&);
 
-			inline Cmpt& x();
-			inline Cmpt& y();
-			inline Cmpt& z();
+        //- Construct given three components
+        inline Vector(const Cmpt& vx, const Cmpt& vy, const Cmpt& vz);
 
-			//- Return i-th component.  Consistency with VectorN
-			inline const Cmpt& operator()
-			(
-				const direction i
-			) const;
-
-			//- Return i-th component.  Consistency with VectorN
-			inline  Cmpt& operator()
-			(
-				const direction i
-			);
+        //- Construct from Istream
+        inline Vector(Istream&);
 
 
-		//- Return *this (used for point which is a typedef to Vector<scalar>.
-		inline const Vector<Cmpt>& centre
-		(
-			const Foam::List<Vector<Cmpt> >&
-		) const;
+    // Member Functions
+
+        // Access
+
+            inline const Cmpt& x() const;
+            inline const Cmpt& y() const;
+            inline const Cmpt& z() const;
+
+            inline Cmpt& x();
+            inline Cmpt& y();
+            inline Cmpt& z();
+
+            //- Return i-th component.  Consistency with VectorN
+            inline const Cmpt& operator()
+            (
+                const direction i
+            ) const;
+
+            //- Return i-th component.  Consistency with VectorN
+            inline  Cmpt& operator()
+            (
+                const direction i
+            );
+
+
+        //- Return *this (used for point which is a typedef to Vector<scalar>.
+        inline const Vector<Cmpt>& centre
+        (
+            const Foam::List<Vector<Cmpt> >&
+        ) const;
 };
 
 
@@ -138,7 +141,7 @@ class typeOfRank<Cmpt, 1>
 {
 public:
 
-	typedef Vector<Cmpt> type;
+    typedef Vector<Cmpt> type;
 };
 
 
@@ -147,7 +150,7 @@ class symmTypeOfRank<Cmpt, 1>
 {
 public:
 
-	typedef Vector<Cmpt> type;
+    typedef Vector<Cmpt> type;
 };
 
 

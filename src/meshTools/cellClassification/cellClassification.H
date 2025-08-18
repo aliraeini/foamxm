@@ -1,91 +1,91 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::cellClassification
+    Foam::cellClassification
 
 Description
-	'Cuts' a mesh with a surface.
+    'Cuts' a mesh with a surface.
 
-	Divides cells into three types
-	- cut, i.e. any of the edges of the cell is split or any edge of the
-	  surface pierces any of the faces of the cell.
-	- outside: cell can be reached by Meshwave from any of the supplied
-			   outside points (without crossing any cut cell)
-	- inside:  all other.
+    Divides cells into three types
+    - cut, i.e. any of the edges of the cell is split or any edge of the
+      surface pierces any of the faces of the cell.
+    - outside: cell can be reached by Meshwave from any of the supplied
+               outside points (without crossing any cut cell)
+    - inside:  all other.
 
-	Used in various meshing programs.
+    Used in various meshing programs.
 
-	Has various utility functions to deal with 'features' on this level
-	where the mesh still has all inside and outside cells.
+    Has various utility functions to deal with 'features' on this level
+    where the mesh still has all inside and outside cells.
 
-	@par Concepts
+    @par Concepts
 
-	- point classification:
-		- point used by meshType cells only
-		- point used by non-meshType cells only
-		- point used by both types ('mixed')
+    - point classification:
+        - point used by meshType cells only
+        - point used by non-meshType cells only
+        - point used by both types ('mixed')
 
-	- hanging cells: meshType cells using mixed points only.
-	  These cells would have all their vertices on the surface when
-	  extracting the meshType cells.
+    - hanging cells: meshType cells using mixed points only.
+      These cells would have all their vertices on the surface when
+      extracting the meshType cells.
 
-	- regionEdges: edges where the cells using it are of mixed type.
-	  Or more precise when walking around the edge and looking at the
-	  different types of the cells there are more than two regions with
-	  same type.
+    - regionEdges: edges where the cells using it are of mixed type.
+      Or more precise when walking around the edge and looking at the
+      different types of the cells there are more than two regions with
+      same type.
 
-	Seen from above:
-	@verbatim
-	Ok:
-		 A | A
-		   |
-		 --+---
-		   |
-		 B | B
+    Seen from above:
+    @verbatim
+    Ok:
+         A | A
+           |
+         --+---
+           |
+         B | B
 
-	Not ok:
-		 A | B
-		   |
-		---+---
-		   |
-		 B | A
-	@endverbatim
+    Not ok:
+         A | B
+           |
+        ---+---
+           |
+         B | A
+    @endverbatim
 
-	because this latter situation would cause the surface after subsetting
-	type A or B to be multiply connected across this edge. And also when
-	snapping the edge end points to the surface it might cause some twisted
-	faces if the surface is normal to the edge (and smoothing the surface
-	would not help since the points on the edge would be 'pulled' from two
-	different sides)
+    because this latter situation would cause the surface after subsetting
+    type A or B to be multiply connected across this edge. And also when
+    snapping the edge end points to the surface it might cause some twisted
+    faces if the surface is normal to the edge (and smoothing the surface
+    would not help since the points on the edge would be 'pulled' from two
+    different sides)
 
-	- regionPoints: like regionEdges but now for points.
-	  Points where subsetting the mesh would cause a multiply connected
-	  outside surface (connected across point, not edge)
+    - regionPoints: like regionEdges but now for points.
+      Points where subsetting the mesh would cause a multiply connected
+      outside surface (connected across point, not edge)
 
 
 SourceFiles
-	cellClassification.C
+    cellClassification.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -111,161 +111,164 @@ class polyMesh;
 class primitiveMesh;
 class triSurface;
 
+/*---------------------------------------------------------------------------*\
+                           Class cellClassification Declaration
+\*---------------------------------------------------------------------------*/
 
 class cellClassification
 :
-	public labelList
+    public labelList
 {
 
 public:
 
-	// Public data types
+    // Public data types
 
-		//- Type of cell.
-		enum cType
-		{
-			NOTSET,
-			INSIDE,     // Inside of surface
-			OUTSIDE,    // Outside ,,
-			CUT         // cut by surface
-		};
+        //- Type of cell.
+        enum cType
+        {
+            NOTSET,
+            INSIDE,     // Inside of surface
+            OUTSIDE,    // Outside ,,
+            CUT         // cut by surface
+        };
 
 
-		//- Enumeration defining the whether points are use by cells of
-		//  a certain type.
-		enum pointStatus
-		{
-			UNSET,
-			MESH,       // points used by meshType cells
-			NONMESH,    //    ,,          non-mesh type cells
-			MIXED       //    ,,          both types of cell
-		};
+        //- Enumeration defining the whether points are use by cells of
+        //  a certain type.
+        enum pointStatus
+        {
+            UNSET,
+            MESH,       // points used by meshType cells
+            NONMESH,    //    ,,          non-mesh type cells
+            MIXED       //    ,,          both types of cell
+        };
 
 private:
 
-	// Private data
+    // Private data
 
-		//- Reference to mesh
-		const polyMesh& mesh_;
+        //- Reference to mesh
+        const polyMesh& mesh_;
 
 
-	// Private Static Functions
+    // Private Static Functions
 
-		//- Count number of occurrences of elem in list
-		static label count(const labelList& elems, const label elem);
+        //- Count number of occurrences of elem in list
+        static label count(const labelList& elems, const label elem);
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Mark all faces intersected by or intersecting surface
-		boolList markFaces(const triSurfaceSearch&) const;
+        //- Mark all faces intersected by or intersecting surface
+        boolList markFaces(const triSurfaceSearch&) const;
 
-		//- Divide cells into cut/inside/outside by using MeshWave from cut
-		//  faces. No check is done on whether outsidePts are in different
-		//  domains.
-		void markCells
-		(
-			const meshSearch& queryMesh,
-			const boolList& piercedFace,
-			const pointField& outsidePts
-		);
+        //- Divide cells into cut/inside/outside by using MeshWave from cut
+        //  faces. No check is done on whether outsidePts are in different
+        //  domains.
+        void markCells
+        (
+            const meshSearch& queryMesh,
+            const boolList& piercedFace,
+            const pointField& outsidePts
+        );
 
-		//- Use cell status to classify points as being internal to meshType,
-		//  internal to non-meshType or on border of both.
-		void classifyPoints
-		(
-			const label meshType,
-			const labelList& cellType,
-			List<pointStatus>& pointSide
-		) const;
+        //- Use cell status to classify points as being internal to meshType,
+        //  internal to non-meshType or on border of both.
+        void classifyPoints
+        (
+            const label meshType,
+            const labelList& cellType,
+            List<pointStatus>& pointSide
+        ) const;
 
-		//- Return true if cell uses only points with status=mixed
-		bool usesMixedPointsOnly
-		(
-			const List<pointStatus>&,
-			const label cellI
-		) const;
+        //- Return true if cell uses only points with status=mixed
+        bool usesMixedPointsOnly
+        (
+            const List<pointStatus>&,
+            const label cellI
+        ) const;
 
-		//- Get faces (and its 'owner') inbetween cells of differing type
-		// (meshType and non-meshType).
-		void getMeshOutside(const label meshType, faceList&, labelList&) const;
+        //- Get faces (and its 'owner') inbetween cells of differing type
+        // (meshType and non-meshType).
+        void getMeshOutside(const label meshType, faceList&, labelList&) const;
 
 public:
 
-	// Static data members
-	ClassName("cellClassification");
+    // Static data members
+    ClassName("cellClassification");
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh and surface and point(s) on outside
-		cellClassification
-		(
-			const polyMesh& mesh,
-			const meshSearch& meshQuery,
-			const triSurfaceSearch& surfQuery,
-			const pointField& outsidePoints
-		);
+        //- Construct from mesh and surface and point(s) on outside
+        cellClassification
+        (
+            const polyMesh& mesh,
+            const meshSearch& meshQuery,
+            const triSurfaceSearch& surfQuery,
+            const pointField& outsidePoints
+        );
 
-		//- Construct from mesh and type for every cell.
-		//  Used to be able to reuse filling routines below.
-		cellClassification(const polyMesh& mesh, const labelList& cellType);
+        //- Construct from mesh and type for every cell.
+        //  Used to be able to reuse filling routines below.
+        cellClassification(const polyMesh& mesh, const labelList& cellType);
 
-		//- Construct as copy
-		cellClassification(const cellClassification&);
-
-
-	// Member Functions
-
-		const polyMesh& mesh() const
-		{
-			return mesh_;
-		}
-
-		label trimCutCells
-		(
-			const label nLayers,
-			const label meshType,
-			const label fillType
-		);
-
-		//- Sets vertex neighbours of meshType cells to fillType
-		label growSurface(const label meshType, const label fillType);
-
-		//- Find hanging cells (cells with all points on outside) and set their
-		//  type to fillType.
-		//  Iterate until nothing changed. Returns total number of cells
-		//  changed (in all iterations)
-		label fillHangingCells
-		(
-			const label meshType,
-			const label fillType,
-			const label maxIter
-		);
-
-		//- Find regionEdges and fill one neighbour. Iterate until nothing
-		//  changes. Returns total number of cells changed.
-		label fillRegionEdges
-		(
-			const label meshType,
-			const label fillType,
-			const label maxIter
-		);
-
-		//- Find regionPoints and fill all neighbours. Iterate until nothing
-		//  changes. Returns total number of cells changed.
-		label fillRegionPoints
-		(
-			const label meshType,
-			const label fillType,
-			const label maxIter
-		);
-
-		//- Write statistics on cell types to Ostream
-		void writeStats(Ostream& os) const;
+        //- Construct as copy
+        cellClassification(const cellClassification&);
 
 
-	// Member Operators
+    // Member Functions
 
-		void operator=(const cellClassification&);
+        const polyMesh& mesh() const
+        {
+            return mesh_;
+        }
+
+        label trimCutCells
+        (
+            const label nLayers,
+            const label meshType,
+            const label fillType
+        );
+
+        //- Sets vertex neighbours of meshType cells to fillType
+        label growSurface(const label meshType, const label fillType);
+
+        //- Find hanging cells (cells with all points on outside) and set their
+        //  type to fillType.
+        //  Iterate until nothing changed. Returns total number of cells
+        //  changed (in all iterations)
+        label fillHangingCells
+        (
+            const label meshType,
+            const label fillType,
+            const label maxIter
+        );
+
+        //- Find regionEdges and fill one neighbour. Iterate until nothing
+        //  changes. Returns total number of cells changed.
+        label fillRegionEdges
+        (
+            const label meshType,
+            const label fillType,
+            const label maxIter
+        );
+
+        //- Find regionPoints and fill all neighbours. Iterate until nothing
+        //  changes. Returns total number of cells changed.
+        label fillRegionPoints
+        (
+            const label meshType,
+            const label fillType,
+            const label maxIter
+        );
+
+        //- Write statistics on cell types to Ostream
+        void writeStats(Ostream& os) const;
+
+
+    // Member Operators
+
+        void operator=(const cellClassification&);
 
 };
 

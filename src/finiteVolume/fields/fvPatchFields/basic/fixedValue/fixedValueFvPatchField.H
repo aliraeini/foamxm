@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fixedValueFvPatchField
+    Foam::fixedValueFvPatchField
 
 Description
-	Foam::fixedValueFvPatchField
+    Foam::fixedValueFvPatchField
 
 SourceFiles
-	fixedValueFvPatchField.C
+    fixedValueFvPatchField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,144 +42,151 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                  Class fixedValueFvPatchField Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class fixedValueFvPatchField
 :
-	public fvPatchField<Type>
+    public fvPatchField<Type>
 {
 
 public:
 
-	//- Runtime type information
-	TypeName("fixedValue");
+    //- Runtime type information
+    TypeName("fixedValue");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from patch and internal field
-		fixedValueFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct from patch and internal field
+        fixedValueFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct from patch, internal field and dictionary
-		fixedValueFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const dictionary&
-		);
+        //- Construct from patch, internal field and dictionary
+        fixedValueFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const dictionary&
+        );
 
-		//- Construct by mapping the given fixedValueFvPatchField<Type>
-		//  onto a new patch
-		fixedValueFvPatchField
-		(
-			const fixedValueFvPatchField<Type>&,
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const fvPatchFieldMapper&
-		);
+        //- Construct by mapping the given fixedValueFvPatchField<Type>
+        //  onto a new patch
+        fixedValueFvPatchField
+        (
+            const fixedValueFvPatchField<Type>&,
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const fvPatchFieldMapper&
+        );
 
-		//- Construct as copy
-		fixedValueFvPatchField
-		(
-			const fixedValueFvPatchField<Type>&
-		);
+        //- Construct as copy
+        fixedValueFvPatchField
+        (
+            const fixedValueFvPatchField<Type>&
+        );
 
-		//- Construct and return a clone
-		virtual tmp<fvPatchField<Type> > clone() const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new fixedValueFvPatchField<Type>(*this)
-			);
-		}
+        //- Construct and return a clone
+        virtual tmp<fvPatchField<Type> > clone() const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new fixedValueFvPatchField<Type>(*this)
+            );
+        }
 
-		//- Construct as copy setting internal field reference
-		fixedValueFvPatchField
-		(
-			const fixedValueFvPatchField<Type>&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct as copy setting internal field reference
+        fixedValueFvPatchField
+        (
+            const fixedValueFvPatchField<Type>&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct and return a clone setting internal field reference
-		virtual tmp<fvPatchField<Type> > clone
-		(
-			const DimensionedField<Type, volMesh>& iF
-		) const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new fixedValueFvPatchField<Type>(*this, iF)
-			);
-		}
-
-
-	// Member functions
-
-		// Access
-
-			//- Return true if this patch field fixes a value.
-			//  Needed to check if a level has to be specified while solving
-			//  Poissons equations.
-			virtual bool fixesValue() const
-			{
-				return true;
-			}
+        //- Construct and return a clone setting internal field reference
+        virtual tmp<fvPatchField<Type> > clone
+        (
+            const DimensionedField<Type, volMesh>& iF
+        ) const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new fixedValueFvPatchField<Type>(*this, iF)
+            );
+        }
 
 
-		// Evaluation functions
-
-			//- Return the matrix diagonal coefficients corresponding to the
-			//  evaluation of the value of this patchField with given weights
-			virtual tmp<Field<Type> > valueInternalCoeffs
-			(
-				const tmp<scalarField>&
-			) const;
-
-			//- Return the matrix source coefficients corresponding to the
-			//  evaluation of the value of this patchField with given weights
-			virtual tmp<Field<Type> > valueBoundaryCoeffs
-			(
-				const tmp<scalarField>&
-			) const;
-
-			//- Return the matrix diagonal coefficients corresponding to the
-			//  evaluation of the gradient of this patchField
-			virtual tmp<Field<Type> > gradientInternalCoeffs() const;
-
-			//- Return the matrix source coefficients corresponding to the
-			//  evaluation of the gradient of this patchField
-			virtual tmp<Field<Type> > gradientBoundaryCoeffs() const;
+    //- Destructor
+    virtual ~fixedValueFvPatchField() = default;
 
 
-		//- Write
-		virtual void write(Ostream&) const;
+    // Member functions
+
+        // Access
+
+            //- Return true if this patch field fixes a value.
+            //  Needed to check if a level has to be specified while solving
+            //  Poissons equations.
+            virtual bool fixesValue() const
+            {
+                return true;
+            }
 
 
-	// Member operators
+        // Evaluation functions
 
-		virtual void operator=(const UList<Type>&) {}
+            //- Return the matrix diagonal coefficients corresponding to the
+            //  evaluation of the value of this patchField with given weights
+            virtual tmp<Field<Type> > valueInternalCoeffs
+            (
+                const tmp<scalarField>&
+            ) const;
 
-		virtual void operator=(const fvPatchField<Type>&) {}
-		virtual void operator+=(const fvPatchField<Type>&) {}
-		virtual void operator-=(const fvPatchField<Type>&) {}
-		virtual void operator*=(const fvPatchField<scalar>&) {}
-		virtual void operator/=(const fvPatchField<scalar>&) {}
+            //- Return the matrix source coefficients corresponding to the
+            //  evaluation of the value of this patchField with given weights
+            virtual tmp<Field<Type> > valueBoundaryCoeffs
+            (
+                const tmp<scalarField>&
+            ) const;
 
-		virtual void operator+=(const Field<Type>&) {}
-		virtual void operator-=(const Field<Type>&) {}
+            //- Return the matrix diagonal coefficients corresponding to the
+            //  evaluation of the gradient of this patchField
+            virtual tmp<Field<Type> > gradientInternalCoeffs() const;
 
-		virtual void operator*=(const Field<scalar>&) {}
-		virtual void operator/=(const Field<scalar>&) {}
+            //- Return the matrix source coefficients corresponding to the
+            //  evaluation of the gradient of this patchField
+            virtual tmp<Field<Type> > gradientBoundaryCoeffs() const;
 
-		virtual void operator=(const Type&) {}
-		virtual void operator+=(const Type&) {}
-		virtual void operator-=(const Type&) {}
-		virtual void operator*=(const scalar) {}
-		virtual void operator/=(const scalar) {}
+
+        //- Write
+        virtual void write(Ostream&) const;
+
+
+    // Member operators
+
+        virtual void operator=(const UList<Type>&) {}
+
+        virtual void operator=(const fvPatchField<Type>&) {}
+        virtual void operator+=(const fvPatchField<Type>&) {}
+        virtual void operator-=(const fvPatchField<Type>&) {}
+        virtual void operator*=(const fvPatchField<scalar>&) {}
+        virtual void operator/=(const fvPatchField<scalar>&) {}
+
+        virtual void operator+=(const Field<Type>&) {}
+        virtual void operator-=(const Field<Type>&) {}
+
+        virtual void operator*=(const Field<scalar>&) {}
+        virtual void operator/=(const Field<scalar>&) {}
+
+        virtual void operator=(const Type&) {}
+        virtual void operator+=(const Type&) {}
+        virtual void operator-=(const Type&) {}
+        virtual void operator*=(const scalar) {}
+        virtual void operator/=(const scalar) {}
 };
 
 
@@ -190,7 +197,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "fixedValueFvPatchField.C"
+#   include "fixedValueFvPatchField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

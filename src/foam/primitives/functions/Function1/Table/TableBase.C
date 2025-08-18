@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,23 +33,23 @@ template<class Type>
 const Foam::interpolationWeights&
 Foam::Function1Types::TableBase<Type>::interpolator() const
 {
-	if (interpolatorPtr_.empty())
-	{
-		// Re-work table into linear list
-		tableSamplesPtr_.reset(new scalarField(table_.size()));
-		scalarField& tableSamples = tableSamplesPtr_();
-		forAll(table_, i)
-		{
-			tableSamples[i] = table_[i].first();
-		}
-		interpolatorPtr_ = interpolationWeights::New
-		(
-			interpolationScheme_,
-			tableSamples
-		);
-	}
+    if (interpolatorPtr_.empty())
+    {
+        // Re-work table into linear list
+        tableSamplesPtr_.reset(new scalarField(table_.size()));
+        scalarField& tableSamples = tableSamplesPtr_();
+        forAll(table_, i)
+        {
+            tableSamples[i] = table_[i].first();
+        }
+        interpolatorPtr_ = interpolationWeights::New
+        (
+            interpolationScheme_,
+            tableSamples
+        );
+    }
 
-	return interpolatorPtr_();
+    return interpolatorPtr_();
 }
 
 
@@ -58,44 +58,37 @@ Foam::Function1Types::TableBase<Type>::interpolator() const
 template<class Type>
 Foam::Function1Types::TableBase<Type>::TableBase
 (
-	const word& name,
-	const dictionary& dict
+    const word& name,
+    const dictionary& dict
 )
 :
-	Function1<Type>(name),
-	name_(name),
-	boundsHandling_
-	(
-		wordToBoundsHandling
-		(
-			dict.lookupOrDefault<word>("outOfBounds", "clamp")
-		)
-	),
-	interpolationScheme_
-	(
-		dict.lookupOrDefault<word>("interpolationScheme", "linear")
-	),
-	table_()
+    Function1<Type>(name),
+    name_(name),
+    boundsHandling_
+    (
+        wordToBoundsHandling
+        (
+            dict.lookupOrDefault<word>("outOfBounds", "clamp")
+        )
+    ),
+    interpolationScheme_
+    (
+        dict.lookupOrDefault<word>("interpolationScheme", "linear")
+    ),
+    table_()
 {}
 
 
 template<class Type>
 Foam::Function1Types::TableBase<Type>::TableBase(const TableBase<Type>& tbl)
 :
-	Function1<Type>(tbl),
-	name_(tbl.name_),
-	boundsHandling_(tbl.boundsHandling_),
-	interpolationScheme_(tbl.interpolationScheme_),
-	table_(tbl.table_),
-	tableSamplesPtr_(tbl.tableSamplesPtr_),
-	interpolatorPtr_(tbl.interpolatorPtr_)
-{}
-
-
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-template<class Type>
-Foam::Function1Types::TableBase<Type>::~TableBase()
+    Function1<Type>(tbl),
+    name_(tbl.name_),
+    boundsHandling_(tbl.boundsHandling_),
+    interpolationScheme_(tbl.interpolationScheme_),
+    table_(tbl.table_),
+    tableSamplesPtr_(tbl.tableSamplesPtr_),
+    interpolatorPtr_(tbl.interpolatorPtr_)
 {}
 
 
@@ -104,36 +97,36 @@ Foam::Function1Types::TableBase<Type>::~TableBase()
 template<class Type>
 Foam::word Foam::Function1Types::TableBase<Type>::boundsHandlingToWord
 (
-	 const boundsHandling& bound
+     const boundsHandling& bound
 ) const
 {
-	word enumName("warn");
+    word enumName("warn");
 
-	switch (bound)
-	{
-		case ERROR:
-		{
-			enumName = "error";
-			break;
-		}
-		case WARN:
-		{
-			enumName = "warn";
-			break;
-		}
-		case CLAMP:
-		{
-			enumName = "clamp";
-			break;
-		}
-		case REPEAT:
-		{
-			enumName = "repeat";
-			break;
-		}
-	}
+    switch (bound)
+    {
+        case ERROR:
+        {
+            enumName = "error";
+            break;
+        }
+        case WARN:
+        {
+            enumName = "warn";
+            break;
+        }
+        case CLAMP:
+        {
+            enumName = "clamp";
+            break;
+        }
+        case REPEAT:
+        {
+            enumName = "repeat";
+            break;
+        }
+    }
 
-	return enumName;
+    return enumName;
 }
 
 
@@ -141,33 +134,33 @@ template<class Type>
 typename Foam::Function1Types::TableBase<Type>::boundsHandling
 Foam::Function1Types::TableBase<Type>::wordToBoundsHandling
 (
-	const word& bound
+    const word& bound
 ) const
 {
-	if (bound == "error")
-	{
-		return ERROR;
-	}
-	else if (bound == "warn")
-	{
-		return WARN;
-	}
-	else if (bound == "clamp")
-	{
-		return CLAMP;
-	}
-	else if (bound == "repeat")
-	{
-		return REPEAT;
-	}
-	else
-	{
-		WarningInFunction
-			<< "bad outOfBounds specifier " << bound << " using 'warn'"
-			<< endl;
+    if (bound == "error")
+    {
+        return ERROR;
+    }
+    else if (bound == "warn")
+    {
+        return WARN;
+    }
+    else if (bound == "clamp")
+    {
+        return CLAMP;
+    }
+    else if (bound == "repeat")
+    {
+        return REPEAT;
+    }
+    else
+    {
+        WarningInFunction
+            << "bad outOfBounds specifier " << bound << " using 'warn'"
+            << endl;
 
-		return WARN;
-	}
+        return WARN;
+    }
 }
 
 
@@ -175,261 +168,261 @@ template<class Type>
 typename Foam::Function1Types::TableBase<Type>::boundsHandling
 Foam::Function1Types::TableBase<Type>::outOfBounds
 (
-	const boundsHandling& bound
+    const boundsHandling& bound
 )
 {
-	boundsHandling prev = boundsHandling_;
-	boundsHandling_ = bound;
+    boundsHandling prev = boundsHandling_;
+    boundsHandling_ = bound;
 
-	return prev;
+    return prev;
 }
 
 
 template<class Type>
 void Foam::Function1Types::TableBase<Type>::check() const
 {
-	if (!table_.size())
-	{
-		FatalErrorInFunction
-			<< "Table for entry " << this->name_ << " is invalid (empty)"
-			<< nl << exit(FatalError);
-	}
+    if (!table_.size())
+    {
+        FatalErrorInFunction
+            << "Table for entry " << this->name_ << " is invalid (empty)"
+            << nl << exit(FatalError);
+    }
 
-	label n = table_.size();
-	scalar prevValue = table_[0].first();
+    label n = table_.size();
+    scalar prevValue = table_[0].first();
 
-	for (label i = 1; i < n; ++i)
-	{
-		const scalar currValue = table_[i].first();
+    for (label i = 1; i < n; ++i)
+    {
+        const scalar currValue = table_[i].first();
 
-		// avoid duplicate values (divide-by-zero error)
-		if (currValue <= prevValue)
-		{
-			FatalErrorInFunction
-				<< "out-of-order value: " << currValue << " at index " << i
-				<< exit(FatalError);
-		}
-		prevValue = currValue;
-	}
+        // avoid duplicate values (divide-by-zero error)
+        if (currValue <= prevValue)
+        {
+            FatalErrorInFunction
+                << "out-of-order value: " << currValue << " at index " << i
+                << exit(FatalError);
+        }
+        prevValue = currValue;
+    }
 }
 
 
 template<class Type>
 bool Foam::Function1Types::TableBase<Type>::checkMinBounds
 (
-	const scalar x,
-	scalar& xDash
+    const scalar x,
+    scalar& xDash
 ) const
 {
-	if (x < table_[0].first())
-	{
-		switch (boundsHandling_)
-		{
-			case ERROR:
-			{
-				FatalErrorInFunction
-					<< "value (" << x << ") underflow"
-					<< exit(FatalError);
-				break;
-			}
-			case WARN:
-			{
-				WarningInFunction
-					<< "value (" << x << ") underflow" << nl
-					<< endl;
+    if (x < table_[0].first())
+    {
+        switch (boundsHandling_)
+        {
+            case ERROR:
+            {
+                FatalErrorInFunction
+                    << "value (" << x << ") underflow"
+                    << exit(FatalError);
+                break;
+            }
+            case WARN:
+            {
+                WarningInFunction
+                    << "value (" << x << ") underflow" << nl
+                    << endl;
 
-				// fall-through to 'CLAMP'
-				[[fallthrough]];
-			}
-			case CLAMP:
-			{
-				xDash = table_[0].first();
-				return true;
-				break;
-			}
-			case REPEAT:
-			{
-				// adjust x to >= minX
-				scalar span = table_.last().first() - table_[0].first();
-				xDash = fmod(x - table_[0].first(), span) + table_[0].first();
-				break;
-			}
-		}
-	}
-	else
-	{
-		xDash = x;
-	}
+                // fall-through to 'CLAMP'
+                [[fallthrough]];
+            }
+            case CLAMP:
+            {
+                xDash = table_[0].first();
+                return true;
+                break;
+            }
+            case REPEAT:
+            {
+                // adjust x to >= minX
+                scalar span = table_.last().first() - table_[0].first();
+                xDash = fmod(x - table_[0].first(), span) + table_[0].first();
+                break;
+            }
+        }
+    }
+    else
+    {
+        xDash = x;
+    }
 
-	return false;
+    return false;
 }
 
 
 template<class Type>
 bool Foam::Function1Types::TableBase<Type>::checkMaxBounds
 (
-	const scalar x,
-	scalar& xDash
+    const scalar x,
+    scalar& xDash
 ) const
 {
-	if (x > table_.last().first())
-	{
-		switch (boundsHandling_)
-		{
-			case ERROR:
-			{
-				FatalErrorInFunction
-					<< "value (" << x << ") overflow"
-					<< exit(FatalError);
-				break;
-			}
-			case WARN:
-			{
-				WarningInFunction
-					<< "value (" << x << ") overflow" << nl
-					<< endl;
+    if (x > table_.last().first())
+    {
+        switch (boundsHandling_)
+        {
+            case ERROR:
+            {
+                FatalErrorInFunction
+                    << "value (" << x << ") overflow"
+                    << exit(FatalError);
+                break;
+            }
+            case WARN:
+            {
+                WarningInFunction
+                    << "value (" << x << ") overflow" << nl
+                    << endl;
 
-				// fall-through to 'CLAMP'
-				[[fallthrough]];
-			}
-			case CLAMP:
-			{
-				xDash = table_.last().first();
-				return true;
-				break;
-			}
-			case REPEAT:
-			{
-				// adjust x to >= minX
-				scalar span = table_.last().first() - table_[0].first();
-				xDash = fmod(x - table_[0].first(), span) + table_[0].first();
-				break;
-			}
-		}
-	}
-	else
-	{
-		xDash = x;
-	}
+                // fall-through to 'CLAMP'
+                [[fallthrough]];
+            }
+            case CLAMP:
+            {
+                xDash = table_.last().first();
+                return true;
+                break;
+            }
+            case REPEAT:
+            {
+                // adjust x to >= minX
+                scalar span = table_.last().first() - table_[0].first();
+                xDash = fmod(x - table_[0].first(), span) + table_[0].first();
+                break;
+            }
+        }
+    }
+    else
+    {
+        xDash = x;
+    }
 
-	return false;
+    return false;
 }
 
 
 template<class Type>
 void Foam::Function1Types::TableBase<Type>::convertTimeBase(const Time& t)
 {
-	forAll(table_, i)
-	{
-		scalar value = table_[i].first();
-		table_[i].first() = t.userTimeToTime(value);
-	}
+    forAll(table_, i)
+    {
+        scalar value = table_[i].first();
+        table_[i].first() = t.userTimeToTime(value);
+    }
 
-	tableSamplesPtr_.clear();
-	interpolatorPtr_.clear();
+    tableSamplesPtr_.clear();
+    interpolatorPtr_.clear();
 }
 
 
 template<class Type>
 Type Foam::Function1Types::TableBase<Type>::value(const scalar x) const
 {
-	scalar xDash = x;
+    scalar xDash = x;
 
-	if (checkMinBounds(x, xDash))
-	{
-		return table_[0].second();
-	}
+    if (checkMinBounds(x, xDash))
+    {
+        return table_[0].second();
+    }
 
-	if (checkMaxBounds(xDash, xDash))
-	{
-		return table_.last().second();
-	}
+    if (checkMaxBounds(xDash, xDash))
+    {
+        return table_.last().second();
+    }
 
-	// Use interpolator
-	interpolator().valueWeights(xDash, currentIndices_, currentWeights_);
+    // Use interpolator
+    interpolator().valueWeights(xDash, currentIndices_, currentWeights_);
 
-	Type t = currentWeights_[0]*table_[currentIndices_[0]].second();
-	for (label i = 1; i < currentIndices_.size(); i++)
-	{
-		t += currentWeights_[i]*table_[currentIndices_[i]].second();
-	}
+    Type t = currentWeights_[0]*table_[currentIndices_[0]].second();
+    for (label i = 1; i < currentIndices_.size(); i++)
+    {
+        t += currentWeights_[i]*table_[currentIndices_[i]].second();
+    }
 
-	return t;
+    return t;
 }
 
 
 template<class Type>
 Type Foam::Function1Types::TableBase<Type>::integrate
 (
-	const scalar x1,
-	const scalar x2
+    const scalar x1,
+    const scalar x2
 ) const
 {
-	// Use interpolator
-	interpolator().integrationWeights(x1, x2, currentIndices_, currentWeights_);
+    // Use interpolator
+    interpolator().integrationWeights(x1, x2, currentIndices_, currentWeights_);
 
-	Type sum = currentWeights_[0]*table_[currentIndices_[0]].second();
-	for (label i = 1; i < currentIndices_.size(); i++)
-	{
-	   sum += currentWeights_[i]*table_[currentIndices_[i]].second();
-	}
+    Type sum = currentWeights_[0]*table_[currentIndices_[0]].second();
+    for (label i = 1; i < currentIndices_.size(); i++)
+    {
+       sum += currentWeights_[i]*table_[currentIndices_[i]].second();
+    }
 
-	return sum;
+    return sum;
 }
 
 
 template<class Type>
 Foam::tmp<Foam::scalarField> Foam::Function1Types::TableBase<Type>::x() const
 {
-	tmp<scalarField> tfld(new scalarField(table_.size(), 0.0));
-	scalarField& fld = tfld();
+    tmp<scalarField> tfld(new scalarField(table_.size(), 0.0));
+    scalarField& fld = tfld.ref();
 
-	forAll(table_, i)
-	{
-		fld[i] = table_[i].first();
-	}
+    forAll(table_, i)
+    {
+        fld[i] = table_[i].first();
+    }
 
-	return tfld;
+    return tfld;
 }
 
 
 template<class Type>
 Foam::tmp<Foam::Field<Type> > Foam::Function1Types::TableBase<Type>::y() const
 {
-	tmp<Field<Type> > tfld(new Field<Type>(table_.size(), pTraits<Type>::zero));
-	Field<Type>& fld = tfld();
+    tmp<Field<Type> > tfld(new Field<Type>(table_.size(), pTraits<Type>::zero));
+    Field<Type>& fld = tfld.ref();
 
-	forAll(table_, i)
-	{
-		fld[i] = table_[i].second();
-	}
+    forAll(table_, i)
+    {
+        fld[i] = table_[i].second();
+    }
 
-	return tfld;
+    return tfld;
 }
 
 
 template<class Type>
 void Foam::Function1Types::TableBase<Type>::writeEntries(Ostream& os) const
 {
-	if (boundsHandling_ != CLAMP)
-	{
-		os.writeKeyword("outOfBounds") << boundsHandlingToWord(boundsHandling_)
-			<< token::END_STATEMENT << nl;
-	}
-	if (interpolationScheme_ != "linear")
-	{
-		os.writeKeyword("interpolationScheme") << interpolationScheme_
-			<< token::END_STATEMENT << nl;
-	}
+    if (boundsHandling_ != CLAMP)
+    {
+        os.writeKeyword("outOfBounds") << boundsHandlingToWord(boundsHandling_)
+            << token::END_STATEMENT << nl;
+    }
+    if (interpolationScheme_ != "linear")
+    {
+        os.writeKeyword("interpolationScheme") << interpolationScheme_
+            << token::END_STATEMENT << nl;
+    }
 }
 
 
 template<class Type>
 void Foam::Function1Types::TableBase<Type>::writeData(Ostream& os) const
 {
-	Function1<Type>::writeData(os);
-	os  << nl << indent << table_ << token::END_STATEMENT << nl;
-	writeEntries(os);
+    Function1<Type>::writeData(os);
+    os  << nl << indent << table_ << token::END_STATEMENT << nl;
+    writeEntries(os);
 }
 
 

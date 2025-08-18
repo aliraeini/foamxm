@@ -2,7 +2,7 @@ The OpenFOAM-Extend Project
 
 Web site: http://www.extend-project.de/
 
-The goal of the OpenFOAM -Extend Project is to open the OpenFOAM CFD toolbox
+The goal of the FOAM-Extend Project is to open the OpenFOAM CFD toolbox
 to community contributed extensions in the spirit of the Open Source
 development model.
 
@@ -16,7 +16,7 @@ is to formalize this spirit.
   Currently, the word "OpenFOAM" is held as a trademark by a commercial
   company, not associated with the Open Source development effort of this
   software.  While the author acknowledges the existence of Trademark,
-  association of trademarked phrase with the code developed by third
+  association of trademarked phrase with the the code developed by third
   parties and including the author is misleading in terms of authorship,
   ownership of intellectual property of the source code.
 

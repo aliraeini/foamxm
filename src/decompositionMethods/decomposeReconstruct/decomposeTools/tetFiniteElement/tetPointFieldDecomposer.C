@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -41,10 +41,8 @@ void tetPointFieldDecomposer::calcAddressing() const
 {
     if (directAddressingPtr_)
     {
-        FatalErrorIn
-        (
-            "void tetPointFieldDecomposer::calcAddressing() const"
-        )   << "addressing already calculated"
+        FatalErrorInFunction
+            << "addressing already calculated"
             << abort(FatalError);
     }
 
@@ -102,11 +100,8 @@ tetPolyPatchFieldDecomposer::calcPatchAddressing() const
 {
     if (directPatchAddressingPtr_)
     {
-        FatalErrorIn
-        (
-            "void tetPointFieldDecomposer::"
-            "tetPolyPatchFieldDecomposer::calcPatchAddressing() const"
-        )   << "addressing already calculated"
+        FatalErrorInFunction
+            << "addressing already calculated"
             << abort(FatalError);
     }
 
@@ -140,11 +135,8 @@ tetPolyPatchFieldDecomposer::calcPatchAddressing() const
 
     if (addr.size() && min(addr) < 0)
     {
-        FatalErrorIn
-        (
-            "void tetPointFieldDecomposer::"
-            "tetPolyPatchFieldDecomposer::calcPatchAddressing() const"
-        )   << "error in addressing"
+        FatalErrorInFunction
+            << "error in addressing"
             << abort(FatalError);
     }
 }

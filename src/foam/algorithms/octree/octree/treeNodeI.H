@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -31,21 +31,21 @@ Description
 template <class Type>
 inline Foam::label Foam::treeNode<Type>::getVolType(const label octant) const
 {
-	return (volType_ >> 2*octant) & 0x3;
+    return (volType_ >> 2*octant) & 0x3;
 }
 
 
 template <class Type>
 inline const Foam::point& Foam::treeNode<Type>::midpoint() const
 {
-	return mid_;
+    return mid_;
 }
 
 
 template <class Type>
 inline Foam::treeElem<Type>* const* Foam::treeNode<Type>::subNodes() const
 {
-	return subNodes_;
+    return subNodes_;
 }
 
 
@@ -53,7 +53,7 @@ inline Foam::treeElem<Type>* const* Foam::treeNode<Type>::subNodes() const
 template <class Type>
 inline Foam::label Foam::treeNode<Type>::isNode(const label octant) const
 {
-	return subNodeTypes_ & (0x1 << octant);
+    return subNodeTypes_ & (0x1 << octant);
 }
 
 
@@ -61,19 +61,19 @@ inline Foam::label Foam::treeNode<Type>::isNode(const label octant) const
 template <class Type>
 inline Foam::treeNode<Type>* Foam::treeNode<Type>::getNodePtr
 (
-	const label octant
+    const label octant
 ) const
 {
-#	ifdef FULLDEBUG
-	if (!isNode(octant))
-	{
-		FatalErrorIn("treeNode::getNodePtr(const label)")
-			<< "not a treeNode"
-			<< abort(FatalError);
-	}
-#	endif
+#   ifdef FULLDEBUG
+    if (!isNode(octant))
+    {
+        FatalErrorIn("treeNode::getNodePtr(const label)")
+            << "not a treeNode"
+            << abort(FatalError);
+    }
+#   endif
 
-	return static_cast<treeNode<Type>*>(subNodes_[octant]);
+    return static_cast<treeNode<Type>*>(subNodes_[octant]);
 }
 
 
@@ -81,19 +81,19 @@ inline Foam::treeNode<Type>* Foam::treeNode<Type>::getNodePtr
 template <class Type>
 inline Foam::treeLeaf<Type>* Foam::treeNode<Type>::getLeafPtr
 (
-	const label octant
+    const label octant
 ) const
 {
-#	ifdef FULLDEBUG
-	if (isNode(octant))
-	{
-		FatalErrorIn("treeNode::getLeafPtr(const label)")
-			<< "not a treeLeaf"
-			<< abort(FatalError);
-	}
-#	endif
+#   ifdef FULLDEBUG
+    if (isNode(octant))
+    {
+        FatalErrorIn("treeNode::getLeafPtr(const label)")
+            << "not a treeLeaf"
+            << abort(FatalError);
+    }
+#   endif
 
-	return static_cast<treeLeaf<Type>*>(subNodes_[octant]);
+    return static_cast<treeLeaf<Type>*>(subNodes_[octant]);
 }
 
 

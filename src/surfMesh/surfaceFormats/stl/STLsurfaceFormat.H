@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fileFormats::STLsurfaceFormat
+    Foam::fileFormats::STLsurfaceFormat
 
 Description
-	Provide a means of reading/writing STL files (ASCII and binary).
+    Provide a means of reading/writing STL files (ASCII and binary).
 
 Note
-	For efficiency, the zones are sorted before creating the faces.
-	The class is thus derived from MeshedSurface.
+    For efficiency, the zones are sorted before creating the faces.
+    The class is thus derived from MeshedSurface.
 
 SourceFiles
-	STLsurfaceFormat.C
-	STLsurfaceFormatASCII.L
+    STLsurfaceFormat.C
+    STLsurfaceFormatASCII.L
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,109 +52,112 @@ namespace Foam
 namespace fileFormats
 {
 
+/*---------------------------------------------------------------------------*\
+                     Class STLsurfaceFormat Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Face>
 class STLsurfaceFormat
 :
-	public MeshedSurface<Face>
+    public MeshedSurface<Face>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Write Face (ASCII)
-		static inline void writeShell
-		(
-			Ostream&,
-			const pointField&,
-			const Face&
-		);
+        //- Write Face (ASCII)
+        static inline void writeShell
+        (
+            Ostream&,
+            const pointField&,
+            const Face&
+        );
 
-		//- Write Face (BINARY)
-		static inline void writeShell
-		(
-			ostream&,
-			const pointField&,
-			const Face&,
-			const label zoneI
-		);
+        //- Write Face (BINARY)
+        static inline void writeShell
+        (
+            ostream&,
+            const pointField&,
+            const Face&,
+            const label zoneI
+        );
 
-		//- Disallow default bitwise copy construct
-		STLsurfaceFormat(const STLsurfaceFormat<Face>&);
+        //- Disallow default bitwise copy construct
+        STLsurfaceFormat(const STLsurfaceFormat<Face>&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const STLsurfaceFormat<Face>&);
+        //- Disallow default bitwise assignment
+        void operator=(const STLsurfaceFormat<Face>&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from file name
-		STLsurfaceFormat(const fileName&);
-
-
-	// Selectors
-
-		//- Read file and return surface
-		static autoPtr<MeshedSurface<Face> > New(const fileName& name)
-		{
-			return autoPtr<MeshedSurface<Face> >
-			(
-				new STLsurfaceFormat<Face>(name)
-			);
-		}
+        //- Construct from file name
+        STLsurfaceFormat(const fileName&);
 
 
-	//- Destructor
-	virtual ~STLsurfaceFormat()
-	{}
+    // Selectors
+
+        //- Read file and return surface
+        static autoPtr<MeshedSurface<Face> > New(const fileName& name)
+        {
+            return autoPtr<MeshedSurface<Face> >
+            (
+                new STLsurfaceFormat<Face>(name)
+            );
+        }
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~STLsurfaceFormat()
+    {}
 
-		//- Write surface mesh components by proxy (as ASCII)
-		static void writeAscii
-		(
-			const fileName&,
-			const MeshedSurfaceProxy<Face>&
-		);
 
-		//- Write surface mesh components by proxy (as BINARY)
-		static void writeBinary
-		(
-			const fileName&,
-			const MeshedSurfaceProxy<Face>&
-		);
+    // Member Functions
 
-		//- Write surface mesh components by proxy
-		//  as ASCII or BINARY, depending on the extension
-		static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
+        //- Write surface mesh components by proxy (as ASCII)
+        static void writeAscii
+        (
+            const fileName&,
+            const MeshedSurfaceProxy<Face>&
+        );
 
-		//- Write UnsortedMeshedSurface (as ASCII) sorted by zone
-		static void writeAscii
-		(
-			const fileName&,
-			const UnsortedMeshedSurface<Face>&
-		);
+        //- Write surface mesh components by proxy (as BINARY)
+        static void writeBinary
+        (
+            const fileName&,
+            const MeshedSurfaceProxy<Face>&
+        );
 
-		//- Write UnsortedMeshedSurface (as BINARY) unsorted by zone
-		static void writeBinary
-		(
-			const fileName&,
-			const UnsortedMeshedSurface<Face>&
-		);
+        //- Write surface mesh components by proxy
+        //  as ASCII or BINARY, depending on the extension
+        static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
 
-		//- Write UnsortedMeshedSurface
-		//  as ASCII or BINARY, depending on the extension
-		static void write(const fileName&, const UnsortedMeshedSurface<Face>&);
+        //- Write UnsortedMeshedSurface (as ASCII) sorted by zone
+        static void writeAscii
+        (
+            const fileName&,
+            const UnsortedMeshedSurface<Face>&
+        );
 
-		//- Read from file
-		virtual bool read(const fileName&);
+        //- Write UnsortedMeshedSurface (as BINARY) unsorted by zone
+        static void writeBinary
+        (
+            const fileName&,
+            const UnsortedMeshedSurface<Face>&
+        );
 
-		//- Write object
-		virtual void write(const fileName& name) const
-		{
-			write(name, MeshedSurfaceProxy<Face>(*this));
-		}
+        //- Write UnsortedMeshedSurface
+        //  as ASCII or BINARY, depending on the extension
+        static void write(const fileName&, const UnsortedMeshedSurface<Face>&);
+
+        //- Read from file
+        virtual bool read(const fileName&);
+
+        //- Write object
+        virtual void write(const fileName& name) const
+        {
+            write(name, MeshedSurfaceProxy<Face>(*this));
+        }
 };
 
 
@@ -166,7 +169,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "STLsurfaceFormat.C"
+#   include "STLsurfaceFormat.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

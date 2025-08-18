@@ -1,32 +1,32 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	3D and 2D quick reject tests for filtering out the neighborhood
-	of the GGI master patch faces
+    3D and 2D quick reject tests for filtering out the neighborhood
+    of the GGI master patch faces
 
 Author
-	Martin Beaudoin, Hydro-Quebec, (2008)
+    Martin Beaudoin, Hydro-Quebec, (2008)
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,10 +47,10 @@ template<class MasterPatch, class SlavePatch>
 const Foam::debug::tolerancesSwitch
 GGIInterpolation<MasterPatch, SlavePatch>::faceBoundBoxExtendSpanFraction_
 (
-	"GGIFaceBoundBoxExtendSpanFraction",
-	1.0e-2,
-	"GGI faces bounding box expansion factor. "
-	"Add robustness for quick-search algo. Keep it to a few percent."
+    "GGIFaceBoundBoxExtendSpanFraction",
+    1.0e-2,
+    "GGI faces bounding box expansion factor. "
+    "Add robustness for quick-search algo. Keep it to a few percent."
 );
 
 
@@ -58,10 +58,10 @@ template<class MasterPatch, class SlavePatch>
 const Foam::debug::optimisationSwitch
 GGIInterpolation<MasterPatch, SlavePatch>::octreeSearchMinNLevel_
 (
-	"GGIOctreeSearchMinNLevel",
-	3,
-	"GGI neighbouring facets octree-based search: "
-	"minNlevel parameter for octree"
+    "GGIOctreeSearchMinNLevel",
+    3,
+    "GGI neighbouring facets octree-based search: "
+    "minNlevel parameter for octree"
 );
 
 
@@ -69,10 +69,10 @@ template<class MasterPatch, class SlavePatch>
 const Foam::debug::optimisationSwitch
 GGIInterpolation<MasterPatch, SlavePatch>::octreeSearchMaxLeafRatio_
 (
-	"GGIOctreeSearchMaxLeafRatio",
-	3,
-	"GGI neighbouring facets octree-based search: "
-	"maxLeafRatio parameter for octree"
+    "GGIOctreeSearchMaxLeafRatio",
+    3,
+    "GGI neighbouring facets octree-based search: "
+    "maxLeafRatio parameter for octree"
 );
 
 
@@ -80,10 +80,10 @@ template<class MasterPatch, class SlavePatch>
 const Foam::debug::optimisationSwitch
 GGIInterpolation<MasterPatch, SlavePatch>::octreeSearchMaxShapeRatio_
 (
-	"GGIOctreeSearchMaxShapeRatio",
-	1,
-	"GGI neighbouring facets octree-based search: "
-	"maxShapeRatio parameter for octree"
+    "GGIOctreeSearchMaxShapeRatio",
+    1,
+    "GGI neighbouring facets octree-based search: "
+    "maxShapeRatio parameter for octree"
 );
 
 
@@ -126,155 +126,155 @@ GGIInterpolation<MasterPatch, SlavePatch>::octreeSearchMaxShapeRatio_
 template<class MasterPatch, class SlavePatch>
 void GGIInterpolation<MasterPatch, SlavePatch>::findNeighbours3D
 (
-	labelListList& result
+    labelListList& result
 ) const
 {
-	// Allocation to local size.  HJ, 27/Apr/2016
-	List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
+    // Allocation to local size.  HJ, 27/Apr/2016
+    List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
 
-	// First, compute the face center and the sphere radius (squared)
-	// of the slave patch faces so we will not have to recompute this
-	// n times
-	vectorField slaveFaceCentre(slavePatch_.size());
-	scalarField slaveRadius2(slavePatch_.size());
+    // First, compute the face center and the sphere radius (squared)
+    // of the slave patch faces so we will not have to recompute this
+    // n times
+    vectorField slaveFaceCentre(slavePatch_.size());
+    scalarField slaveRadius2(slavePatch_.size());
 
-	// Since the parallelised search is done on the master, all of
-	// slave face data is needed.  HJ, 27/Apr/2016
-	forAll (slavePatch_, faceSi)
-	{
-		// Grab points from slave face
-		pointField curFacePoints =
-			slavePatch_[faceSi].points(slavePatch_.points());
+    // Since the parallelised search is done on the master, all of
+    // slave face data is needed.  HJ, 27/Apr/2016
+    forAll (slavePatch_, faceSi)
+    {
+        // Grab points from slave face
+        pointField curFacePoints =
+            slavePatch_[faceSi].points(slavePatch_.points());
 
-		slaveFaceCentre[faceSi] =
-			slavePatch_[faceSi].centre(slavePatch_.points());
+        slaveFaceCentre[faceSi] =
+            slavePatch_[faceSi].centre(slavePatch_.points());
 
-		if (doTransform())
-		{
-			// Transform points and normal to master plane
+        if (doTransform())
+        {
+            // Transform points and normal to master plane
 
-			if (forwardT_.size() == 1)
-			{
-				// Constant transform
-				transform
-				(
-					curFacePoints,
-					forwardT_[0],
-					curFacePoints
-				);
+            if (forwardT_.size() == 1)
+            {
+                // Constant transform
+                transform
+                (
+                    curFacePoints,
+                    forwardT_[0],
+                    curFacePoints
+                );
 
-				slaveFaceCentre[faceSi] = transform
-				(
-					forwardT_[0],
-					slaveFaceCentre[faceSi]
-				);
-			}
-			else
-			{
-				transform
-				(
-					curFacePoints,
-					forwardT_[faceSi],
-					curFacePoints
-				);
+                slaveFaceCentre[faceSi] = transform
+                (
+                    forwardT_[0],
+                    slaveFaceCentre[faceSi]
+                );
+            }
+            else
+            {
+                transform
+                (
+                    curFacePoints,
+                    forwardT_[faceSi],
+                    curFacePoints
+                );
 
-				slaveFaceCentre[faceSi] = transform
-				(
-					forwardT_[faceSi],
-					slaveFaceCentre[faceSi]
-				);
-			}
-		}
+                slaveFaceCentre[faceSi] = transform
+                (
+                    forwardT_[faceSi],
+                    slaveFaceCentre[faceSi]
+                );
+            }
+        }
 
-		boundBox bbSlave(curFacePoints, false);
+        boundBox bbSlave(curFacePoints, false);
 
-		scalar tmpValue = 0.25*Foam::magSqr(bbSlave.max() - bbSlave.min());
+        scalar tmpValue = 0.25*Foam::magSqr(bbSlave.max() - bbSlave.min());
 
-		// We compare squared distances, so save the sqrt() if value > 1.
-		if (tmpValue < 1)
-		{
-			// Take the sqrt, otherwise, we underestimate the radius
-			slaveRadius2[faceSi] = sqrt(tmpValue);
-		}
-		else
-		{
-			slaveRadius2[faceSi] = tmpValue;
-		}
-	}
+        // We compare squared distances, so save the sqrt() if value > 1.
+        if (tmpValue < 1)
+        {
+            // Take the sqrt, otherwise, we underestimate the radius
+            slaveRadius2[faceSi] = sqrt(tmpValue);
+        }
+        else
+        {
+            slaveRadius2[faceSi] = tmpValue;
+        }
+    }
 
-	// Next, we search for each master face a list of potential neighbors
+    // Next, we search for each master face a list of potential neighbors
 
-	// Parallel search split.  HJ, 27/Apr/2016
-	const label pmStart = this->parMasterStart();
+    // Parallel search split.  HJ, 27/Apr/2016
+    const label pmStart = this->parMasterStart();
 
-	for
-	(
-		label faceMi = pmStart;
-		faceMi < this->parMasterEnd();
-		faceMi++
-	)
+    for
+    (
+        label faceMi = pmStart;
+        faceMi < this->parMasterEnd();
+        faceMi++
+    )
 //     forAll (masterPatch_, faceMi)
-	{
-		// For each masterPatch faces, compute the bounding box. With
-		// this, we compute the radius of the bounding sphere for this
-		// face
-		boundBox bbMaster
-		(
-			masterPatch_[faceMi].points(masterPatch_.points()),
-			false
-		);
+    {
+        // For each masterPatch faces, compute the bounding box. With
+        // this, we compute the radius of the bounding sphere for this
+        // face
+        boundBox bbMaster
+        (
+            masterPatch_[faceMi].points(masterPatch_.points()),
+            false
+        );
 
-		// We will compare squared distances, so save the sqrt() if > 1.0.
-		scalar masterRadius2 =
-			Foam::magSqr(bbMaster.max() - bbMaster.min())/4.0;
+        // We will compare squared distances, so save the sqrt() if > 1.0.
+        scalar masterRadius2 =
+            Foam::magSqr(bbMaster.max() - bbMaster.min())/4.0;
 
-		// Take the sqrt, otherwise, we underestimate the radius
-		if (masterRadius2 < 1.0)
-		{
-			masterRadius2 = sqrt(masterRadius2);
-		}
+        // Take the sqrt, otherwise, we underestimate the radius
+        if (masterRadius2 < 1.0)
+        {
+            masterRadius2 = sqrt(masterRadius2);
+        }
 
-		// This is the inner loop, so the face centres and face radii
-		// for the slave faces are already pre-computed
-		forAll (slavePatch_, faceSi)
-		{
-			// We test if the squared distance between the two face
-			// centers is less than the sum of the 2 squared radii from
-			// each face bounding sphere.
+        // This is the inner loop, so the face centres and face radii
+        // for the slave faces are already pre-computed
+        forAll (slavePatch_, faceSi)
+        {
+            // We test if the squared distance between the two face
+            // centers is less than the sum of the 2 squared radii from
+            // each face bounding sphere.
 
-			// If so, we have found possibly 2 neighbours
-			scalar distFaceCenters =
-				Foam::magSqr
-				(
-					masterPatch_[faceMi].centre(masterPatch_.points())
-				  - slaveFaceCentre[faceSi]
-				);
+            // If so, we have found possibly 2 neighbours
+            scalar distFaceCenters =
+                Foam::magSqr
+                (
+                    masterPatch_[faceMi].centre(masterPatch_.points())
+                  - slaveFaceCentre[faceSi]
+                );
 
-			if (distFaceCenters < 1.0)
-			{
-				distFaceCenters = sqrt(distFaceCenters);
-			}
+            if (distFaceCenters < 1.0)
+            {
+                distFaceCenters = sqrt(distFaceCenters);
+            }
 
-			if (distFaceCenters < (masterRadius2 + slaveRadius2[faceSi]))
-			{
-				candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
-			}
-		}
-	}
+            if (distFaceCenters < (masterRadius2 + slaveRadius2[faceSi]))
+            {
+                candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
+            }
+        }
+    }
 
-	// Repack the list.  Local size
-	result.setSize(parMasterSize());
+    // Repack the list.  Local size
+    result.setSize(parMasterSize());
 
-	// Parallel search split: local size.  HJ, 27/Apr/2016
-	forAll (result, i)
-	{
-		result[i].transfer(candidateMasterNeighbors[i].shrink());
-	}
+    // Parallel search split: local size.  HJ, 27/Apr/2016
+    forAll (result, i)
+    {
+        result[i].transfer(candidateMasterNeighbors[i].shrink());
+    }
 
-	// Note: since the neighbours are used to perform a search, there is
-	// no need to do a global reduce of the candidates.  The rest of the list
-	// (searched on other processors) will remain unused.
-	// HJ, 27/Apr/2016
+    // Note: since the neighbours are used to perform a search, there is
+    // no need to do a global reduce of the candidates.  The rest of the list
+    // (searched on other processors) will remain unused.
+    // HJ, 27/Apr/2016
 }
 
 
@@ -298,175 +298,175 @@ void GGIInterpolation<MasterPatch, SlavePatch>::findNeighbours3D
 template<class MasterPatch, class SlavePatch>
 void GGIInterpolation<MasterPatch, SlavePatch>::findNeighboursAABB
 (
-	labelListList& result
+    labelListList& result
 ) const
 {
-	// Allocation to local size.  HJ, 27/Apr/2016
-	List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
+    // Allocation to local size.  HJ, 27/Apr/2016
+    List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
 
-	// Allocation to local size.  HJ, 27/Apr/2016
-	List<boundBox> masterPatchBB(parMasterSize());
+    // Allocation to local size.  HJ, 27/Apr/2016
+    List<boundBox> masterPatchBB(parMasterSize());
 
-	// Parallel search split.  HJ, 27/Apr/2016
-	const label pmStart = this->parMasterStart();
+    // Parallel search split.  HJ, 27/Apr/2016
+    const label pmStart = this->parMasterStart();
 
-	for
-	(
-		label faceMi = this->parMasterStart();
-		faceMi < this->parMasterEnd();
-		faceMi++
-	)
+    for
+    (
+        label faceMi = this->parMasterStart();
+        faceMi < this->parMasterEnd();
+        faceMi++
+    )
 //     forAll (masterPatch_, faceMi)
-	{
-		masterPatchBB[faceMi - pmStart] = boundBox
-		(
-			masterPatch_[faceMi].points(masterPatch_.points()),
-			false
-		);
-	}
+    {
+        masterPatchBB[faceMi - pmStart] = boundBox
+        (
+            masterPatch_[faceMi].points(masterPatch_.points()),
+            false
+        );
+    }
 
-	// Grab the slave patch faces bounding boxes, plus compute its
-	// extend or delta
-	List<boundBox> slavePatchBB(slavePatch_.size());
-	pointField deltaBBSlave(slavePatch_.size());
+    // Grab the slave patch faces bounding boxes, plus compute its
+    // extend or delta
+    List<boundBox> slavePatchBB(slavePatch_.size());
+    pointField deltaBBSlave(slavePatch_.size());
 
-	// We expect that any neighbour face to face intersection will fall
-	// within augmented BB.
-	vectorField slaveFaceBBminThickness(slavePatch_.size(), vector::zero);
+    // We expect that any neighbour face to face intersection will fall
+    // within augmented BB.
+    vectorField slaveFaceBBminThickness(slavePatch_.size(), vector::zero);
 
-	const faceList& slaveLocalFaces = slavePatch_.localFaces();
-	vectorField slaveNormals = slavePatch_.faceNormals();
-	const pointField& slaveLocalPoints = slavePatch_.localPoints();
+    const faceList& slaveLocalFaces = slavePatch_.localFaces();
+    vectorField slaveNormals = slavePatch_.faceNormals();
+    const pointField& slaveLocalPoints = slavePatch_.localPoints();
 
-	// Transform slave normals to master plane if needed
-	if (doTransform())
-	{
-		if (forwardT_.size() == 1)
-		{
-			transform(slaveNormals, forwardT_[0], slaveNormals);
-		}
-		else
-		{
-			transform(slaveNormals, forwardT_, slaveNormals);
-		}
-	}
+    // Transform slave normals to master plane if needed
+    if (doTransform())
+    {
+        if (forwardT_.size() == 1)
+        {
+            transform(slaveNormals, forwardT_[0], slaveNormals);
+        }
+        else
+        {
+            transform(slaveNormals, forwardT_, slaveNormals);
+        }
+    }
 
-	forAll (slaveFaceBBminThickness, sI)
-	{
-		scalar maxEdgeLength = 0.0;
+    forAll (slaveFaceBBminThickness, sI)
+    {
+        scalar maxEdgeLength = 0.0;
 
-		// Let's use the length of the longest edge from each faces
-		edgeList el = slaveLocalFaces[sI].edges();
+        // Let's use the length of the longest edge from each faces
+        edgeList el = slaveLocalFaces[sI].edges();
 
-		forAll (el, elI)
-		{
-			scalar edgeLength = el[elI].mag(slaveLocalPoints);
-			maxEdgeLength = Foam::max(edgeLength, maxEdgeLength);
-		}
+        forAll (el, elI)
+        {
+            scalar edgeLength = el[elI].mag(slaveLocalPoints);
+            maxEdgeLength = Foam::max(edgeLength, maxEdgeLength);
+        }
 
-		// Make sure our offset is positive. Ugly, but cheap
-		vector posNormal = cmptMag(slaveNormals[sI]);
+        // Make sure our offset is positive. Ugly, but cheap
+        vector posNormal = cmptMag(slaveNormals[sI]);
 
-		slaveFaceBBminThickness[sI] = posNormal*maxEdgeLength;
-	}
+        slaveFaceBBminThickness[sI] = posNormal*maxEdgeLength;
+    }
 
-	// Iterate over slave patch faces, compute its bounding box,
-	// using a possible transformation and separation for cyclic patches
-	forAll (slavePatch_, faceSi)
-	{
-		pointField curFacePoints =
-			slavePatch_[faceSi].points(slavePatch_.points());
+    // Iterate over slave patch faces, compute its bounding box,
+    // using a possible transformation and separation for cyclic patches
+    forAll (slavePatch_, faceSi)
+    {
+        pointField curFacePoints =
+            slavePatch_[faceSi].points(slavePatch_.points());
 
-		if (doTransform())
-		{
-			if (forwardT_.size() == 1)
-			{
-				transform(curFacePoints, forwardT_[0], curFacePoints);
-			}
-			else
-			{
-				transform(curFacePoints, forwardT_[faceSi], curFacePoints);
-			}
-		}
+        if (doTransform())
+        {
+            if (forwardT_.size() == 1)
+            {
+                transform(curFacePoints, forwardT_[0], curFacePoints);
+            }
+            else
+            {
+                transform(curFacePoints, forwardT_[faceSi], curFacePoints);
+            }
+        }
 
-		if (doSeparation())
-		{
-			if (forwardSep_.size() == 1)
-			{
-				curFacePoints += forwardSep_[0];
-			}
-			else
-			{
-				curFacePoints += forwardSep_[faceSi];
-			}
-		}
+        if (doSeparation())
+        {
+            if (forwardSep_.size() == 1)
+            {
+                curFacePoints += forwardSep_[0];
+            }
+            else
+            {
+                curFacePoints += forwardSep_[faceSi];
+            }
+        }
 
-		slavePatchBB[faceSi] = boundBox(curFacePoints, false);
+        slavePatchBB[faceSi] = boundBox(curFacePoints, false);
 
-		// We compute the extent of the slave face BB.
-		// Plus, we boost it a little bit, just to stay clear
-		// of floating point numerical issues when doing intersections
-		// Let's boost by 10%.
-		deltaBBSlave[faceSi] =
-			1.1*
-			(
-				slavePatchBB[faceSi].max()
-			  - slavePatchBB[faceSi].min()
-			  + slaveFaceBBminThickness[faceSi]
-			);
-	}
+        // We compute the extent of the slave face BB.
+        // Plus, we boost it a little bit, just to stay clear
+        // of floating point numerical issues when doing intersections
+        // Let's boost by 10%.
+        deltaBBSlave[faceSi] =
+            1.1*
+            (
+                slavePatchBB[faceSi].max()
+              - slavePatchBB[faceSi].min()
+              + slaveFaceBBminThickness[faceSi]
+            );
+    }
 
-	// Visit each master patch face BB,
-	// augment it with the info from the slave patch face BB
-	// then, compute the intersection
-	const vectorField& masterFaceNormals = masterPatch_.faceNormals();
+    // Visit each master patch face BB,
+    // augment it with the info from the slave patch face BB
+    // then, compute the intersection
+    const vectorField& masterFaceNormals = masterPatch_.faceNormals();
 
-	// Parallel search split.  HJ, 27/Apr/2016
-	for
-	(
-		label faceMi = this->parMasterStart();
-		faceMi < this->parMasterEnd();
-		faceMi++
-	)
+    // Parallel search split.  HJ, 27/Apr/2016
+    for
+    (
+        label faceMi = this->parMasterStart();
+        faceMi < this->parMasterEnd();
+        faceMi++
+    )
 //     forAll (masterPatch_, faceMi)
-	{
-		forAll (slavePatchBB, faceSi)
-		{
-			// Compute the augmented AABB
-			boundBox augmentedBBMaster
-			(
-				masterPatchBB[faceMi - pmStart].min() - deltaBBSlave[faceSi],
-				masterPatchBB[faceMi - pmStart].max() + deltaBBSlave[faceSi]
-			);
+    {
+        forAll (slavePatchBB, faceSi)
+        {
+            // Compute the augmented AABB
+            boundBox augmentedBBMaster
+            (
+                masterPatchBB[faceMi - pmStart].min() - deltaBBSlave[faceSi],
+                masterPatchBB[faceMi - pmStart].max() + deltaBBSlave[faceSi]
+            );
 
-			if (augmentedBBMaster.overlaps(slavePatchBB[faceSi]))
-			{
-				// Compute featureCos between the two face normals
-				// before adding to the list of candidates
-				scalar featureCos =
-					masterFaceNormals[faceMi] & slaveNormals[faceSi];
+            if (augmentedBBMaster.overlaps(slavePatchBB[faceSi]))
+            {
+                // Compute featureCos between the two face normals
+                // before adding to the list of candidates
+                scalar featureCos =
+                    masterFaceNormals[faceMi] & slaveNormals[faceSi];
 
-				if (mag(featureCos) > featureCosTol_)
-				{
-					candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
-				}
-			}
-		}
-	}
+                if (mag(featureCos) > featureCosTol_)
+                {
+                    candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
+                }
+            }
+        }
+    }
 
-	// Repack the list.  Local size
-	result.setSize(parMasterSize());
+    // Repack the list.  Local size
+    result.setSize(parMasterSize());
 
-	// Parallel search split: local size.  HJ, 27/Apr/2016
-	forAll (result, i)
-	{
-		result[i].transfer(candidateMasterNeighbors[i].shrink());
-	}
+    // Parallel search split: local size.  HJ, 27/Apr/2016
+    forAll (result, i)
+    {
+        result[i].transfer(candidateMasterNeighbors[i].shrink());
+    }
 
-	// Note: since the neighbours are used to perform a search, there is
-	// no need to do a global reduce of the candidates.  The rest of the list
-	// (searched on other processors) will remain unused.
-	// HJ, 27/Apr/2016
+    // Note: since the neighbours are used to perform a search, there is
+    // no need to do a global reduce of the candidates.  The rest of the list
+    // (searched on other processors) will remain unused.
+    // HJ, 27/Apr/2016
 }
 
 
@@ -475,162 +475,162 @@ void GGIInterpolation<MasterPatch, SlavePatch>::findNeighboursAABB
 template<class MasterPatch, class SlavePatch>
 void GGIInterpolation<MasterPatch, SlavePatch>::findNeighboursBBOctree
 (
-	labelListList& result
+    labelListList& result
 ) const
 {
-	// Allocation to local size.  HJ, 27/Apr/2016
-	List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
+    // Allocation to local size.  HJ, 27/Apr/2016
+    List<DynamicList<label, 8> > candidateMasterNeighbors(parMasterSize());
 
-	// Allocation to local size.  HJ, 27/Apr/2016
-	treeBoundBoxList lmasterFaceBB(parMasterSize());
+    // Allocation to local size.  HJ, 27/Apr/2016
+    treeBoundBoxList lmasterFaceBB(parMasterSize());
 
-	// Parallel search split.  HJ, 27/Apr/2016
-	const label pmStart = this->parMasterStart();
+    // Parallel search split.  HJ, 27/Apr/2016
+    const label pmStart = this->parMasterStart();
 
-	for
-	(
-		label faceMi = this->parMasterStart();
-		faceMi < this->parMasterEnd();
-		faceMi++
-	)
+    for
+    (
+        label faceMi = this->parMasterStart();
+        faceMi < this->parMasterEnd();
+        faceMi++
+    )
 //     forAll (masterPatch_, faceMi)
-	{
-		pointField facePoints
-		(
-			masterPatch_[faceMi].points(masterPatch_.points())
-		);
+    {
+        pointField facePoints
+        (
+            masterPatch_[faceMi].points(masterPatch_.points())
+        );
 
-		// Construct face BB with an extension of face span defined by the
-		//  global tolerance factor faceBoundBoxExtendSpanFraction_
-		// (1% by default)
-		treeBoundBox bbFaceMaster(facePoints);
+        // Construct face BB with an extension of face span defined by the
+        //  global tolerance factor faceBoundBoxExtendSpanFraction_
+        // (1% by default)
+        treeBoundBox bbFaceMaster(facePoints);
 
-		lmasterFaceBB[faceMi - pmStart] =
-			bbFaceMaster.extend(faceBoundBoxExtendSpanFraction_());
-	}
+        lmasterFaceBB[faceMi - pmStart] =
+            bbFaceMaster.extend(faceBoundBoxExtendSpanFraction_());
+    }
 
-	// Initialize the list of slave patch faces bounding box
-	treeBoundBoxList lslaveFaceBB(slavePatch_.size());
+    // Initialize the list of slave patch faces bounding box
+    treeBoundBoxList lslaveFaceBB(slavePatch_.size());
 
-	forAll (slavePatch_, faceSi)
-	{
-		pointField facePoints
-		(
-			slavePatch_[faceSi].points(slavePatch_.points())
-		);
+    forAll (slavePatch_, faceSi)
+    {
+        pointField facePoints
+        (
+            slavePatch_[faceSi].points(slavePatch_.points())
+        );
 
-		// possible transformation and separation for cyclic patches
-		if (doTransform())
-		{
-			if (forwardT_.size() == 1)
-			{
-				transform(facePoints, forwardT_[0], facePoints);
-			}
-			else
-			{
-				transform(facePoints, forwardT_[faceSi], facePoints);
-			}
-		}
+        // possible transformation and separation for cyclic patches
+        if (doTransform())
+        {
+            if (forwardT_.size() == 1)
+            {
+                transform(facePoints, forwardT_[0], facePoints);
+            }
+            else
+            {
+                transform(facePoints, forwardT_[faceSi], facePoints);
+            }
+        }
 
-		if (doSeparation())
-		{
-			if (forwardSep_.size() == 1)
-			{
-				facePoints += forwardSep_[0];
-			}
-			else
-			{
-				facePoints += forwardSep_[faceSi];
-			}
-		}
+        if (doSeparation())
+        {
+            if (forwardSep_.size() == 1)
+            {
+                facePoints += forwardSep_[0];
+            }
+            else
+            {
+                facePoints += forwardSep_[faceSi];
+            }
+        }
 
-		// Construct face BB with an extension of face span defined by the
-		//  global tolerance factor faceBoundBoxExtendSpanFraction_
-		// (1% by default)
-		treeBoundBox bbFaceSlave(facePoints);
+        // Construct face BB with an extension of face span defined by the
+        //  global tolerance factor faceBoundBoxExtendSpanFraction_
+        // (1% by default)
+        treeBoundBox bbFaceSlave(facePoints);
 
-		lslaveFaceBB[faceSi] =
-			bbFaceSlave.extend(faceBoundBoxExtendSpanFraction_());
-	}
+        lslaveFaceBB[faceSi] =
+            bbFaceSlave.extend(faceBoundBoxExtendSpanFraction_());
+    }
 
-	// Create the slave octreeData, using the boundBox flavor
-	octreeDataBoundBox slaveDataBB(lslaveFaceBB);
+    // Create the slave octreeData, using the boundBox flavor
+    octreeDataBoundBox slaveDataBB(lslaveFaceBB);
 
-	// Overall slave patch BB
-	treeBoundBox slaveOverallBB(slavePatch_.points());
+    // Overall slave patch BB
+    treeBoundBox slaveOverallBB(slavePatch_.points());
 
-	// Create the slave patch octree
+    // Create the slave patch octree
 
-	octree<octreeDataBoundBox> slavePatchOctree
-	(
-		slaveOverallBB,              // overall search domain
-		slaveDataBB,
-		octreeSearchMinNLevel_(),      // min number of levels
-		octreeSearchMaxLeafRatio_(),   // max avg. size of leaves
-		octreeSearchMaxShapeRatio_()   // max avg. duplicity.
-	);
+    octree<octreeDataBoundBox> slavePatchOctree
+    (
+        slaveOverallBB,              // overall search domain
+        slaveDataBB,
+        octreeSearchMinNLevel_(),      // min number of levels
+        octreeSearchMaxLeafRatio_(),   // max avg. size of leaves
+        octreeSearchMaxShapeRatio_()   // max avg. duplicity.
+    );
 
-	const vectorField& masterFaceNormals = masterPatch_.faceNormals();
-	vectorField slaveNormals = slavePatch_.faceNormals();
+    const vectorField& masterFaceNormals = masterPatch_.faceNormals();
+    vectorField slaveNormals = slavePatch_.faceNormals();
 
-	// Transform slave normals to master plane if needed
-	if (doTransform())
-	{
-		if (forwardT_.size() == 1)
-		{
-			transform(slaveNormals, forwardT_[0], slaveNormals);
-		}
-		else
-		{
-			transform(slaveNormals, forwardT_, slaveNormals);
-		}
-	}
+    // Transform slave normals to master plane if needed
+    if (doTransform())
+    {
+        if (forwardT_.size() == 1)
+        {
+            transform(slaveNormals, forwardT_[0], slaveNormals);
+        }
+        else
+        {
+            transform(slaveNormals, forwardT_, slaveNormals);
+        }
+    }
 
-	// Visit each master patch face BB and find the potential neighbours
-	// using the slave patch octree
+    // Visit each master patch face BB and find the potential neighbours
+    // using the slave patch octree
 
-	// Parallel search split.  HJ, 27/Apr/2016
-	for
-	(
-		label faceMi = this->parMasterStart();
-		faceMi < this->parMasterEnd();
-		faceMi++
-	)
+    // Parallel search split.  HJ, 27/Apr/2016
+    for
+    (
+        label faceMi = this->parMasterStart();
+        faceMi < this->parMasterEnd();
+        faceMi++
+    )
 //     forAll (masterPatch_, faceMi)
-	{
-		// List of candidate neighbours
-		labelList overlappedFaces  =
-			slavePatchOctree.findBox(lmasterFaceBB[faceMi - pmStart]);
+    {
+        // List of candidate neighbours
+        labelList overlappedFaces  =
+            slavePatchOctree.findBox(lmasterFaceBB[faceMi - pmStart]);
 
-		forAll (overlappedFaces, ovFi)
-		{
-			label faceSi = overlappedFaces[ovFi];
+        forAll (overlappedFaces, ovFi)
+        {
+            label faceSi = overlappedFaces[ovFi];
 
-			// Compute and verify featureCos between the two face normals
-			// before adding to the list of candidates
-			scalar featureCos =
-				masterFaceNormals[faceMi] & slaveNormals[faceSi];
+            // Compute and verify featureCos between the two face normals
+            // before adding to the list of candidates
+            scalar featureCos =
+                masterFaceNormals[faceMi] & slaveNormals[faceSi];
 
-			if (mag(featureCos) > featureCosTol_)
-			{
-				candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
-			}
-		}
-	}
+            if (mag(featureCos) > featureCosTol_)
+            {
+                candidateMasterNeighbors[faceMi - pmStart].append(faceSi);
+            }
+        }
+    }
 
-	// Repack the list.  Local size
-	result.setSize(parMasterSize());
+    // Repack the list.  Local size
+    result.setSize(parMasterSize());
 
-	// Parallel search split: local size.  HJ, 27/Apr/2016
-	forAll (result, i)
-	{
-		result[i].transfer(candidateMasterNeighbors[i].shrink());
-	}
+    // Parallel search split: local size.  HJ, 27/Apr/2016
+    forAll (result, i)
+    {
+        result[i].transfer(candidateMasterNeighbors[i].shrink());
+    }
 
-	// Note: since the neighbours are used to perform a search, there is
-	// no need to do a global reduce of the candidates.  The rest of the list
-	// (searched on other processors) will remain unused.
-	// HJ, 27/Apr/2016
+    // Note: since the neighbours are used to perform a search, there is
+    // no need to do a global reduce of the candidates.  The rest of the list
+    // (searched on other processors) will remain unused.
+    // HJ, 27/Apr/2016
 }
 
 
@@ -641,43 +641,43 @@ void GGIInterpolation<MasterPatch, SlavePatch>::findNeighboursBBOctree
 template<class MasterPatch, class SlavePatch>
 tmp<pointField> GGIInterpolation<MasterPatch, SlavePatch>::projectPointsOnPlane
 (
-	const pointField& lpoints,
-	const vector& planeOrig,
-	const vector& planeDirection,
-	scalarField& distanceProjection
+    const pointField& lpoints,
+    const vector& planeOrig,
+    const vector& planeDirection,
+    scalarField& distanceProjection
 ) const
 {
-	tmp<pointField> tprojectedPoints(new pointField(lpoints.size()));
-	pointField& projectedPoints = tprojectedPoints();
+    tmp<pointField> tprojectedPoints(new pointField(lpoints.size()));
+    pointField& projectedPoints = tprojectedPoints.ref();
 
-	vector normalVector = planeDirection/(mag(planeDirection) + VSMALL);
+    vector normalVector = planeDirection/(mag(planeDirection) + VSMALL);
 
-	scalarField dist(lpoints.size(), 0.0);
+    scalarField dist(lpoints.size(), 0.0);
 
-	if (lpoints.size() > 3 && mag(normalVector) > SMALL)
-	{
-		// Construct the plane
-		plane projectionPlane(planeOrig, normalVector);
+    if (lpoints.size() > 3 && mag(normalVector) > SMALL)
+    {
+        // Construct the plane
+        plane projectionPlane(planeOrig, normalVector);
 
-		forAll (lpoints, pointI)
-		{
-			projectedPoints[pointI] =
-				projectionPlane.nearestPoint(lpoints[pointI]);
+        forAll (lpoints, pointI)
+        {
+            projectedPoints[pointI] =
+                projectionPlane.nearestPoint(lpoints[pointI]);
 
-			dist[pointI] = projectionPlane.distance(lpoints[pointI]);
-		}
-	}
-	else
-	{
-		  // Triangle... nothing to project, the points are already
-		  // located on the right plane
-		projectedPoints = lpoints;
-	}
+            dist[pointI] = projectionPlane.distance(lpoints[pointI]);
+        }
+    }
+    else
+    {
+          // Triangle... nothing to project, the points are already
+          // located on the right plane
+        projectedPoints = lpoints;
+    }
 
-	// Transfer the projection distance
-	distanceProjection = dist;
+    // Transfer the projection distance
+    distanceProjection = dist;
 
-	return tprojectedPoints;
+    return tprojectedPoints;
 }
 
 
@@ -690,47 +690,47 @@ template<class MasterPatch, class SlavePatch>
 typename GGIInterpolation<MasterPatch, SlavePatch>::orthoNormalBasis
 GGIInterpolation<MasterPatch, SlavePatch>::computeOrthonormalBasis
 (
-	const vector& normalVectorCentre,
-	const vector& normalVector,
-	const pointField& pointsOnPlane
+    const vector& normalVectorCentre,
+    const vector& normalVector,
+    const pointField& pointsOnPlane
 ) const
 {
-	// The orthonormal basis uvw
-	orthoNormalBasis uvw;
+    // The orthonormal basis uvw
+    orthoNormalBasis uvw;
 
-	vector u = pTraits<vector>::zero;
-	vector v = pTraits<vector>::zero;
-	vector w = normalVector;
+    vector u = pTraits<vector>::zero;
+    vector v = pTraits<vector>::zero;
+    vector w = normalVector;
 
-	// Normalized w
-	w /= mag(w) + VSMALL;
+    // Normalized w
+    w /= mag(w) + VSMALL;
 
-	// Find the projected point from the master face that is the most distant
-	scalar longestDistanceFromCenter = 0;
+    // Find the projected point from the master face that is the most distant
+    scalar longestDistanceFromCenter = 0;
 
-	forAll (pointsOnPlane, pointI)
-	{
-		vector delta = pointsOnPlane[pointI] - normalVectorCentre;
+    forAll (pointsOnPlane, pointI)
+    {
+        vector delta = pointsOnPlane[pointI] - normalVectorCentre;
 
-		if (mag(delta) > longestDistanceFromCenter)
-		{
-			longestDistanceFromCenter = mag(delta);
-			u = delta; // This is our next candidate for the u direction
-		}
-	}
+        if (mag(delta) > longestDistanceFromCenter)
+        {
+            longestDistanceFromCenter = mag(delta);
+            u = delta; // This is our next candidate for the u direction
+        }
+    }
 
-	// Normalized u
-	u /= mag(u) + VSMALL;
+    // Normalized u
+    u /= mag(u) + VSMALL;
 
-	// Compute v from u and w
-	v = w ^ u;    // v = w^u;
+    // Compute v from u and w
+    v = w ^ u;    // v = w^u;
 
-	// We got ourselves a new orthonormal basis to play with
-	uvw[0] = u;
-	uvw[1] = v;
-	uvw[2] = w;
+    // We got ourselves a new orthonormal basis to play with
+    uvw[0] = u;
+    uvw[1] = v;
+    uvw[2] = w;
 
-	return uvw;
+    return uvw;
 }
 
 
@@ -740,36 +740,36 @@ GGIInterpolation<MasterPatch, SlavePatch>::computeOrthonormalBasis
 template<class MasterPatch, class SlavePatch>
 List<point2D> GGIInterpolation<MasterPatch, SlavePatch>::projectPoints3Dto2D
 (
-	const orthoNormalBasis& orthoBase,
-	const vector& orthoBaseOffset,
-	const pointField& pointsIn3D,
-	scalarField& distanceProjection
+    const orthoNormalBasis& orthoBase,
+    const vector& orthoBaseOffset,
+    const pointField& pointsIn3D,
+    scalarField& distanceProjection
 ) const
 {
-	List<point2D> pointsIn2D(pointsIn3D.size());
-	scalarField  dist(pointsIn3D.size(), 0.0);
+    List<point2D> pointsIn2D(pointsIn3D.size());
+    scalarField  dist(pointsIn3D.size(), 0.0);
 
-	pointField pointsIn3DTranslated = pointsIn3D - orthoBaseOffset;
+    pointField pointsIn3DTranslated = pointsIn3D - orthoBaseOffset;
 
-	// Project onto the uv plane. The distance from the plane is
-	// computed with w
-	forAll (pointsIn3D, pointsI)
-	{
-		// u component
-		pointsIn2D[pointsI][0] =
-			pointsIn3DTranslated[pointsI] & orthoBase[0];
+    // Project onto the uv plane. The distance from the plane is
+    // computed with w
+    forAll (pointsIn3D, pointsI)
+    {
+        // u component
+        pointsIn2D[pointsI][0] =
+            pointsIn3DTranslated[pointsI] & orthoBase[0];
 
-		// v component
-		pointsIn2D[pointsI][1] =
-			pointsIn3DTranslated[pointsI] & orthoBase[1];
+        // v component
+        pointsIn2D[pointsI][1] =
+            pointsIn3DTranslated[pointsI] & orthoBase[1];
 
-		// w component = error above projection plane
-		dist[pointsI] = pointsIn3DTranslated[pointsI] & orthoBase[2];
-	}
+        // w component = error above projection plane
+        dist[pointsI] = pointsIn3DTranslated[pointsI] & orthoBase[2];
+    }
 
-	distanceProjection = dist;
+    distanceProjection = dist;
 
-	return pointsIn2D;
+    return pointsIn2D;
 }
 
 
@@ -777,21 +777,21 @@ List<point2D> GGIInterpolation<MasterPatch, SlavePatch>::projectPoints3Dto2D
 template<class MasterPatch, class SlavePatch>
 scalarField GGIInterpolation<MasterPatch, SlavePatch>::projectPoints2Dto1D
 (
-	const vector2D&      normalizedProjectionDir,
-	const point2D&       normalizedProjectionDirOffset,
-	const List<point2D>& lPoints2D
-	) const
+    const vector2D&      normalizedProjectionDir,
+    const point2D&       normalizedProjectionDirOffset,
+    const List<point2D>& lPoints2D
+    ) const
 {
-	scalarField pointsIn1D(lPoints2D.size()); // Return values.
+    scalarField pointsIn1D(lPoints2D.size()); // Return values.
 
-	forAll (lPoints2D, ptsI)
-	{
-		pointsIn1D[ptsI] =
-			normalizedProjectionDir & (lPoints2D[ptsI]
-		  - normalizedProjectionDirOffset);
-	}
+    forAll (lPoints2D, ptsI)
+    {
+        pointsIn1D[ptsI] =
+            normalizedProjectionDir & (lPoints2D[ptsI]
+          - normalizedProjectionDirOffset);
+    }
 
-	return pointsIn1D;
+    return pointsIn1D;
 }
 
 
@@ -808,144 +808,144 @@ scalarField GGIInterpolation<MasterPatch, SlavePatch>::projectPoints2Dto1D
 template<class MasterPatch, class SlavePatch>
 bool GGIInterpolation<MasterPatch, SlavePatch>::detect2dPolygonsOverlap
 (
-	const List<point2D>& poly1,
-	const List<point2D>& poly2,
-	const scalar& tolFactor,
-	const bool firstCall
+    const List<point2D>& poly1,
+    const List<point2D>& poly2,
+    const scalar& tolFactor,
+    const bool firstCall
 ) const
 {
-	bool isOverlapping = true;
+    bool isOverlapping = true;
 
-	for
-	(
-		label istart1 = 0, iend1 = poly1.size() - 1;
-		istart1 < poly1.size();
-		iend1 = istart1, istart1++
-	)
-	{
-		// Reference edge from polygon1
-		point2D curEdge1 = poly1[istart1] - poly1[iend1];
+    for
+    (
+        label istart1 = 0, iend1 = poly1.size() - 1;
+        istart1 < poly1.size();
+        iend1 = istart1, istart1++
+    )
+    {
+        // Reference edge from polygon1
+        point2D curEdge1 = poly1[istart1] - poly1[iend1];
 
-		point2D origEdge1 = poly1[iend1];
+        point2D origEdge1 = poly1[iend1];
 
-		// normalPerpDirection1 & curEdge1 == 0
-		vector2D normalPerpDirection1(curEdge1[1], - curEdge1[0]);
+        // normalPerpDirection1 & curEdge1 == 0
+        vector2D normalPerpDirection1(curEdge1[1], - curEdge1[0]);
 
-		// Normalize
-		normalPerpDirection1 /= mag(normalPerpDirection1) + VSMALL;
+        // Normalize
+        normalPerpDirection1 /= mag(normalPerpDirection1) + VSMALL;
 
-		// Project poly1 onto normalPerpDirection1
-		scalarField poly1PointsProjection = projectPoints2Dto1D
-		(
-			normalPerpDirection1,
-			origEdge1,
-			poly1
-		);
+        // Project poly1 onto normalPerpDirection1
+        scalarField poly1PointsProjection = projectPoints2Dto1D
+        (
+            normalPerpDirection1,
+            origEdge1,
+            poly1
+        );
 
-		// Project poly2 onto normalPerpDirection1
-		scalarField poly2PointsProjection = projectPoints2Dto1D
-		(
-			normalPerpDirection1,
-			origEdge1,
-			poly2
-		);
+        // Project poly2 onto normalPerpDirection1
+        scalarField poly2PointsProjection = projectPoints2Dto1D
+        (
+            normalPerpDirection1,
+            origEdge1,
+            poly2
+        );
 
-		// Grab range of the projected polygons
-		scalar p1_min = Foam::min(poly1PointsProjection);
-		scalar p1_max = Foam::max(poly1PointsProjection);
-		scalar p2_min = Foam::min(poly2PointsProjection);
-		scalar p2_max = Foam::max(poly2PointsProjection);
+        // Grab range of the projected polygons
+        scalar p1_min = Foam::min(poly1PointsProjection);
+        scalar p1_max = Foam::max(poly1PointsProjection);
+        scalar p2_min = Foam::min(poly2PointsProjection);
+        scalar p2_max = Foam::max(poly2PointsProjection);
 
-		// Here are all the possible situations for the range overlap
-		// detection, and a simple test that discriminates them all
-		//
-		//
-		//    P1 -------------                       p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//    P2 -------------
-		//
-		//    P2 -------------                       p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//    P1 -------------
-		//
-		//
-		//    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//         P2  ----
-		//
-		//         P1  ----
-		//    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//
-		//
-		//    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//              P2  ---------
-		//
-		//    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
-		//              P1  ---------
-		//
-		//
-		//                        P1 -------------   p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
-		//    P2  -------------
-		//
-		//
-		//                        P2 -------------   p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
-		//    P1  -------------
-		//
-		//
-		//
-		//    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
-		//                     ------------- P2
-		//
-		//
-		//    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
-		//                     ------------- P1
-		//
-		//
-		//
-		// What value should we give to epsilon???
-		//
-		// The intervals [p1_min, p1_max] and [p2_min, p2_max] are
-		// basically the dimension of one side of the BB for a given
-		// polygon, for a given "orientation" of the polygon.
-		//
-		// This means that epsilon^2 is roughly the size of the minimal
-		// surface area intersecting the 2 polygons that one accept to
-		// discard.
-		//
-		// So, if for instance we fix epsilon = 10e-3 * min
-		// (range_of_polygon1, range_of_polygon2), this means that we
-		// accept to discard an intersecting area roughly 10e-6 times the
-		// surface of the smallest polygon, so 1 PPM.
-		//
-		// Which means also that our GGI weighting factors will never be
-		//  smaller than roughly 10e-6, because this is the fraction of
-		// the intersection surface area we choose to discard.
+        // Here are all the possible situations for the range overlap
+        // detection, and a simple test that discriminates them all
+        //
+        //
+        //    P1 -------------                       p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //    P2 -------------
+        //
+        //    P2 -------------                       p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //    P1 -------------
+        //
+        //
+        //    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //         P2  ----
+        //
+        //         P1  ----
+        //    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //
+        //
+        //    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //              P2  ---------
+        //
+        //    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == true
+        //              P1  ---------
+        //
+        //
+        //                        P1 -------------   p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
+        //    P2  -------------
+        //
+        //
+        //                        P2 -------------   p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
+        //    P1  -------------
+        //
+        //
+        //
+        //    P1  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
+        //                     ------------- P2
+        //
+        //
+        //    P2  -------------                      p1_min + epsilon < p2_max  &&  p2_min + epsilon < p1_max  == false
+        //                     ------------- P1
+        //
+        //
+        //
+        // What value should we give to epsilon???
+        //
+        // The intervals [p1_min, p1_max] and [p2_min, p2_max] are
+        // basically the dimension of one side of the BB for a given
+        // polygon, for a given "orientation" of the polygon.
+        //
+        // This means that epsilon^2 is roughly the size of the minimal
+        // surface area intersecting the 2 polygons that one accept to
+        // discard.
+        //
+        // So, if for instance we fix epsilon = 10e-3 * min
+        // (range_of_polygon1, range_of_polygon2), this means that we
+        // accept to discard an intersecting area roughly 10e-6 times the
+        // surface of the smallest polygon, so 1 PPM.
+        //
+        // Which means also that our GGI weighting factors will never be
+        //  smaller than roughly 10e-6, because this is the fraction of
+        // the intersection surface area we choose to discard.
 
-		scalar _epsilon = tolFactor*
-			Foam::min
-			(
-				mag(p1_max - p1_min),
-				mag(p2_max - p2_min)
-			);
+        scalar _epsilon = tolFactor*
+            Foam::min
+            (
+                mag(p1_max - p1_min),
+                mag(p2_max - p2_min)
+            );
 
-		// Evaluate the presence or not of an overlapping
-		if
-		(
-			!((p1_min + _epsilon < p2_max)
-		  && (p2_min + _epsilon < p1_max))
-		)
-		{
-			isOverlapping = false; // We have found a separating axis!
-			break;
-		}
-	}
+        // Evaluate the presence or not of an overlapping
+        if
+        (
+            !((p1_min + _epsilon < p2_max)
+          && (p2_min + _epsilon < p1_max))
+        )
+        {
+            isOverlapping = false; // We have found a separating axis!
+            break;
+        }
+    }
 
-	if (isOverlapping && firstCall)
-	{
-		// We have not found any separating axes by exploring from
-		// poly1, let's switch by exploring from poly2 instead
-		isOverlapping =
-			detect2dPolygonsOverlap(poly2, poly1, tolFactor, false);
-	}
+    if (isOverlapping && firstCall)
+    {
+        // We have not found any separating axes by exploring from
+        // poly1, let's switch by exploring from poly2 instead
+        isOverlapping =
+            detect2dPolygonsOverlap(poly2, poly1, tolFactor, false);
+    }
 
-	return isOverlapping;
+    return isOverlapping;
 }
 
 

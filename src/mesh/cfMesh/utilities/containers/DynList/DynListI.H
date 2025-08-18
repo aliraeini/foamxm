@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -11,15 +11,15 @@
 License
     This file is part of foam-extend.
 
-    foam-extend is free software; you can redistribute it and/or modify it
+    foam-extend is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
+    Free Software Foundation, either version 3 of the License, or (at your
     option) any later version.
 
-    foam-extend is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
     You should have received a copy of the GNU General Public License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
@@ -75,13 +75,14 @@ inline void Foam::DynList<T, staticSize>::allocateSize(const label s)
     }
     else
     {
-        if( nAllocated_ > staticSize  && dataPtr_!=staticData_)
+        if( nAllocated_ > staticSize )
         {
-            //- delete dynamically allocated data
-            for(label i=0;i<s;++i)
+            // Delete dynamically allocated data
+            for(label i = 0;i < s;++i)
                 staticData_[i] = dataPtr_[i];
 
-            delete [] dataPtr_;
+            if (dataPtr_)
+                delete [] dataPtr_;
         }
 
         dataPtr_ = staticData_;
@@ -94,11 +95,8 @@ inline void Foam::DynList<T, staticSize>::checkIndex(const label i) const
 {
     if( (i < 0) || (i >= nextFree_) )
     {
-        FatalErrorIn
-        (
-            "void Foam::DynList<T, label, Offset>::"
-            "checkIndex(const label i) const"
-        ) << "Index " << i << " is not in range " << 0
+        FatalErrorInFunction
+            << "Index " << i << " is not in range " << 0
             << " and " << nextFree_ << abort(FatalError);
     }
 }
@@ -107,13 +105,9 @@ template<class T, Foam::label staticSize>
 inline void Foam::DynList<T, staticSize>::checkAllocation() const
 {
     if( nextFree_ > nAllocated_ )
-        FatalErrorIn
-        (
-            "template<class T, Foam::label staticSize> "
-            "inline void Foam::DynList<T, staticSize>::"
-            "checkAllocation() const"
-        ) << "nextFree_ is out of scope 0 " << " and " << nAllocated_
-          << abort(FatalError);
+        FatalErrorInFunction
+            << "nextFree_ is out of scope 0 " << " and " << nAllocated_
+            << abort(FatalError);
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -272,7 +266,7 @@ inline Foam::label Foam::DynList<T, staticSize>::byteSize() const
 
     if( !contiguous<T>() )
     {
-        FatalErrorIn("DynList<T>::byteSize()")
+        FatalErrorInFunction
             << "Cannot return the binary size of a list of "
                "non-primitive elements"
             << abort(FatalError);
@@ -411,10 +405,8 @@ inline T Foam::DynList<T, staticSize>::removeLastElement()
 
     if( nextFree_ == 0 )
     {
-        FatalErrorIn
-        (
-            "void Foam::DynList<T, staticSize>::remove()"
-        )   << "List is empty" << abort(FatalError);
+        FatalErrorInFunction
+            << "List is empty" << abort(FatalError);
     }
 
     T el = this->operator[](nextFree_-1);
@@ -431,10 +423,8 @@ inline T Foam::DynList<T, staticSize>::removeElement(const label i)
 
     if( nextFree_ == 0 )
     {
-        FatalErrorIn
-        (
-            "void Foam::DynList<T, staticSize>::remove()"
-        )   << "List is empty" << abort(FatalError);
+        FatalErrorInFunction
+            << "List is empty" << abort(FatalError);
     }
 
     T el = this->operator[](i);

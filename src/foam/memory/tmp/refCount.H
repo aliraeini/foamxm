@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::refCount
+    Foam::refCount
 
 Description
-	Reference counter for tmp\<field\>.
+    Reference counter for tmp\<field\>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -39,81 +39,84 @@ Description
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                          Class refCount Declaration
+\*---------------------------------------------------------------------------*/
 
 class refCount
 {
-	// Private data
+    // Private Data
 
-		int count_;
+        int count_;
 
-	// Private member functions
+    // Private member functions
 
-		//- Dissallow copy
-		refCount(const refCount&);
+        //- Dissallow copy
+        refCount(const refCount&) = delete;
 
-		//- Dissallow bitwise assignment
-		void operator=(const refCount&);
+        //- Dissallow bitwise assignment
+        void operator=(const refCount&) = delete;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null with zero count
-		refCount()
-		:
-			count_(0)
-		{}
-
-
-	// Member Functions
-
-		//- Return the reference count
-		int count() const
-		{
-			return count_;
-		}
+        //- Construct null with zero count
+        refCount()
+        :
+            count_(0)
+        {}
 
 
-		//- Return true if the reference count is zero
-		bool unique() const
-		{
-			return count_ == 0;
-		}
+    // Member Functions
+
+        //- Return the reference count
+        int count() const
+        {
+            return count_;
+        }
 
 
-		//- Reset the reference count to zero
-		void resetRefCount()
-		{
-			count_ = 0;
-		}
+        //- Return true if the reference count is zero
+        bool unique() const
+        {
+            return count_ == 0;
+        }
 
 
-	// Member Operators
+        //- Reset the reference count to zero
+        void resetRefCount()
+        {
+            count_ = 0;
+        }
 
-		//- Increment the reference count
-		void operator++()
-		{
-			count_++;
-		}
 
-		//- Increment the reference count
-		void operator++(int)
-		{
-			count_++;
-		}
+    // Member Operators
 
-		//- Decrement the reference count
-		void operator--()
-		{
-			count_--;
-		}
+        //- Increment the reference count
+        void operator++()
+        {
+            count_++;
+        }
 
-		//- Decrement the reference count
-		void operator--(int)
-		{
-			count_--;
-		}
+        //- Increment the reference count
+        void operator++(int)
+        {
+            count_++;
+        }
+
+        //- Decrement the reference count
+        void operator--()
+        {
+            count_--;
+        }
+
+        //- Decrement the reference count
+        void operator--(int)
+        {
+            count_--;
+        }
 };
 
 

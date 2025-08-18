@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,89 +31,89 @@ License
 template<unsigned SizeInc, unsigned SizeMult, unsigned SizeDiv>
 Foam::label Foam::face::triangles
 (
-	const pointField& points,
-	DynamicList<face, SizeInc, SizeMult, SizeDiv>& triFaces
+    const pointField& points,
+    DynamicList<face, SizeInc, SizeMult, SizeDiv>& triFaces
 ) const
 {
-	label triI = triFaces.size();
-	label quadI = 0;
-	faceList quadFaces;
+    label triI = triFaces.size();
+    label quadI = 0;
+    faceList quadFaces;
 
-	// adjust the addressable size (and allocate space if needed)
-	triFaces.setSize(triI + nTriangles());
+    // adjust the addressable size (and allocate space if needed)
+    triFaces.setSize(triI + nTriangles());
 
-	return split(SPLITTRIANGLE, points, triI, quadI, triFaces, quadFaces);
+    return split(SPLITTRIANGLE, points, triI, quadI, triFaces, quadFaces);
 }
 
 
 template<class Type>
 Type Foam::face::average
 (
-	const pointField& meshPoints,
-	const Field<Type>& fld
+    const pointField& meshPoints,
+    const Field<Type>& fld
 ) const
 {
-	// Calculate the average by breaking the face into triangles and
-	// area-weighted averaging their averages
+    // Calculate the average by breaking the face into triangles and
+    // area-weighted averaging their averages
 
-	// If the face is a triangle, do a direct calculation
-	if (size() == 3)
-	{
-		return
-			(1.0/3.0)
-		   *(
-			   fld[operator[](0)]
-			 + fld[operator[](1)]
-			 + fld[operator[](2)]
-			);
-	}
+    // If the face is a triangle, do a direct calculation
+    if (size() == 3)
+    {
+        return
+            (1.0/3.0)
+           *(
+               fld[operator[](0)]
+             + fld[operator[](1)]
+             + fld[operator[](2)]
+            );
+    }
 
-	label nPoints = size();
+    label nPoints = size();
 
-	point centrePoint = point::zero;
-	Type cf = pTraits<Type>::zero;
+    point centrePoint = point::zero;
+    Type cf = pTraits<Type>::zero;
 
-	for (label pI=0; pI<nPoints; pI++)
-	{
-		centrePoint += meshPoints[operator[](pI)];
-		cf += fld[operator[](pI)];
-	}
+    for (label pI=0; pI<nPoints; pI++)
+    {
+        centrePoint += meshPoints[operator[](pI)];
+        cf += fld[operator[](pI)];
+    }
 
-	centrePoint /= nPoints;
-	cf /= nPoints;
+    centrePoint /= nPoints;
+    cf /= nPoints;
 
-	scalar sumA = 0;
-	Type sumAf = pTraits<Type>::zero;
+    scalar sumA = 0;
+    Type sumAf = pTraits<Type>::zero;
 
-	for (label pI=0; pI<nPoints; pI++)
-	{
-		// Calculate 3*triangle centre field value
-		Type ttcf  =
-		(
-			fld[operator[](pI)]
-		  + fld[operator[]((pI + 1) % nPoints)]
-		  + cf
-		);
+    for (label pI=0; pI<nPoints; pI++)
+    {
+        // Calculate 3*triangle centre field value
+        Type ttcf  =
+        (
+            fld[operator[](pI)]
+          + fld[operator[]((pI + 1) % nPoints)]
+          + cf
+        );
 
-		// Calculate 2*triangle area
-		scalar ta = Foam::mag
-		(
-			(meshPoints[operator[](pI)] - centrePoint)
-		  ^ (meshPoints[operator[]((pI + 1) % nPoints)] - centrePoint)
-		);
+        // Calculate 2*triangle area
+        scalar ta = Foam::mag
+        (
+            (meshPoints[operator[](pI)] - centrePoint)
+          ^ (meshPoints[operator[]((pI + 1) % nPoints)] - centrePoint)
+        );
 
-		sumA += ta;
-		sumAf += ta*ttcf;
-	}
+        sumA += ta;
+        sumAf += ta*ttcf;
+    }
 
-	if (sumA > VSMALL)
-	{
-		return sumAf/(3*sumA);
-	}
-	else
-	{
-		return cf;
-	}
+    if (sumA > VSMALL)
+    {
+        return sumAf/(3*sumA);
+    }
+    else
+    {
+        return cf;
+    }
 }
 
 

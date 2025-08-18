@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,9 +38,9 @@ namespace Foam
 defineTypeNameAndDebug(linearInterpolationWeights, 0);
 addToRunTimeSelectionTable
 (
-	interpolationWeights,
-	linearInterpolationWeights,
-	word
+    interpolationWeights,
+    linearInterpolationWeights,
+    word
 );
 
 
@@ -48,25 +48,25 @@ addToRunTimeSelectionTable
 
 Foam::Pair<Foam::scalar> linearInterpolationWeights::integrationWeights
 (
-	const label i,
-	const scalar t
+    const label i,
+    const scalar t
 ) const
 {
-	// t is in range samples_[i] .. samples_[i+1]
+    // t is in range samples_[i] .. samples_[i+1]
 
-	scalar s = (t-samples_[i])/(samples_[i+1]-samples_[i]);
+    scalar s = (t-samples_[i])/(samples_[i+1]-samples_[i]);
 
-	if (s < -SMALL || s > 1+SMALL)
-	{
-		FatalErrorInFunction
-			<< "Value " << t << " outside range " << samples_[i]
-			<< " .. " << samples_[i+1]
-			<< exit(FatalError);
-	}
+    if (s < -SMALL || s > 1+SMALL)
+    {
+        FatalErrorInFunction
+            << "Value " << t << " outside range " << samples_[i]
+            << " .. " << samples_[i+1]
+            << exit(FatalError);
+    }
 
-	scalar d = samples_[i+1]-t;
+    scalar d = samples_[i+1]-t;
 
-	return Pair<scalar>(d*0.5*(1-s), d*0.5*(1+s));
+    return Pair<scalar>(d*0.5*(1-s), d*0.5*(1+s));
 }
 
 
@@ -74,11 +74,11 @@ Foam::Pair<Foam::scalar> linearInterpolationWeights::integrationWeights
 
 linearInterpolationWeights::linearInterpolationWeights
 (
-	const scalarField& samples
+    const scalarField& samples
 )
 :
-	interpolationWeights(samples),
-	index_(-1)
+    interpolationWeights(samples),
+    index_(-1)
 {}
 
 
@@ -86,162 +86,162 @@ linearInterpolationWeights::linearInterpolationWeights
 
 bool linearInterpolationWeights::valueWeights
 (
-	const scalar t,
-	labelList& indices,
-	scalarField& weights
+    const scalar t,
+    labelList& indices,
+    scalarField& weights
 ) const
 {
-	bool indexChanged = false;
+    bool indexChanged = false;
 
-	// Check if current timeIndex is still valid
-	if
-	(
-		index_ >= 0
-	 && index_ < samples_.size()
-	 && (
-			samples_[index_] <= t
-		 && (index_ == samples_.size()-1 || t <= samples_[index_+1])
-		)
-	)
-	{
-		// index_ still at correct slot
-	}
-	else
-	{
-		// search for correct index
-		index_ = findLower(samples_, t);
-		indexChanged = true;
-	}
+    // Check if current timeIndex is still valid
+    if
+    (
+        index_ >= 0
+     && index_ < samples_.size()
+     && (
+            samples_[index_] <= t
+         && (index_ == samples_.size()-1 || t <= samples_[index_+1])
+        )
+    )
+    {
+        // index_ still at correct slot
+    }
+    else
+    {
+        // search for correct index
+        index_ = findLower(samples_, t);
+        indexChanged = true;
+    }
 
 
-	if (index_ == -1)
-	{
-		// Use first element only
-		indices.setSize(1);
-		weights.setSize(1);
-		indices[0] = 0;
-		weights[0] = 1.0;
-	}
-	else if (index_ == samples_.size()-1)
-	{
-		// Use last element only
-		indices.setSize(1);
-		weights.setSize(1);
-		indices[0] = samples_.size()-1;
-		weights[0] = 1.0;
-	}
-	else
-	{
-		// Interpolate
-		indices.setSize(2);
-		weights.setSize(2);
+    if (index_ == -1)
+    {
+        // Use first element only
+        indices.setSize(1);
+        weights.setSize(1);
+        indices[0] = 0;
+        weights[0] = 1.0;
+    }
+    else if (index_ == samples_.size()-1)
+    {
+        // Use last element only
+        indices.setSize(1);
+        weights.setSize(1);
+        indices[0] = samples_.size()-1;
+        weights[0] = 1.0;
+    }
+    else
+    {
+        // Interpolate
+        indices.setSize(2);
+        weights.setSize(2);
 
-		indices[0] = index_;
-		indices[1] = index_+1;
+        indices[0] = index_;
+        indices[1] = index_+1;
 
-		scalar t0 = samples_[indices[0]];
-		scalar t1 = samples_[indices[1]];
-		scalar deltaT = t1-t0;
+        scalar t0 = samples_[indices[0]];
+        scalar t1 = samples_[indices[1]];
+        scalar deltaT = t1-t0;
 
-		weights[0] = (t1-t)/deltaT;
-		weights[1] = 1.0-weights[0];
-	}
+        weights[0] = (t1-t)/deltaT;
+        weights[1] = 1.0-weights[0];
+    }
 
-	return indexChanged;
+    return indexChanged;
 }
 
 
 bool linearInterpolationWeights::integrationWeights
 (
-	const scalar t1,
-	const scalar t2,
-	labelList& indices,
-	scalarField& weights
+    const scalar t1,
+    const scalar t2,
+    labelList& indices,
+    scalarField& weights
 ) const
 {
-	if (t2 < t1-VSMALL)
-	{
-		FatalErrorInFunction
-			<< "Integration should be in positive direction."
-			<<  " t1:" << t1 << " t2:" << t2
-			<< exit(FatalError);
-	}
+    if (t2 < t1-VSMALL)
+    {
+        FatalErrorInFunction
+            << "Integration should be in positive direction."
+            <<  " t1:" << t1 << " t2:" << t2
+            << exit(FatalError);
+    }
 
-	// Currently no fancy logic on cached index like in value
+    // Currently no fancy logic on cached index like in value
 
-	//- Find lower or equal index
-	label i1 = findLower(samples_, t1, 0, lessEqOp<scalar>());
-	//- Find lower index
-	label i2 = findLower(samples_, t2);
+    //- Find lower or equal index
+    label i1 = findLower(samples_, t1, 0, lessEqOp<scalar>());
+    //- Find lower index
+    label i2 = findLower(samples_, t2);
 
-	// For now just fail if any outside table
-	if (i1 == -1 || i2 == samples_.size()-1)
-	{
-		FatalErrorInFunction
-			<< "Integrating outside table " << samples_[0] << ".."
-			<< samples_.last() << " not implemented."
-			<< " t1:" << t1 << " t2:" << t2 << exit(FatalError);
-	}
+    // For now just fail if any outside table
+    if (i1 == -1 || i2 == samples_.size()-1)
+    {
+        FatalErrorInFunction
+            << "Integrating outside table " << samples_[0] << ".."
+            << samples_.last() << " not implemented."
+            << " t1:" << t1 << " t2:" << t2 << exit(FatalError);
+    }
 
-	label nIndices = i2-i1+2;
+    label nIndices = i2-i1+2;
 
 
-	// Determine if indices already correct
-	bool anyChanged = false;
+    // Determine if indices already correct
+    bool anyChanged = false;
 
-	if (nIndices != indices.size())
-	{
-		anyChanged = true;
-	}
-	else
-	{
-		// Closer check
+    if (nIndices != indices.size())
+    {
+        anyChanged = true;
+    }
+    else
+    {
+        // Closer check
 
-		label index = i1;
-		forAll(indices, i)
-		{
-			if (indices[i] != index)
-			{
-				anyChanged = true;
-				break;
-			}
-			index++;
-		}
-	}
+        label index = i1;
+        forAll(indices, i)
+        {
+            if (indices[i] != index)
+            {
+                anyChanged = true;
+                break;
+            }
+            index++;
+        }
+    }
 
-	indices.setSize(nIndices);
-	weights.setSize(nIndices);
-	weights = 0.0;
+    indices.setSize(nIndices);
+    weights.setSize(nIndices);
+    weights = 0.0;
 
-	// Sum from i1+1 to i2+1
-	for (label i = i1+1; i <= i2; i++)
-	{
-		scalar d = samples_[i+1]-samples_[i];
-		indices[i-i1] = i;
-		weights[i-i1] += 0.5*d;
-		indices[i+1-i1] = i+1;
-		weights[i+1-i1] += 0.5*d;
-	}
+    // Sum from i1+1 to i2+1
+    for (label i = i1+1; i <= i2; i++)
+    {
+        scalar d = samples_[i+1]-samples_[i];
+        indices[i-i1] = i;
+        weights[i-i1] += 0.5*d;
+        indices[i+1-i1] = i+1;
+        weights[i+1-i1] += 0.5*d;
+    }
 
-	// Add from i1 to t1
-	{
-		Pair<scalar> i1Tot1 = integrationWeights(i1, t1);
-		indices[0] = i1;
-		weights[0] += i1Tot1.first();
-		indices[1] = i1+1;
-		weights[1] += i1Tot1.second();
-	}
+    // Add from i1 to t1
+    {
+        Pair<scalar> i1Tot1 = integrationWeights(i1, t1);
+        indices[0] = i1;
+        weights[0] += i1Tot1.first();
+        indices[1] = i1+1;
+        weights[1] += i1Tot1.second();
+    }
 
-	// Subtract from t2 to i2+1
-	{
-		Pair<scalar> wghts = integrationWeights(i2, t2);
-		indices[i2-i1] = i2;
-		weights[i2-i1] += -wghts.first();
-		indices[i2-i1+1] = i2+1;
-		weights[i2-i1+1] += -wghts.second();
-	}
+    // Subtract from t2 to i2+1
+    {
+        Pair<scalar> wghts = integrationWeights(i2, t2);
+        indices[i2-i1] = i2;
+        weights[i2-i1] += -wghts.first();
+        indices[i2-i1+1] = i2+1;
+        weights[i2-i1+1] += -wghts.second();
+    }
 
-	return anyChanged;
+    return anyChanged;
 }
 
 

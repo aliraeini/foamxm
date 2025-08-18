@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -41,7 +41,7 @@ defineTypeNameAndDebug(Foam::treeDataPoint, 0);
 // Construct from components
 Foam::treeDataPoint::treeDataPoint(const pointField& points)
 :
-	points_(points)
+    points_(points)
 {}
 
 
@@ -49,7 +49,7 @@ Foam::treeDataPoint::treeDataPoint(const pointField& points)
 
 Foam::pointField Foam::treeDataPoint::points() const
 {
-	return points_;
+    return points_;
 }
 
 
@@ -57,22 +57,22 @@ Foam::pointField Foam::treeDataPoint::points() const
 //  Only makes sense for closed surfaces.
 Foam::label Foam::treeDataPoint::getVolumeType
 (
-	const indexedOctree<treeDataPoint>& oc,
-	const point& sample
+    const indexedOctree<treeDataPoint>& oc,
+    const point& sample
 ) const
 {
-	return indexedOctree<treeDataPoint>::UNKNOWN;
+    return volumeType::UNKNOWN;
 }
 
 
 // Check if any point on shape is inside cubeBb.
 bool Foam::treeDataPoint::overlaps
 (
-	const label index,
-	const treeBoundBox& cubeBb
+    const label index,
+    const treeBoundBox& cubeBb
 ) const
 {
-	return cubeBb.contains(points_[index]);
+    return cubeBb.contains(points_[index]);
 }
 
 
@@ -80,29 +80,29 @@ bool Foam::treeDataPoint::overlaps
 //  minIndex, nearestPoint.
 void Foam::treeDataPoint::findNearest
 (
-	const labelList& indices,
-	const point& sample,
+    const labelList& indices,
+    const point& sample,
 
-	scalar& nearestDistSqr,
-	label& minIndex,
-	point& nearestPoint
+    scalar& nearestDistSqr,
+    label& minIndex,
+    point& nearestPoint
 ) const
 {
-	forAll(indices, i)
-	{
-		label index = indices[i];
+    forAll(indices, i)
+    {
+        label index = indices[i];
 
-		const point& pt = points_[index];
+        const point& pt = points_[index];
 
-		scalar distSqr = magSqr(pt - sample);
+        scalar distSqr = magSqr(pt - sample);
 
-		if (distSqr < nearestDistSqr)
-		{
-			nearestDistSqr = distSqr;
-			minIndex = index;
-			nearestPoint = pt;
-		}
-	}
+        if (distSqr < nearestDistSqr)
+        {
+            nearestDistSqr = distSqr;
+            minIndex = index;
+            nearestPoint = pt;
+        }
+    }
 }
 
 
@@ -110,54 +110,54 @@ void Foam::treeDataPoint::findNearest
 //  Returns point and distance (squared)
 void Foam::treeDataPoint::findNearest
 (
-	const labelList& indices,
-	const linePointRef& ln,
+    const labelList& indices,
+    const linePointRef& ln,
 
-	treeBoundBox& tightest,
-	label& minIndex,
-	point& linePoint,
-	point& nearestPoint
+    treeBoundBox& tightest,
+    label& minIndex,
+    point& linePoint,
+    point& nearestPoint
 ) const
 {
-	// Best so far
-	scalar nearestDistSqr = magSqr(linePoint - nearestPoint);
+    // Best so far
+    scalar nearestDistSqr = magSqr(linePoint - nearestPoint);
 
-	forAll(indices, i)
-	{
-		label index = indices[i];
+    forAll(indices, i)
+    {
+        label index = indices[i];
 
-		const point& shapePt = points_[index];
+        const point& shapePt = points_[index];
 
-		if (tightest.contains(shapePt))
-		{
-			// Nearest point on line
-			pointHit pHit = ln.nearestDist(shapePt);
-			scalar distSqr = sqr(pHit.distance());
+        if (tightest.contains(shapePt))
+        {
+            // Nearest point on line
+            pointHit pHit = ln.nearestDist(shapePt);
+            scalar distSqr = sqr(pHit.distance());
 
-			if (distSqr < nearestDistSqr)
-			{
-				nearestDistSqr = distSqr;
-				minIndex = index;
-				linePoint = pHit.rawPoint();
-				nearestPoint = shapePt;
+            if (distSqr < nearestDistSqr)
+            {
+                nearestDistSqr = distSqr;
+                minIndex = index;
+                linePoint = pHit.rawPoint();
+                nearestPoint = shapePt;
 
-				{
-					point& minPt = tightest.min();
-					minPt = min(ln.start(), ln.end());
-					minPt.x() -= pHit.distance();
-					minPt.y() -= pHit.distance();
-					minPt.z() -= pHit.distance();
-				}
-				{
-					point& maxPt = tightest.max();
-					maxPt = max(ln.start(), ln.end());
-					maxPt.x() += pHit.distance();
-					maxPt.y() += pHit.distance();
-					maxPt.z() += pHit.distance();
-				}
-			}
-		}
-	}
+                {
+                    point& minPt = tightest.min();
+                    minPt = min(ln.start(), ln.end());
+                    minPt.x() -= pHit.distance();
+                    minPt.y() -= pHit.distance();
+                    minPt.z() -= pHit.distance();
+                }
+                {
+                    point& maxPt = tightest.max();
+                    maxPt = max(ln.start(), ln.end());
+                    maxPt.x() += pHit.distance();
+                    maxPt.y() += pHit.distance();
+                    maxPt.z() += pHit.distance();
+                }
+            }
+        }
+    }
 }
 
 

@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	mixerGgiFvMesh
+    mixerGgiFvMesh
 
 Description
-	Simple mixer mesh using a GGI interface
+    Simple mixer mesh using a GGI interface
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 SourceFiles
-	mixerGgiFvMesh.C
+    mixerGgiFvMesh.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,71 +46,77 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                        Class mixerGgiFvMesh Declaration
+\*---------------------------------------------------------------------------*/
 
 class mixerGgiFvMesh
 :
-	public dynamicFvMesh
+    public dynamicFvMesh
 {
-	// Private data
+    // Private data
 
-		//- Motion dictionary
-		dictionary dict_;
+        //- Motion dictionary
+        dictionary dict_;
 
-		//- Coordinate system
-		cylindricalCS cs_;
+        //- Coordinate system
+        cylindricalCS cs_;
 
-		// - Rotational speed in rotations per minute (rpm)
-		scalar rpm_;
+        // - Rotational speed in rotations per minute (rpm)
+        scalar rpm_;
 
-		//- Markup field for points.  Moving points marked with 1
-		mutable scalarField* movingPointsMaskPtr_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		mixerGgiFvMesh(const mixerGgiFvMesh&);
-
-		//- Disallow default bitwise assignment
-		void operator=(const mixerGgiFvMesh&);
+        //- Markup field for points.  Moving points marked with 1
+        mutable scalarField* movingPointsMaskPtr_;
 
 
-		//- Add mixer zones
-		void addZonesAndModifiers();
+    // Private Member Functions
 
-		//- Calculate moving masks
-		void calcMovingMasks() const;
+        //- Disallow default bitwise copy construct
+        mixerGgiFvMesh(const mixerGgiFvMesh&) = delete;
 
-		//- Return moving points mask
-		const scalarField& movingPointsMask() const;
+        //- Disallow default bitwise assignment
+        void operator=(const mixerGgiFvMesh&) = delete;
+
+
+        //- Add mixer zones
+        void addZonesAndModifiers();
+
+        //- Calculate moving masks
+        void calcMovingMasks() const;
+
+        //- Return moving points mask
+        const scalarField& movingPointsMask() const;
+
+        //- Clear out
+        void clearOut();
 
 
 public:
 
-	//- Runtime type information
-	TypeName("mixerGgiFvMesh");
+    //- Runtime type information
+    TypeName("mixerGgiFvMesh");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject
-		explicit mixerGgiFvMesh(const IOobject& io);
-
-
-	// Destructor
-		virtual ~mixerGgiFvMesh();
+        //- Construct from IOobject
+        explicit mixerGgiFvMesh(const IOobject& io);
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~mixerGgiFvMesh();
 
-		//- Return coordinate system
-		const cylindricalCS& cs() const
-		{
-			return cs_;
-		}
 
-		//- Update the mesh for both mesh motion
-		virtual bool update();
+    // Member Functions
+
+        //- Return coordinate system
+        const cylindricalCS& cs() const
+        {
+            return cs_;
+        }
+
+        //- Update the mesh for both mesh motion
+        virtual bool update();
 };
 
 

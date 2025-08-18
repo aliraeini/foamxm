@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -38,37 +38,37 @@ namespace Foam
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void ComponentMixedPointPatchVectorField
 <
-	PatchField,
-	Mesh,
-	PointPatch,
-	MatrixType
+    PatchField,
+    Mesh,
+    PointPatch,
+    MatrixType
 >
 ::checkFieldSize() const
 {
-	if
-	(
-		this->size() != this->patch().size()
-	 || refValue_.size() != this->patch().size()
-	 || valueFraction_.size() != this->patch().size()
-	)
-	{
-		FatalErrorIn
-		(
-			"void ComponentMixedPointPatchVectorField::checkField() const"
-		)   << "field does not correspond to patch. " << endl
-			<< "Field size: " << this->size()
-			<< " value size: " << refValue_.size()
-			<< " valueFraction size: " << valueFraction_.size()
-			<< " patch size: " << this->patch().size()
-			<< abort(FatalError);
-	}
+    if
+    (
+        this->size() != this->patch().size()
+     || refValue_.size() != this->patch().size()
+     || valueFraction_.size() != this->patch().size()
+    )
+    {
+        FatalErrorIn
+        (
+            "void ComponentMixedPointPatchVectorField::checkField() const"
+        )   << "field does not correspond to patch. " << endl
+            << "Field size: " << this->size()
+            << " value size: " << refValue_.size()
+            << " valueFraction size: " << valueFraction_.size()
+            << " patch size: " << this->patch().size()
+            << abort(FatalError);
+    }
 }
 
 
@@ -76,108 +76,108 @@ void ComponentMixedPointPatchVectorField
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 ComponentMixedPointPatchVectorField<PatchField, Mesh, PointPatch, MatrixType>::
 ComponentMixedPointPatchVectorField
 (
-	const PointPatch& p,
-	const DimensionedField<vector, Mesh>& iF
+    const PointPatch& p,
+    const DimensionedField<vector, Mesh>& iF
 )
 :
-	PatchField<vector>(p, iF),
-	refValue_(p.size()),
-	valueFraction_(p.size())
+    PatchField<vector>(p, iF),
+    refValue_(p.size()),
+    valueFraction_(p.size())
 {}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 ComponentMixedPointPatchVectorField<PatchField, Mesh, PointPatch, MatrixType>::
 ComponentMixedPointPatchVectorField
 (
-	const PointPatch& p,
-	const DimensionedField<vector, Mesh>& iF,
-	const dictionary& dict
+    const PointPatch& p,
+    const DimensionedField<vector, Mesh>& iF,
+    const dictionary& dict
 )
 :
-	PatchField<vector>(p, iF),
-	refValue_("refValue", dict, p.size()),
-	valueFraction_("valueFraction", dict, p.size())
+    PatchField<vector>(p, iF),
+    refValue_("refValue", dict, p.size()),
+    valueFraction_("valueFraction", dict, p.size())
 {
-	this->updateBoundaryField();
+    this->updateBoundaryField();
 }
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 ComponentMixedPointPatchVectorField<PatchField, Mesh, PointPatch, MatrixType>::
 ComponentMixedPointPatchVectorField
 (
-	const ComponentMixedPointPatchVectorField
-		<PatchField, Mesh, PointPatch, MatrixType>& ptf,
-	const PointPatch& p,
-	const DimensionedField<vector, Mesh>& iF,
-	const PointPatchFieldMapper& mapper
+    const ComponentMixedPointPatchVectorField
+        <PatchField, Mesh, PointPatch, MatrixType>& ptf,
+    const PointPatch& p,
+    const DimensionedField<vector, Mesh>& iF,
+    const PointPatchFieldMapper& mapper
 )
 :
-	PatchField<vector>(p, iF),
-	refValue_(ptf.refValue_, mapper),
-	valueFraction_(ptf.valueFraction_, mapper)
+    PatchField<vector>(p, iF),
+    refValue_(ptf.refValue_, mapper),
+    valueFraction_(ptf.valueFraction_, mapper)
 {}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 ComponentMixedPointPatchVectorField<PatchField, Mesh, PointPatch, MatrixType>::
 ComponentMixedPointPatchVectorField
 (
-	const ComponentMixedPointPatchVectorField
-	<PatchField, Mesh, PointPatch, MatrixType>& ptf
+    const ComponentMixedPointPatchVectorField
+    <PatchField, Mesh, PointPatch, MatrixType>& ptf
 )
 :
-	PatchField<vector>(ptf),
-	refValue_(ptf.refValue_),
-	valueFraction_(ptf.valueFraction_)
+    PatchField<vector>(ptf),
+    refValue_(ptf.refValue_),
+    valueFraction_(ptf.valueFraction_)
 {}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 ComponentMixedPointPatchVectorField<PatchField, Mesh, PointPatch, MatrixType>::
 ComponentMixedPointPatchVectorField
 (
-	const ComponentMixedPointPatchVectorField
-	<PatchField, Mesh, PointPatch, MatrixType>& ptf,
-	const DimensionedField<vector, Mesh>& iF
+    const ComponentMixedPointPatchVectorField
+    <PatchField, Mesh, PointPatch, MatrixType>& ptf,
+    const DimensionedField<vector, Mesh>& iF
 )
 :
-	PatchField<vector>(ptf, iF),
-	refValue_(ptf.refValue_),
-	valueFraction_(ptf.valueFraction_)
+    PatchField<vector>(ptf, iF),
+    refValue_(ptf.refValue_),
+    valueFraction_(ptf.valueFraction_)
 {}
 
 
@@ -185,140 +185,140 @@ ComponentMixedPointPatchVectorField
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void
 ComponentMixedPointPatchVectorField
 <PatchField, Mesh, PointPatch, MatrixType>::
 autoMap
 (
-	const PointPatchFieldMapper& m
+    const PointPatchFieldMapper& m
 )
 {
-	refValue_.autoMap(m);
-	valueFraction_.autoMap(m);
+    refValue_.autoMap(m);
+    valueFraction_.autoMap(m);
 }
 
 
 // Grab the values using rmap
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void ComponentMixedPointPatchVectorField
 <PatchField, Mesh, PointPatch, MatrixType>::
 rmap
 (
-	const PointPatchField
-		<PatchField, Mesh, PointPatch, MatrixType, vector>& ptf,
-	const labelList& addr
+    const PointPatchField
+        <PatchField, Mesh, PointPatch, MatrixType, vector>& ptf,
+    const labelList& addr
 )
 {
-	const ComponentMixedPointPatchVectorField& mptf =
-		refCast<const ComponentMixedPointPatchVectorField>(ptf);
+    const ComponentMixedPointPatchVectorField& mptf =
+        refCast<const ComponentMixedPointPatchVectorField>(ptf);
 
-	refValue_.rmap(mptf.refValue_, addr);
-	valueFraction_.rmap(mptf.valueFraction_, addr);
+    refValue_.rmap(mptf.refValue_, addr);
+    valueFraction_.rmap(mptf.valueFraction_, addr);
 }
 
 
 // Evaluate patch field
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void ComponentMixedPointPatchVectorField
 <PatchField, Mesh, PointPatch, MatrixType>::
 evaluate
 (
-	const Pstream::commsTypes commsType
+    const Pstream::commsTypes commsType
 )
 {
-	tmp<vectorField> internalValues = this->patchInternalField();
+    tmp<vectorField> internalValues = this->patchInternalField();
 
-	// Get internal field to insert values into
-	vectorField& iF = const_cast<vectorField&>(this->internalField());
+    // Get internal field to insert values into
+    vectorField& iF = const_cast<vectorField&>(this->internalField());
 
-	vectorField values =
-		cmptMultiply(refValue_, valueFraction_)
-	  + cmptMultiply(internalValues, vector::one - valueFraction_);
+    vectorField values =
+        cmptMultiply(refValue_, valueFraction_)
+      + cmptMultiply(internalValues, vector::one - valueFraction_);
 
-	this->setInInternalField(iF, values);
+    this->setInInternalField(iF, values);
 }
 
 
 // Set boundary condition to matrix
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void ComponentMixedPointPatchVectorField
 <PatchField, Mesh, PointPatch, MatrixType>::
 setBoundaryCondition
 (
-	Map<typename MatrixType<vector>::ConstraintType>& fix
+    Map<typename MatrixType<vector>::ConstraintType>& fix
 ) const
 {
-	// get addressing
-	const labelList& meshPoints = this->patch().meshPoints();
+    // get addressing
+    const labelList& meshPoints = this->patch().meshPoints();
 
-	// The boundary nod eequation expects a list of valueFractions
-	// associated with each component.  In order to enforce
-	// consistency, the valueFraction is stored as a vector.
+    // The boundary nod eequation expects a list of valueFractions
+    // associated with each component.  In order to enforce
+    // consistency, the valueFraction is stored as a vector.
 
-	forAll (meshPoints, pointI)
-	{
-		const label curPoint = meshPoints[pointI];
+    forAll (meshPoints, pointI)
+    {
+        const label curPoint = meshPoints[pointI];
 
-		// create a constraint
-		typename MatrixType<vector>::ConstraintType bc
-		(
-			curPoint,
-			refValue_[pointI],
-			cmptMag(valueFraction_[pointI])
-		);
+        // create a constraint
+        typename MatrixType<vector>::ConstraintType bc
+        (
+            curPoint,
+            refValue_[pointI],
+            cmptMag(valueFraction_[pointI])
+        );
 
-		// If pointer is not set, add it, otherwise combine with
-		// already existing value
-		if (!fix.found(curPoint))
-		{
-			fix.insert(curPoint, bc);
-		}
-		else
-		{
-			fix[curPoint].combine(bc);
-		}
-	}
+        // If pointer is not set, add it, otherwise combine with
+        // already existing value
+        if (!fix.found(curPoint))
+        {
+            fix.insert(curPoint, bc);
+        }
+        else
+        {
+            fix[curPoint].combine(bc);
+        }
+    }
 }
 
 
 // Write
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void ComponentMixedPointPatchVectorField
 <PatchField, Mesh, PointPatch, MatrixType>::
 write(Ostream& os) const
 {
-	PatchField<vector>::write(os);
-	refValue_.writeEntry("refValue", os);
-	valueFraction_.writeEntry("valueFraction", os);
+    PatchField<vector>::write(os);
+    refValue_.writeEntry("refValue", os);
+    valueFraction_.writeEntry("valueFraction", os);
 }
 
 

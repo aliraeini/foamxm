@@ -5,8 +5,8 @@
         (
             "g",
             runTime.constant(),
-			mesh,
-			IOobject::MUST_READ,
-			IOobject::NO_WRITE
-		)
-	);
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    );

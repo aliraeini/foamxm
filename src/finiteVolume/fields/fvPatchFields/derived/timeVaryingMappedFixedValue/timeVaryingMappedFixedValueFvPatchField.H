@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::timeVaryingMappedFixedValueFvPatchField
+    Foam::timeVaryingMappedFixedValueFvPatchField
 
 Description
-	Foam::timeVaryingMappedFixedValueFvPatchField
+    Foam::timeVaryingMappedFixedValueFvPatchField
 
 SourceFiles
-	timeVaryingMappedFixedValueFvPatchField.C
+    timeVaryingMappedFixedValueFvPatchField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,182 +45,188 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+              Class timeVaryingMappedFixedValueFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class timeVaryingMappedFixedValueFvPatchField
 :
-	public fixedValueFvPatchField<Type>
+    public fixedValueFvPatchField<Type>
 {
-	// Private data
+    // Private data
 
-		//- Name of the field data table, defaults to the name of the field
-		word fieldTableName_;
+        //- Name of the field data table, defaults to the name of the field
+        word fieldTableName_;
 
-		//- If true adjust the mapped field to maintain average value
-		bool setAverage_;
+        //- If true adjust the mapped field to maintain average value
+        bool setAverage_;
 
-		//- Coordinate system
-		autoPtr<coordinateSystem> referenceCS_;
+        //- Coordinate system
+        autoPtr<coordinateSystem> referenceCS_;
 
-		//- Current interpolation addressing to face centres of underlying
-		//  patch
-		List<FixedList<label, 3> > nearestVertex_;
+        //- Current interpolation addressing to face centres of underlying
+        //  patch
+        List<FixedList<label, 3> > nearestVertex_;
 
-		//- Current interpolation factors to face centres of underlying
-		//  patch
-		List<FixedList<scalar, 3> > nearestVertexWeight_;
+        //- Current interpolation factors to face centres of underlying
+        //  patch
+        List<FixedList<scalar, 3> > nearestVertexWeight_;
 
-		//- List of boundaryData time directories
-		instantList sampleTimes_;
+        //- List of boundaryData time directories
+        instantList sampleTimes_;
 
-		//- Current starting index in sampleTimes
-		label startSampleTime_;
+        //- Current starting index in sampleTimes
+        label startSampleTime_;
 
-		//- Interpolated values from startSampleTime
-		Field<Type> startSampledValues_;
+        //- Interpolated values from startSampleTime
+        Field<Type> startSampledValues_;
 
-		//- If setAverage: starting average value
-		Type startAverage_;
+        //- If setAverage: starting average value
+        Type startAverage_;
 
-		//- Current end index in sampleTimes
-		label endSampleTime_;
+        //- Current end index in sampleTimes
+        label endSampleTime_;
 
-		//- Interpolated values from endSampleTime
-		Field<Type> endSampledValues_;
+        //- Interpolated values from endSampleTime
+        Field<Type> endSampledValues_;
 
-		//- If setAverage: end average value
-		Type endAverage_;
+        //- If setAverage: end average value
+        Type endAverage_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Get names of times
-		static wordList timeNames(const instantList&);
+        //- Get names of times
+        static wordList timeNames(const instantList&);
 
-		//- Find times around current time
-		void findTime
-		(
-			const fileName& instance,
-			const fileName& local,
-			const scalar timeVal,
-			label& lo,
-			label& hi
-		) const;
+        //- Find times around current time
+        void findTime
+        (
+            const fileName& instance,
+            const fileName& local,
+            const scalar timeVal,
+            label& lo,
+            label& hi
+        ) const;
 
-		//- Read boundary points and determine interpolation weights to patch
-		//  faceCentres
-		void readSamplePoints();
+        //- Read boundary points and determine interpolation weights to patch
+        //  faceCentres
+        void readSamplePoints();
 
-		//- Find boundary data inbetween current time and interpolate
-		void checkTable();
+        //- Find boundary data inbetween current time and interpolate
+        void checkTable();
 
-		//- Do actual interpolation using current weights
-		tmp<Field<Type> > interpolate(const Field<Type>&) const;
+        //- Do actual interpolation using current weights
+        tmp<Field<Type> > interpolate(const Field<Type>&) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("timeVaryingMappedFixedValue");
+    //- Runtime type information
+    TypeName("timeVaryingMappedFixedValue");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from patch and internal field
-		timeVaryingMappedFixedValueFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct from patch and internal field
+        timeVaryingMappedFixedValueFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct from patch, internal field and dictionary
-		timeVaryingMappedFixedValueFvPatchField
-		(
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const dictionary&
-		);
+        //- Construct from patch, internal field and dictionary
+        timeVaryingMappedFixedValueFvPatchField
+        (
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const dictionary&
+        );
 
-		//- Construct by mapping given timeVaryingMappedFixedValueFvPatchField
-		//  onto a new patch
-		timeVaryingMappedFixedValueFvPatchField
-		(
-			const timeVaryingMappedFixedValueFvPatchField<Type>&,
-			const fvPatch&,
-			const DimensionedField<Type, volMesh>&,
-			const fvPatchFieldMapper&
-		);
+        //- Construct by mapping given timeVaryingMappedFixedValueFvPatchField
+        //  onto a new patch
+        timeVaryingMappedFixedValueFvPatchField
+        (
+            const timeVaryingMappedFixedValueFvPatchField<Type>&,
+            const fvPatch&,
+            const DimensionedField<Type, volMesh>&,
+            const fvPatchFieldMapper&
+        );
 
-		//- Construct as copy
-		timeVaryingMappedFixedValueFvPatchField
-		(
-			const timeVaryingMappedFixedValueFvPatchField<Type>&
-		);
+        //- Construct as copy
+        timeVaryingMappedFixedValueFvPatchField
+        (
+            const timeVaryingMappedFixedValueFvPatchField<Type>&
+        );
 
-		//- Construct and return a clone
-		virtual tmp<fvPatchField<Type> > clone() const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new timeVaryingMappedFixedValueFvPatchField<Type>(*this)
-			);
-		}
+        //- Construct and return a clone
+        virtual tmp<fvPatchField<Type> > clone() const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new timeVaryingMappedFixedValueFvPatchField<Type>(*this)
+            );
+        }
 
-		//- Construct as copy setting internal field reference
-		timeVaryingMappedFixedValueFvPatchField
-		(
-			const timeVaryingMappedFixedValueFvPatchField<Type>&,
-			const DimensionedField<Type, volMesh>&
-		);
+        //- Construct as copy setting internal field reference
+        timeVaryingMappedFixedValueFvPatchField
+        (
+            const timeVaryingMappedFixedValueFvPatchField<Type>&,
+            const DimensionedField<Type, volMesh>&
+        );
 
-		//- Construct and return a clone setting internal field reference
-		virtual tmp<fvPatchField<Type> > clone
-		(
-			const DimensionedField<Type, volMesh>& iF
-		) const
-		{
-			return tmp<fvPatchField<Type> >
-			(
-				new timeVaryingMappedFixedValueFvPatchField<Type>(*this, iF)
-			);
-		}
+        //- Construct and return a clone setting internal field reference
+        virtual tmp<fvPatchField<Type> > clone
+        (
+            const DimensionedField<Type, volMesh>& iF
+        ) const
+        {
+            return tmp<fvPatchField<Type> >
+            (
+                new timeVaryingMappedFixedValueFvPatchField<Type>(*this, iF)
+            );
+        }
 
-
-	// Member functions
-
-		// Access
-
-			//- Return the coordinateSystem
-			const coordinateSystem& referenceCS() const
-			{
-				return referenceCS_;
-			}
+    //- Destructor
+    virtual ~timeVaryingMappedFixedValueFvPatchField() = default;
 
 
-		// Mapping functions
+    // Member functions
 
-			//- Map (and resize as needed) from self given a mapping object
-			virtual void autoMap
-			(
-				const fvPatchFieldMapper&
-			);
+        // Access
 
-			//- Reverse map the given fvPatchField onto this fvPatchField
-			virtual void rmap
-			(
-				const fvPatchField<Type>&,
-				const labelList&
-			);
+            //- Return the coordinateSystem
+            const coordinateSystem& referenceCS() const
+            {
+                return referenceCS_;
+            }
 
 
-		// Evaluation functions
+        // Mapping functions
 
-			//- Update the coefficients associated with the patch field
-			virtual void updateCoeffs();
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const fvPatchFieldMapper&
+            );
+
+            //- Reverse map the given fvPatchField onto this fvPatchField
+            virtual void rmap
+            (
+                const fvPatchField<Type>&,
+                const labelList&
+            );
 
 
-		//- Write
-		virtual void write(Ostream&) const;
+        // Evaluation functions
+
+            //- Update the coefficients associated with the patch field
+            virtual void updateCoeffs();
+
+
+        //- Write
+        virtual void write(Ostream&) const;
 };
 
 
@@ -231,7 +237,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "timeVaryingMappedFixedValueFvPatchField.C"
+#   include "timeVaryingMappedFixedValueFvPatchField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

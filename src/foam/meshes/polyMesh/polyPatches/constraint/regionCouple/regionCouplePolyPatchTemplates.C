@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 \*---------------------------------------------------------------------------*/
 
@@ -34,235 +34,405 @@ Author
 template<class Type>
 Foam::tmp<Foam::Field<Type> > Foam::regionCouplePolyPatch::fastExpand
 (
-	const Field<Type>& ff
+    const UList<Type>& ff
 ) const
 {
-	// Check and expand the field from patch size to zone size
-	// with communication
-	if (ff.size() != size())
-	{
-		FatalErrorIn
-		(
-			"tmp<Field<Type> > regionCouplePolyPatch::fastExpand\n"
-			"(\n"
-			"    const Field<Type>& ff\n"
-			") const"
-		)   << "Incorrect patch field size.  Field size: "
-			<< ff.size() << " patch size: " << size()
-			<< abort(FatalError);
-	}
+    // Check and expand the field from patch size to zone size
+    // with communication
+    if (ff.size() != size())
+    {
+        FatalErrorInFunction
+            << "Incorrect patch field size.  Field size: "
+            << ff.size() << " patch size: " << size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
 
-	if (localParallel())
-	{
-		FatalErrorIn
-		(
-			"tmp<Field<Type> > regionCouplePolyPatch::fastExpand"
-			"("
-			"    const Field<Type>& ff"
-			") const"
-		)   << "Requested expand on local parallel.  This is not allowed"
-			<< abort(FatalError);
-	}
+    if (localParallel())
+    {
+        FatalErrorInFunction
+            << "Requested expand on local parallel.  This is not allowed"
+            << abort(FatalError);
+    }
 
-	// Replaced old comms algorithm.  HJ, 31/May/2016
-	// HJ, 4/Jun/2011
+    // Replaced old comms algorithm.  HJ, 31/May/2016
+    // HJ, 4/Jun/2011
 
-	// This function requires send-receive-addressing, but usage is not
-	// symmetric across processors. Hence trigger re-calculate at this point
-	// HR, 10/Jul/2013
-	if (Pstream::parRun() && !localParallel())
-	{
-		map();
-		shadow().map();
-	}
+    // This function requires send-receive-addressing, but usage is not
+    // symmetric across processors. Hence trigger re-calculate at this point
+    // HR, 10/Jul/2013
+    if (Pstream::parRun() && !localParallel())
+    {
+        map();
+        shadow().map();
+    }
 
-	// New version: mapDistribute
+    // New version: mapDistribute
 
-	if (Pstream::parRun())
-	{
-		// Optimised mapDistribute
+    if (Pstream::parRun())
+    {
+        // Optimised mapDistribute
 
-		// Prepare return field: expand the field to zone size
-		tmp<Field<Type> > texpandField
-		(
-			new Field<Type>(ff)
-		);
-		Field<Type>& expandField = texpandField();
+        // Prepare return field: expand the field to zone size
+        tmp<Field<Type> > texpandField
+        (
+            new Field<Type>(ff)
+        );
+        Field<Type>& expandField = texpandField.ref();
 
-		map().distribute(expandField);
+        map().distribute(expandField);
 
-		return texpandField;
-	}
-	else
-	{
-		// Serial.  Expand the field to zone size
+        return texpandField;
+    }
+    else
+    {
+        // Serial.  Expand the field to zone size
 
-		tmp<Field<Type> > texpandField
-		(
-			new Field<Type>(zone().size())  // filled with nans
-		);
-		Field<Type>& expandField = texpandField();
+        tmp<Field<Type> > texpandField
+        (
+            new Field<Type>(zone().size())  // filled with nans
+        );
+        Field<Type>& expandField = texpandField.ref();
 
-		const labelList& zAddr = zoneAddressing();
+        const labelList& zAddr = zoneAddressing();
 
-		forAll (zAddr, i)
-		{
-			expandField[zAddr[i]] = ff[i];
-		}
+        forAll (zAddr, i)
+        {
+            expandField[zAddr[i]] = ff[i];
+        }
 
-		return texpandField;
-	}
+        return texpandField;
+    }
 }
 
 
 template<class Type>
 Foam::tmp<Foam::Field<Type> > Foam::regionCouplePolyPatch::interpolate
 (
-	const Field<Type>& ff
+    const Field<Type>& ff
 ) const
 {
-	// Check and expand the field from patch size to zone size
-	if (ff.size() != shadow().size())
-	{
-		FatalErrorIn
-		(
-			"tmp<Field<Type> > regionCouplePolyPatch::interpolate\n"
-			"(\n"
-			"    const Field<Type>& ff\n"
-			") const"
-		)   << "Incorrect slave patch field size.  Field size: "
-			<< ff.size() << " patch size: " << shadow().size()
-			<< abort(FatalError);
-	}
+    // Check and expand the field from patch size to zone size
+    if (ff.size() != shadow().size())
+    {
+        FatalErrorInFunction
+            << "Incorrect slave patch field size.  Field size: "
+            << ff.size() << " patch size: " << shadow().size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
 
-	if (localParallel())
-	{
-		// No expansion or filtering needed.  HJ, 4/Jun/2011
+    if (localParallel())
+    {
+        // No expansion or filtering needed.  HJ, 4/Jun/2011
 
-		if (empty())
-		{
-			// Patch empty, no interpolation
-			return tmp<Field<Type> >(new Field<Type>());
-		}
+        if (empty())
+        {
+            // Patch empty, no interpolation
+            return tmp<Field<Type> >(new Field<Type>());
+        }
 
-		// Interpolate field
-		if (master())
-		{
-			return patchToPatch().slaveToMaster(ff);
-		}
-		else
-		{
-			return patchToPatch().masterToSlave(ff);
-		}
-	}
-	else
-	{
-		// Expand shadow
-		Field<Type> expandField = shadow().fastExpand(ff);
+        // Interpolate field
+        if (master())
+        {
+            return patchToPatch().slaveToMaster(ff);
+        }
+        else
+        {
+            return patchToPatch().masterToSlave(ff);
+        }
+    }
+    else
+    {
+        // Expand shadow
+        Field<Type> expandField = shadow().fastExpand(ff);
 
-		tmp<Field<Type> > tresult(new Field<Type>(size()));
-		Field<Type>& result = tresult();
+        tmp<Field<Type> > tresult(new Field<Type>(size()));
+        Field<Type>& result = tresult.ref();
 
-		if (master())
-		{
-			patchToPatch().maskedSlaveToMaster
-			(
-				expandField,
-				result,
-				zoneAddressing()
-			);
-		}
-		else
-		{
-			patchToPatch().maskedMasterToSlave
-			(
-				expandField,
-				result,
-				zoneAddressing()
-			);
-		}
+        if (master())
+        {
+            patchToPatch().maskedSlaveToMaster
+            (
+                expandField,
+                result,
+                zoneAddressing()
+            );
+        }
+        else
+        {
+            patchToPatch().maskedMasterToSlave
+            (
+                expandField,
+                result,
+                zoneAddressing()
+            );
+        }
 
-		return tresult;
-	}
+        return tresult;
+    }
 }
 
 
 template<class Type>
 Foam::tmp<Foam::Field<Type> > Foam::regionCouplePolyPatch::interpolate
 (
-	const tmp<Field<Type> >& tff
+    const tmp<Field<Type> >& tff
 ) const
 {
-	tmp<Field<Type> > tint = interpolate(tff());
-	tff.clear();
-	return tint;
+    tmp<Field<Type> > tint = interpolate(tff());
+    tff.clear();
+    return tint;
 }
 
 
 template<class Type>
 void Foam::regionCouplePolyPatch::setUncoveredFaces
 (
-	const Field<Type>& fieldToSet,
-	Field<Type>& ff
+    const Field<Type>& fieldToSet,
+    Field<Type>& ff
 ) const
 {
-	// Check and expand the field from patch size to zone size
-	if (ff.size() != size())
-	{
-		FatalErrorIn
-		(
-			"tmp<Field<Type> > regionCouplePolyPatch::setUncoveredFaces\n"
-			"(\n"
-			"    const Field<Type>& fieldToSet,\n"
-			"    Field<Type>& ff\n"
-			") const"
-		)   << "Incorrect patch field size for setting.  Field size: "
-			<< ff.size() << " patch size: " << size()
-			<< abort(FatalError);
-	}
+    // Check and expand the field from patch size to zone size
+    if (ff.size() != size())
+    {
+        FatalErrorInFunction
+            << "Incorrect patch field size for setting uncovered faces.  "
+            << "Field size: "
+            << ff.size() << " patch size: " << size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
 
-	if (bridgeOverlap())
-	{
-		if (empty())
-		{
-			// Patch empty, no bridging
-			return;
-		}
+    if (bridgeOverlap())
+    {
+        if (empty())
+        {
+            // Patch empty, no bridging
+            return;
+        }
 
-		if (localParallel())
-		{
-			if (master())
-			{
-				patchToPatch().setUncoveredFacesMaster(fieldToSet, ff);
-			}
-			else
-			{
-				patchToPatch().setUncoveredFacesSlave(fieldToSet, ff);
-			}
-		}
-		else
-		{
-			// Note: since bridging is only a local operation
-			if (master())
-			{
-				patchToPatch().maskedSetUncoveredFacesMaster
-				(
-					fieldToSet,
-					ff,
-					zoneAddressing()
-				);
-			}
-			else
-			{
-				patchToPatch().maskedSetUncoveredFacesSlave
-				(
-					fieldToSet,
-					ff,
-					zoneAddressing()
-				);
-			}
-		}
-	}
+        if (localParallel())
+        {
+            if (master())
+            {
+                patchToPatch().setUncoveredFacesMaster(fieldToSet, ff);
+            }
+            else
+            {
+                patchToPatch().setUncoveredFacesSlave(fieldToSet, ff);
+            }
+        }
+        else
+        {
+            // Note: since bridging is only a local operation
+            if (master())
+            {
+                patchToPatch().maskedSetUncoveredFacesMaster
+                (
+                    fieldToSet,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+            else
+            {
+                patchToPatch().maskedSetUncoveredFacesSlave
+                (
+                    fieldToSet,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+        }
+    }
+}
+
+
+template<class Type>
+void Foam::regionCouplePolyPatch::setPartialFaces
+(
+    const Field<Type>& fieldToSet,
+    Field<Type>& ff
+) const
+{
+    // Check and expand the field from patch size to zone size
+    if (ff.size() != size())
+    {
+        FatalErrorInFunction
+            << "Incorrect patch field size for setting partial faces.  "
+            << "Field size: " << ff.size() << " patch size: " << size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
+
+    if (bridgeOverlap())
+    {
+        if (empty())
+        {
+            // Patch empty, no bridging
+            return;
+        }
+
+        if (localParallel())
+        {
+            if (master())
+            {
+                patchToPatch().setPartialFacesMaster(fieldToSet, ff);
+            }
+            else
+            {
+                patchToPatch().setPartialFacesSlave(fieldToSet, ff);
+            }
+        }
+        else
+        {
+            // Note: since bridging is only a local operation
+            if (master())
+            {
+                patchToPatch().maskedSetPartialFacesMaster
+                (
+                    fieldToSet,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+            else
+            {
+                patchToPatch().maskedSetPartialFacesSlave
+                (
+                    fieldToSet,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+        }
+    }
+}
+
+
+template<class Type>
+void Foam::regionCouplePolyPatch::scalePartialFaces(Field<Type>& ff) const
+{
+    // Check and expand the field from patch size to zone size
+    if (ff.size() != size())
+    {
+        FatalErrorInFunction
+            << "Incorrect patch field size for scaling.  Field size: "
+            << ff.size() << " patch size: " << size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
+
+    if (bridgeOverlap())
+    {
+        if (empty())
+        {
+            // Patch empty, no bridging
+            return;
+        }
+
+        if (localParallel())
+        {
+            if (master())
+            {
+                patchToPatch().scalePartialMaster(ff);
+            }
+            else
+            {
+                patchToPatch().scalePartialSlave(ff);
+            }
+        }
+        else
+        {
+            // Note: since bridging is only a local operation
+            if (master())
+            {
+                patchToPatch().maskedScalePartialMaster
+                (
+                    ff,
+                    zoneAddressing()
+                );
+            }
+            else
+            {
+                patchToPatch().maskedScalePartialSlave
+                (
+                    ff,
+                    zoneAddressing()
+                );
+            }
+        }
+    }
+}
+
+
+template<class Type>
+void Foam::regionCouplePolyPatch::addToPartialFaces
+(
+    const Field<Type>& fieldToAdd,
+    Field<Type>& ff
+) const
+{
+    // Check and expand the field from patch size to zone size
+    if (ff.size() != size())
+    {
+        FatalErrorInFunction
+            << "Incorrect patch field size for adding.  Field size: "
+            << ff.size() << " field to add size: "
+            << fieldToAdd.size() << " patch size: " << size()
+            << " for patch pair: " << this->name() << " "
+            << this->shadowPatchName() << " on " << this->shadowRegionName()
+            << abort(FatalError);
+    }
+
+    if (bridgeOverlap())
+    {
+        if (empty())
+        {
+            // Patch empty, no bridging
+            return;
+        }
+
+        if (localParallel())
+        {
+            if (master())
+            {
+                patchToPatch().addToPartialFacesMaster(fieldToAdd, ff);
+            }
+            else
+            {
+                patchToPatch().addToPartialFacesSlave(fieldToAdd, ff);
+            }
+        }
+        else
+        {
+            // Note: since bridging is only a local operation
+            if (master())
+            {
+                patchToPatch().maskedAddToPartialFacesMaster
+                (
+                    fieldToAdd,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+            else
+            {
+                patchToPatch().maskedAddToPartialFacesSlave
+                (
+                    fieldToAdd,
+                    ff,
+                    zoneAddressing()
+                );
+            }
+        }
+    }
 }
 
 

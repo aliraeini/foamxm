@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::pressureInletVelocityFvPatchVectorField
+    Foam::pressureInletVelocityFvPatchVectorField
 
 Description
-	Velocity inlet boundary condition for patches where the pressure is
-	specified. The inflow velocity is obtained from the flux with a direction
-	normal to the patch faces.  If reverse flow is possible or expected use
-	the "pressureInletOutletVelocityFvPatchVectorField" BC instead.
+    Velocity inlet boundary condition for patches where the pressure is
+    specified. The inflow velocity is obtained from the flux with a direction
+    normal to the patch faces.  If reverse flow is possible or expected use
+    the "pressureInletOutletVelocityFvPatchVectorField" BC instead.
 
 SourceFiles
-	pressureInletVelocityFvPatchVectorField.C
+    pressureInletVelocityFvPatchVectorField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,127 +46,130 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                 Class pressureInletVelocityFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class pressureInletVelocityFvPatchVectorField
 :
-	public fixedValueFvPatchVectorField
+    public fixedValueFvPatchVectorField
 {
-	// Private data
+    // Private data
 
-		//- Name of the flux field
-		word phiName_;
+        //- Name of the flux field
+        word phiName_;
 
-		//- Name of the density field
-		word rhoName_;
+        //- Name of the density field
+        word rhoName_;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("pressureInletVelocity");
+    //- Runtime type information
+    TypeName("pressureInletVelocity");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from patch and internal field
-		pressureInletVelocityFvPatchVectorField
-		(
-			const fvPatch&,
-			const DimensionedField<vector, volMesh>&
-		);
+        //- Construct from patch and internal field
+        pressureInletVelocityFvPatchVectorField
+        (
+            const fvPatch&,
+            const DimensionedField<vector, volMesh>&
+        );
 
-		//- Construct from patch, internal field and dictionary
-		pressureInletVelocityFvPatchVectorField
-		(
-			const fvPatch&,
-			const DimensionedField<vector, volMesh>&,
-			const dictionary&
-		);
+        //- Construct from patch, internal field and dictionary
+        pressureInletVelocityFvPatchVectorField
+        (
+            const fvPatch&,
+            const DimensionedField<vector, volMesh>&,
+            const dictionary&
+        );
 
-		//- Construct by mapping given pressureInletVelocityFvPatchVectorField
-		//  onto a new patch
-		pressureInletVelocityFvPatchVectorField
-		(
-			const pressureInletVelocityFvPatchVectorField&,
-			const fvPatch&,
-			const DimensionedField<vector, volMesh>&,
-			const fvPatchFieldMapper&
-		);
+        //- Construct by mapping given pressureInletVelocityFvPatchVectorField
+        //  onto a new patch
+        pressureInletVelocityFvPatchVectorField
+        (
+            const pressureInletVelocityFvPatchVectorField&,
+            const fvPatch&,
+            const DimensionedField<vector, volMesh>&,
+            const fvPatchFieldMapper&
+        );
 
-		//- Construct as copy
-		pressureInletVelocityFvPatchVectorField
-		(
-			const pressureInletVelocityFvPatchVectorField&
-		);
+        //- Construct as copy
+        pressureInletVelocityFvPatchVectorField
+        (
+            const pressureInletVelocityFvPatchVectorField&
+        );
 
-		//- Construct and return a clone
-		virtual tmp<fvPatchVectorField> clone() const
-		{
-			return tmp<fvPatchVectorField>
-			(
-				new pressureInletVelocityFvPatchVectorField(*this)
-			);
-		}
+        //- Construct and return a clone
+        virtual tmp<fvPatchVectorField> clone() const
+        {
+            return tmp<fvPatchVectorField>
+            (
+                new pressureInletVelocityFvPatchVectorField(*this)
+            );
+        }
 
-		//- Construct as copy setting internal field reference
-		pressureInletVelocityFvPatchVectorField
-		(
-			const pressureInletVelocityFvPatchVectorField&,
-			const DimensionedField<vector, volMesh>&
-		);
+        //- Construct as copy setting internal field reference
+        pressureInletVelocityFvPatchVectorField
+        (
+            const pressureInletVelocityFvPatchVectorField&,
+            const DimensionedField<vector, volMesh>&
+        );
 
-		//- Construct and return a clone setting internal field reference
-		virtual tmp<fvPatchVectorField> clone
-		(
-			const DimensionedField<vector, volMesh>& iF
-		) const
-		{
-			return tmp<fvPatchVectorField>
-			(
-				new pressureInletVelocityFvPatchVectorField(*this, iF)
-			);
-		}
-
-
-	// Member functions
-
-		// Access
-
-			//- Return the name of rho
-			const word& rhoName() const
-			{
-				return rhoName_;
-			}
-
-			//- Return reference to the name of rho to allow adjustment
-			word& rhoName()
-			{
-				return rhoName_;
-			}
-
-			//- Return the name of phi
-			const word& phiName() const
-			{
-				return phiName_;
-			}
-
-			//- Return reference to the name of phi to allow adjustment
-			word& phiName()
-			{
-				return phiName_;
-			}
+        //- Construct and return a clone setting internal field reference
+        virtual tmp<fvPatchVectorField> clone
+        (
+            const DimensionedField<vector, volMesh>& iF
+        ) const
+        {
+            return tmp<fvPatchVectorField>
+            (
+                new pressureInletVelocityFvPatchVectorField(*this, iF)
+            );
+        }
 
 
-		//- Update the coefficients associated with the patch field
-		virtual void updateCoeffs();
+    // Member functions
 
-		//- Write
-		virtual void write(Ostream&) const;
+        // Access
+
+            //- Return the name of rho
+            const word& rhoName() const
+            {
+                return rhoName_;
+            }
+
+            //- Return reference to the name of rho to allow adjustment
+            word& rhoName()
+            {
+                return rhoName_;
+            }
+
+            //- Return the name of phi
+            const word& phiName() const
+            {
+                return phiName_;
+            }
+
+            //- Return reference to the name of phi to allow adjustment
+            word& phiName()
+            {
+                return phiName_;
+            }
 
 
-	// Member operators
+        //- Update the coefficients associated with the patch field
+        virtual void updateCoeffs();
 
-		virtual void operator=(const fvPatchField<vector>& pvf);
+        //- Write
+        virtual void write(Ostream&) const;
+
+
+    // Member operators
+
+        virtual void operator=(const fvPatchField<vector>& pvf);
 };
 
 

@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::directions
+    Foam::directions
 
 Description
-	Set of directions for each cell in the mesh. Either uniform and size=1
-	or one set of directions per cell.
+    Set of directions for each cell in the mesh. Either uniform and size=1
+    or one set of directions per cell.
 
-	Used in splitting cells.
-	Either all cells have similar refinement direction ('global') or
-	direction is dependent on local cell geometry. Controlled by dictionary.
+    Used in splitting cells.
+    Either all cells have similar refinement direction ('global') or
+    direction is dependent on local cell geometry. Controlled by dictionary.
 
 SourceFiles
-	directions.C
+    directions.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,87 +57,90 @@ class primitiveMesh;
 class polyPatch;
 class dictionary;
 
+/*---------------------------------------------------------------------------*\
+                           Class directions Declaration
+\*---------------------------------------------------------------------------*/
 
 class directions
 :
-	public List<vectorField>
+    public List<vectorField>
 {
 public:
-	// Data types
+    // Data types
 
-		//- Enumeration listing the possible coordinate directions.
-		enum directionType
-		{
-			TAN1,
-			TAN2,
-			NORMAL,
-		};
+        //- Enumeration listing the possible coordinate directions.
+        enum directionType
+        {
+            TAN1,
+            TAN2,
+            NORMAL,
+        };
 
 private:
 
-		static const NamedEnum<directionType, 3> directionTypeNames_;
+        static const NamedEnum<directionType, 3> directionTypeNames_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
 
-		//- For debugging. Write point coordinate.
-		static void writeOBJ(Ostream& os, const point& pt);
+        //- For debugging. Write point coordinate.
+        static void writeOBJ(Ostream& os, const point& pt);
 
-		//- For debugging. Write edge between two points.
-		static void writeOBJ
-		(
-			Ostream& os,
-			const point& pt0,
-			const point& pt1,
-			label& vertI
-		);
+        //- For debugging. Write edge between two points.
+        static void writeOBJ
+        (
+            Ostream& os,
+            const point& pt0,
+            const point& pt1,
+            label& vertI
+        );
 
-		//- For debugging. Write hedgehog display of vectorField as obj file.
-		static void writeOBJ
-		(
-			const fileName& fName,
-			const primitiveMesh& mesh,
-			const vectorField& dirs
-		);
+        //- For debugging. Write hedgehog display of vectorField as obj file.
+        static void writeOBJ
+        (
+            const fileName& fName,
+            const primitiveMesh& mesh,
+            const vectorField& dirs
+        );
 
-		//- Check if vec has no component in 2D normal direction. Exits if
-		//  so.
-		static void check2D
-		(
-			const twoDPointCorrector* correct2DPtr,
-			const vector& vec
-		);
+        //- Check if vec has no component in 2D normal direction. Exits if
+        //  so.
+        static void check2D
+        (
+            const twoDPointCorrector* correct2DPtr,
+            const vector& vec
+        );
 
-		//- Get coordinate direction for all cells in mesh by propagating from
-		//  vector on patch.
-		static vectorField propagateDirection
-		(
-			const polyMesh& mesh,
-			const bool useTopo,
-			const polyPatch& pp,
-			const vectorField& ppField,
-			const vector& defaultDir
-		);
+        //- Get coordinate direction for all cells in mesh by propagating from
+        //  vector on patch.
+        static vectorField propagateDirection
+        (
+            const polyMesh& mesh,
+            const bool useTopo,
+            const polyPatch& pp,
+            const vectorField& ppField,
+            const vector& defaultDir
+        );
 
-		//- Disallow default bitwise copy construct
-		directions(const directions&);
+        //- Disallow default bitwise copy construct
+        directions(const directions&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const directions&);
+        //- Disallow default bitwise assignment
+        void operator=(const directions&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh and dictionary and optional 2D corrector.
-		directions
-		(
-			const polyMesh& mesh,
-			const dictionary& dict,
-			const twoDPointCorrector* correct2DPtr = nullptr
-		);
+        //- Construct from mesh and dictionary and optional 2D corrector.
+        directions
+        (
+            const polyMesh& mesh,
+            const dictionary& dict,
+            const twoDPointCorrector* correct2DPtr = nullptr
+        );
 
 };
 

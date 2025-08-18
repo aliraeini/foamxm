@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fileFormats::FTRsurfaceFormat
+    Foam::fileFormats::FTRsurfaceFormat
 
 Description
-	Reading of the (now deprecated and infrequently used)
-	Foam Trisurface Format.
+    Reading of the (now deprecated and infrequently used)
+    Foam Trisurface Format.
 
 SourceFiles
-	FTRsurfaceFormat.C
+    FTRsurfaceFormat.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,77 +47,80 @@ namespace Foam
 namespace fileFormats
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class FTRsurfaceFormat Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Face>
 class FTRsurfaceFormat
 :
-	public UnsortedMeshedSurface<Face>
+    public UnsortedMeshedSurface<Face>
 {
-	// Private classes
+    // Private classes
 
-		//- read compatibility for ftr patch definitions
-		class ftrPatch
-		{
-			//- Name of patch
-			word name_;
+        //- read compatibility for ftr patch definitions
+        class ftrPatch
+        {
+            //- Name of patch
+            word name_;
 
-			//- Type of patch (ignored since it is usually "empty")
-			word type_;
+            //- Type of patch (ignored since it is usually "empty")
+            word type_;
 
-		public:
+        public:
 
-			const word& name() const
-			{
-				return name_;
-			}
+            const word& name() const
+            {
+                return name_;
+            }
 
-			friend Istream& operator>>(Istream& is, ftrPatch& p)
-			{
-				is >> p.name_ >> p.type_;
-				return is;
-			}
-		};
+            friend Istream& operator>>(Istream& is, ftrPatch& p)
+            {
+                is >> p.name_ >> p.type_;
+                return is;
+            }
+        };
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		FTRsurfaceFormat(const FTRsurfaceFormat<Face>&);
+        //- Disallow default bitwise copy construct
+        FTRsurfaceFormat(const FTRsurfaceFormat<Face>&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const FTRsurfaceFormat<Face>&);
+        //- Disallow default bitwise assignment
+        void operator=(const FTRsurfaceFormat<Face>&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from file name
-		FTRsurfaceFormat(const fileName&);
-
-
-	// Selectors
-
-		//- Read file and return surface
-		static autoPtr<UnsortedMeshedSurface<Face> > New(const fileName& name)
-		{
-			return autoPtr<UnsortedMeshedSurface<Face> >
-			(
-				new FTRsurfaceFormat<Face>(name)
-			);
-		}
+        //- Construct from file name
+        FTRsurfaceFormat(const fileName&);
 
 
-	// Destructor
+    // Selectors
 
-		virtual ~FTRsurfaceFormat()
-		{}
+        //- Read file and return surface
+        static autoPtr<UnsortedMeshedSurface<Face> > New(const fileName& name)
+        {
+            return autoPtr<UnsortedMeshedSurface<Face> >
+            (
+                new FTRsurfaceFormat<Face>(name)
+            );
+        }
 
 
-	// Member Functions
+    // Destructor
 
-		//- Read from file
-		virtual bool read(const fileName&);
+        virtual ~FTRsurfaceFormat()
+        {}
+
+
+    // Member Functions
+
+        //- Read from file
+        virtual bool read(const fileName&);
 };
 
 
@@ -129,7 +132,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "FTRsurfaceFormat.C"
+#   include "FTRsurfaceFormat.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

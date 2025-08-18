@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,12 +32,12 @@ template<class Type>
 Foam::timeVaryingUniformFixedValueFvPatchField<Type>::
 timeVaryingUniformFixedValueFvPatchField
 (
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF
 )
 :
-	fixedValueFvPatchField<Type>(p, iF),
-	timeSeries_()
+    fixedValueFvPatchField<Type>(p, iF),
+    timeSeries_()
 {}
 
 
@@ -45,21 +45,21 @@ template<class Type>
 Foam::timeVaryingUniformFixedValueFvPatchField<Type>::
 timeVaryingUniformFixedValueFvPatchField
 (
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF,
-	const dictionary& dict
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF,
+    const dictionary& dict
 )
 :
-	fixedValueFvPatchField<Type>(p, iF),
-	timeSeries_(dict)
+    fixedValueFvPatchField<Type>(p, iF),
+    timeSeries_(dict)
 {
    if (dict.found("value"))
    {
-	   fvPatchField<Type>::operator==(Field<Type>("value", dict, p.size()));
+       fvPatchField<Type>::operator==(Field<Type>("value", dict, p.size()));
    }
    else
    {
-	   updateCoeffs();
+       updateCoeffs();
    }
 }
 
@@ -68,14 +68,14 @@ template<class Type>
 Foam::timeVaryingUniformFixedValueFvPatchField<Type>::
 timeVaryingUniformFixedValueFvPatchField
 (
-	const timeVaryingUniformFixedValueFvPatchField<Type>& ptf,
-	const fvPatch& p,
-	const DimensionedField<Type, volMesh>& iF,
-	const fvPatchFieldMapper& mapper
+    const timeVaryingUniformFixedValueFvPatchField<Type>& ptf,
+    const fvPatch& p,
+    const DimensionedField<Type, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
 )
 :
-	fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
-	timeSeries_(ptf.timeSeries_)
+    fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
+    timeSeries_(ptf.timeSeries_)
 {}
 
 
@@ -83,11 +83,11 @@ template<class Type>
 Foam::timeVaryingUniformFixedValueFvPatchField<Type>::
 timeVaryingUniformFixedValueFvPatchField
 (
-	const timeVaryingUniformFixedValueFvPatchField<Type>& ptf
+    const timeVaryingUniformFixedValueFvPatchField<Type>& ptf
 )
 :
-	fixedValueFvPatchField<Type>(ptf),
-	timeSeries_(ptf.timeSeries_)
+    fixedValueFvPatchField<Type>(ptf),
+    timeSeries_(ptf.timeSeries_)
 {}
 
 
@@ -95,12 +95,12 @@ template<class Type>
 Foam::timeVaryingUniformFixedValueFvPatchField<Type>::
 timeVaryingUniformFixedValueFvPatchField
 (
-	const timeVaryingUniformFixedValueFvPatchField<Type>& ptf,
-	const DimensionedField<Type, volMesh>& iF
+    const timeVaryingUniformFixedValueFvPatchField<Type>& ptf,
+    const DimensionedField<Type, volMesh>& iF
 )
 :
-	fixedValueFvPatchField<Type>(ptf, iF),
-	timeSeries_(ptf.timeSeries_)
+    fixedValueFvPatchField<Type>(ptf, iF),
+    timeSeries_(ptf.timeSeries_)
 {}
 
 
@@ -109,28 +109,28 @@ timeVaryingUniformFixedValueFvPatchField
 template<class Type>
 void Foam::timeVaryingUniformFixedValueFvPatchField<Type>::updateCoeffs()
 {
-	if (this->updated())
-	{
-		return;
-	}
+    if (this->updated())
+    {
+        return;
+    }
 
-	fvPatchField<Type>::operator==
-	(
-		timeSeries_(this->db().time().timeOutputValue())
-	);
-	fixedValueFvPatchField<Type>::updateCoeffs();
+    fvPatchField<Type>::operator==
+    (
+        timeSeries_(this->db().time().timeOutputValue())
+    );
+    fixedValueFvPatchField<Type>::updateCoeffs();
 }
 
 
 template<class Type>
 void Foam::timeVaryingUniformFixedValueFvPatchField<Type>::write
 (
-	Ostream& os
+    Ostream& os
 ) const
 {
-	fvPatchField<Type>::write(os);
-	timeSeries_.write(os);
-	this->writeEntry("value", os);
+    fvPatchField<Type>::write(os);
+    timeSeries_.write(os);
+    this->writeEntry("value", os);
 }
 
 

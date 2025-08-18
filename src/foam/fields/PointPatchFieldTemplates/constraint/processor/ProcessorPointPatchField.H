@@ -1,33 +1,33 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	ProcessorPointPatchField
+    ProcessorPointPatchField
 
 Description
 
 SourceFiles
-	ProcessorPointPatchField.C
+    ProcessorPointPatchField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -41,307 +41,310 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                   Class ProcessorPointPatchField Declaration
+\*---------------------------------------------------------------------------*/
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	class ProcessorPointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    class ProcessorPointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 class ProcessorPointPatchField
 :
-	public CoupledPointPatchField
-	<
-		PatchField,
-		Mesh,
-		PointPatch,
-		typename ProcessorPointPatch::CoupledPointPatch,
-		MatrixType,
-		Type
-	>
+    public CoupledPointPatchField
+    <
+        PatchField,
+        Mesh,
+        PointPatch,
+        typename ProcessorPointPatch::CoupledPointPatch,
+        MatrixType,
+        Type
+    >
 {
-	// Private data
+    // Private data
 
-		//- Local reference to processor patch
-		const ProcessorPointPatch& procPatch_;
-
-
-		// Non-blocking parallel communications
-		// Temporary: move to patch.  HJ, 15/Apr/2008
-
-			//- Outstanding request
-			mutable label outstandingSendRequest_;
-
-			//- Outstanding request
-			mutable label outstandingRecvRequest_;
-
-			//- Send buffer.
-			//  Only sized and used when compressed or non-blocking comms used.
-			mutable List<char> sendBuf_;
-
-			//- Receive buffer.
-			//  Only sized and used when compressed or non-blocking comms used.
-			mutable List<char> receiveBuf_;
-
-			//- Resize the buffer if required
-			void resizeBuf(List<char>& buf, const label size) const;
+        //- Local reference to processor patch
+        const ProcessorPointPatch& procPatch_;
 
 
-	// Private member functions
+        // Non-blocking parallel communications
+        // Temporary: move to patch.  HJ, 15/Apr/2008
 
-		//- Raw field send function
-		template<class Type2>
-		void sendField
-		(
-			const tmp<Field<Type2> >&,
-			const Pstream::commsTypes commsType = Pstream::blocking
-		) const;
+            //- Outstanding request
+            mutable label outstandingSendRequest_;
 
-		//- Raw field receive function
-		template<class Type2>
-		tmp<Field<Type2> > receivePointField
-		(
-			const Pstream::commsTypes commsType = Pstream::blocking
-		) const;
+            //- Outstanding request
+            mutable label outstandingRecvRequest_;
 
-		template<class Type2>
-		tmp<Field<Type2> > receiveEdgeField
-		(
-			const Pstream::commsTypes commsType = Pstream::blocking
-		) const;
+            //- Send buffer.
+            //  Only sized and used when compressed or non-blocking comms used.
+            mutable List<char> sendBuf_;
 
-		//- Templated add diagonal/source functions
-		template<class Type2>
-		void initAddFieldTempl
-		(
-			const Pstream::commsTypes commsType,
-			const Field<Type2>&
-		) const;
+            //- Receive buffer.
+            //  Only sized and used when compressed or non-blocking comms used.
+            mutable List<char> receiveBuf_;
 
-		template<class Type2>
-		void addFieldTempl
-		(
-			const Pstream::commsTypes commsType,
-			Field<Type2>&
-		) const;
+            //- Resize the buffer if required
+            void resizeBuf(List<char>& buf, const label size) const;
+
+
+    // Private member functions
+
+        //- Raw field send function
+        template<class Type2>
+        void sendField
+        (
+            const tmp<Field<Type2> >&,
+            const Pstream::commsTypes commsType = Pstream::blocking
+        ) const;
+
+        //- Raw field receive function
+        template<class Type2>
+        tmp<Field<Type2> > receivePointField
+        (
+            const Pstream::commsTypes commsType = Pstream::blocking
+        ) const;
+
+        template<class Type2>
+        tmp<Field<Type2> > receiveEdgeField
+        (
+            const Pstream::commsTypes commsType = Pstream::blocking
+        ) const;
+
+        //- Templated add diagonal/source functions
+        template<class Type2>
+        void initAddFieldTempl
+        (
+            const Pstream::commsTypes commsType,
+            const Field<Type2>&
+        ) const;
+
+        template<class Type2>
+        void addFieldTempl
+        (
+            const Pstream::commsTypes commsType,
+            Field<Type2>&
+        ) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName(ProcessorPointPatch::typeName_());
+    //- Runtime type information
+    TypeName(ProcessorPointPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from patch and internal field
-		ProcessorPointPatchField
-		(
-			const PointPatch&,
-			const DimensionedField<Type, Mesh>&
-		);
+        //- Construct from patch and internal field
+        ProcessorPointPatchField
+        (
+            const PointPatch&,
+            const DimensionedField<Type, Mesh>&
+        );
 
-		//- Construct from patch, internal field and dictionary
-		ProcessorPointPatchField
-		(
-			const PointPatch&,
-			const DimensionedField<Type, Mesh>&,
-			const dictionary&
-		);
+        //- Construct from patch, internal field and dictionary
+        ProcessorPointPatchField
+        (
+            const PointPatch&,
+            const DimensionedField<Type, Mesh>&,
+            const dictionary&
+        );
 
-		//- Construct by mapping given patchField<Type> onto a new patch
-		ProcessorPointPatchField
-		(
-			const ProcessorPointPatchField
-			<
-				PatchField,
-				Mesh,
-				PointPatch,
-				ProcessorPointPatch,
-				MatrixType,
-				Type
-			>&,
-			const PointPatch&,
-			const DimensionedField<Type, Mesh>&,
-			const PointPatchFieldMapper&
-		);
+        //- Construct by mapping given patchField<Type> onto a new patch
+        ProcessorPointPatchField
+        (
+            const ProcessorPointPatchField
+            <
+                PatchField,
+                Mesh,
+                PointPatch,
+                ProcessorPointPatch,
+                MatrixType,
+                Type
+            >&,
+            const PointPatch&,
+            const DimensionedField<Type, Mesh>&,
+            const PointPatchFieldMapper&
+        );
 
-		//- Construct as copy
-		ProcessorPointPatchField
-		(
-			const ProcessorPointPatchField
-			<
-				PatchField,
-				Mesh,
-				PointPatch,
-				ProcessorPointPatch,
-				MatrixType,
-				Type
-			>&
-		);
+        //- Construct as copy
+        ProcessorPointPatchField
+        (
+            const ProcessorPointPatchField
+            <
+                PatchField,
+                Mesh,
+                PointPatch,
+                ProcessorPointPatch,
+                MatrixType,
+                Type
+            >&
+        );
 
-		//- Construct and return a clone
-		virtual autoPtr<PatchField<Type> > clone() const
-		{
-			return autoPtr<PatchField<Type> >
-			(
-				new ProcessorPointPatchField
-				<
-					PatchField,
-					Mesh,
-					PointPatch,
-					ProcessorPointPatch,
-					MatrixType,
-					Type
-				>(*this)
-				);
-		}
+        //- Construct and return a clone
+        virtual autoPtr<PatchField<Type> > clone() const
+        {
+            return autoPtr<PatchField<Type> >
+            (
+                new ProcessorPointPatchField
+                <
+                    PatchField,
+                    Mesh,
+                    PointPatch,
+                    ProcessorPointPatch,
+                    MatrixType,
+                    Type
+                >(*this)
+                );
+        }
 
-		//- Construct as copy setting internal field reference
-		ProcessorPointPatchField
-		(
-			const ProcessorPointPatchField
-			<
-				PatchField,
-				Mesh,
-				PointPatch,
-				ProcessorPointPatch,
-				MatrixType,
-				Type
-			>&,
-			const DimensionedField<Type, Mesh>&
-		);
+        //- Construct as copy setting internal field reference
+        ProcessorPointPatchField
+        (
+            const ProcessorPointPatchField
+            <
+                PatchField,
+                Mesh,
+                PointPatch,
+                ProcessorPointPatch,
+                MatrixType,
+                Type
+            >&,
+            const DimensionedField<Type, Mesh>&
+        );
 
-		//- Construct and return a clone setting internal field reference
-		virtual autoPtr<PatchField<Type> > clone
-		(
-			const DimensionedField<Type, Mesh>& iF
-		) const
-		{
-			return autoPtr<PatchField<Type> >
-			(
-				new ProcessorPointPatchField
-				<
-					PatchField,
-					Mesh,
-					PointPatch,
-					ProcessorPointPatch,
-					MatrixType,
-					Type
-				>(*this, iF)
-			);
-		}
-
-
-	// Destructor
-
-		virtual ~ProcessorPointPatchField();
+        //- Construct and return a clone setting internal field reference
+        virtual autoPtr<PatchField<Type> > clone
+        (
+            const DimensionedField<Type, Mesh>& iF
+        ) const
+        {
+            return autoPtr<PatchField<Type> >
+            (
+                new ProcessorPointPatchField
+                <
+                    PatchField,
+                    Mesh,
+                    PointPatch,
+                    ProcessorPointPatch,
+                    MatrixType,
+                    Type
+                >(*this, iF)
+            );
+        }
 
 
-	// Member functions
+    // Destructor
 
-		// Access
-
-			//- Return true if running parallel
-			virtual bool coupled() const
-			{
-				if (Pstream::parRun())
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			//- Does the patch field perform the transfromation
-			virtual bool doTransform() const
-			{
-				return
-				   !(
-					    procPatch_.procPolyPatch().parallel()
-					 || pTraits<Type>::rank == 0
-					);
-			}
-
-			//- Initialise evaluation of the patch field
-			virtual void initEvaluate
-			(
-				const Pstream::commsTypes commsType = Pstream::blocking
-			);
-
-			//- Evaluate the patch field
-			virtual void evaluate
-			(
-				const Pstream::commsTypes commsType = Pstream::blocking
-			);
-
-			//- Init add field to internal field
-			virtual void initAddField() const;
-
-			//- Add field to internal field
-			virtual void addField(Field<Type>&) const;
-
-			//- Set boundary condition to matrix.  Used to save the processor
-			//  patch off-diagonal coefficients
-			virtual void setBoundaryCondition
-			(
-				Map<typename MatrixType<Type>::ConstraintType> &
-			) const;
+        virtual ~ProcessorPointPatchField();
 
 
-		// Matrix construction (completion) functionality
+    // Member functions
 
-			//- Add diagonal/source contributions
-			virtual void initAddDiag(const scalarField&) const;
-			virtual void initAddSource(const scalarField&) const;
+        // Access
 
-			virtual void addDiag(scalarField&) const;
-			virtual void addSource(scalarField&) const;
+            //- Return true if running parallel
+            virtual bool coupled() const
+            {
+                if (Pstream::parRun())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
-			//- Add upper/lower contributions
-			virtual void initAddUpperLower(const scalarField&) const;
+            //- Does the patch field perform the transfromation
+            virtual bool doTransform() const
+            {
+                return
+                   !(
+                        procPatch_.procPolyPatch().parallel()
+                     || pTraits<Type>::rank == 0
+                    );
+            }
 
-			virtual void addUpperLower(scalarField&) const;
+            //- Initialise evaluation of the patch field
+            virtual void initEvaluate
+            (
+                const Pstream::commsTypes commsType = Pstream::blocking
+            );
 
-			virtual void eliminateUpperLower(scalarField&) const;
+            //- Evaluate the patch field
+            virtual void evaluate
+            (
+                const Pstream::commsTypes commsType = Pstream::blocking
+            );
 
-			//- Get the cut edge coefficients in Amul order
-			virtual tmp<scalarField> cutBouCoeffs(const lduMatrix&) const;
+            //- Init add field to internal field
+            virtual void initAddField() const;
 
-			//- Get the cut edge coefficients in Tmul order
-			virtual tmp<scalarField> cutIntCoeffs(const lduMatrix&) const;
+            //- Add field to internal field
+            virtual void addField(Field<Type>&) const;
+
+            //- Set boundary condition to matrix.  Used to save the processor
+            //  patch off-diagonal coefficients
+            virtual void setBoundaryCondition
+            (
+                Map<typename MatrixType<Type>::ConstraintType> &
+            ) const;
 
 
-		// Coupled interface functionality
+        // Matrix construction (completion) functionality
 
-			//- Initialise neighbour matrix update
-			virtual void initInterfaceMatrixUpdate
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix& m,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
+            //- Add diagonal/source contributions
+            virtual void initAddDiag(const scalarField&) const;
+            virtual void initAddSource(const scalarField&) const;
 
-			//- Update result field based on interface functionality
-			virtual void updateInterfaceMatrix
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix& m,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
+            virtual void addDiag(scalarField&) const;
+            virtual void addSource(scalarField&) const;
+
+            //- Add upper/lower contributions
+            virtual void initAddUpperLower(const scalarField&) const;
+
+            virtual void addUpperLower(scalarField&) const;
+
+            virtual void eliminateUpperLower(scalarField&) const;
+
+            //- Get the cut edge coefficients in Amul order
+            virtual tmp<scalarField> cutBouCoeffs(const lduMatrix&) const;
+
+            //- Get the cut edge coefficients in Tmul order
+            virtual tmp<scalarField> cutIntCoeffs(const lduMatrix&) const;
+
+
+        // Coupled interface functionality
+
+            //- Initialise neighbour matrix update
+            virtual void initInterfaceMatrixUpdate
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix& m,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
+
+            //- Update result field based on interface functionality
+            virtual void updateInterfaceMatrix
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix& m,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 };
 
 
@@ -352,7 +355,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	 include "ProcessorPointPatchField.C"
+#    include "ProcessorPointPatchField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

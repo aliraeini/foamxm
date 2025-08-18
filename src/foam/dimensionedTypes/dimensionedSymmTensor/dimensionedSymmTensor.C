@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,12 +36,12 @@ namespace Foam
 template<>
 dimensionedSymmTensor dimensionedSymmTensor::T() const
 {
-	return dimensionedSymmTensor
-	(
-		name()+".T()",
-		dimensions(),
-		value().T()
-	);
+    return dimensionedSymmTensor
+    (
+        name()+".T()",
+        dimensions(),
+        value().T()
+    );
 }
 
 
@@ -49,122 +49,122 @@ dimensionedSymmTensor dimensionedSymmTensor::T() const
 
 dimensionedSymmTensor sqr(const dimensionedVector& dv)
 {
-	return dimensionedSymmTensor
-	(
-		"sqr("+dv.name()+')',
-		sqr(dv.dimensions()),
-		sqr(dv.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "sqr("+dv.name()+')',
+        sqr(dv.dimensions()),
+        sqr(dv.value())
+    );
 }
 
 
 dimensionedSymmTensor innerSqr(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"innerSqr("+dt.name()+')',
-		sqr(dt.dimensions()),
-		innerSqr(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "innerSqr("+dt.name()+')',
+        sqr(dt.dimensions()),
+        innerSqr(dt.value())
+    );
 }
 
 
 dimensionedScalar tr(const dimensionedSymmTensor& dt)
 {
-	return dimensionedScalar
-	(
-		"tr("+dt.name()+')',
-		dt.dimensions(),
-		tr(dt.value())
-	);
+    return dimensionedScalar
+    (
+        "tr("+dt.name()+')',
+        dt.dimensions(),
+        tr(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor symm(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"symm("+dt.name()+')',
-		dt.dimensions(),
-		symm(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "symm("+dt.name()+')',
+        dt.dimensions(),
+        symm(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor twoSymm(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"twoSymm("+dt.name()+')',
-		dt.dimensions(),
-		twoSymm(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "twoSymm("+dt.name()+')',
+        dt.dimensions(),
+        twoSymm(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor dev(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"dev("+dt.name()+')',
-		dt.dimensions(),
-		dev(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "dev("+dt.name()+')',
+        dt.dimensions(),
+        dev(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor dev2(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"dev2("+dt.name()+')',
-		dt.dimensions(),
-		dev2(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "dev2("+dt.name()+')',
+        dt.dimensions(),
+        dev2(dt.value())
+    );
 }
 
 
 dimensionedScalar det(const dimensionedSymmTensor& dt)
 {
-	return dimensionedScalar
-	(
-		"det("+dt.name()+')',
-		pow(dt.dimensions(), symmTensor::dim),
-		det(dt.value())
-	);
+    return dimensionedScalar
+    (
+        "det("+dt.name()+')',
+        pow(dt.dimensions(), symmTensor::dim),
+        det(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor cof(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"cof("+dt.name()+')',
-		pow(dt.dimensions(), symmTensor::dim - 1),
-		cof(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "cof("+dt.name()+')',
+        pow(dt.dimensions(), symmTensor::dim - 1),
+        cof(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor inv(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"inv("+dt.name()+')',
-		dimless/dt.dimensions(),
-		inv(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "inv("+dt.name()+')',
+        dimless/dt.dimensions(),
+        inv(dt.value())
+    );
 }
 
 
 dimensionedSymmTensor hinv(const dimensionedSymmTensor& dt)
 {
-	return dimensionedSymmTensor
-	(
-		"hinv("+dt.name()+')',
-		dimless/dt.dimensions(),
-		hinv(dt.value())
-	);
+    return dimensionedSymmTensor
+    (
+        "hinv("+dt.name()+')',
+        dimless/dt.dimensions(),
+        hinv(dt.value())
+    );
 }
 
 
@@ -172,12 +172,12 @@ dimensionedSymmTensor hinv(const dimensionedSymmTensor& dt)
 
 dimensionedVector operator*(const dimensionedSymmTensor& dt)
 {
-	return dimensionedVector
-	(
-		"*"+dt.name(),
-		dt.dimensions(),
-		*dt.value()
-	);
+    return dimensionedVector
+    (
+        "*"+dt.name(),
+        dt.dimensions(),
+        *dt.value()
+    );
 }
 
 

@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::processorSAMGInterfaceField
+    Foam::processorSAMGInterfaceField
 
 Description
-	AMG selected processor interface field.
+    AMG selected processor interface field.
 
 SourceFiles
-	processorSAMGInterfaceField.C
+    processorSAMGInterfaceField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,153 +44,156 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                  Class processorSAMGInterfaceField Declaration
+\*---------------------------------------------------------------------------*/
 
 class processorSAMGInterfaceField
 :
-	public SAMGInterfaceField,
-	public processorLduInterfaceField
+    public SAMGInterfaceField,
+    public processorLduInterfaceField
 {
-	// Private data
+    // Private data
 
-		//- Local reference cast into the processor interface
-		const processorSAMGInterface& procInterface_;
+        //- Local reference cast into the processor interface
+        const processorSAMGInterface& procInterface_;
 
-		//- Is the transform required
-		bool doTransform_;
+        //- Is the transform required
+        bool doTransform_;
 
-		//- Rank of component for transformation
-		int rank_;
-
-
-		// Sending and receiving
-
-			//- Outstanding request
-			mutable label outstandingSendRequest_;
-
-			//- Outstanding request
-			mutable label outstandingRecvRequest_;
-
-			//- Scalar send buffer
-			mutable Field<scalar> scalarSendBuf_;
-
-			//- Scalar receive buffer
-			mutable Field<scalar> scalarReceiveBuf_;
+        //- Rank of component for transformation
+        int rank_;
 
 
-	// Private Member Functions
+        // Sending and receiving
 
-		//- Disallow default bitwise copy construct
-		processorSAMGInterfaceField(const processorSAMGInterfaceField&);
+            //- Outstanding request
+            mutable label outstandingSendRequest_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const processorSAMGInterfaceField&);
+            //- Outstanding request
+            mutable label outstandingRecvRequest_;
+
+            //- Scalar send buffer
+            mutable Field<scalar> scalarSendBuf_;
+
+            //- Scalar receive buffer
+            mutable Field<scalar> scalarReceiveBuf_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        processorSAMGInterfaceField(const processorSAMGInterfaceField&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const processorSAMGInterfaceField&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("processor");
+    //- Runtime type information
+    TypeName("processor");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from AMG interface and fine level interface field
-		processorSAMGInterfaceField
-		(
-			const SAMGInterface& SAMGCp,
-			const lduInterfaceField& fineInterfaceField
-		);
-
-
-	//- Destructor
-	virtual ~processorSAMGInterfaceField();
+        //- Construct from AMG interface and fine level interface field
+        processorSAMGInterfaceField
+        (
+            const SAMGInterface& SAMGCp,
+            const lduInterfaceField& fineInterfaceField
+        );
 
 
-	// Member Functions
-
-		// Access
-
-			//- Return size
-			label size() const
-			{
-				return procInterface_.interfaceSize();
-			}
+    //- Destructor
+    virtual ~processorSAMGInterfaceField() = default;
 
 
-		// Coupled interface matrix update
+    // Member Functions
 
-			//- Transform neighbour field
-			virtual void transformCoupleField
-			(
-				scalarField& pnf,
-				const direction cmpt
-			) const
-			{
-				processorLduInterfaceField::transformCoupleField(pnf, cmpt);
-			}
+        // Access
 
-			//- Initialise neighbour matrix update
-			virtual void initInterfaceMatrixUpdate
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix& m,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
-
-			//- Update result field based on interface functionality
-			virtual void updateInterfaceMatrix
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix&,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
+            //- Return size
+            label size() const
+            {
+                return procInterface_.interfaceSize();
+            }
 
 
-		//- Processor interface functions
+        // Coupled interface matrix update
 
-			//- Return communicator used for comms
-			virtual label comm() const
-			{
-				return procInterface_.comm();
-			}
+            //- Transform neighbour field
+            virtual void transformCoupleField
+            (
+                scalarField& pnf,
+                const direction cmpt
+            ) const
+            {
+                processorLduInterfaceField::transformCoupleField(pnf, cmpt);
+            }
 
-			//- Return processor number
-			virtual int myProcNo() const
-			{
-				return procInterface_.myProcNo();
-			}
+            //- Initialise neighbour matrix update
+            virtual void initInterfaceMatrixUpdate
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix& m,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 
-			//- Return neigbour processor number
-			virtual int neighbProcNo() const
-			{
-				return procInterface_.neighbProcNo();
-			}
+            //- Update result field based on interface functionality
+            virtual void updateInterfaceMatrix
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix&,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 
-			//- Does the interface field perform the transfromation
-			virtual bool doTransform() const
-			{
-				return doTransform_;
-			}
 
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return procInterface_.forwardT();
-			}
+        //- Processor interface functions
 
-			//- Return rank of component for transform
-			virtual int rank() const
-			{
-				return rank_;
-			}
+            //- Return communicator used for comms
+            virtual label comm() const
+            {
+                return procInterface_.comm();
+            }
+
+            //- Return processor number
+            virtual int myProcNo() const
+            {
+                return procInterface_.myProcNo();
+            }
+
+            //- Return neigbour processor number
+            virtual int neighbProcNo() const
+            {
+                return procInterface_.neighbProcNo();
+            }
+
+            //- Does the interface field perform the transfromation
+            virtual bool doTransform() const
+            {
+                return doTransform_;
+            }
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return procInterface_.forwardT();
+            }
+
+            //- Return rank of component for transform
+            virtual int rank() const
+            {
+                return rank_;
+            }
 };
 
 

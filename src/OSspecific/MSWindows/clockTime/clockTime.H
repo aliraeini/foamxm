@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::clockTime
+    Foam::clockTime
 
 Description
-	Starts timing (using rtc) and returns elapsed time from start.
-	Better resolution (2uSec instead of ~20mSec) than cpuTime.
+    Starts timing (using rtc) and returns elapsed time from start.
+    Better resolution (2uSec instead of ~20mSec) than cpuTime.
 
 SourceFiles
-	clockTime.C
+    clockTime.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,41 +44,44 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class clockTime Declaration
+\*---------------------------------------------------------------------------*/
 
 class clockTime
 {
-	// Private data
+    // Private data
 
-		struct timeval startTime_;
-		mutable struct timeval lastTime_;
-		mutable struct timeval newTime_;
+        struct timeval startTime_;
+        mutable struct timeval lastTime_;
+        mutable struct timeval newTime_;
 
-		static void getTime(struct timeval& t);
+        static void getTime(struct timeval& t);
 
-		static double timeDifference
-		(
-			const struct timeval& start,
-			const struct timeval& end
-		);
+        static double timeDifference
+        (
+            const struct timeval& start,
+            const struct timeval& end
+        );
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		clockTime();
+        //- Construct from components
+        clockTime();
 
 
-	// Member Functions
+    // Member Functions
 
-		// Access
+        // Access
 
-			//- Returns CPU time from start of run
-			double elapsedTime() const;
+            //- Returns CPU time from start of run
+            double elapsedTime() const;
 
-			//- Returns CPU time from last call of clockTimeIncrement()
-			double timeIncrement() const;
+            //- Returns CPU time from last call of clockTimeIncrement()
+            double timeIncrement() const;
 };
 
 

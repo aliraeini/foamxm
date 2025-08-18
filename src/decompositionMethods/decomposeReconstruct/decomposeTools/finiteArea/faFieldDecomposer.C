@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ namespace Foam
 faFieldDecomposer::patchFieldDecomposer::patchFieldDecomposer
 (
     const label sizeBeforeMapping,
-    const unallocLabelList& addressingSlice,
+    const labelUList& addressingSlice,
     const label addressingOffset
 )
 :
@@ -56,7 +56,7 @@ faFieldDecomposer::processorAreaPatchFieldDecomposer::
 processorAreaPatchFieldDecomposer
 (
     const faMesh& mesh,
-    const unallocLabelList& addressingSlice
+    const labelUList& addressingSlice
 )
 :
     sizeBeforeMapping_(mesh.nFaces()),
@@ -110,7 +110,7 @@ faFieldDecomposer::processorEdgePatchFieldDecomposer::
 processorEdgePatchFieldDecomposer
 (
     label sizeBeforeMapping,
-    const unallocLabelList& addressingSlice
+    const labelUList& addressingSlice
 )
 :
     sizeBeforeMapping_(sizeBeforeMapping),
@@ -186,7 +186,7 @@ faFieldDecomposer::faFieldDecomposer
                 new processorEdgePatchFieldDecomposer
                 (
                     procMesh_.boundary()[patchi].size(),
-                    static_cast<const unallocLabelList&>
+                    static_cast<const labelUList&>
                     (
                         procMesh_.boundary()[patchi].patchSlice
                         (

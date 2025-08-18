@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -68,10 +68,8 @@ Foam::labelListList Foam::sharedPoints::procPatchPairs() const
                         // Get the other mesh
                         if (!meshes_.set(nbrProcID))
                         {
-                            FatalErrorIn
-                            (
-                                "labelListList sharedPoints::procPatchPairs()"
-                            )   << "Neighbour mesh does not exist for proc "
+                            FatalErrorInFunction
+                                << "Neighbour mesh does not exist for proc "
                                 << meshI << " patch " << patchI
                                 << " and neighbour " << nbrProcID
                                 << abort(FatalError);
@@ -114,10 +112,8 @@ Foam::labelListList Foam::sharedPoints::procPatchPairs() const
 
                         if (!found)
                         {
-                            FatalErrorIn
-                            (
-                                "labelListList sharedPoints::procPatchPairs()"
-                            )   << "Neighbour patch does not exist for proc "
+                            FatalErrorInFunction
+                                << "Neighbour patch does not exist for proc "
                                 << meshI << " patch " << patchI
                                 << " and neighbour " << nbrProcID
                                 << abort(FatalError);

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,171 +42,171 @@ License
 //   is detected ... this is not exactly what we want.
 int Foam::fileFormats::STLsurfaceFormatCore::detectBINARY
 (
-	const fileName& filename
+    const fileName& filename
 )
 {
-	off_t dataFileSize = Foam::fileSize(filename);
+    off_t dataFileSize = Foam::fileSize(filename);
 
-	IFstream str(filename, IOstream::BINARY);
-	istream& is = str().stdStream();
+    IFstream str(filename, IOstream::BINARY);
+    istream& is = str().stdStream();
 
-	// Read the STL header
-	char header[headerSize];
-	is.read(header, headerSize);
+    // Read the STL header
+    char header[headerSize];
+    is.read(header, headerSize);
 
-	// Check that stream is OK, if not this may be an ASCII file
-	if (!is.good())
-	{
-		return 0;
-	}
+    // Check that stream is OK, if not this may be an ASCII file
+    if (!is.good())
+    {
+        return 0;
+    }
 
-	// Read the number of triangles in the STl file
-	// (note: read as int so we can check whether >2^31)
-	int nTris;
-	is.read(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
+    // Read the number of triangles in the STl file
+    // (note: read as int so we can check whether >2^31)
+    int nTris;
+    is.read(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
 
-	// Check that stream is OK and number of triangles is positive,
-	// if not this may be an ASCII file
-	//
-	// Also compare the file size with that expected from the number of tris
-	// If the comparison is not sensible then it may be an ASCII file
-	if
-	(
-		!is
-	 || nTris < 0
-	 || nTris < (dataFileSize - headerSize)/50
-	 || nTris > (dataFileSize - headerSize)/25
-	)
-	{
-		return 0;
-	}
+    // Check that stream is OK and number of triangles is positive,
+    // if not this may be an ASCII file
+    //
+    // Also compare the file size with that expected from the number of tris
+    // If the comparison is not sensible then it may be an ASCII file
+    if
+    (
+        !is
+     || nTris < 0
+     || nTris < (dataFileSize - headerSize)/50
+     || nTris > (dataFileSize - headerSize)/25
+    )
+    {
+        return 0;
+    }
 
-	// looks like it might be BINARY, return number of triangles
-	return nTris;
+    // looks like it might be BINARY, return number of triangles
+    return nTris;
 }
 
 
 bool Foam::fileFormats::STLsurfaceFormatCore::readBINARY
 (
-	istream& is,
-	const off_t dataFileSize
+    istream& is,
+    const off_t dataFileSize
 )
 {
-	sorted_ = true;
+    sorted_ = true;
 
-	// Read the STL header
-	char header[headerSize];
-	is.read(header, headerSize);
+    // Read the STL header
+    char header[headerSize];
+    is.read(header, headerSize);
 
-	// Check that stream is OK, if not this may be an ASCII file
-	if (!is.good())
-	{
-		FatalErrorIn
-		(
-			"fileFormats::STLsurfaceFormatCore::readBINARY(IFstream&)"
-		)
-			<< "problem reading header, perhaps file is not binary "
-			<< exit(FatalError);
-	}
+    // Check that stream is OK, if not this may be an ASCII file
+    if (!is.good())
+    {
+        FatalErrorIn
+        (
+            "fileFormats::STLsurfaceFormatCore::readBINARY(IFstream&)"
+        )
+            << "problem reading header, perhaps file is not binary "
+            << exit(FatalError);
+    }
 
-	// Read the number of triangles in the STl file
-	// (note: read as int so we can check whether >2^31)
-	int nTris;
-	is.read(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
+    // Read the number of triangles in the STl file
+    // (note: read as int so we can check whether >2^31)
+    int nTris;
+    is.read(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
 
-	// Check that stream is OK and number of triangles is positive,
-	// if not this maybe an ASCII file
-	//
-	// Also compare the file size with that expected from the number of tris
-	// If the comparison is not sensible then it may be an ASCII file
-	if
-	(
-		!is
-	 || nTris < 0
-	 || nTris < (dataFileSize - headerSize)/50
-	 || nTris > (dataFileSize - headerSize)/25
-	)
-	{
-		FatalErrorIn
-		(
-			"fileFormats::STLsurfaceFormatCore::readBINARY(istream&)"
-		)
-			<< "problem reading number of triangles, perhaps file is not binary"
-			<< exit(FatalError);
-	}
-
-#ifdef DEBUG_STLBINARY
-	Info<< "# " << nTris << " facets" << endl;
-	label prevZone = -1;
-#endif
-
-	points_.setSize(3*nTris);
-	zoneIds_.setSize(nTris);
-
-	Map<label> lookup;
-	dynamicLabelList dynSizes;
-
-	label ptI = 0;
-	label zoneI = -1;
-	forAll(zoneIds_, faceI)
-	{
-		// Read an STL triangle
-		STLtriangle stlTri(is);
-
-		// transcribe the vertices of the STL triangle -> points
-		points_[ptI++] = stlTri.a();
-		points_[ptI++] = stlTri.b();
-		points_[ptI++] = stlTri.c();
-
-		// interprete stl attribute as a zone
-		const label origId = stlTri.attrib();
-
-		Map<label>::const_iterator fnd = lookup.find(origId);
-		if (fnd != lookup.end())
-		{
-			if (zoneI != fnd())
-			{
-				// group appeared out of order
-				sorted_ = false;
-			}
-			zoneI = fnd();
-		}
-		else
-		{
-			zoneI = dynSizes.size();
-			lookup.insert(origId, zoneI);
-			dynSizes.append(0);
-		}
-
-		zoneIds_[faceI] = zoneI;
-		dynSizes[zoneI]++;
+    // Check that stream is OK and number of triangles is positive,
+    // if not this maybe an ASCII file
+    //
+    // Also compare the file size with that expected from the number of tris
+    // If the comparison is not sensible then it may be an ASCII file
+    if
+    (
+        !is
+     || nTris < 0
+     || nTris < (dataFileSize - headerSize)/50
+     || nTris > (dataFileSize - headerSize)/25
+    )
+    {
+        FatalErrorIn
+        (
+            "fileFormats::STLsurfaceFormatCore::readBINARY(istream&)"
+        )
+            << "problem reading number of triangles, perhaps file is not binary"
+            << exit(FatalError);
+    }
 
 #ifdef DEBUG_STLBINARY
-		if (prevZone != zoneI)
-		{
-			if (prevZone != -1)
-			{
-				Info<< "endsolid zone" << prevZone << nl;
-			}
-			prevZone = zoneI;
-
-			Info<< "solid zone" << prevZone << nl;
-		}
-
-		Info<< " facet normal " << stlTri.normal() << nl
-			<< "  outer loop" << nl
-			<< "   vertex " << stlTri.a() << nl
-			<< "   vertex " << stlTri.b() << nl
-			<< "   vertex " << stlTri.c() << nl
-			<< "  outer loop" << nl
-			<< " endfacet" << endl;
+    Info<< "# " << nTris << " facets" << endl;
+    label prevZone = -1;
 #endif
-	}
 
-	names_.clear();
-	sizes_.transfer(dynSizes);
+    points_.setSize(3*nTris);
+    zoneIds_.setSize(nTris);
 
-	return true;
+    Map<label> lookup;
+    dynamicLabelList dynSizes;
+
+    label ptI = 0;
+    label zoneI = -1;
+    forAll(zoneIds_, faceI)
+    {
+        // Read an STL triangle
+        STLtriangle stlTri(is);
+
+        // transcribe the vertices of the STL triangle -> points
+        points_[ptI++] = stlTri.a();
+        points_[ptI++] = stlTri.b();
+        points_[ptI++] = stlTri.c();
+
+        // interprete stl attribute as a zone
+        const label origId = stlTri.attrib();
+
+        Map<label>::const_iterator fnd = lookup.find(origId);
+        if (fnd != lookup.end())
+        {
+            if (zoneI != fnd())
+            {
+                // group appeared out of order
+                sorted_ = false;
+            }
+            zoneI = fnd();
+        }
+        else
+        {
+            zoneI = dynSizes.size();
+            lookup.insert(origId, zoneI);
+            dynSizes.append(0);
+        }
+
+        zoneIds_[faceI] = zoneI;
+        dynSizes[zoneI]++;
+
+#ifdef DEBUG_STLBINARY
+        if (prevZone != zoneI)
+        {
+            if (prevZone != -1)
+            {
+                Info<< "endsolid zone" << prevZone << nl;
+            }
+            prevZone = zoneI;
+
+            Info<< "solid zone" << prevZone << nl;
+        }
+
+        Info<< " facet normal " << stlTri.normal() << nl
+            << "  outer loop" << nl
+            << "   vertex " << stlTri.a() << nl
+            << "   vertex " << stlTri.b() << nl
+            << "   vertex " << stlTri.c() << nl
+            << "  outer loop" << nl
+            << " endfacet" << endl;
+#endif
+    }
+
+    names_.clear();
+    sizes_.transfer(dynSizes);
+
+    return true;
 }
 
 
@@ -214,34 +214,34 @@ bool Foam::fileFormats::STLsurfaceFormatCore::readBINARY
 
 Foam::fileFormats::STLsurfaceFormatCore::STLsurfaceFormatCore
 (
-	const fileName& filename
+    const fileName& filename
 )
 :
-	sorted_(true),
-	points_(0),
-	zoneIds_(0),
-	names_(0),
-	sizes_(0)
+    sorted_(true),
+    points_(0),
+    zoneIds_(0),
+    names_(0),
+    sizes_(0)
 {
-	off_t dataFileSize = Foam::fileSize(filename);
+    off_t dataFileSize = Foam::fileSize(filename);
 
-	// auto-detect ascii/binary
-	if (detectBINARY(filename))
-	{
-		readBINARY
-		(
-			IFstream(filename, IOstream::BINARY)().stdStream(),
-			dataFileSize
-		);
-	}
-	else
-	{
-		readASCII
-		(
-			IFstream(filename)().stdStream(),
-			dataFileSize
-		);
-	}
+    // auto-detect ascii/binary
+    if (detectBINARY(filename))
+    {
+        readBINARY
+        (
+            IFstream(filename, IOstream::BINARY)().stdStream(),
+            dataFileSize
+        );
+    }
+    else
+    {
+        readASCII
+        (
+            IFstream(filename)().stdStream(),
+            dataFileSize
+        );
+    }
 }
 
 
@@ -255,22 +255,22 @@ Foam::fileFormats::STLsurfaceFormatCore::~STLsurfaceFormatCore()
 
 void Foam::fileFormats::STLsurfaceFormatCore::writeHeaderBINARY
 (
-	ostream& os,
-	unsigned int nTris
+    ostream& os,
+    unsigned int nTris
 )
 {
-	// STL header with extra information about nTris
-	char header[headerSize];
-	sprintf(header, "STL binary file %u facets", nTris);
+    // STL header with extra information about nTris
+    char header[headerSize];
+    sprintf(header, "STL binary file %u facets", nTris);
 
-	// avoid trailing junk
-	for (size_t i = strlen(header); i < headerSize; ++i)
-	{
-		header[i] = 0;
-	}
+    // avoid trailing junk
+    for (size_t i = strlen(header); i < headerSize; ++i)
+    {
+        header[i] = 0;
+    }
 
-	os.write(header, headerSize);
-	os.write(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
+    os.write(header, headerSize);
+    os.write(reinterpret_cast<char*>(&nTris), sizeof(unsigned int));
 
 }
 

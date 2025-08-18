@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-	Foam::label
+    Foam::label
 
 Description
-	A label is an int32_t or int64_t as specified by the pre-processor macro
-	WM_LABEL_SIZE.
+    A label is an int32_t or int64_t as specified by the pre-processor macro
+    WM_LABEL_SIZE.
 
-	A readLabel function is defined so that label can be constructed from
-	Istream.
+    A readLabel function is defined so that label can be constructed from
+    Istream.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@ Description
 #define INT_SIZE(x,y) INT_ADD_DEF_SIZE(x,WM_LABEL_SIZE,y)
 
 #if WM_LABEL_SIZE != 32 && WM_LABEL_SIZE != 64
-	#error "label.H: WM_LABEL_SIZE must be set to either 32 or 64"
+    #error "label.H: WM_LABEL_SIZE must be set to either 32 or 64"
 #endif
 
 
@@ -63,7 +63,7 @@ static const label labelMax = INT_SIZE(INT, _MAX);
 
 inline label readLabel(Istream& is)
 {
-	return INT_SIZE(readInt,) (is);
+    return INT_SIZE(readInt,) (is);
 }
 
 
@@ -78,12 +78,12 @@ label factorial(label n);
 
 inline label& setComponent(label& l, const direction)
 {
-	return l;
+    return l;
 }
 
 inline label component(const label l, const direction)
 {
-	return l;
+    return l;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

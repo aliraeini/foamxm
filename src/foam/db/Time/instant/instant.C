@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,20 +37,20 @@ Foam::instant::instant()
 
 Foam::instant::instant(const scalar val, const word& tname)
 :
-	value_(val),
-	name_(tname)
+    value_(val),
+    name_(tname)
 {}
 
 Foam::instant::instant(const scalar val)
 :
-	value_(val),
-	name_(Time::timeName(val))
+    value_(val),
+    name_(Time::timeName(val))
 {}
 
 Foam::instant::instant(const word& tname)
 :
-	value_(atof(tname.c_str())),
-	name_(tname)
+    value_(atof(tname.c_str())),
+    name_(tname)
 {}
 
 
@@ -58,7 +58,7 @@ Foam::instant::instant(const word& tname)
 
 bool Foam::instant::equal(const scalar b) const
 {
-	return (value_ < b + SMALL  && value_ > b - SMALL);
+    return (value_ < b + SMALL  && value_ > b - SMALL);
 }
 
 
@@ -66,13 +66,13 @@ bool Foam::instant::equal(const scalar b) const
 
 bool Foam::operator==(const instant& a, const instant& b)
 {
-	return a.equal(b.value_);
+    return a.equal(b.value_);
 }
 
 
 bool Foam::operator!=(const instant& a, const instant& b)
 {
-	return !operator==(a, b);
+    return !operator==(a, b);
 }
 
 
@@ -80,9 +80,9 @@ bool Foam::operator!=(const instant& a, const instant& b)
 
 Foam::Istream& Foam::operator>>(Istream& is, instant& I)
 {
-	is >> I.value_ >> I.name_;
+    is >> I.value_ >> I.name_;
 
-	return is;
+    return is;
 }
 
 

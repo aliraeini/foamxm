@@ -1,41 +1,41 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fileFormats::AC3DsurfaceFormat
+    Foam::fileFormats::AC3DsurfaceFormat
 
 Description
-	Provide a means of reading/writing AC3D format.
+    Provide a means of reading/writing AC3D format.
 
-	http://www.inivis.com/ac3d/man/ac3dfileformat.html
+    http://www.inivis.com/ac3d/man/ac3dfileformat.html
 
 Note
-	On input, the faces are already organized as zones.
-	The output is always sorted by zones.
-	In the absence of zones, a single zone will be assigned.
+    On input, the faces are already organized as zones.
+    The output is always sorted by zones.
+    In the absence of zones, a single zone will be assigned.
 
 SourceFiles
-	AC3DsurfaceFormat.C
+    AC3DsurfaceFormat.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -54,64 +54,67 @@ namespace Foam
 namespace fileFormats
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class AC3DsurfaceFormat Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Face>
 class AC3DsurfaceFormat
 :
-	public MeshedSurface<Face>,
-	public AC3DsurfaceFormatCore
+    public MeshedSurface<Face>,
+    public AC3DsurfaceFormatCore
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		AC3DsurfaceFormat(const AC3DsurfaceFormat<Face>&);
+        //- Disallow default bitwise copy construct
+        AC3DsurfaceFormat(const AC3DsurfaceFormat<Face>&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const AC3DsurfaceFormat<Face>&);
+        //- Disallow default bitwise assignment
+        void operator=(const AC3DsurfaceFormat<Face>&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from file name
-		AC3DsurfaceFormat(const fileName&);
-
-
-	// Selectors
-
-		//- Read file and return surface
-		static autoPtr<MeshedSurface<Face> > New(const fileName& name)
-		{
-			return autoPtr<MeshedSurface<Face> >
-			(
-				new AC3DsurfaceFormat<Face>(name)
-			);
-		}
+        //- Construct from file name
+        AC3DsurfaceFormat(const fileName&);
 
 
-	// Destructor
+    // Selectors
 
-		virtual ~AC3DsurfaceFormat()
-		{}
+        //- Read file and return surface
+        static autoPtr<MeshedSurface<Face> > New(const fileName& name)
+        {
+            return autoPtr<MeshedSurface<Face> >
+            (
+                new AC3DsurfaceFormat<Face>(name)
+            );
+        }
 
 
-	// Member Functions
+    // Destructor
 
-		//- Write surface mesh components by proxy
-		static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
+        virtual ~AC3DsurfaceFormat()
+        {}
 
-		//- Write UnsortedMeshedSurface, the output is always sorted by zones.
-		static void write(const fileName&, const UnsortedMeshedSurface<Face>&);
 
-		//- Read from file
-		virtual bool read(const fileName&);
+    // Member Functions
 
-		//- Write object
-		virtual void write(const fileName& name) const
-		{
-			write(name, MeshedSurfaceProxy<Face>(*this));
-		}
+        //- Write surface mesh components by proxy
+        static void write(const fileName&, const MeshedSurfaceProxy<Face>&);
+
+        //- Write UnsortedMeshedSurface, the output is always sorted by zones.
+        static void write(const fileName&, const UnsortedMeshedSurface<Face>&);
+
+        //- Read from file
+        virtual bool read(const fileName&);
+
+        //- Write object
+        virtual void write(const fileName& name) const
+        {
+            write(name, MeshedSurfaceProxy<Face>(*this));
+        }
 };
 
 
@@ -123,7 +126,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "AC3DsurfaceFormat.C"
+#   include "AC3DsurfaceFormat.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

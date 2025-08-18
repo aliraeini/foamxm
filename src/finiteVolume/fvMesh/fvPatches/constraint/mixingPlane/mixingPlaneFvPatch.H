@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	mixingPlaneFvPatch
+    mixingPlaneFvPatch
 
 Description
-	mixingPlane patch.
+    mixingPlane patch.
 
 Author
-	Martin Beaudoin, Hydro-Quebec, 2009.  All rights reserved
+    Martin Beaudoin, Hydro-Quebec, 2009.  All rights reserved
 
 Contributor
-	Hrvoje Jasak, Wikki Ltd.
+    Hrvoje Jasak, Wikki Ltd.
 
 SourceFiles
-	mixingPlaneFvPatch.C
+    mixingPlaneFvPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,224 +50,230 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                    Class mixingPlaneFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class mixingPlaneFvPatch
 :
-	public coupledFvPatch,
-	public mixingPlaneLduInterface
+    public coupledFvPatch,
+    public mixingPlaneLduInterface
 {
-	// Private Data
+    // Private Data
 
-		//- Reference to polyPatch
-		const mixingPlanePolyPatch& mixingPlanePolyPatch_;
+        //- Reference to polyPatch
+        const mixingPlanePolyPatch& mixingPlanePolyPatch_;
 
 
 protected:
 
-	// Protected Member functions
+    // Protected Member functions
 
-		//- Make patch weighting factors
-		virtual void makeWeights(fvsPatchScalarField&) const;
+        //- Make patch weighting factors
+        virtual void makeWeights(fvsPatchScalarField&) const;
 
-		//- Make patch face - neighbour cell distances
-		virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
+        //- Make patch face delta coefficients
+        virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
 
-		//- Make patch face non-orthogonality correction vectors
-		virtual void makeCorrVecs(fvsPatchVectorField&) const;
+        //- Construct long distance factors
+        virtual void makeMagLongDeltas(fvsPatchScalarField&) const;
+
+        //- Make patch face non-orthogonality correction vectors
+        virtual void makeCorrVecs(fvsPatchVectorField&) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName(mixingPlanePolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(mixingPlanePolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		mixingPlaneFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
-		:
-			coupledFvPatch(patch, bm),
-			mixingPlanePolyPatch_(refCast<const mixingPlanePolyPatch>(patch))
-		{}
-
-
-	//- Destructor
-	virtual ~mixingPlaneFvPatch();
+        //- Construct from components
+        mixingPlaneFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
+        :
+            coupledFvPatch(patch, bm),
+            mixingPlanePolyPatch_(refCast<const mixingPlanePolyPatch>(patch))
+        {}
 
 
-	// Member functions
-
-		// Communication support
-
-			//- Return communicator used for parallel communication
-			virtual int comm() const
-			{
-				return mixingPlanePolyPatch_.comm();
-			}
-
-			//- Return message tag used for sending
-			virtual int tag() const
-			{
-				return mixingPlanePolyPatch_.tag();
-			}
+    //- Destructor
+    virtual ~mixingPlaneFvPatch() = default;
 
 
-		// Access
+    // Member functions
 
-			//- Return shadow patch
-			const mixingPlaneFvPatch& shadow() const;
+        // Communication support
 
-			//- Return number of profile bands
-			label nProfileBands() const
-			{
-				return mixingPlanePolyPatch_.nProfileBands();
-			}
+            //- Return communicator used for parallel communication
+            virtual int comm() const
+            {
+                return mixingPlanePolyPatch_.comm();
+            }
 
-			//- Return delta (P to N) vectors across coupled patch
-			virtual tmp<vectorField> delta() const;
-
-
-		// Interpolation
-
-			//- Interpolate face field
-			template<class Type>
-			tmp<Field<Type> > interpolate(const Field<Type>& pf) const
-			{
-				return mixingPlanePolyPatch_.interpolate(pf);
-			}
-
-			template<class Type>
-			tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
-			{
-				return mixingPlanePolyPatch_.interpolate(tpf);
-			}
-
-			//- Profile average field.  Return field size is equal to
-			//  the number of bands
-			template<class Type>
-			tmp<Field<Type> > toProfile
-			(
-				const Field<Type>& pf
-			) const
-			{
-				return mixingPlanePolyPatch_.toProfile(pf);
-			}
-
-			template<class Type>
-			tmp<Field<Type> > toProfile
-			(
-				const tmp<Field<Type> >& tpf
-			) const
-			{
-				return mixingPlanePolyPatch_.toProfile(tpf);
-			}
-
-			//- Field from profile field.  Return field size is equal to
-			//  patch size
-			template<class Type>
-			tmp<Field<Type> > fromProfile
-			(
-				const Field<Type>& pf
-			) const
-			{
-				return mixingPlanePolyPatch_.fromProfile(pf);
-			}
-
-			template<class Type>
-			tmp<Field<Type> > fromProfile
-			(
-				const tmp<Field<Type> >& tpf
-			) const
-			{
-				return mixingPlanePolyPatch_.fromProfile(tpf);
-			}
-
-			//- Circumferential average face field
-			template<class Type>
-			tmp<Field<Type> > circumferentialAverage
-			(
-				const Field<Type>& pf
-			) const
-			{
-				return mixingPlanePolyPatch_.circumferentialAverage(pf);
-			}
-
-			template<class Type>
-			tmp<Field<Type> > circumferentialAverage
-			(
-				const tmp<Field<Type> >& tpf
-			) const
-			{
-				return mixingPlanePolyPatch_.circumferentialAverage(tpf);
-			}
+            //- Return message tag used for sending
+            virtual int tag() const
+            {
+                return mixingPlanePolyPatch_.tag();
+            }
 
 
-		// Interface transfer functions
+        // Access
 
-			//- Is this the master side?
-			virtual bool master() const;
+            //- Return shadow patch
+            const mixingPlaneFvPatch& shadow() const;
 
-			//- Return shadow patch index
-			virtual label shadowIndex() const;
+            //- Return number of profile bands
+            label nProfileBands() const
+            {
+                return mixingPlanePolyPatch_.nProfileBands();
+            }
 
-			//- Return shadow interface
-			virtual const mixingPlaneLduInterface& shadowInterface() const;
+            //- Return delta (P to N) vectors across coupled patch
+            virtual tmp<vectorField> delta() const;
 
-			//- Return addressing.  Master side returns own addressing and
-			//  slave side returns addressing from master
-			virtual const labelListList& ggiAddressing() const;
 
-			//- Return weights.  Master side returns own weights and
-			//  slave side returns weights from master
-			virtual const scalarListList& ggiWeights() const;
+        // Interpolation
 
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return coupledFvPatch::forwardT();
-			}
+            //- Interpolate face field
+            template<class Type>
+            tmp<Field<Type> > interpolate(const Field<Type>& pf) const
+            {
+                return mixingPlanePolyPatch_.interpolate(pf);
+            }
 
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return coupledFvPatch::reverseT();
-			}
+            template<class Type>
+            tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
+            {
+                return mixingPlanePolyPatch_.interpolate(tpf);
+            }
 
-			//- Return the values of the given internal data adjacent to
-			//  the interface as a field
-			virtual tmp<labelField> interfaceInternalField
-			(
-				const unallocLabelList& internalData
-			) const;
+            //- Profile average field.  Return field size is equal to
+            //  the number of bands
+            template<class Type>
+            tmp<Field<Type> > toProfile
+            (
+                const Field<Type>& pf
+            ) const
+            {
+                return mixingPlanePolyPatch_.toProfile(pf);
+            }
 
-			//- Initialise interface data transfer
-			virtual void initTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            template<class Type>
+            tmp<Field<Type> > toProfile
+            (
+                const tmp<Field<Type> >& tpf
+            ) const
+            {
+                return mixingPlanePolyPatch_.toProfile(tpf);
+            }
 
-			//- Transfer and return neighbour field
-			virtual tmp<labelField> transfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            //- Field from profile field.  Return field size is equal to
+            //  patch size
+            template<class Type>
+            tmp<Field<Type> > fromProfile
+            (
+                const Field<Type>& pf
+            ) const
+            {
+                return mixingPlanePolyPatch_.fromProfile(pf);
+            }
 
-			//- Initialise transfer of internal field adjacent to the interface
-			virtual void initInternalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& iF
-			) const;
+            template<class Type>
+            tmp<Field<Type> > fromProfile
+            (
+                const tmp<Field<Type> >& tpf
+            ) const
+            {
+                return mixingPlanePolyPatch_.fromProfile(tpf);
+            }
 
-			//- Return neighbour field
-			virtual tmp<labelField> internalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& internalData
-			) const;
+            //- Circumferential average face field
+            template<class Type>
+            tmp<Field<Type> > circumferentialAverage
+            (
+                const Field<Type>& pf
+            ) const
+            {
+                return mixingPlanePolyPatch_.circumferentialAverage(pf);
+            }
+
+            template<class Type>
+            tmp<Field<Type> > circumferentialAverage
+            (
+                const tmp<Field<Type> >& tpf
+            ) const
+            {
+                return mixingPlanePolyPatch_.circumferentialAverage(tpf);
+            }
+
+
+        // Interface transfer functions
+
+            //- Is this the master side?
+            virtual bool master() const;
+
+            //- Return shadow patch index
+            virtual label shadowIndex() const;
+
+            //- Return shadow interface
+            virtual const mixingPlaneLduInterface& shadowInterface() const;
+
+            //- Return addressing.  Master side returns own addressing and
+            //  slave side returns addressing from master
+            virtual const labelListList& ggiAddressing() const;
+
+            //- Return weights.  Master side returns own weights and
+            //  slave side returns weights from master
+            virtual const scalarListList& ggiWeights() const;
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return coupledFvPatch::forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return coupledFvPatch::reverseT();
+            }
+
+            //- Return the values of the given internal data adjacent to
+            //  the interface as a field
+            virtual tmp<labelField> interfaceInternalField
+            (
+                const labelUList& internalData
+            ) const;
+
+            //- Initialise interface data transfer
+            virtual void initTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Transfer and return neighbour field
+            virtual tmp<labelField> transfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Initialise transfer of internal field adjacent to the interface
+            virtual void initInternalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& iF
+            ) const;
+
+            //- Return neighbour field
+            virtual tmp<labelField> internalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& internalData
+            ) const;
 };
 
 

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -34,19 +34,19 @@ License
 
 Foam::IOerror::IOerror(const string& title)
 :
-	error(title),
-	ioFileName_("unknown"),
-	ioStartLineNumber_(-1),
-	ioEndLineNumber_(-1)
+    error(title),
+    ioFileName_("unknown"),
+    ioStartLineNumber_(-1),
+    ioEndLineNumber_(-1)
 {}
 
 
 Foam::IOerror::IOerror(const dictionary& errDict)
 :
-	error(errDict),
-	ioFileName_(errDict.lookup("ioFileName")),
-	ioStartLineNumber_(readLabel(errDict.lookup("ioStartLineNumber"))),
-	ioEndLineNumber_(readLabel(errDict.lookup("ioEndLineNumber")))
+    error(errDict),
+    ioFileName_(errDict.lookup("ioFileName")),
+    ioStartLineNumber_(readLabel(errDict.lookup("ioStartLineNumber"))),
+    ioEndLineNumber_(readLabel(errDict.lookup("ioEndLineNumber")))
 {}
 
 
@@ -56,232 +56,232 @@ Foam::IOerror::~IOerror() throw()
 
 Foam::OSstream& Foam::IOerror::operator()
 (
-	const char* functionName,
-	const char* sourceFileName,
-	const int sourceFileLineNumber,
-	const string& ioFileName,
-	const label ioStartLineNumber,
-	const label ioEndLineNumber
+    const char* functionName,
+    const char* sourceFileName,
+    const int sourceFileLineNumber,
+    const string& ioFileName,
+    const label ioStartLineNumber,
+    const label ioEndLineNumber
 )
 {
-	error::operator()(functionName, sourceFileName, sourceFileLineNumber);
-	ioFileName_ = ioFileName;
-	ioStartLineNumber_ = ioStartLineNumber;
-	ioEndLineNumber_ = ioEndLineNumber;
+    error::operator()(functionName, sourceFileName, sourceFileLineNumber);
+    ioFileName_ = ioFileName;
+    ioStartLineNumber_ = ioStartLineNumber;
+    ioEndLineNumber_ = ioEndLineNumber;
 
-	return operator OSstream&();
+    return operator OSstream&();
 }
 
 
 Foam::OSstream& Foam::IOerror::operator()
 (
-	const char* functionName,
-	const char* sourceFileName,
-	const int sourceFileLineNumber,
-	const IOstream& ioStream
+    const char* functionName,
+    const char* sourceFileName,
+    const int sourceFileLineNumber,
+    const IOstream& ioStream
 )
 {
-	return operator()
-	(
-		functionName,
-		sourceFileName,
-		sourceFileLineNumber,
-		ioStream.name(),
-		ioStream.lineNumber(),
-		-1
-	);
+    return operator()
+    (
+        functionName,
+        sourceFileName,
+        sourceFileLineNumber,
+        ioStream.name(),
+        ioStream.lineNumber(),
+        -1
+    );
 }
 
 
 Foam::OSstream& Foam::IOerror::operator()
 (
-	const char* functionName,
-	const char* sourceFileName,
-	const int sourceFileLineNumber,
-	const dictionary& dict
+    const char* functionName,
+    const char* sourceFileName,
+    const int sourceFileLineNumber,
+    const dictionary& dict
 )
 {
-	return operator()
-	(
-		functionName,
-		sourceFileName,
-		sourceFileLineNumber,
-		dict.name(),
-		dict.startLineNumber(),
-		dict.endLineNumber()
-	);
+    return operator()
+    (
+        functionName,
+        sourceFileName,
+        sourceFileLineNumber,
+        dict.name(),
+        dict.startLineNumber(),
+        dict.endLineNumber()
+    );
 }
 
 
 void Foam::IOerror::SafeFatalIOError
 (
-	const char* functionName,
-	const char* sourceFileName,
-	const int sourceFileLineNumber,
-	const IOstream& ioStream,
-	const string& msg
+    const char* functionName,
+    const char* sourceFileName,
+    const int sourceFileLineNumber,
+    const IOstream& ioStream,
+    const string& msg
 )
 {
-	if (JobInfo::constructed)
-	{
-		FatalIOErrorIn
-		(
-			"primitiveEntry::readEntry(const dictionary&, Istream&)",
-			ioStream
-		)   << msg << Foam::exit(FatalIOError);
-	}
-	else
-	{
-		std::cerr
-			<< std::endl
-			<< "--> FOAM FATAL IO ERROR:" << std::endl
-			<< msg
-			<< std::endl
-			<< "file: " << ioStream.name()
-			<< " at line " << ioStream.lineNumber() << '.'
-			<< std::endl << std::endl
-			<< "    From function " << functionName
-			<< std::endl
-			<< "    in file " << sourceFileName
-			<< " at line " << sourceFileLineNumber << '.'
-			<< std::endl;
-		::exit(1);
-	}
+    if (JobInfo::constructed)
+    {
+        FatalIOErrorIn
+        (
+            "primitiveEntry::readEntry(const dictionary&, Istream&)",
+            ioStream
+        )   << msg << Foam::exit(FatalIOError);
+    }
+    else
+    {
+        std::cerr
+            << std::endl
+            << "--> FOAM FATAL IO ERROR:" << std::endl
+            << msg
+            << std::endl
+            << "file: " << ioStream.name()
+            << " at line " << ioStream.lineNumber() << '.'
+            << std::endl << std::endl
+            << "    From function " << functionName
+            << std::endl
+            << "    in file " << sourceFileName
+            << " at line " << sourceFileLineNumber << '.'
+            << std::endl;
+        ::exit(1);
+    }
 }
 
 
 Foam::IOerror::operator Foam::dictionary() const
 {
-	dictionary errDict(error::operator dictionary());
+    dictionary errDict(error::operator dictionary());
 
-	errDict.remove("type");
-	errDict.add("type", word("Foam::IOerror"));
+    errDict.remove("type");
+    errDict.add("type", word("Foam::IOerror"));
 
-	errDict.add("ioFileName", ioFileName());
-	errDict.add("ioStartLineNumber", ioStartLineNumber());
-	errDict.add("ioEndLineNumber", ioEndLineNumber());
+    errDict.add("ioFileName", ioFileName());
+    errDict.add("ioStartLineNumber", ioStartLineNumber());
+    errDict.add("ioEndLineNumber", ioEndLineNumber());
 
-	return errDict;
+    return errDict;
 }
 
 
 void Foam::IOerror::exit(const int)
 {
-	if (!throwExceptions_ && JobInfo::constructed)
-	{
-		jobInfo.add("FatalIOError", operator dictionary());
-		jobInfo.exit();
-	}
+    if (!throwExceptions_ && JobInfo::constructed)
+    {
+        jobInfo.add("FatalIOError", operator dictionary());
+        jobInfo.exit();
+    }
 
-	if (abort_)
-	{
-		abort();
-	}
+    if (abort_)
+    {
+        abort();
+    }
 
-	if (Pstream::parRun())
-	{
-		Perr<< endl << *this << endl
-			<< "\nFOAM parallel run exiting\n" << endl;
-		Pstream::exit(1);
-	}
-	else
-	{
-		if (throwExceptions_)
-		{
-			// Make a copy of the error to throw
-			IOerror errorException(*this);
+    if (Pstream::parRun())
+    {
+        Perr<< endl << *this << endl
+            << "\nFOAM parallel run exiting\n" << endl;
+        Pstream::exit(1);
+    }
+    else
+    {
+        if (throwExceptions_)
+        {
+            // Make a copy of the error to throw
+            IOerror errorException(*this);
 
-			// Rewind the message buffer for the next error message
-			messageStreamPtr_->rewind();
+            // Rewind the message buffer for the next error message
+            messageStreamPtr_->rewind();
 
-			throw errorException;
-		}
-		else
-		{
-			Perr<< endl << *this << endl
-				<< "\nFOAM exiting\n" << endl;
-			::exit(1);
-		}
-	}
+            throw errorException;
+        }
+        else
+        {
+            Perr<< endl << *this << endl
+                << "\nFOAM exiting\n" << endl;
+            ::exit(1);
+        }
+    }
 }
 
 
 void Foam::IOerror::abort()
 {
-	if (!throwExceptions_ && JobInfo::constructed)
-	{
-		jobInfo.add("FatalIOError", operator dictionary());
-		jobInfo.abort();
-	}
+    if (!throwExceptions_ && JobInfo::constructed)
+    {
+        jobInfo.add("FatalIOError", operator dictionary());
+        jobInfo.abort();
+    }
 
-	if (abort_)
-	{
-		Perr<< endl << *this << endl
-			<< "\nFOAM aborting (FOAM_ABORT set)\n" << endl;
-		printStack(Perr);
-		::abort();
-	}
+    if (abort_)
+    {
+        Perr<< endl << *this << endl
+            << "\nFOAM aborting (FOAM_ABORT set)\n" << endl;
+        printStack(Perr);
+        ::abort();
+    }
 
-	if (Pstream::parRun())
-	{
-		Perr<< endl << *this << endl
-			<< "\nFOAM parallel run aborting\n" << endl;
-		printStack(Perr);
-		Pstream::abort();
-	}
-	else
-	{
-		if (throwExceptions_)
-		{
-			// Make a copy of the error to throw
-			IOerror errorException(*this);
+    if (Pstream::parRun())
+    {
+        Perr<< endl << *this << endl
+            << "\nFOAM parallel run aborting\n" << endl;
+        printStack(Perr);
+        Pstream::abort();
+    }
+    else
+    {
+        if (throwExceptions_)
+        {
+            // Make a copy of the error to throw
+            IOerror errorException(*this);
 
-			// Rewind the message buffer for the next error message
-			messageStreamPtr_->rewind();
+            // Rewind the message buffer for the next error message
+            messageStreamPtr_->rewind();
 
-			throw errorException;
-		}
-		else
-		{
-			Perr<< endl << *this << endl
-				<< "\nFOAM aborting\n" << endl;
-			printStack(Perr);
-			::abort();
-		}
-	}
+            throw errorException;
+        }
+        else
+        {
+            Perr<< endl << *this << endl
+                << "\nFOAM aborting\n" << endl;
+            printStack(Perr);
+            ::abort();
+        }
+    }
 }
 
 
 Foam::Ostream& Foam::operator<<(Ostream& os, const IOerror& ioErr)
 {
-	if (!os.bad())
-	{
-		os  << endl
-			<< ioErr.title().c_str() << endl
-			<< ioErr.message().c_str() << endl << endl;
+    if (!os.bad())
+    {
+        os  << endl
+            << ioErr.title().c_str() << endl
+            << ioErr.message().c_str() << endl << endl;
 
-		os  << "file: " << ioErr.ioFileName().c_str();
+        os  << "file: " << ioErr.ioFileName().c_str();
 
-		if (ioErr.ioStartLineNumber() >= 0 && ioErr.ioEndLineNumber() >= 0)
-		{
-			os  << " from line " << ioErr.ioStartLineNumber()
-				<< " to line " << ioErr.ioEndLineNumber() << '.';
-		}
-		else if (ioErr.ioStartLineNumber() >= 0)
-		{
-			os  << " at line " << ioErr.ioStartLineNumber() << '.';
-		}
+        if (ioErr.ioStartLineNumber() >= 0 && ioErr.ioEndLineNumber() >= 0)
+        {
+            os  << " from line " << ioErr.ioStartLineNumber()
+                << " to line " << ioErr.ioEndLineNumber() << '.';
+        }
+        else if (ioErr.ioStartLineNumber() >= 0)
+        {
+            os  << " at line " << ioErr.ioStartLineNumber() << '.';
+        }
 
-		if (IOerror::level >= 2 && ioErr.sourceFileLineNumber())
-		{
-			os  << endl << endl
-				<< "    From function " << ioErr.functionName().c_str() << endl
-				<< "    in file " << ioErr.sourceFileName().c_str()
-				<< " at line " << ioErr.sourceFileLineNumber() << '.';
-		}
-	}
+        if (IOerror::level >= 2 && ioErr.sourceFileLineNumber())
+        {
+            os  << endl << endl
+                << "    From function " << ioErr.functionName().c_str() << endl
+                << "    in file " << ioErr.sourceFileName().c_str()
+                << " at line " << ioErr.sourceFileLineNumber() << '.';
+        }
+    }
 
-	return os;
+    return os;
 }
 
 

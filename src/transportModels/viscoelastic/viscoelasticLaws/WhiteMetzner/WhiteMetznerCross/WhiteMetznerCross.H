@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	WhiteMetznerCross
+    WhiteMetznerCross
 
 Description
-	White-Metzner Power Law non linear viscoelastic fluid model
-	(Larson, R. G., Constitutive equations for polymer melts
-	and solutions, 1988).
+    White-Metzner Power Law non linear viscoelastic fluid model
+    (Larson, R. G., Constitutive equations for polymer melts
+    and solutions, 1988).
 
 Author
-	Jovani L. Favero.  All rights reserved
+    Jovani L. Favero.  All rights reserved
 
 SourceFiles
-	WhiteMetznerCross.C
+    WhiteMetznerCross.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,89 +47,92 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class WhiteMetznerCross Declaration
+\*---------------------------------------------------------------------------*/
 
 class WhiteMetznerCross
 :
-	public viscoelasticLaw
+    public viscoelasticLaw
 {
-	// Private data
+    // Private data
 
-		//- Transported viscoelastic stress
-		volSymmTensorField tau_;
-
-
-		// Model constants
-
-			//- Density
-			dimensionedScalar rho_;
-
-			//- Solvent viscosity
-			dimensionedScalar etaS_;
-
-			//- Zero shear rate polymer viscosity
-			dimensionedScalar etaP_;
-
-			//- Relaxation time
-			dimensionedScalar lambda_;
-
-			//- Fitted parameter for etaP
-			dimensionedScalar K_;
-
-			//- Fitted parameter for lambda
-			dimensionedScalar L_;
-
-			//- Fitted parameter for etaP
-			dimensionedScalar m_;
-
-			//- Fitted parameter for lambda
-			dimensionedScalar n_;
+        //- Transported viscoelastic stress
+        volSymmTensorField tau_;
 
 
-	// Private Member Functions
+        // Model constants
 
-		//- Disallow default bitwise copy construct
-		WhiteMetznerCross(const WhiteMetznerCross&);
+            //- Density
+            dimensionedScalar rho_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const WhiteMetznerCross&);
+            //- Solvent viscosity
+            dimensionedScalar etaS_;
+
+            //- Zero shear rate polymer viscosity
+            dimensionedScalar etaP_;
+
+            //- Relaxation time
+            dimensionedScalar lambda_;
+
+            //- Fitted parameter for etaP
+            dimensionedScalar K_;
+
+            //- Fitted parameter for lambda
+            dimensionedScalar L_;
+
+            //- Fitted parameter for etaP
+            dimensionedScalar m_;
+
+            //- Fitted parameter for lambda
+            dimensionedScalar n_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        WhiteMetznerCross(const WhiteMetznerCross&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const WhiteMetznerCross&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("WhiteMetznerCross");
+    //- Runtime type information
+    TypeName("WhiteMetznerCross");
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		WhiteMetznerCross
-		(
-			const word& name,
-			const volVectorField& U,
-			const surfaceScalarField& phi,
-			const dictionary& dict
-		);
-
-
-	// Destructor
-
-		virtual ~WhiteMetznerCross()
-		{}
+        //- Construct from components
+        WhiteMetznerCross
+        (
+            const word& name,
+            const volVectorField& U,
+            const surfaceScalarField& phi,
+            const dictionary& dict
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Return the viscoelastic stress tensor
-		virtual tmp<volSymmTensorField> tau() const
-		{
-			return tau_;
-		}
+        virtual ~WhiteMetznerCross()
+        {}
 
-		//- Return the coupling term for the momentum equation
-		virtual tmp<fvVectorMatrix> divTau(volVectorField& U) const;
 
-		//- Correct the viscoelastic stress
-		virtual void correct();
+    // Member Functions
+
+        //- Return the viscoelastic stress tensor
+        virtual tmp<volSymmTensorField> tau() const
+        {
+            return tau_;
+        }
+
+        //- Return the coupling term for the momentum equation
+        virtual tmp<fvVectorMatrix> divTau(volVectorField& U) const;
+
+        //- Correct the viscoelastic stress
+        virtual void correct();
 };
 
 

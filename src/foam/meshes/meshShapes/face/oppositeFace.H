@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::oppositeFace
+    Foam::oppositeFace
 
 Description
-	Class containing opposite face for a prismatic cell with addresing
-	and a possibility of failure.
+    Class containing opposite face for a prismatic cell with addresing
+    and a possibility of failure.
 
 SourceFiles
-	oppositeFace.C
+    oppositeFace.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,57 +43,60 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class oppositeFace Declaration
+\*---------------------------------------------------------------------------*/
 
 class oppositeFace
 :
-	public face
+    public face
 {
-	// Private data
+    // Private data
 
-		//- Master face index
-		const label masterIndex_;
+        //- Master face index
+        const label masterIndex_;
 
-		//- Opposite face index
-		const label oppositeIndex_;
+        //- Opposite face index
+        const label oppositeIndex_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		oppositeFace
-		(
-			const face& f,
-			const label masterIndex,
-			const label oppositeIndex
-		)
-		:
-			face(f),
-			masterIndex_(masterIndex),
-			oppositeIndex_(oppositeIndex)
-		{}
+        //- Construct from components
+        oppositeFace
+        (
+            const face& f,
+            const label masterIndex,
+            const label oppositeIndex
+        )
+        :
+            face(f),
+            masterIndex_(masterIndex),
+            oppositeIndex_(oppositeIndex)
+        {}
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Master face index
-		inline label masterIndex() const
-		{
-			return masterIndex_;
-		}
+        //- Master face index
+        inline label masterIndex() const
+        {
+            return masterIndex_;
+        }
 
-		//- Slave face index
-		inline label oppositeIndex() const
-		{
-			return oppositeIndex_;
-		}
+        //- Slave face index
+        inline label oppositeIndex() const
+        {
+            return oppositeIndex_;
+        }
 
-		//- Does the opposite face exist?
-		inline bool found() const
-		{
-			return size() > 0;
-		}
+        //- Does the opposite face exist?
+        inline bool found() const
+        {
+            return size() > 0;
+        }
 };
 
 

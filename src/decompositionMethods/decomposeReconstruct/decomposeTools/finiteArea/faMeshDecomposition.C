@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ void faMeshDecomposition::decomposeMesh(const bool filterEmptyPatches)
         {
             if (faceToProc_[faceI] >= nProcs())
             {
-                FatalErrorIn("Finite area mesh decomposition")
+                FatalErrorInFunction
                     << "Impossible processor label " << faceToProc_[faceI]
                     << "for face " << faceI
                     << abort(FatalError);
@@ -491,8 +491,7 @@ void faMeshDecomposition::decomposeMesh(const bool filterEmptyPatches)
 
                         if (interProcBouFound && !neighbourFound)
                         {
-                            FatalErrorIn
-                                ("faDomainDecomposition::decomposeMesh()")
+                            FatalErrorInFunction
                                 << "Inconsistency in inter - "
                                 << "processor boundary lists for processors "
                                 << ownerProc << " and " << neighbourProc
@@ -691,10 +690,8 @@ void faMeshDecomposition::decomposeMesh(const bool filterEmptyPatches)
 
                                 if (interProcBouFound && !neighbourFound)
                                 {
-                                    FatalErrorIn
-                                    (
-                                        "faDomainDecomposition::decomposeMesh()"
-                                    )   << "Inconsistency in inter-processor "
+                                    FatalErrorInFunction
+                                        << "Inconsistency in inter-processor "
                                         << "boundary lists for processors "
                                         << ownerProc << " and " << neighbourProc
                                         << " in cyclic boundary matching"

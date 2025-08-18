@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::motionDirectionalDiffusivity
+    Foam::motionDirectionalDiffusivity
 
 Description
-	MotionDirectional finite volume mesh motion diffusivity.
+    MotionDirectional finite volume mesh motion diffusivity.
 
 SourceFiles
-	motionDirectionalDiffusivity.C
+    motionDirectionalDiffusivity.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,50 +42,53 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class motionDirectionalDiffusivity Declaration
+\*---------------------------------------------------------------------------*/
 
 class motionDirectionalDiffusivity
 :
-	public uniformDiffusivity
+    public uniformDiffusivity
 {
-	// Private data
+    // Private data
 
-		vector diffusivityVector_;
+        vector diffusivityVector_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		motionDirectionalDiffusivity(const motionDirectionalDiffusivity&);
+        //- Disallow default bitwise copy construct
+        motionDirectionalDiffusivity(const motionDirectionalDiffusivity&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const motionDirectionalDiffusivity&);
+        //- Disallow default bitwise assignment
+        void operator=(const motionDirectionalDiffusivity&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("motionDirectional");
+    //- Runtime type information
+    TypeName("motionDirectional");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct for the given fvMotionSolver and data Istream
-		motionDirectionalDiffusivity
-		(
-			const fvMotionSolver& mSolver,
-			Istream& mdData
-		);
-
-
-	// Destructor
-
-		virtual ~motionDirectionalDiffusivity();
+        //- Construct for the given fvMotionSolver and data Istream
+        motionDirectionalDiffusivity
+        (
+            const fvMotionSolver& mSolver,
+            Istream& mdData
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Correct the motion diffusivity
-		virtual void correct();
+        virtual ~motionDirectionalDiffusivity();
+
+
+    // Member Functions
+
+        //- Correct the motion diffusivity
+        virtual void correct();
 };
 
 

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,22 +42,22 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 Su
 (
-	const GeometricField<Type, fvPatchField, volMesh>& su,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const GeometricField<Type, fvPatchField, volMesh>& su,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return su;
+    return su;
 }
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 Su
 (
-	const tmp<GeometricField<Type, fvPatchField, volMesh> >& tsu,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const tmp<GeometricField<Type, fvPatchField, volMesh> >& tsu,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return tsu;
+    return tsu;
 }
 
 
@@ -65,22 +65,22 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 Sp
 (
-	const volScalarField& sp,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const volScalarField& sp,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return sp*vf;
+    return sp*vf;
 }
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 Sp
 (
-	const tmp<volScalarField>& tsp,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const tmp<volScalarField>& tsp,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return tsp*vf;
+    return tsp*vf;
 }
 
 
@@ -88,11 +88,11 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 Sp
 (
-	const dimensionedScalar& sp,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const dimensionedScalar& sp,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return sp*vf;
+    return sp*vf;
 }
 
 
@@ -100,22 +100,22 @@ template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 SuSp
 (
-	const volScalarField& sp,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const volScalarField& sp,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return sp*vf;
+    return sp*vf;
 }
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh> >
 SuSp
 (
-	const tmp<volScalarField>& tsp,
-	GeometricField<Type, fvPatchField, volMesh>& vf
+    const tmp<volScalarField>& tsp,
+    GeometricField<Type, fvPatchField, volMesh>& vf
 )
 {
-	return tsp*vf;
+    return tsp*vf;
 }
 
 

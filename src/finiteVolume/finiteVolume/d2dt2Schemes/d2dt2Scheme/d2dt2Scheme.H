@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fv::d2dt2Scheme
+    Foam::fv::d2dt2Scheme
 
 Description
-	Abstract base class for d2dt2 schemes.
+    Abstract base class for d2dt2 schemes.
 
 SourceFiles
-	d2dt2Scheme.C
+    d2dt2Scheme.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,112 +57,114 @@ class fvMesh;
 namespace fv
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class d2dt2Scheme Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class d2dt2Scheme
 :
-	public refCount
+    public refCount
 {
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		const fvMesh& mesh_;
+        const fvMesh& mesh_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow copy construct
-		d2dt2Scheme(const d2dt2Scheme&);
+        //- Disallow copy construct
+        d2dt2Scheme(const d2dt2Scheme&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const d2dt2Scheme&);
+        //- Disallow default bitwise assignment
+        void operator=(const d2dt2Scheme&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	virtual const word& type() const = 0;
+    //- Runtime type information
+    virtual const word& type() const = 0;
 
 
-	// Declare run-time constructor selection tables
+    // Declare run-time constructor selection tables
 
-		declareRunTimeSelectionTable
-		(
-			tmp,
-			d2dt2Scheme,
-			Istream,
-			(const fvMesh& mesh, Istream& schemeData),
-			(mesh, schemeData)
-		);
-
-
-	// Constructors
-
-		//- Construct from mesh
-		d2dt2Scheme(const fvMesh& mesh)
-		:
-			mesh_(mesh)
-		{}
-
-		//- Construct from mesh and Istream
-		d2dt2Scheme(const fvMesh& mesh, Istream&)
-		:
-			mesh_(mesh)
-		{}
+        declareRunTimeSelectionTable
+        (
+            tmp,
+            d2dt2Scheme,
+            Istream,
+            (const fvMesh& mesh, Istream& schemeData),
+            (mesh, schemeData)
+        );
 
 
-	// Selectors
+    // Constructors
 
-		//- Return a pointer to a new d2dt2Scheme created on freestore
-		static tmp<d2dt2Scheme<Type> > New
-		(
-			const fvMesh& mesh,
-			Istream& schemeData
-		);
+        //- Construct from mesh
+        d2dt2Scheme(const fvMesh& mesh)
+        :
+            mesh_(mesh)
+        {}
+
+        //- Construct from mesh and Istream
+        d2dt2Scheme(const fvMesh& mesh, Istream&)
+        :
+            mesh_(mesh)
+        {}
 
 
-	// Destructor
+    // Selectors
 
-		virtual ~d2dt2Scheme();
+        //- Return a pointer to a new d2dt2Scheme created on freestore
+        static tmp<d2dt2Scheme<Type> > New
+        (
+            const fvMesh& mesh,
+            Istream& schemeData
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~d2dt2Scheme() = default;
 
-		//- Return mesh reference
-		const fvMesh& mesh() const
-		{
-			return mesh_;
-		}
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+    // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
-		(
-			const volScalarField&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        //- Return mesh reference
+        const fvMesh& mesh() const
+        {
+            return mesh_;
+        }
 
-		virtual tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
 
-		virtual tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const dimensionedScalar&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
+        (
+            const volScalarField&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
 
-		virtual tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const volScalarField&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
+
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const dimensionedScalar&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
+
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const volScalarField&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
 };
 
 
@@ -179,15 +181,15 @@ public:
 // Add the patch constructor functions to the hash tables
 
 #define makeFvD2dt2TypeScheme(SS, Type)                                        \
-					                                                           \
+                                                                               \
 defineNamedTemplateTypeNameAndDebug(SS<Type>, 0);                              \
-					                                                           \
+                                                                               \
 d2dt2Scheme<Type>::addIstreamConstructorToTable<SS<Type> >                     \
-	add##SS##Type##IstreamConstructorToTable_;
+    add##SS##Type##IstreamConstructorToTable_;
 
 
 #define makeFvD2dt2Scheme(SS)                                                  \
-					                                                           \
+                                                                               \
 makeFvD2dt2TypeScheme(SS, scalar)                                              \
 makeFvD2dt2TypeScheme(SS, vector)                                              \
 makeFvD2dt2TypeScheme(SS, sphericalTensor)                                     \
@@ -200,7 +202,7 @@ makeFvD2dt2TypeScheme(SS, tensor)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "d2dt2Scheme.C"
+#   include "d2dt2Scheme.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

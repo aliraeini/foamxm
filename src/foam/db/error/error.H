@@ -1,47 +1,47 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::error
+    Foam::error
 
 Description
-	Class to handle errors and exceptions in a simple, consistent stream-based
-	manner.
+    Class to handle errors and exceptions in a simple, consistent stream-based
+    manner.
 
-	The error class is globally instantiated with a title string. Errors,
-	messages and other data are piped to the messageStream class in the
-	standard manner.  Manipulators are supplied for exit and abort which may
-	terminate the program or throw an exception depending on whether the
-	exception handling has been switched on (off by default).
+    The error class is globally instantiated with a title string. Errors,
+    messages and other data are piped to the messageStream class in the
+    standard manner.  Manipulators are supplied for exit and abort which may
+    terminate the program or throw an exception depending on whether the
+    exception handling has been switched on (off by default).
 
 Usage
-	\code
-		error << "message1" << "message2" << FoamDataType << exit(errNo);
-		error << "message1" << "message2" << FoamDataType << abort();
-	\endcode
+    \code
+        error << "message1" << "message2" << FoamDataType << exit(errNo);
+        error << "message1" << "message2" << FoamDataType << abort();
+    \endcode
 
 SourceFiles
-	error.C
+    error.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -60,122 +60,125 @@ class error;
 Ostream& operator<<(Ostream&, const error&);
 
 
+/*---------------------------------------------------------------------------*\
+                            Class error Declaration
+\*---------------------------------------------------------------------------*/
 
 class error
 :
-	public std::exception,
-	public messageStream
+    public std::exception,
+    public messageStream
 {
 protected:
 
-	// Protected data
+    // Protected data
 
-		string functionName_;
-		string sourceFileName_;
-		label sourceFileLineNumber_;
+        string functionName_;
+        string sourceFileName_;
+        label sourceFileLineNumber_;
 
-		bool abort_;
+        bool abort_;
 
-		bool throwExceptions_;
-		OStringStream* messageStreamPtr_;
+        bool throwExceptions_;
+        OStringStream* messageStreamPtr_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from title string
-		error(const string& title);
+        //- Construct from title string
+        error(const string& title);
 
-		//- Construct from dictionary
-		error(const dictionary& errDict);
+        //- Construct from dictionary
+        error(const dictionary& errDict);
 
-		//- Construct as copy
-		error(const error& err);
-
-
-	//- Destructor
-	virtual ~error() throw();
+        //- Construct as copy
+        error(const error& err);
 
 
-	// Member functions
-
-		string message() const;
-
-		const string& functionName() const
-		{
-			return functionName_;
-		}
-
-		const string& sourceFileName() const
-		{
-			return sourceFileName_;
-		}
-
-		label sourceFileLineNumber() const
-		{
-			return sourceFileLineNumber_;
-		}
-
-		void throwExceptions()
-		{
-			throwExceptions_ = true;
-		}
-
-		void dontThrowExceptions()
-		{
-			throwExceptions_ = false;
-		}
-
-		//- Convert to Ostream
-		//  Prints basic message and then returns Ostream for further info.
-		OSstream& operator()
-		(
-			const char* functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber = 0
-		);
-
-		OSstream& operator()
-		(
-			const string& functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber = 0
-		);
-
-		//- Convert to Ostream
-		//  Prints basic message and then returns Ostream for further info.
-		operator OSstream&();
-
-		//- Explicitly convert to Ostream for << operations
-		OSstream& operator()()
-		{
-			return operator OSstream&();
-		}
-
-		//- Create and return a dictionary
-		operator dictionary() const;
+    //- Destructor
+    virtual ~error() throw();
 
 
-		//- Helper function to print a stack (if OpenFOAM IO not yet
-		//  initialised)
-		static void safePrintStack(std::ostream&);
+    // Member functions
 
-		//- Helper function to print a stack
-		static void printStack(Ostream& os);
+        string message() const;
 
-		//- Exit : can be called for any error to exit program. Prints stack
-		//  before exiting.
-		void exit(const int errNo = 1);
+        const string& functionName() const
+        {
+            return functionName_;
+        }
 
-		//- Abort : used to stop code for fatal errors. Prints stack before
-		//  exiting.
-		void abort();
+        const string& sourceFileName() const
+        {
+            return sourceFileName_;
+        }
+
+        label sourceFileLineNumber() const
+        {
+            return sourceFileLineNumber_;
+        }
+
+        void throwExceptions()
+        {
+            throwExceptions_ = true;
+        }
+
+        void dontThrowExceptions()
+        {
+            throwExceptions_ = false;
+        }
+
+        //- Convert to Ostream
+        //  Prints basic message and then returns Ostream for further info.
+        OSstream& operator()
+        (
+            const char* functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber = 0
+        );
+
+        OSstream& operator()
+        (
+            const string& functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber = 0
+        );
+
+        //- Convert to Ostream
+        //  Prints basic message and then returns Ostream for further info.
+        operator OSstream&();
+
+        //- Explicitly convert to Ostream for << operations
+        OSstream& operator()()
+        {
+            return operator OSstream&();
+        }
+
+        //- Create and return a dictionary
+        operator dictionary() const;
 
 
-	// Ostream operator
+        //- Helper function to print a stack (if OpenFOAM IO not yet
+        //  initialised)
+        static void safePrintStack(std::ostream&);
 
-		friend Ostream& operator<<(Ostream&, const error&);
+        //- Helper function to print a stack
+        static void printStack(Ostream& os);
+
+        //- Exit : can be called for any error to exit program. Prints stack
+        //  before exiting.
+        void exit(const int errNo = 1);
+
+        //- Abort : used to stop code for fatal errors. Prints stack before
+        //  exiting.
+        void abort();
+
+
+    // Ostream operator
+
+        friend Ostream& operator<<(Ostream&, const error&);
 };
 
 
@@ -184,108 +187,111 @@ class IOerror;
 Ostream& operator<<(Ostream&, const IOerror&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class IOerror Declaration
+\*---------------------------------------------------------------------------*/
 
 //- Report an I/O error
 class IOerror
 :
-	public error
+    public error
 {
-	// Private data
+    // Private data
 
-		string ioFileName_;
-		label ioStartLineNumber_;
-		label ioEndLineNumber_;
+        string ioFileName_;
+        label ioStartLineNumber_;
+        label ioEndLineNumber_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from title string
-		IOerror(const string& title);
+        //- Construct from title string
+        IOerror(const string& title);
 
-		//- Construct from dictionary
-		IOerror(const dictionary& errDict);
-
-
-	//- Destructor
-	virtual ~IOerror() throw();
+        //- Construct from dictionary
+        IOerror(const dictionary& errDict);
 
 
-	// Member functions
-
-		const string& ioFileName() const
-		{
-			return ioFileName_;
-		}
-
-		label ioStartLineNumber() const
-		{
-			return ioStartLineNumber_;
-		}
-
-		label ioEndLineNumber() const
-		{
-			return ioEndLineNumber_;
-		}
-
-		//- Convert to Ostream
-		//  Prints basic message and then returns Ostream for further info.
-		OSstream& operator()
-		(
-			const char* functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber,
-			const string& ioFileName,
-			const label ioStartLineNumber = -1,
-			const label ioEndLineNumber = -1
-		);
-
-		//- Convert to Ostream
-		//  Prints basic message and then returns Ostream for further info.
-		OSstream& operator()
-		(
-			const char* functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber,
-			const IOstream&
-		);
-
-		//- Convert to Ostream
-		//  Prints basic message and then returns Ostream for further info.
-		OSstream& operator()
-		(
-			const char* functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber,
-			const dictionary&
-		);
-
-		//- Print basic message and exit. Uses cerr if streams not constructed
-		//  yet (at startup). Use in startup parsing instead of FatalError.
-		static void SafeFatalIOError
-		(
-			const char* functionName,
-			const char* sourceFileName,
-			const int sourceFileLineNumber,
-			const IOstream&,
-			const string& msg
-		);
-
-		//- Create and return a dictionary
-		operator dictionary() const;
+    //- Destructor
+    virtual ~IOerror() throw();
 
 
-		//- Exit : can be called for any error to exit program
-		void exit(const int errNo = 1);
+    // Member functions
 
-		//- Abort : used to stop code for fatal errors
-		void abort();
+        const string& ioFileName() const
+        {
+            return ioFileName_;
+        }
+
+        label ioStartLineNumber() const
+        {
+            return ioStartLineNumber_;
+        }
+
+        label ioEndLineNumber() const
+        {
+            return ioEndLineNumber_;
+        }
+
+        //- Convert to Ostream
+        //  Prints basic message and then returns Ostream for further info.
+        OSstream& operator()
+        (
+            const char* functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber,
+            const string& ioFileName,
+            const label ioStartLineNumber = -1,
+            const label ioEndLineNumber = -1
+        );
+
+        //- Convert to Ostream
+        //  Prints basic message and then returns Ostream for further info.
+        OSstream& operator()
+        (
+            const char* functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber,
+            const IOstream&
+        );
+
+        //- Convert to Ostream
+        //  Prints basic message and then returns Ostream for further info.
+        OSstream& operator()
+        (
+            const char* functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber,
+            const dictionary&
+        );
+
+        //- Print basic message and exit. Uses cerr if streams not constructed
+        //  yet (at startup). Use in startup parsing instead of FatalError.
+        static void SafeFatalIOError
+        (
+            const char* functionName,
+            const char* sourceFileName,
+            const int sourceFileLineNumber,
+            const IOstream&,
+            const string& msg
+        );
+
+        //- Create and return a dictionary
+        operator dictionary() const;
 
 
-	// Ostream operator
+        //- Exit : can be called for any error to exit program
+        void exit(const int errNo = 1);
 
-		friend Ostream& operator<<(Ostream&, const IOerror&);
+        //- Abort : used to stop code for fatal errors
+        void abort();
+
+
+    // Ostream operator
+
+        friend Ostream& operator<<(Ostream&, const IOerror&);
 };
 
 
@@ -305,7 +311,7 @@ extern IOerror FatalIOError;
 //- Report an error message using Foam::FatalError
 //  for functionName in file __FILE__ at line __LINE__
 #define FatalErrorIn(functionName)                                             \
-	::Foam::FatalError((functionName), __FILE__, __LINE__)
+    ::Foam::FatalError((functionName), __FILE__, __LINE__)
 
 //- Report an error message using Foam::FatalError
 //  for FUNCTION_NAME in file __FILE__ at line __LINE__
@@ -316,7 +322,7 @@ extern IOerror FatalIOError;
 //  for functionName in file __FILE__ at line __LINE__
 //  for a particular IOstream
 #define FatalIOErrorIn(functionName, ios)                                      \
-	::Foam::FatalIOError((functionName), __FILE__, __LINE__, (ios))
+    ::Foam::FatalIOError((functionName), __FILE__, __LINE__, (ios))
 
 //- Report an error message using Foam::FatalIOError
 //  for FUNCTION_NAME in file __FILE__ at line __LINE__
@@ -329,15 +335,15 @@ extern IOerror FatalIOError;
 //  for functionName in file __FILE__ at line __LINE__
 //  for a particular IOstream
 #define SafeFatalIOErrorIn(functionName, ios, msg)                             \
-	::Foam::IOerror::SafeFatalIOError                                          \
-	((functionName), __FILE__, __LINE__, (ios), (msg))
+    ::Foam::IOerror::SafeFatalIOError                                          \
+    ((functionName), __FILE__, __LINE__, (ios), (msg))
 
 //- Report an error message using Foam::FatalIOError
 //  (or cerr if FatalIOError not yet constructed)
 //  for functionName in file __FILE__ at line __LINE__
 //  for a particular IOstream
 #define SafeFatalIOErrorInFunction(ios, msg)                                   \
-	SafeFatalIOErrorIn(FUNCTION_NAME, ios, msg)
+    SafeFatalIOErrorIn(FUNCTION_NAME, ios, msg)
 
 
 //- Issue a FatalErrorIn for a function not currently implemented.
@@ -347,8 +353,8 @@ extern IOerror FatalIOError;
 //  complete the interface of a derived class even if they should never be
 //  called for this derived class.
 #define notImplemented(functionName)                                           \
-	FatalErrorIn(functionName)                                                 \
-		<< "Not implemented" << ::Foam::abort(FatalError);
+    FatalErrorIn(functionName)                                                 \
+        << "Not implemented" << ::Foam::abort(FatalError);
 
 //- Issue a FatalErrorIn for a function not currently implemented.
 //  The FUNCTION_NAME is printed and then abort is called.

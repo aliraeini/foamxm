@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ void tetPointFieldReconstructor::reconstructTetPointField
     Field<Type>& iField = reconField.internalField();
 
     typename GeometricField<Type, tetPolyPatchField, tetPointMesh>::
-        Boundary& bouField = reconField.boundaryField();
+        GeometricBoundaryField& bouField = reconField.boundaryField();
 
     forAll (procMeshes_, procI)
     {
@@ -224,7 +224,7 @@ tetPointFieldReconstructor::reconstructTetPointField
     // Reconstruct field
     reconstructTetPointField
     (
-        treconField(),
+        treconField.ref(),
         procFields
     );
 
@@ -244,7 +244,7 @@ void tetPointFieldReconstructor::reconstructElementField
     Field<Type>& iField = reconField.internalField();
 
     typename GeometricField<Type, elementPatchField, elementMesh>::
-        Boundary& bouField = reconField.boundaryField();
+        GeometricBoundaryField& bouField = reconField.boundaryField();
 
     forAll (procMeshes_, procI)
     {
@@ -434,7 +434,7 @@ tetPointFieldReconstructor::reconstructElementField
     // Reconstruct field
     reconstructElementField
     (
-        treconField(),
+        treconField.ref(),
         procFields
     );
 

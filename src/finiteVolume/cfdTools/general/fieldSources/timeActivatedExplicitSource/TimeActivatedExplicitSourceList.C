@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,60 +30,60 @@ License
 template<class Type>
 Foam::TimeActivatedExplicitSourceList<Type>::TimeActivatedExplicitSourceList
 (
-	const word& name,
-	const fvMesh& mesh,
-	const dimensionSet& dimensions,
-	const wordList& fieldNames
+    const word& name,
+    const fvMesh& mesh,
+    const dimensionSet& dimensions,
+    const wordList& fieldNames
 )
 :
-	IOPtrList<TimeActivatedExplicitSource<Type> >
-	(
-		IOobject
-		(
-			name + "SourceProperties",
-			mesh.time().constant(),
-			mesh,
-			IOobject::MUST_READ,
-			IOobject::NO_WRITE
-		),
-		typename TimeActivatedExplicitSource<Type>::iNew(mesh, fieldNames)
-	),
-	name_(name),
-	mesh_(mesh),
-	dimensions_(dimensions),
-	fieldNames_(fieldNames)
+    IOPtrList<TimeActivatedExplicitSource<Type> >
+    (
+        IOobject
+        (
+            name + "SourceProperties",
+            mesh.time().constant(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        ),
+        typename TimeActivatedExplicitSource<Type>::iNew(mesh, fieldNames)
+    ),
+    name_(name),
+    mesh_(mesh),
+    dimensions_(dimensions),
+    fieldNames_(fieldNames)
 {}
 
 
 template<class Type>
 Foam::TimeActivatedExplicitSourceList<Type>::TimeActivatedExplicitSourceList
 (
-	const word& name,
-	const fvMesh& mesh,
-	const dimensionSet& dimensions,
-	const word& fieldName
+    const word& name,
+    const fvMesh& mesh,
+    const dimensionSet& dimensions,
+    const word& fieldName
 )
 :
-	IOPtrList<TimeActivatedExplicitSource<Type> >
-	(
-		IOobject
-		(
-			name + "SourceProperties",
-			mesh.time().constant(),
-			mesh,
-			IOobject::MUST_READ,
-			IOobject::NO_WRITE
-		),
-		typename TimeActivatedExplicitSource<Type>::iNew
-		(
-			mesh,
-			IStringStream('(' + fieldName + ')')()
-		)
-	),
-	name_(name),
-	mesh_(mesh),
-	dimensions_(dimensions),
-	fieldNames_(1, fieldName)
+    IOPtrList<TimeActivatedExplicitSource<Type> >
+    (
+        IOobject
+        (
+            name + "SourceProperties",
+            mesh.time().constant(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        ),
+        typename TimeActivatedExplicitSource<Type>::iNew
+        (
+            mesh,
+            IStringStream('(' + fieldName + ')')()
+        )
+    ),
+    name_(name),
+    mesh_(mesh),
+    dimensions_(dimensions),
+    fieldNames_(1, fieldName)
 {}
 
 
@@ -91,117 +91,132 @@ Foam::TimeActivatedExplicitSourceList<Type>::TimeActivatedExplicitSourceList
 
 template<class Type>
 Foam::tmp<Foam::DimensionedField<Type, Foam::volMesh> >
-Foam::TimeActivatedExplicitSourceList<Type>::Su(const label fieldI)
+Foam::TimeActivatedExplicitSourceList<Type>::Su(const label fieldI) const
 {
-	tmp<DimensionedField<Type, volMesh> > tSu
-	(
-	   new DimensionedField<Type, volMesh>
-	   (
-		   IOobject
-		   (
-			   name_ + "Source_" + fieldNames_[fieldI],
-			   mesh_.time().timeName(),
-			   mesh_,
-			   IOobject::NO_READ,
-			   IOobject::NO_WRITE
-		   ),
-		   mesh_,
-		   dimensioned<Type>("zero", dimensions_, pTraits<Type>::zero)
-	   )
-	);
+    tmp<DimensionedField<Type, volMesh> > tSu
+    (
+       new DimensionedField<Type, volMesh>
+       (
+           IOobject
+           (
+               name_ + "Source_" + fieldNames_[fieldI],
+               mesh_.time().timeName(),
+               mesh_,
+               IOobject::NO_READ,
+               IOobject::NO_WRITE
+           ),
+           mesh_,
+           dimensioned<Type>("zero", dimensions_, pTraits<Type>::zero)
+       )
+    );
 
-	DimensionedField<Type, volMesh>& Su = tSu();
+    DimensionedField<Type, volMesh>& Su = tSu.ref();
 
-	forAll(*this, i)
-	{
-		this->operator[](i).addToField(Su, fieldI);
-	}
+    forAll (*this, i)
+    {
+        this->operator[](i).addToField(Su, fieldI);
+    }
 
-	return tSu;
+    return tSu;
 }
 
 
 template<class Type>
 Foam::tmp<Foam::DimensionedField<Type, Foam::volMesh> >
-Foam::TimeActivatedExplicitSourceList<Type>::SuTot()
+Foam::TimeActivatedExplicitSourceList<Type>::SuTot() const
 {
-	tmp<DimensionedField<Type, volMesh> > tSuTot
-	(
-	   new DimensionedField<Type, volMesh>
-	   (
-		   IOobject
-		   (
-			   name_ + "TotalSource",
-			   mesh_.time().timeName(),
-			   mesh_,
-			   IOobject::NO_READ,
-			   IOobject::NO_WRITE
-		   ),
-		   mesh_,
-		   dimensioned<Type>("zero", dimensions_, pTraits<Type>::zero)
-	   )
-	);
+    tmp<DimensionedField<Type, volMesh> > tSuTot
+    (
+       new DimensionedField<Type, volMesh>
+       (
+           IOobject
+           (
+               name_ + "TotalSource",
+               mesh_.time().timeName(),
+               mesh_,
+               IOobject::NO_READ,
+               IOobject::NO_WRITE
+           ),
+           mesh_,
+           dimensioned<Type>("zero", dimensions_, pTraits<Type>::zero)
+       )
+    );
 
-	DimensionedField<Type, volMesh>& SuTot = tSuTot();
+    DimensionedField<Type, volMesh>& SuTot = tSuTot.ref();
 
-	forAll(fieldNames_, fieldI)
-	{
-		forAll(*this, sourceI)
-		{
-			this->operator[](sourceI).addToField(SuTot, fieldI);
-		}
-	}
+    forAll (fieldNames_, fieldI)
+    {
+        forAll (*this, sourceI)
+        {
+            this->operator[](sourceI).addToField(SuTot, fieldI);
+        }
+    }
 
-	return tSuTot;
+    return tSuTot;
+}
+
+
+template<class Type>
+void
+Foam::TimeActivatedExplicitSourceList<Type>::limitField
+(
+    GeometricField<Type, fvPatchField, volMesh>& psi,
+    const label fieldI
+) const
+{
+    forAll (*this, i)
+    {
+        this->operator[](i).limitField(psi, fieldI);
+    }
 }
 
 
 template<class Type>
 bool Foam::TimeActivatedExplicitSourceList<Type>::readData(Istream& is)
 {
-	this->clear();
+    this->clear();
 
-	IOPtrList<TimeActivatedExplicitSource<Type> > newSources
-	(
-		IOobject
-		(
-			name_ + "TimeActivatedExplicitSource",
-			mesh_.time().constant(),
-			mesh_,
-			IOobject::MUST_READ,
-			IOobject::NO_WRITE,
-			false
-		),
-		typename TimeActivatedExplicitSource<Type>::iNew(mesh_, fieldNames_)
-	);
+    IOPtrList<TimeActivatedExplicitSource<Type> > newSources
+    (
+        IOobject
+        (
+            name_ + "TimeActivatedExplicitSource",
+            mesh_.time().constant(),
+            mesh_,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE,
+            false
+        ),
+        typename TimeActivatedExplicitSource<Type>::iNew(mesh_, fieldNames_)
+    );
 
-	this->transfer(newSources);
+    this->transfer(newSources);
 
-	return is.good();
+    return is.good();
 }
 
 
 template<class Type>
 bool Foam::TimeActivatedExplicitSourceList<Type>::writeData(Ostream& os) const
 {
-	// Write size of list
-	os << nl << this->size();
+    // Write size of list
+    os << nl << this->size();
 
-	// Write beginning of contents
-	os << nl << token::BEGIN_LIST;
+    // Write beginning of contents
+    os << nl << token::BEGIN_LIST;
 
-	// Write list contents
-	forAll(*this, i)
-	{
-		os << nl;
-		this->operator[](i).writeData(os);
-	}
+    // Write list contents
+    forAll (*this, i)
+    {
+        os << nl;
+        this->operator[](i).writeData(os);
+    }
 
-	// Write end of contents
-	os << token::END_LIST << token::END_STATEMENT << nl;
+    // Write end of contents
+    os << token::END_LIST << token::END_STATEMENT << nl;
 
-	// Check state of IOstream
-	return os.good();
+    // Check state of IOstream
+    return os.good();
 }
 
 
@@ -210,12 +225,12 @@ bool Foam::TimeActivatedExplicitSourceList<Type>::writeData(Ostream& os) const
 template<class Type>
 Foam::Ostream& Foam::operator<<
 (
-	Ostream& os,
-	const TimeActivatedExplicitSourceList<Type>& sources
+    Ostream& os,
+    const TimeActivatedExplicitSourceList<Type>& sources
 )
 {
-	sources.writeData(os);
-	return os;
+    sources.writeData(os);
+    return os;
 }
 
 

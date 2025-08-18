@@ -5,7 +5,7 @@ namespace Foam
 {
     class polyMesh;
 
-	bool checkSync(const wordList& names);
+    bool checkSync(const wordList& names);
 
-	label checkTopology(const polyMesh&, const bool, const bool);
+    label checkTopology(const polyMesh&, const bool, const bool);
 }

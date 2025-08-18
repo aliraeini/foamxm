@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,53 +32,53 @@ License
 
 Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 (
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF
 )
 :
-	basicSymmetryFvPatchVectorField(p, iF)
+    basicSymmetryFvPatchVectorField(p, iF)
 {}
 
 
 Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 (
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF,
-	const dictionary& dict
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF,
+    const dictionary& dict
 )
 :
-	basicSymmetryFvPatchVectorField(p, iF, dict)
+    basicSymmetryFvPatchVectorField(p, iF, dict)
 {}
 
 
 Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 (
-	const blockSymmPlaneFvPatchVectorField& ptf,
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF,
-	const fvPatchFieldMapper& mapper
+    const blockSymmPlaneFvPatchVectorField& ptf,
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
 )
 :
-	basicSymmetryFvPatchVectorField(ptf, p, iF, mapper)
+    basicSymmetryFvPatchVectorField(ptf, p, iF, mapper)
 {}
 
 
 Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 (
-	const blockSymmPlaneFvPatchVectorField& ptf
+    const blockSymmPlaneFvPatchVectorField& ptf
 )
 :
-	basicSymmetryFvPatchVectorField(ptf)
+    basicSymmetryFvPatchVectorField(ptf)
 {}
 
 
 Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 (
-	const blockSymmPlaneFvPatchVectorField& ptf,
-	const DimensionedField<vector, volMesh>& iF
+    const blockSymmPlaneFvPatchVectorField& ptf,
+    const DimensionedField<vector, volMesh>& iF
 )
 :
-	basicSymmetryFvPatchVectorField(ptf, iF)
+    basicSymmetryFvPatchVectorField(ptf, iF)
 {}
 
 
@@ -88,10 +88,10 @@ Foam::blockSymmPlaneFvPatchVectorField::blockSymmPlaneFvPatchVectorField
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::valueInternalCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	return tmp<vectorField>(new vectorField(this->size(), vector::zero));
+    return tmp<vectorField>(new vectorField(this->size(), vector::zero));
 }
 
 
@@ -99,10 +99,10 @@ Foam::blockSymmPlaneFvPatchVectorField::valueInternalCoeffs
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::valueBoundaryCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	return tmp<vectorField>(new vectorField(this->size(), vector::zero));
+    return tmp<vectorField>(new vectorField(this->size(), vector::zero));
 }
 
 
@@ -110,7 +110,7 @@ Foam::blockSymmPlaneFvPatchVectorField::valueBoundaryCoeffs
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::gradientInternalCoeffs() const
 {
-	return tmp<vectorField>(new vectorField(this->size(), vector::zero));
+    return tmp<vectorField>(new vectorField(this->size(), vector::zero));
 }
 
 
@@ -118,7 +118,7 @@ Foam::blockSymmPlaneFvPatchVectorField::gradientInternalCoeffs() const
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::gradientBoundaryCoeffs() const
 {
-	return tmp<vectorField>(new vectorField(this->size(), vector::zero));
+    return tmp<vectorField>(new vectorField(this->size(), vector::zero));
 }
 
 
@@ -126,17 +126,17 @@ Foam::blockSymmPlaneFvPatchVectorField::gradientBoundaryCoeffs() const
 Foam::tmp<Foam::vectorCoeffField>
 Foam::blockSymmPlaneFvPatchVectorField::blockValueInternalCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	tmp<vectorCoeffField> tcoeff
-	(
-		new vectorCoeffField(this->size())
-	);
+    tmp<vectorCoeffField> tcoeff
+    (
+        new vectorCoeffField(this->size())
+    );
 
-	tcoeff().asSquare() = I - this->patch().nf()*this->patch().nf();
+    tcoeff.ref().asSquare() = I - this->patch().nf()*this->patch().nf();
 
-	return tcoeff;
+    return tcoeff;
 }
 
 
@@ -144,16 +144,16 @@ Foam::blockSymmPlaneFvPatchVectorField::blockValueInternalCoeffs
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::blockValueBoundaryCoeffs
 (
-	const tmp<scalarField>&
+    const tmp<scalarField>&
 ) const
 {
-	return
-		*this
-	  - transform
-		(
-			I - sqr(this->patch().nf()),
-			this->patchInternalField()
-		);
+    return
+        *this
+      - transform
+        (
+            I - sqr(this->patch().nf()),
+            this->patchInternalField()
+        );
 }
 
 
@@ -161,15 +161,15 @@ Foam::blockSymmPlaneFvPatchVectorField::blockValueBoundaryCoeffs
 Foam::tmp<Foam::vectorCoeffField>
 Foam::blockSymmPlaneFvPatchVectorField::blockGradientInternalCoeffs() const
 {
-	tmp<vectorCoeffField> tcoeff
-	(
-		new vectorCoeffField(this->size())
-	);
+    tmp<vectorCoeffField> tcoeff
+    (
+        new vectorCoeffField(this->size())
+    );
 
-	tcoeff().asSquare() =
-		-this->patch().deltaCoeffs()*this->patch().nf()*this->patch().nf();
+    tcoeff.ref().asSquare() =
+        -this->patch().deltaCoeffs()*this->patch().nf()*this->patch().nf();
 
-	return tcoeff;
+    return tcoeff;
 }
 
 
@@ -177,18 +177,18 @@ Foam::blockSymmPlaneFvPatchVectorField::blockGradientInternalCoeffs() const
 Foam::tmp<Foam::vectorField>
 Foam::blockSymmPlaneFvPatchVectorField::blockGradientBoundaryCoeffs() const
 {
-	return
-	(
-		sqr(this->patch().nf())
-	  & (
-			this->snGrad()
-		  - transform
-			(
-				-this->patch().deltaCoeffs()*sqr(this->patch().nf()),
-				this->patchInternalField()
-			)
-		)
-	);
+    return
+    (
+        sqr(this->patch().nf())
+      & (
+            this->snGrad()
+          - transform
+            (
+                -this->patch().deltaCoeffs()*sqr(this->patch().nf()),
+                this->patchInternalField()
+            )
+        )
+    );
 }
 
 
@@ -199,8 +199,8 @@ namespace Foam
 
 makePatchTypeField
 (
-	fvPatchVectorField,
-	blockSymmPlaneFvPatchVectorField
+    fvPatchVectorField,
+    blockSymmPlaneFvPatchVectorField
 );
 
 } // End namespace Foam

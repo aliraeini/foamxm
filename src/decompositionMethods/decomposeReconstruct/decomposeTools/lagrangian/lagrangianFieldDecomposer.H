@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -47,6 +47,9 @@ namespace Foam
 
 class IOobjectList;
 
+/*---------------------------------------------------------------------------*\
+                    Class lagrangianFieldDecomposer Declaration
+\*---------------------------------------------------------------------------*/
 
 class lagrangianFieldDecomposer
 {
@@ -65,10 +68,10 @@ class lagrangianFieldDecomposer
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
-        lagrangianFieldDecomposer(const lagrangianFieldDecomposer&);
+        lagrangianFieldDecomposer(const lagrangianFieldDecomposer&) = delete;
 
         //- Disallow default bitwise assignment
-        void operator=(const lagrangianFieldDecomposer&);
+        void operator=(const lagrangianFieldDecomposer&) = delete;
 
 
 public:
@@ -85,6 +88,10 @@ public:
             const Cloud<indexedParticle>& lagrangianPositions,
             const List<SLList<indexedParticle*>*>& cellParticles
         );
+
+
+    //- Destructor
+    ~lagrangianFieldDecomposer() = default;
 
 
     // Member Functions

@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	regionCoupleFvPatch
+    regionCoupleFvPatch
 
 Description
-	Region couple patch coupled two mesh regions for a solution in the same
-	linear system.
+    Region couple patch coupled two mesh regions for a solution in the same
+    linear system.
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	regionCoupleFvPatch.C
+    regionCoupleFvPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,210 +50,248 @@ namespace Foam
 
 class fvMesh;
 
+/*---------------------------------------------------------------------------*\
+                     Class regionCoupleFvPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class regionCoupleFvPatch
 :
-	public coupledFvPatch,
-	public ggiLduInterface
+    public coupledFvPatch,
+    public ggiLduInterface
 {
-	// Private Data
+    // Private Data
 
-		//- Reference to polyPatch
-		const regionCouplePolyPatch& rcPolyPatch_;
+        //- Reference to polyPatch
+        const regionCouplePolyPatch& rcPolyPatch_;
 
 
 protected:
 
-	// Protected Member functions
+    // Protected Member functions
 
-		//- Make patch weighting factors
-		virtual void makeWeights(fvsPatchScalarField&) const;
+        //- Make patch weighting factors
+        virtual void makeWeights(fvsPatchScalarField&) const;
 
-		//- Make patch face - neighbour cell distances
-		virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
+        //- Make patch face delta coefficients
+        virtual void makeDeltaCoeffs(fvsPatchScalarField&) const;
 
-		//- Make patch face non-orthogonality correction vectors
-		virtual void makeCorrVecs(fvsPatchVectorField&) const;
+        //- Construct long distance factors
+        virtual void makeMagLongDeltas(fvsPatchScalarField&) const;
+
+        //- Make patch face non-orthogonality correction vectors
+        virtual void makeCorrVecs(fvsPatchVectorField&) const;
 
 
 public:
 
-	//- Runtime type information
-	TypeName(regionCouplePolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(regionCouplePolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		regionCoupleFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
-		:
-			coupledFvPatch(patch, bm),
-			rcPolyPatch_(refCast<const regionCouplePolyPatch>(patch))
-		{}
-
-
-	//- Destructor
-	virtual ~regionCoupleFvPatch();
+        //- Construct from components
+        regionCoupleFvPatch(const polyPatch& patch, const fvBoundaryMesh& bm)
+        :
+            coupledFvPatch(patch, bm),
+            rcPolyPatch_(refCast<const regionCouplePolyPatch>(patch))
+        {}
 
 
-	// Member functions
-
-		// Access
-
-			//- Return true if coupled
-			virtual bool coupled() const;
-
-			//- Return shadow patch
-			const fvMesh& shadowRegion() const;
-
-			//- Return shadow patch
-			const regionCoupleFvPatch& shadow() const;
-
-			//- Use bridging to fix overlap error in interpolation
-			bool bridgeOverlap() const
-			{
-				return rcPolyPatch_.bridgeOverlap();
-			}
-
-			//- Return delta (P to N) vectors across coupled patch
-			virtual tmp<vectorField> delta() const;
+    //- Destructor
+    virtual ~regionCoupleFvPatch() = default;
 
 
-		// Communication support
+    // Member functions
 
-			//- Return communicator used for parallel communication
-			virtual int comm() const
-			{
-				return rcPolyPatch_.comm();
-			}
+        // Access
 
-			//- Return message tag used for sending
-			virtual int tag() const
-			{
-				return rcPolyPatch_.tag();
-			}
+            //- Return true if coupled
+            virtual bool coupled() const;
 
+            //- Return shadow patch
+            const fvMesh& shadowRegion() const;
 
-		// Interpolation
+            //- Return shadow patch
+            const regionCoupleFvPatch& shadow() const;
 
-			//- Interpolate face field
-			template<class Type>
-			tmp<Field<Type> > interpolate(const Field<Type>& pf) const
-			{
-				return rcPolyPatch_.interpolate(pf);
-			}
+            //- Use bridging to fix overlap error in interpolation
+            bool bridgeOverlap() const
+            {
+                return rcPolyPatch_.bridgeOverlap();
+            }
 
-			template<class Type>
-			tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
-			{
-				return rcPolyPatch_.interpolate(tpf);
-			}
-
-			//- Set given field for uncovered faces. Usually used for setting
-			//  mirrored field
-			template<class Type>
-			void setUncoveredFaces
-			(
-				const Field<Type>& fieldToSet,
-				Field<Type>& ff
-			) const
-			{
-				return rcPolyPatch_.setUncoveredFaces(fieldToSet, ff);
-			}
+            //- Return delta (P to N) vectors across coupled patch
+            virtual tmp<vectorField> delta() const;
 
 
-		// Interface transfer functions
+        // Communication support
 
-			//- Is this the master side?
-			virtual bool master() const;
+            //- Return communicator used for parallel communication
+            virtual int comm() const
+            {
+                return rcPolyPatch_.comm();
+            }
 
-			//- Is this the fine level?
-			virtual bool fineLevel() const;
-
-			//- Return shadow patch index
-			virtual label shadowIndex() const;
-
-			//- Return shadow interface
-			virtual const ggiLduInterface& shadowInterface() const;
-
-			//- Return interface size
-			virtual label interfaceSize() const;
-
-			//- Return zone size
-			virtual label zoneSize() const;
-
-			//- Return zone addressing
-			virtual const labelList& zoneAddressing() const;
-
-			//- Return addressing.  Master side returns own addressing and
-			//  slave side returns addressing from master
-			virtual const labelListList& ggiAddressing() const;
-
-			//- Is the patch localised on a single processor
-			virtual bool localParallel() const;
-
-			//- Return mapDistribute
-			const mapDistribute& map() const;
-
-			//- Return weights.  Master side returns own weights and
-			//  slave side returns weights from master
-			virtual const scalarListList& ggiWeights() const;
-
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return coupledFvPatch::forwardT();
-			}
-
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return coupledFvPatch::reverseT();
-			}
-
-			//- Expand addressing to zone
-			//  Used in optimised AMG coarsening
-			virtual void expandAddrToZone(labelField&) const;
-
-			//- Expand crMatrix to zone
-			//  Used in optimised SAMG coarsening
-			virtual void expandCrMatrixToZone(crMatrix&) const;
+            //- Return message tag used for sending
+            virtual int tag() const
+            {
+                return rcPolyPatch_.tag();
+            }
 
 
-			//- Return the values of the given internal data adjacent to
-			//  the interface as a field
-			virtual tmp<labelField> interfaceInternalField
-			(
-				const unallocLabelList& internalData
-			) const;
+        // Interpolation
 
-			//- Initialise interface data transfer
-			virtual void initTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            //- Interpolate face field
+            template<class Type>
+            tmp<Field<Type> > interpolate(const Field<Type>& pf) const
+            {
+                return rcPolyPatch_.interpolate(pf);
+            }
 
-			//- Transfer and return neighbour field
-			virtual tmp<labelField> transfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const;
+            template<class Type>
+            tmp<Field<Type> > interpolate(const tmp<Field<Type> >& tpf) const
+            {
+                return rcPolyPatch_.interpolate(tpf);
+            }
 
-			//- Initialise transfer of internal field adjacent to the interface
-			virtual void initInternalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& iF
-			) const;
+            //- Set given field for uncovered faces. Usually used for setting
+            //  mirrored field
+            template<class Type>
+            void setUncoveredFaces
+            (
+                const Field<Type>& fieldToSet,
+                Field<Type>& ff
+            ) const
+            {
+                return rcPolyPatch_.setUncoveredFaces(fieldToSet, ff);
+            }
 
-			//- Return neighbour field
-			virtual tmp<labelField> internalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& internalData
-			) const;
+            //- Set given field for partially uncovered faces
+            template<class Type>
+            void setPartialFaces
+            (
+                const Field<Type>& fieldToSet,
+                Field<Type>& ff
+            ) const
+            {
+                return rcPolyPatch_.setPartialFaces(fieldToSet, ff);
+            }
+
+            //- Scale field for partially covered faces. Needed for correct
+            //  construction of mesh interpolation data (weights and delta
+            //  coeffs) and to ensure fully conservative implicit treatment
+            template<class Type>
+            void scalePartialFaces(Field<Type>& ff) const
+            {
+                return rcPolyPatch_.scalePartialFaces(ff);
+            }
+
+            //- Add given field to partially covered faces. Needed to ensure
+            //  fully conservative implicit treatment
+            template<class Type>
+            void addToPartialFaces
+            (
+                const Field<Type>& fieldToAdd,
+                Field<Type>& ff
+            ) const
+            {
+                return rcPolyPatch_.addToPartialFaces(fieldToAdd, ff);
+            }
+
+
+        // Interface transfer functions
+
+            //- Is this the master side?
+            virtual bool master() const;
+
+            //- Is this the fine level?
+            virtual bool fineLevel() const;
+
+            //- Return shadow patch index
+            virtual label shadowIndex() const;
+
+            //- Return shadow interface
+            virtual const ggiLduInterface& shadowInterface() const;
+
+            //- Return interface size
+            virtual label interfaceSize() const;
+
+            //- Return zone size
+            virtual label zoneSize() const;
+
+            //- Return zone addressing
+            virtual const labelList& zoneAddressing() const;
+
+            //- Return addressing.  Master side returns own addressing and
+            //  slave side returns addressing from master
+            virtual const labelListList& ggiAddressing() const;
+
+            //- Is the patch localised on a single processor
+            virtual bool localParallel() const;
+
+            //- Return mapDistribute
+            const mapDistribute& map() const;
+
+            //- Return weights.  Master side returns own weights and
+            //  slave side returns weights from master
+            virtual const scalarListList& ggiWeights() const;
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return coupledFvPatch::forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return coupledFvPatch::reverseT();
+            }
+
+            //- Expand addressing to zone
+            //  Used in optimised AMG coarsening
+            virtual void expandAddrToZone(labelField&) const;
+
+            //- Expand crMatrix to zone
+            //  Used in optimised SAMG coarsening
+            virtual void expandCrMatrixToZone(crMatrix&) const;
+
+
+            //- Return the values of the given internal data adjacent to
+            //  the interface as a field
+            virtual tmp<labelField> interfaceInternalField
+            (
+                const labelUList& internalData
+            ) const;
+
+            //- Initialise interface data transfer
+            virtual void initTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Transfer and return neighbour field
+            virtual tmp<labelField> transfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const;
+
+            //- Initialise transfer of internal field adjacent to the interface
+            virtual void initInternalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& iF
+            ) const;
+
+            //- Return neighbour field
+            virtual tmp<labelField> internalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& internalData
+            ) const;
 };
 
 

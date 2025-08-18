@@ -2,8 +2,8 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-wmakeLnInclude solidBodyMotion
+echo decativated: wmakeLnInclude solidBodyMotion
 wmakeLnInclude fvMotionSolver
 wmakeLnInclude RBFMotionSolver
 
-echo "decativated:  wmakeLnInclude mesquiteMotionSolver"
+echo decativated:  wmakeLnInclude mesquiteMotionSolver

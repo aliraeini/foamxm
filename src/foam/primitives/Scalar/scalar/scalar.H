@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-	Foam::scalar
+    Foam::scalar
 
 Description
-	Single floating point number identical to float or double depending on
-	whether WM_SP or WM_DP is defined.
+    Single floating point number identical to float or double depending on
+    whether WM_SP or WM_DP is defined.
 
 SourceFiles
-	scalar.C
+    scalar.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,17 +48,17 @@ SourceFiles
 
 namespace Foam
 {
-	typedef floatScalar scalar;
+    typedef floatScalar scalar;
 
-	static const scalar GREAT = floatScalarGREAT;
-	static const scalar VGREAT = floatScalarVGREAT;
-	static const scalar ROOTVGREAT = floatScalarROOTVGREAT;
-	static const scalar SMALL = floatScalarSMALL;
-	static const scalar ROOTSMALL = floatScalarROOTSMALL;
-	static const scalar VSMALL = floatScalarVSMALL;
-	static const scalar ROOTVSMALL = floatScalarROOTVSMALL;
+    static const scalar GREAT = floatScalarGREAT;
+    static const scalar VGREAT = floatScalarVGREAT;
+    static const scalar ROOTVGREAT = floatScalarROOTVGREAT;
+    static const scalar SMALL = floatScalarSMALL;
+    static const scalar ROOTSMALL = floatScalarROOTSMALL;
+    static const scalar VSMALL = floatScalarVSMALL;
+    static const scalar ROOTVSMALL = floatScalarROOTVSMALL;
 
-	scalar readScalar(Istream& is);
+    scalar readScalar(Istream& is);
 }
 
 #elif defined(WM_DP)
@@ -67,17 +67,17 @@ namespace Foam
 
 namespace Foam
 {
-	typedef doubleScalar scalar;
+    typedef doubleScalar scalar;
 
-	static const scalar GREAT = doubleScalarGREAT;
-	static const scalar VGREAT = doubleScalarVGREAT;
-	static const scalar ROOTVGREAT = doubleScalarROOTVGREAT;
-	static const scalar SMALL = doubleScalarSMALL;
-	static const scalar ROOTSMALL = doubleScalarROOTSMALL;
-	static const scalar VSMALL = doubleScalarVSMALL;
-	static const scalar ROOTVSMALL = doubleScalarROOTVSMALL;
+    static const scalar GREAT = doubleScalarGREAT;
+    static const scalar VGREAT = doubleScalarVGREAT;
+    static const scalar ROOTVGREAT = doubleScalarROOTVGREAT;
+    static const scalar SMALL = doubleScalarSMALL;
+    static const scalar ROOTSMALL = doubleScalarROOTSMALL;
+    static const scalar VSMALL = doubleScalarVSMALL;
+    static const scalar ROOTVSMALL = doubleScalarROOTVSMALL;
 
-	scalar readScalar(Istream& is);
+    scalar readScalar(Istream& is);
 }
 
 #elif defined(WM_LDP)
@@ -86,17 +86,17 @@ namespace Foam
 
 namespace Foam
 {
-	typedef longDoubleScalar scalar;
+    typedef longDoubleScalar scalar;
 
-	static const scalar GREAT = longDoubleScalarGREAT;
-	static const scalar VGREAT = longDoubleScalarVGREAT;
-	static const scalar ROOTVGREAT = longDoubleScalarROOTVGREAT;
-	static const scalar SMALL = longDoubleScalarSMALL;
-	static const scalar ROOTSMALL = longScalarROOTSMALL;
-	static const scalar VSMALL = longDoubleScalarVSMALL;
-	static const scalar ROOTVSMALL = longDoubleScalarROOTVSMALL;
+    static const scalar GREAT = longDoubleScalarGREAT;
+    static const scalar VGREAT = longDoubleScalarVGREAT;
+    static const scalar ROOTVGREAT = longDoubleScalarROOTVGREAT;
+    static const scalar SMALL = longDoubleScalarSMALL;
+    static const scalar ROOTSMALL = longScalarROOTSMALL;
+    static const scalar VSMALL = longDoubleScalarVSMALL;
+    static const scalar ROOTVSMALL = longDoubleScalarROOTVSMALL;
 
-	scalar readScalar(Istream& is);
+    scalar readScalar(Istream& is);
 }
 
 #else

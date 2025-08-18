@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fileStat
+    Foam::fileStat
 
 Description
-	Wrapper for stat() system call.
+    Wrapper for stat() system call.
 
 Warning
-	on Linux (an maybe on others) a stat() of an nfs mounted (remote)
-	file does never timeout and cannot be interrupted!
-	So e.g. Foam::ping first and hope nfs is running.
+    on Linux (an maybe on others) a stat() of an nfs mounted (remote)
+    file does never timeout and cannot be interrupted!
+    So e.g. Foam::ping first and hope nfs is running.
 
 SourceFiles
-	fileStat.C
+    fileStat.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,63 +51,66 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class fileStat Declaration
+\*---------------------------------------------------------------------------*/
 
 class fileStat
 {
-	// Private data
+    // Private data
 
-		struct stat status_;
+        struct stat status_;
 
-		bool isValid_;
+        bool isValid_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Empty constructor
-		fileStat();
+        //- Empty constructor
+        fileStat();
 
-		//- Construct from components
-		fileStat(const fileName& fName, const unsigned int maxTime=0);
+        //- Construct from components
+        fileStat(const fileName& fName, const unsigned int maxTime=0);
 
-		//- Construct from Istream
-		fileStat(Istream&);
-
-
-	// Member Functions
-
-		// Access
-
-			//- Raw status
-			const struct stat& status() const
-			{
-				return status_;
-			}
-
-			//- Did constructor fail
-			bool isValid() const
-			{
-				return isValid_;
-			}
+        //- Construct from Istream
+        fileStat(Istream&);
 
 
-		// Check
+    // Member Functions
 
-			//- compare two fileStats for same device
-			bool sameDevice(const fileStat& stat2) const;
+        // Access
 
-			//- compare two fileStats for same Inode
-			bool sameINode(const fileStat& stat2) const;
+            //- Raw status
+            const struct stat& status() const
+            {
+                return status_;
+            }
 
-			//- compare state against inode
-			bool sameINode(const label iNode) const;
+            //- Did constructor fail
+            bool isValid() const
+            {
+                return isValid_;
+            }
 
 
-	// IOstream Operators
+        // Check
 
-		friend Istream& operator>>(Istream&, fileStat&);
-		friend Ostream& operator<<(Ostream&, const fileStat&);
+            //- compare two fileStats for same device
+            bool sameDevice(const fileStat& stat2) const;
+
+            //- compare two fileStats for same Inode
+            bool sameINode(const fileStat& stat2) const;
+
+            //- compare state against inode
+            bool sameINode(const label iNode) const;
+
+
+    // IOstream Operators
+
+        friend Istream& operator>>(Istream&, fileStat&);
+        friend Ostream& operator<<(Ostream&, const fileStat&);
 };
 
 

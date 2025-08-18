@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,7 +31,7 @@ License
 
 const Foam::word Foam::functionEntries::inputModeEntry::typeName
 (
-	Foam::functionEntries::inputModeEntry::typeName_()
+    Foam::functionEntries::inputModeEntry::typeName_()
 );
 
 // Don't lookup the debug switch here as the debug switch dictionary
@@ -39,24 +39,24 @@ const Foam::word Foam::functionEntries::inputModeEntry::typeName
 Foam::debug::debugSwitch
 Foam::functionEntries::inputModeEntry::debug
 (
-	"inputModeEntry",
-	0
+    "inputModeEntry",
+    0
 );
 
 Foam::functionEntries::inputModeEntry::inputMode
-	Foam::functionEntries::inputModeEntry::mode_(MERGE);
+    Foam::functionEntries::inputModeEntry::mode_(MERGE);
 
 namespace Foam
 {
 namespace functionEntries
 {
-	addToMemberFunctionSelectionTable
-	(
-		functionEntry,
-		inputModeEntry,
-		execute,
-		dictionaryIstream
-	);
+    addToMemberFunctionSelectionTable
+    (
+        functionEntry,
+        inputModeEntry,
+        execute,
+        dictionaryIstream
+    );
 }
 }
 
@@ -65,36 +65,36 @@ namespace functionEntries
 // we could combine this into execute() directly, but leave it here for now
 void Foam::functionEntries::inputModeEntry::setMode(Istream& is)
 {
-	clear();
+    clear();
 
-	word mode(is);
-	if (mode == "merge" || mode == "default")
-	{
-		mode_ = MERGE;
-	}
-	else if (mode == "overwrite")
-	{
-		mode_ = OVERWRITE;
-	}
-	else if (mode == "protect")
-	{
-		mode_ = PROTECT;
-	}
-	else if (mode == "warn")
-	{
-		mode_ = WARN;
-	}
-	else if (mode == "error")
-	{
-		mode_ = ERROR;
-	}
-	else
-	{
-		WarningIn("Foam::functionEntries::inputModeEntry::setMode(Istream&)")
-			<< "unsupported input mode '" << mode
-			<< "' ... defaulting to 'merge'"
-			<< endl;
-	}
+    word mode(is);
+    if (mode == "merge" || mode == "default")
+    {
+        mode_ = MERGE;
+    }
+    else if (mode == "overwrite")
+    {
+        mode_ = OVERWRITE;
+    }
+    else if (mode == "protect")
+    {
+        mode_ = PROTECT;
+    }
+    else if (mode == "warn")
+    {
+        mode_ = WARN;
+    }
+    else if (mode == "error")
+    {
+        mode_ = ERROR;
+    }
+    else
+    {
+        WarningIn("Foam::functionEntries::inputModeEntry::setMode(Istream&)")
+            << "unsupported input mode '" << mode
+            << "' ... defaulting to 'merge'"
+            << endl;
+    }
 }
 
 
@@ -102,41 +102,41 @@ void Foam::functionEntries::inputModeEntry::setMode(Istream& is)
 
 bool Foam::functionEntries::inputModeEntry::execute
 (
-	dictionary& parentDict,
-	Istream& is
+    dictionary& parentDict,
+    Istream& is
 )
 {
-	setMode(is);
-	return true;
+    setMode(is);
+    return true;
 }
 
 
 void Foam::functionEntries::inputModeEntry::clear()
 {
-	mode_ = MERGE;
+    mode_ = MERGE;
 }
 
 
 bool Foam::functionEntries::inputModeEntry::merge()
 {
-	return mode_ == MERGE;
+    return mode_ == MERGE;
 }
 
 
 bool Foam::functionEntries::inputModeEntry::overwrite()
 {
-	return mode_ == OVERWRITE;
+    return mode_ == OVERWRITE;
 }
 
 
 bool Foam::functionEntries::inputModeEntry::protect()
 {
-	return mode_ == PROTECT;
+    return mode_ == PROTECT;
 }
 
 bool Foam::functionEntries::inputModeEntry::error()
 {
-	return mode_ == ERROR;
+    return mode_ == ERROR;
 }
 
 

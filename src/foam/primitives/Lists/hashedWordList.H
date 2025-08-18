@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::hashedWordList
+    Foam::hashedWordList
 
 Description
-	A wordList with hashed indices for faster lookup by name.
+    A wordList with hashed indices for faster lookup by name.
 
 SourceFiles
-	hashedWordListI.H
-	hashedWordList.C
+    hashedWordListI.H
+    hashedWordList.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,82 +51,85 @@ Istream& operator>>(Istream&, hashedWordList&);
 Ostream& operator<<(Ostream&, const hashedWordList&);
 
 
+/*---------------------------------------------------------------------------*\
+                       Class hashedWordList Declaration
+\*---------------------------------------------------------------------------*/
 
 class hashedWordList
 :
-	public List<word>
+    public List<word>
 {
-	// Private data
+    // Private data
 
-		HashTable<label, word> indices_;
+        HashTable<label, word> indices_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Rebuild the hash of indices
-		void rehash();
+        //- Rebuild the hash of indices
+        void rehash();
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		hashedWordList();
+        //- Construct null
+        hashedWordList();
 
-		//- Copy constructor.
-		hashedWordList(const hashedWordList&);
+        //- Copy constructor.
+        hashedWordList(const hashedWordList&);
 
-		//- Construct from list of names
-		hashedWordList(const UList<word>& names);
+        //- Construct from list of names
+        hashedWordList(const UList<word>& names);
 
-		//- Construct by transferring the parameter contents
-		hashedWordList(const Xfer<List<word> >& names);
+        //- Construct by transferring the parameter contents
+        hashedWordList(const Xfer<List<word> >& names);
 
-		//- Construct from number and list of names
-		hashedWordList(const label nNames, const char** names);
+        //- Construct from number and list of names
+        hashedWordList(const label nNames, const char** names);
 
-		//- Construct from a nullptr-terminated list of names
-		hashedWordList(const char** names);
+        //- Construct from a nullptr-terminated list of names
+        hashedWordList(const char** names);
 
-		//- Construct from Istream
-		hashedWordList(Istream&);
-
-
-	// Member Functions
-
-		//- Clear the list, i.e. set size to zero.
-		void clear();
-
-		//- Append an element at the end of the list
-		void append(const word&);
-
-		//- Does the list contain the specified name
-		inline bool contains(const word&) const;
-
-		//- Transfer the contents of the argument List into this list
-		//  and annul the argument list.
-		void transfer(List<word>&);
+        //- Construct from Istream
+        hashedWordList(Istream&);
 
 
-	// Member Operators
+    // Member Functions
 
-		//- Assignment operator from list of names
-		inline void operator=(const UList<word>& names);
+        //- Clear the list, i.e. set size to zero.
+        void clear();
 
-		//- Assignment operator.
-		inline void operator=(const hashedWordList&);
+        //- Append an element at the end of the list
+        void append(const word&);
 
-		//- Return name corresponding to specified index
-		inline const word& operator[](const label index) const;
+        //- Does the list contain the specified name
+        inline bool contains(const word&) const;
 
-		//- Return index corresponding to specified name
-		inline label operator[](const word&) const;
+        //- Transfer the contents of the argument List into this list
+        //  and annul the argument list.
+        void transfer(List<word>&);
 
 
-	// Istream operators
+    // Member Operators
 
-		friend Istream& operator>>(Istream&, hashedWordList&);
-		friend Ostream& operator<<(Ostream&, const hashedWordList&);
+        //- Assignment operator from list of names
+        inline void operator=(const UList<word>& names);
+
+        //- Assignment operator.
+        inline void operator=(const hashedWordList&);
+
+        //- Return name corresponding to specified index
+        inline const word& operator[](const label index) const;
+
+        //- Return index corresponding to specified name
+        inline label operator[](const word&) const;
+
+
+    // Istream operators
+
+        friend Istream& operator>>(Istream&, hashedWordList&);
+        friend Ostream& operator<<(Ostream&, const hashedWordList&);
 };
 
 

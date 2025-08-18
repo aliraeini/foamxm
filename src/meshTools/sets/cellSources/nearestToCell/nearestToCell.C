@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,9 +45,9 @@ addToRunTimeSelectionTable(topoSetSource, nearestToCell, istream);
 
 Foam::topoSetSource::addToUsageTable Foam::nearestToCell::usage_
 (
-	nearestToCell::typeName,
-	"\n    Usage: nearestToCell (pt0 .. ptn)\n\n"
-	"    Select the nearest cell for each of the points pt0 ..ptn\n\n"
+    nearestToCell::typeName,
+    "\n    Usage: nearestToCell (pt0 .. ptn)\n\n"
+    "    Select the nearest cell for each of the points pt0 ..ptn\n\n"
 );
 
 
@@ -55,13 +55,13 @@ Foam::topoSetSource::addToUsageTable Foam::nearestToCell::usage_
 
 void Foam::nearestToCell::combine(topoSet& set, const bool add) const
 {
-	// Construct search engine withouth tet decomposition.
-	meshSearch queryMesh(mesh_, false);
+    // Construct search engine withouth tet decomposition.
+    meshSearch queryMesh(mesh_, false);
 
-	forAll(points_, pointI)
-	{
-		addOrDelete(set, queryMesh.findNearestCell(points_[pointI]), add);
-	}
+    forAll(points_, pointI)
+    {
+        addOrDelete(set, queryMesh.findNearestCell(points_[pointI]), add);
+    }
 }
 
 
@@ -70,36 +70,36 @@ void Foam::nearestToCell::combine(topoSet& set, const bool add) const
 // Construct from components
 Foam::nearestToCell::nearestToCell
 (
-	const polyMesh& mesh,
-	const pointField& points
+    const polyMesh& mesh,
+    const pointField& points
 )
 :
-	topoSetSource(mesh),
-	points_(points)
+    topoSetSource(mesh),
+    points_(points)
 {}
 
 
 // Construct from dictionary
 Foam::nearestToCell::nearestToCell
 (
-	const polyMesh& mesh,
-	const dictionary& dict
+    const polyMesh& mesh,
+    const dictionary& dict
 )
 :
-	topoSetSource(mesh),
-	points_(dict.lookup("points"))
+    topoSetSource(mesh),
+    points_(dict.lookup("points"))
 {}
 
 
 // Construct from Istream
 Foam::nearestToCell::nearestToCell
 (
-	const polyMesh& mesh,
-	Istream& is
+    const polyMesh& mesh,
+    Istream& is
 )
 :
-	topoSetSource(mesh),
-	points_(checkIs(is))
+    topoSetSource(mesh),
+    points_(checkIs(is))
 {}
 
 
@@ -113,22 +113,22 @@ Foam::nearestToCell::~nearestToCell()
 
 void Foam::nearestToCell::applyToSet
 (
-	const topoSetSource::setAction action,
-	topoSet& set
+    const topoSetSource::setAction action,
+    topoSet& set
 ) const
 {
-	if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
-	{
-		Info<< "    Adding cells nearest to " << points_ << endl;
+    if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
+    {
+        Info<< "    Adding cells nearest to " << points_ << endl;
 
-		combine(set, true);
-	}
-	else if (action == topoSetSource::DELETE)
-	{
-		Info<< "    Removing cells nearest to " << points_ << endl;
+        combine(set, true);
+    }
+    else if (action == topoSetSource::DELETE)
+    {
+        Info<< "    Removing cells nearest to " << points_ << endl;
 
-		combine(set, false);
-	}
+        combine(set, false);
+    }
 }
 
 

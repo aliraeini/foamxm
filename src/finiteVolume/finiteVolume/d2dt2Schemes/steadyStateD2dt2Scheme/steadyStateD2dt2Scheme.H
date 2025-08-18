@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fv::steadyStateD2dt2Scheme
+    Foam::fv::steadyStateD2dt2Scheme
 
 Description
-	SteadyState d2dt2 which returns 0.
+    SteadyState d2dt2 which returns 0.
 
 SourceFiles
-	steadyStateD2dt2Scheme.C
+    steadyStateD2dt2Scheme.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,77 +47,78 @@ namespace Foam
 namespace fv
 {
 
+/*---------------------------------------------------------------------------*\
+                       Class steadyStateD2dt2Scheme Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class steadyStateD2dt2Scheme
 :
-	public fv::d2dt2Scheme<Type>
+    public fv::d2dt2Scheme<Type>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		steadyStateD2dt2Scheme(const steadyStateD2dt2Scheme&);
+        //- Disallow default bitwise copy construct
+        steadyStateD2dt2Scheme(const steadyStateD2dt2Scheme&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const steadyStateD2dt2Scheme&);
+        //- Disallow default bitwise assignment
+        void operator=(const steadyStateD2dt2Scheme&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("steadyState");
+    //- Runtime type information
+    TypeName("steadyState");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh
-		steadyStateD2dt2Scheme(const fvMesh& mesh)
-		:
-			d2dt2Scheme<Type>(mesh)
-		{}
+        //- Construct from mesh
+        steadyStateD2dt2Scheme(const fvMesh& mesh)
+        :
+            d2dt2Scheme<Type>(mesh)
+        {}
 
-		//- Construct from mesh and Istream
-		steadyStateD2dt2Scheme(const fvMesh& mesh, Istream& is)
-		:
-			d2dt2Scheme<Type>(mesh, is)
-		{}
+        //- Construct from mesh and Istream
+        steadyStateD2dt2Scheme(const fvMesh& mesh, Istream& is)
+        :
+            d2dt2Scheme<Type>(mesh, is)
+        {}
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~steadyStateD2dt2Scheme() = default;
 
-		//- Return mesh reference
-		const fvMesh& mesh() const
-		{
-			return fv::d2dt2Scheme<Type>::mesh();
-		}
 
-		tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+    // Member Functions
 
-		tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
-		(
-			const volScalarField&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 
-		tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcD2dt2
+        (
+            const volScalarField&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 
-		tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const dimensionedScalar&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 
-		tmp<fvMatrix<Type> > fvmD2dt2
-		(
-			const volScalarField&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const dimensionedScalar&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
+
+        virtual tmp<fvMatrix<Type> > fvmD2dt2
+        (
+            const volScalarField&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 };
 
 
@@ -132,7 +133,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "steadyStateD2dt2Scheme.C"
+#   include "steadyStateD2dt2Scheme.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

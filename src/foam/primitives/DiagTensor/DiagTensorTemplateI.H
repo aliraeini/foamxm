@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,10 +42,10 @@ inline DiagTensor<Cmpt>::DiagTensor()
 template <class Cmpt>
 inline DiagTensor<Cmpt>::DiagTensor
 (
-	const VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>& vs
+    const VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>& vs
 )
 :
-	VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>(vs)
+    VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>(vs)
 {}
 
 
@@ -53,14 +53,14 @@ inline DiagTensor<Cmpt>::DiagTensor
 template <class Cmpt>
 inline DiagTensor<Cmpt>::DiagTensor
 (
-	const Cmpt& vxx,
-	const Cmpt& vyy,
-	const Cmpt& vzz
+    const Cmpt& vxx,
+    const Cmpt& vyy,
+    const Cmpt& vzz
 )
 {
-	this->v_[XX] = vxx;
-	this->v_[YY] = vyy;
-	this->v_[ZZ] = vzz;
+    this->v_[XX] = vxx;
+    this->v_[YY] = vyy;
+    this->v_[ZZ] = vzz;
 }
 
 
@@ -68,7 +68,7 @@ inline DiagTensor<Cmpt>::DiagTensor
 template <class Cmpt>
 inline DiagTensor<Cmpt>::DiagTensor(Istream& is)
 :
-	VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>(is)
+    VectorSpace<DiagTensor<Cmpt>, Cmpt, 3>(is)
 {}
 
 
@@ -77,38 +77,38 @@ inline DiagTensor<Cmpt>::DiagTensor(Istream& is)
 template <class Cmpt>
 inline const Cmpt&  DiagTensor<Cmpt>::xx() const
 {
-	return this->v_[XX];
+    return this->v_[XX];
 }
 
 template <class Cmpt>
 inline const Cmpt&  DiagTensor<Cmpt>::yy() const
 {
-	return this->v_[YY];
+    return this->v_[YY];
 }
 
 template <class Cmpt>
 inline const Cmpt&  DiagTensor<Cmpt>::zz() const
 {
-	return this->v_[ZZ];
+    return this->v_[ZZ];
 }
 
 
 template <class Cmpt>
 inline Cmpt& DiagTensor<Cmpt>::xx()
 {
-	return this->v_[XX];
+    return this->v_[XX];
 }
 
 template <class Cmpt>
 inline Cmpt& DiagTensor<Cmpt>::yy()
 {
-	return this->v_[YY];
+    return this->v_[YY];
 }
 
 template <class Cmpt>
 inline Cmpt& DiagTensor<Cmpt>::zz()
 {
-	return this->v_[ZZ];
+    return this->v_[ZZ];
 }
 
 
@@ -118,12 +118,12 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator+(const DiagTensor<Cmpt>& dt1, const Tensor<Cmpt>& t2)
 {
-	return Tensor<Cmpt>
-	(
-		dt1.xx() + t2.xx(), t2.xy(),            t2.xz(),
-		t2.yx(),            dt1.yy() + t2.yy(), t2.yz(),
-		t2.zx(),            t2.zy(),            dt1.zz() + t2.zz()
-	);
+    return Tensor<Cmpt>
+    (
+        dt1.xx() + t2.xx(), t2.xy(),            t2.xz(),
+        t2.yx(),            dt1.yy() + t2.yy(), t2.yz(),
+        t2.zx(),            t2.zy(),            dt1.zz() + t2.zz()
+    );
 }
 
 
@@ -131,12 +131,12 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator+(const Tensor<Cmpt>& t1, const DiagTensor<Cmpt>& dt2)
 {
-	return Tensor<Cmpt>
-	(
-		t1.xx() + dt2.xx(), t1.xy(),            t1.xz(),
-		t1.yx(),            t1.yy() + dt2.yy(), t1.yz(),
-		t1.zx(),            t1.zy(),            t1.zz() + dt2.zz()
-	);
+    return Tensor<Cmpt>
+    (
+        t1.xx() + dt2.xx(), t1.xy(),            t1.xz(),
+        t1.yx(),            t1.yy() + dt2.yy(), t1.yz(),
+        t1.zx(),            t1.zy(),            t1.zz() + dt2.zz()
+    );
 }
 
 
@@ -144,12 +144,12 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator-(const DiagTensor<Cmpt>& dt1, const Tensor<Cmpt>& t2)
 {
-	return Tensor<Cmpt>
-	(
-		dt1.xx() - t2.xx(), -t2.xy(),            -t2.xz(),
-	   -t2.yx(),             dt1.yy() - t2.yy(), -t2.yz(),
-	   -t2.zx(),            -t2.zy(),             dt1.zz() - t2.zz()
-	);
+    return Tensor<Cmpt>
+    (
+        dt1.xx() - t2.xx(), -t2.xy(),            -t2.xz(),
+       -t2.yx(),             dt1.yy() - t2.yy(), -t2.yz(),
+       -t2.zx(),            -t2.zy(),             dt1.zz() - t2.zz()
+    );
 }
 
 
@@ -157,12 +157,12 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator-(const Tensor<Cmpt>& t1, const DiagTensor<Cmpt>& dt2)
 {
-	return Tensor<Cmpt>
-	(
-		t1.xx() - dt2.xx(), t1.xy(),            t1.xz(),
-		t1.yx(),            t1.yy() - dt2.yy(), t1.yz(),
-		t1.zx(),            t1.zy(),            t1.zz() - dt2.zz()
-	);
+    return Tensor<Cmpt>
+    (
+        t1.xx() - dt2.xx(), t1.xy(),            t1.xz(),
+        t1.yx(),            t1.yy() - dt2.yy(), t1.yz(),
+        t1.zx(),            t1.zy(),            t1.zz() - dt2.zz()
+    );
 }
 
 
@@ -171,12 +171,12 @@ template <class Cmpt>
 inline DiagTensor<Cmpt>
 operator&(const DiagTensor<Cmpt>& dt1, const DiagTensor<Cmpt>& dt2)
 {
-	return DiagTensor<Cmpt>
-	(
-		dt1.xx()*dt2.xx(),
-		dt1.yy()*dt2.yy(),
-		dt1.zz()*dt2.zz()
-	);
+    return DiagTensor<Cmpt>
+    (
+        dt1.xx()*dt2.xx(),
+        dt1.yy()*dt2.yy(),
+        dt1.zz()*dt2.zz()
+    );
 }
 
 
@@ -185,20 +185,20 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator&(const DiagTensor<Cmpt>& dt1, const Tensor<Cmpt>& t2)
 {
-	return Tensor<Cmpt>
-	(
-		dt1.xx()*t2.xx(),
-		dt1.xx()*t2.xy(),
-		dt1.xx()*t2.xz(),
+    return Tensor<Cmpt>
+    (
+        dt1.xx()*t2.xx(),
+        dt1.xx()*t2.xy(),
+        dt1.xx()*t2.xz(),
 
-					      dt1.yy()*t2.yx(),
-					      dt1.yy()*t2.yy(),
-					      dt1.yy()*t2.yz(),
+                          dt1.yy()*t2.yx(),
+                          dt1.yy()*t2.yy(),
+                          dt1.yy()*t2.yz(),
 
-					                        dt1.zz()*t2.zx(),
-					                        dt1.zz()*t2.zy(),
-					                        dt1.zz()*t2.zz()
-	);
+                                            dt1.zz()*t2.zx(),
+                                            dt1.zz()*t2.zy(),
+                                            dt1.zz()*t2.zz()
+    );
 }
 
 
@@ -207,20 +207,20 @@ template <class Cmpt>
 inline Tensor<Cmpt>
 operator&(const Tensor<Cmpt>& t1, const DiagTensor<Cmpt>& dt2)
 {
-	return Tensor<Cmpt>
-	(
-		t1.xx()*dt2.xx(),
-					      t1.xy()*dt2.yy(),
-					                        t1.xz()*dt2.zz(),
+    return Tensor<Cmpt>
+    (
+        t1.xx()*dt2.xx(),
+                          t1.xy()*dt2.yy(),
+                                            t1.xz()*dt2.zz(),
 
-		t1.yx()*dt2.xx(),
-					      t1.yy()*dt2.yy(),
-					                        t1.yz()*dt2.zz(),
+        t1.yx()*dt2.xx(),
+                          t1.yy()*dt2.yy(),
+                                            t1.yz()*dt2.zz(),
 
-		t1.zx()*dt2.xx(),
-					      t1.zy()*dt2.yy(),
-					                        t1.zz()*dt2.zz()
-	);
+        t1.zx()*dt2.xx(),
+                          t1.zy()*dt2.yy(),
+                                            t1.zz()*dt2.zz()
+    );
 }
 
 
@@ -229,12 +229,12 @@ template <class Cmpt>
 inline Vector<Cmpt>
 operator&(const DiagTensor<Cmpt>& dt, const Vector<Cmpt>& v)
 {
-	return Vector<Cmpt>
-	(
-		dt.xx()*v.x(),
-					   dt.yy()*v.y(),
-					                  dt.zz()*v.z()
-	);
+    return Vector<Cmpt>
+    (
+        dt.xx()*v.x(),
+                       dt.yy()*v.y(),
+                                      dt.zz()*v.z()
+    );
 }
 
 
@@ -243,12 +243,12 @@ template <class Cmpt>
 inline Vector<Cmpt>
 operator&(const Vector<Cmpt>& v, const DiagTensor<Cmpt>& dt)
 {
-	return Vector<Cmpt>
-	(
-		v.x()*dt.xx(),
-					   v.y()*dt.yy(),
-					                  v.z()*dt.zz()
-	);
+    return Vector<Cmpt>
+    (
+        v.x()*dt.xx(),
+                       v.y()*dt.yy(),
+                                      v.z()*dt.zz()
+    );
 }
 
 
@@ -257,7 +257,7 @@ template <class Cmpt>
 inline DiagTensor<Cmpt>
 operator/(const scalar s, const DiagTensor<Cmpt>& dt)
 {
-	return DiagTensor<Cmpt>(s/dt.xx(), s/dt.yy(), s/dt.zz());
+    return DiagTensor<Cmpt>(s/dt.xx(), s/dt.yy(), s/dt.zz());
 }
 
 
@@ -266,7 +266,7 @@ template <class Cmpt>
 inline Vector<Cmpt>
 operator/(const Vector<Cmpt> v, const DiagTensor<Cmpt>& dt)
 {
-	return Vector<Cmpt>(v.x()/dt.xx(), v.y()/dt.yy(), v.z()/dt.zz());
+    return Vector<Cmpt>(v.x()/dt.xx(), v.y()/dt.yy(), v.z()/dt.zz());
 }
 
 
@@ -274,7 +274,7 @@ operator/(const Vector<Cmpt> v, const DiagTensor<Cmpt>& dt)
 template <class Cmpt>
 inline Cmpt tr(const DiagTensor<Cmpt>& dt)
 {
-	return dt.xx() + dt.yy() + dt.zz();
+    return dt.xx() + dt.yy() + dt.zz();
 }
 
 
@@ -282,7 +282,7 @@ inline Cmpt tr(const DiagTensor<Cmpt>& dt)
 template <class Cmpt>
 inline SphericalTensor<Cmpt> sph(const DiagTensor<Cmpt>& dt)
 {
-	return 0.5*tr(dt);
+    return 0.5*tr(dt);
 }
 
 
@@ -290,7 +290,7 @@ inline SphericalTensor<Cmpt> sph(const DiagTensor<Cmpt>& dt)
 template <class Cmpt>
 inline Cmpt det(const DiagTensor<Cmpt>& t)
 {
-	return t.xx()*t.yy()*t.zz();
+    return t.xx()*t.yy()*t.zz();
 }
 
 
@@ -298,7 +298,7 @@ inline Cmpt det(const DiagTensor<Cmpt>& t)
 template <class Cmpt>
 inline DiagTensor<Cmpt> inv(const DiagTensor<Cmpt>& dt)
 {
-	return DiagTensor<Cmpt>(1.0/dt.xx(), 1.0/dt.yy(), 1.0/dt.zz());
+    return DiagTensor<Cmpt>(1.0/dt.xx(), 1.0/dt.yy(), 1.0/dt.zz());
 }
 
 
@@ -306,7 +306,7 @@ inline DiagTensor<Cmpt> inv(const DiagTensor<Cmpt>& dt)
 template <class Cmpt>
 inline DiagTensor<Cmpt> diag(const SymmTensor<Cmpt>& t)
 {
-	return DiagTensor<Cmpt>(t.xx(), t.yy(), t.zz());
+    return DiagTensor<Cmpt>(t.xx(), t.yy(), t.zz());
 }
 
 
@@ -314,7 +314,7 @@ inline DiagTensor<Cmpt> diag(const SymmTensor<Cmpt>& t)
 template <class Cmpt>
 inline DiagTensor<Cmpt> diag(const Tensor<Cmpt>& t)
 {
-	return DiagTensor<Cmpt>(t.xx(), t.yy(), t.zz());
+    return DiagTensor<Cmpt>(t.xx(), t.yy(), t.zz());
 }
 
 
@@ -323,7 +323,7 @@ class innerProduct<DiagTensor<Cmpt>, DiagTensor<Cmpt> >
 {
 public:
 
-	typedef DiagTensor<Cmpt> type;
+    typedef DiagTensor<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -331,7 +331,7 @@ class outerProduct<DiagTensor<Cmpt>, Cmpt>
 {
 public:
 
-	typedef DiagTensor<Cmpt> type;
+    typedef DiagTensor<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -339,7 +339,7 @@ class outerProduct<Cmpt, DiagTensor<Cmpt> >
 {
 public:
 
-	typedef DiagTensor<Cmpt> type;
+    typedef DiagTensor<Cmpt> type;
 };
 
 

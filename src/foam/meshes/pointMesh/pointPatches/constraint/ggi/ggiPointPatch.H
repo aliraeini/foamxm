@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	ggiPointPatch
+    ggiPointPatch
 
 Description
-	Dummy ggi patch for post-processing.  No functionality built in!
+    Dummy ggi patch for post-processing.  No functionality built in!
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	ggiPointPatch.C
+    ggiPointPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,93 +46,96 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class ggiPointPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class ggiPointPatch
 :
-	public coupledFacePointPatch
+    public coupledFacePointPatch
 {
-	// Private data
+    // Private data
 
-		//- Local reference cast into the cyclic patch
-		const ggiPolyPatch& ggiPolyPatch_;
+        //- Local reference cast into the cyclic patch
+        const ggiPolyPatch& ggiPolyPatch_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default construct as copy
-		ggiPointPatch(const ggiPointPatch&);
+        //- Disallow default construct as copy
+        ggiPointPatch(const ggiPointPatch&);
 
-		//- Disallow default assignment
-		void operator=(const ggiPointPatch&);
+        //- Disallow default assignment
+        void operator=(const ggiPointPatch&);
 
 
 protected:
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		//- Initialise the calculation of the patch geometry
-		virtual void initGeometry()
-		{}
+        //- Initialise the calculation of the patch geometry
+        virtual void initGeometry()
+        {}
 
-		//- Calculate mesh points
-		virtual void calcGeometry()
-		{}
+        //- Calculate mesh points
+        virtual void calcGeometry()
+        {}
 
-		//- Correct patches after moving points
-		virtual void movePoints()
-		{}
+        //- Correct patches after moving points
+        virtual void movePoints()
+        {}
 
-		//- Initialise the update of the patch topology
-		virtual void initUpdateMesh();
+        //- Initialise the update of the patch topology
+        virtual void initUpdateMesh();
 
-		//- Update of the patch topology
-		virtual void updateMesh();
+        //- Update of the patch topology
+        virtual void updateMesh();
 
 
 public:
 
-	typedef pointBoundaryMesh BoundaryMesh;
+    typedef pointBoundaryMesh BoundaryMesh;
 
 
-	//- Runtime type information
-	TypeName(ggiPolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(ggiPolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		ggiPointPatch
-		(
-			const polyPatch& patch,
-			const pointBoundaryMesh& bm
-		);
-
-
-	//- Destructor
-	virtual ~ggiPointPatch();
+        //- Construct from components
+        ggiPointPatch
+        (
+            const polyPatch& patch,
+            const pointBoundaryMesh& bm
+        );
 
 
-	// Member Functions
-
-		// Access
-
-			//- Return true because this patch is coupled
-			virtual bool coupled() const;
+    //- Destructor
+    virtual ~ggiPointPatch();
 
 
-		// Communications support
+    // Member Functions
 
-			//- Return communicator used for communication
-			virtual label comm() const
-			{
-				return ggiPolyPatch_.comm();
-			}
+        // Access
 
-			//- Return message tag to use for communication
-			virtual int tag() const
-			{
-				return ggiPolyPatch_.tag();
-			}
+            //- Return true because this patch is coupled
+            virtual bool coupled() const;
+
+
+        // Communications support
+
+            //- Return communicator used for communication
+            virtual label comm() const
+            {
+                return ggiPolyPatch_.comm();
+            }
+
+            //- Return message tag to use for communication
+            virtual int tag() const
+            {
+                return ggiPolyPatch_.tag();
+            }
 };
 
 

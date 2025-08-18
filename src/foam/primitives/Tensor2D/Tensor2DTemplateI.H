@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,54 +38,54 @@ inline Tensor2D<Cmpt>::Tensor2D()
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D(const VectorSpace<Tensor2D<Cmpt>, Cmpt, 4>& vs)
 :
-	VectorSpace<Tensor2D<Cmpt>, Cmpt, 4>(vs)
+    VectorSpace<Tensor2D<Cmpt>, Cmpt, 4>(vs)
 {}
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D(const SymmTensor2D<Cmpt>& st)
 {
-	this->v_[XX] = st.xx(); this->v_[XY] = st.xy();
-	this->v_[YX] = st.xy(); this->v_[YY] = st.yy();
+    this->v_[XX] = st.xx(); this->v_[XY] = st.xy();
+    this->v_[YX] = st.xy(); this->v_[YY] = st.yy();
 }
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D(const SphericalTensor2D<Cmpt>& st)
 {
-	this->v_[XX] = st.ii(); this->v_[XY] = 0;
-	this->v_[YX] = 0; this->v_[YY] = st.ii();
+    this->v_[XX] = st.ii(); this->v_[XY] = 0;
+    this->v_[YX] = 0; this->v_[YY] = st.ii();
 }
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D
 (
-	const Vector2D<Cmpt>& x,
-	const Vector2D<Cmpt>& y
+    const Vector2D<Cmpt>& x,
+    const Vector2D<Cmpt>& y
 )
 {
-	this->v_[XX] = x.x(); this->v_[XY] = x.y();
-	this->v_[YX] = y.x(); this->v_[YY] = y.y();
+    this->v_[XX] = x.x(); this->v_[XY] = x.y();
+    this->v_[YX] = y.x(); this->v_[YY] = y.y();
 }
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D
 (
-	const Cmpt txx, const Cmpt txy,
-	const Cmpt tyx, const Cmpt tyy
+    const Cmpt txx, const Cmpt txy,
+    const Cmpt tyx, const Cmpt tyy
 )
 {
-	this->v_[XX] = txx; this->v_[XY] = txy;
-	this->v_[YX] = tyx; this->v_[YY] = tyy;
+    this->v_[XX] = txx; this->v_[XY] = txy;
+    this->v_[YX] = tyx; this->v_[YY] = tyy;
 }
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt>::Tensor2D(Istream& is)
 :
-	VectorSpace<Tensor2D<Cmpt>, Cmpt, 4>(is)
+    VectorSpace<Tensor2D<Cmpt>, Cmpt, 4>(is)
 {}
 
 
@@ -94,102 +94,102 @@ inline Tensor2D<Cmpt>::Tensor2D(Istream& is)
 template<class Cmpt>
 inline Vector2D<Cmpt> Tensor2D<Cmpt>::x() const
 {
-	return Vector2D<Cmpt>(this->v_[XX], this->v_[XY]);
+    return Vector2D<Cmpt>(this->v_[XX], this->v_[XY]);
 }
 
 template<class Cmpt>
 inline Vector2D<Cmpt> Tensor2D<Cmpt>::y() const
 {
-	return Vector2D<Cmpt>(this->v_[YX], this->v_[YY]);
+    return Vector2D<Cmpt>(this->v_[YX], this->v_[YY]);
 }
 
 
 template<class Cmpt>
 inline const Cmpt& Tensor2D<Cmpt>::xx() const
 {
-	return this->v_[XX];
+    return this->v_[XX];
 }
 
 
 template<class Cmpt>
 inline const Cmpt& Tensor2D<Cmpt>::xy() const
 {
-	return this->v_[XY];
+    return this->v_[XY];
 }
 
 
 template<class Cmpt>
 inline const Cmpt& Tensor2D<Cmpt>::yx() const
 {
-	return this->v_[YX];
+    return this->v_[YX];
 }
 
 
 template<class Cmpt>
 inline const Cmpt& Tensor2D<Cmpt>::yy() const
 {
-	return this->v_[YY];
+    return this->v_[YY];
 }
 
 
 template<class Cmpt>
 inline Cmpt& Tensor2D<Cmpt>::xx()
 {
-	return this->v_[XX];
+    return this->v_[XX];
 }
 
 
 template<class Cmpt>
 inline Cmpt& Tensor2D<Cmpt>::xy()
 {
-	return this->v_[XY];
+    return this->v_[XY];
 }
 
 
 template<class Cmpt>
 inline Cmpt& Tensor2D<Cmpt>::yx()
 {
-	return this->v_[YX];
+    return this->v_[YX];
 }
 
 
 template<class Cmpt>
 inline Cmpt& Tensor2D<Cmpt>::yy()
 {
-	return this->v_[YY];
+    return this->v_[YY];
 }
 
 
 template<class Cmpt>
 inline const Cmpt& Tensor2D<Cmpt>::operator()
 (
-	const direction i,
-	const direction j
+    const direction i,
+    const direction j
 ) const
 {
-	return this->operator[](i*Tensor2D<Cmpt>::dim + j);
+    return this->operator[](i*Tensor2D<Cmpt>::dim + j);
 }
 
 
 template<class Cmpt>
 inline Cmpt& Tensor2D<Cmpt>::operator()
 (
-	const direction i,
-	const direction j
+    const direction i,
+    const direction j
 )
 {
-	return this->operator[](i*Tensor2D<Cmpt>::dim + j);
+    return this->operator[](i*Tensor2D<Cmpt>::dim + j);
 }
 
 
 template<class Cmpt>
 inline Tensor2D<Cmpt> Tensor2D<Cmpt>::T() const
 {
-	return Tensor2D<Cmpt>
-	(
-		xx(), yx(),
-		xy(), yy()
-	);
+    return Tensor2D<Cmpt>
+    (
+        xx(), yx(),
+        xy(), yy()
+    );
 }
 
 
@@ -198,16 +198,16 @@ inline Tensor2D<Cmpt> Tensor2D<Cmpt>::T() const
 template<class Cmpt>
 inline void Tensor2D<Cmpt>::operator=(const SymmTensor2D<Cmpt>& st)
 {
-	this->v_[XX] = st.xx(); this->v_[XY] = st.xy();
-	this->v_[YX] = st.xy(); this->v_[YY] = st.yy();
+    this->v_[XX] = st.xx(); this->v_[XY] = st.xy();
+    this->v_[YX] = st.xy(); this->v_[YY] = st.yy();
 }
 
 
 template<class Cmpt>
 inline void Tensor2D<Cmpt>::operator=(const SphericalTensor2D<Cmpt>& st)
 {
-	this->v_[XX] = st.ii(); this->v_[XY] = 0;
-	this->v_[YX] = 0; this->v_[YY] = st.ii();
+    this->v_[XX] = st.ii(); this->v_[XY] = 0;
+    this->v_[YX] = 0; this->v_[YY] = st.ii();
 }
 
 
@@ -219,14 +219,14 @@ template<class Cmpt>
 inline typename innerProduct<Tensor2D<Cmpt>, Tensor2D<Cmpt> >::type
 operator&(const Tensor2D<Cmpt>& t1, const Tensor2D<Cmpt>& t2)
 {
-	return Tensor2D<Cmpt>
-	(
-		t1.xx()*t2.xx() + t1.xy()*t2.yx(),
-		t1.xx()*t2.xy() + t1.xy()*t2.yy(),
+    return Tensor2D<Cmpt>
+    (
+        t1.xx()*t2.xx() + t1.xy()*t2.yx(),
+        t1.xx()*t2.xy() + t1.xy()*t2.yy(),
 
-		t1.yx()*t2.xx() + t1.yy()*t2.yx(),
-		t1.yx()*t2.xy() + t1.yy()*t2.yy()
-	);
+        t1.yx()*t2.xx() + t1.yy()*t2.yx(),
+        t1.yx()*t2.xy() + t1.yy()*t2.yy()
+    );
 }
 
 //- Inner-product between a tensor and a vector
@@ -234,11 +234,11 @@ template<class Cmpt>
 inline typename innerProduct<Tensor2D<Cmpt>, Vector2D<Cmpt> >::type
 operator&(const Tensor2D<Cmpt>& t, const Vector2D<Cmpt>& v)
 {
-	return Vector2D<Cmpt>
-	(
-		t.xx()*v.x() + t.xy()*v.y(),
-		t.yx()*v.x() + t.yy()*v.y()
-	);
+    return Vector2D<Cmpt>
+    (
+        t.xx()*v.x() + t.xy()*v.y(),
+        t.yx()*v.x() + t.yy()*v.y()
+    );
 }
 
 //- Inner-product between a vector and a tensor
@@ -246,11 +246,11 @@ template<class Cmpt>
 inline typename innerProduct<Vector2D<Cmpt>, Tensor2D<Cmpt> >::type
 operator&(const Vector2D<Cmpt>& v, const Tensor2D<Cmpt>& t)
 {
-	return Vector2D<Cmpt>
-	(
-		v.x()*t.xx() + v.y()*t.yx(),
-		v.x()*t.xy() + v.y()*t.yy()
-	);
+    return Vector2D<Cmpt>
+    (
+        v.x()*t.xx() + v.y()*t.yx(),
+        v.x()*t.xy() + v.y()*t.yy()
+    );
 }
 
 //- Outer-product between two vectors
@@ -258,11 +258,11 @@ template<class Cmpt>
 inline typename outerProduct<Vector2D<Cmpt>, Vector2D<Cmpt> >::type
 operator*(const Vector2D<Cmpt>& v1, const Vector2D<Cmpt>& v2)
 {
-	return Tensor2D<Cmpt>
-	(
-		v1.x()*v2.x(), v1.x()*v2.y(),
-		v1.y()*v2.x(), v1.y()*v2.y()
-	);
+    return Tensor2D<Cmpt>
+    (
+        v1.x()*v2.x(), v1.x()*v2.y(),
+        v1.y()*v2.x(), v1.y()*v2.y()
+    );
 }
 
 
@@ -270,7 +270,7 @@ operator*(const Vector2D<Cmpt>& v1, const Vector2D<Cmpt>& v2)
 template<class Cmpt>
 inline Cmpt tr(const Tensor2D<Cmpt>& t)
 {
-	return t.xx() + t.yy();
+    return t.xx() + t.yy();
 }
 
 
@@ -278,7 +278,7 @@ inline Cmpt tr(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline SphericalTensor2D<Cmpt> sph(const Tensor2D<Cmpt>& t)
 {
-	return 0.5*tr(t);
+    return 0.5*tr(t);
 }
 
 
@@ -286,33 +286,33 @@ inline SphericalTensor2D<Cmpt> sph(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline SymmTensor2D<Cmpt> symm(const Tensor2D<Cmpt>& t)
 {
-	return SymmTensor2D<Cmpt>
-	(
-		t.xx(), 0.5*(t.xy() + t.yx()),
-				t.yy()
-	);
+    return SymmTensor2D<Cmpt>
+    (
+        t.xx(), 0.5*(t.xy() + t.yx()),
+                t.yy()
+    );
 }
 
 //- Return the twice the symmetric part of a tensor
 template<class Cmpt>
 inline SymmTensor2D<Cmpt> twoSymm(const Tensor2D<Cmpt>& t)
 {
-	return SymmTensor2D<Cmpt>
-	(
-		t.xx() + t.xx(), t.xy() + t.yx(),
-					     t.yy() + t.yy()
-	);
+    return SymmTensor2D<Cmpt>
+    (
+        t.xx() + t.xx(), t.xy() + t.yx(),
+                         t.yy() + t.yy()
+    );
 }
 
 //- Return the skew-symmetric part of a tensor
 template<class Cmpt>
 inline Tensor2D<Cmpt> skew(const Tensor2D<Cmpt>& t)
 {
-	return Tensor2D<Cmpt>
-	(
-		0.0, 0.5*(t.xy() - t.yx()),
-		0.5*(t.yx() - t.xy()), 0.0
-	);
+    return Tensor2D<Cmpt>
+    (
+        0.0, 0.5*(t.xy() - t.yx()),
+        0.5*(t.yx() - t.xy()), 0.0
+    );
 }
 
 
@@ -320,7 +320,7 @@ inline Tensor2D<Cmpt> skew(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Tensor2D<Cmpt> dev(const Tensor2D<Cmpt>& t)
 {
-	return t - SphericalTensor2D<Cmpt>::oneThirdI*tr(t);
+    return t - SphericalTensor2D<Cmpt>::oneThirdI*tr(t);
 }
 
 
@@ -328,7 +328,7 @@ inline Tensor2D<Cmpt> dev(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Tensor2D<Cmpt> dev2(const Tensor2D<Cmpt>& t)
 {
-	return t - SphericalTensor2D<Cmpt>::twoThirdsI*tr(t);
+    return t - SphericalTensor2D<Cmpt>::twoThirdsI*tr(t);
 }
 
 
@@ -336,7 +336,7 @@ inline Tensor2D<Cmpt> dev2(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Cmpt det(const Tensor2D<Cmpt>& t)
 {
-	return(t.xx()*t.yy() - t.xy()*t.yx());
+    return(t.xx()*t.yy() - t.xy()*t.yx());
 }
 
 
@@ -344,11 +344,11 @@ inline Cmpt det(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Tensor2D<Cmpt> cof(const Tensor2D<Cmpt>& t)
 {
-	return Tensor2D<Cmpt>
-	(
-		t.yy(), -t.xy(),
-	   -t.yx(),  t.xx()
-	);
+    return Tensor2D<Cmpt>
+    (
+        t.yy(), -t.xy(),
+       -t.yx(),  t.xx()
+    );
 }
 
 
@@ -356,7 +356,7 @@ inline Tensor2D<Cmpt> cof(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Tensor2D<Cmpt> inv(const Tensor2D<Cmpt>& t, const Cmpt dett)
 {
-	return cof(t)/dett;
+    return cof(t)/dett;
 }
 
 
@@ -364,7 +364,7 @@ inline Tensor2D<Cmpt> inv(const Tensor2D<Cmpt>& t, const Cmpt dett)
 template<class Cmpt>
 inline Tensor2D<Cmpt> inv(const Tensor2D<Cmpt>& t)
 {
-	return inv(t, det(t));
+    return inv(t, det(t));
 }
 
 
@@ -372,7 +372,7 @@ inline Tensor2D<Cmpt> inv(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Cmpt invariantI(const Tensor2D<Cmpt>& t)
 {
-	return tr(t);
+    return tr(t);
 }
 
 
@@ -380,15 +380,15 @@ inline Cmpt invariantI(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Cmpt invariantII(const Tensor2D<Cmpt>& t)
 {
-	return
-	(
-		0.5*sqr(tr(t))
-	  - 0.5*
-		(
-		   t.xx()*t.xx() + t.xy()*t.xy()
-		 + t.yx()*t.yx() + t.yy()*t.yy()
-		)
-	);
+    return
+    (
+        0.5*sqr(tr(t))
+      - 0.5*
+        (
+           t.xx()*t.xx() + t.xy()*t.xy()
+         + t.yx()*t.yx() + t.yy()*t.yy()
+        )
+    );
 }
 
 
@@ -396,7 +396,7 @@ inline Cmpt invariantII(const Tensor2D<Cmpt>& t)
 template<class Cmpt>
 inline Cmpt invariantIII(const Tensor2D<Cmpt>& t)
 {
-	return det(t);
+    return det(t);
 }
 
 
@@ -406,11 +406,11 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator+(const SphericalTensor2D<Cmpt>& st1, const Tensor2D<Cmpt>& t2)
 {
-	return Tensor2D<Cmpt>
-	(
-		st1.ii() + t2.xx(), t2.xy(),
-		t2.yx(),            st1.ii() + t2.yy()
-	);
+    return Tensor2D<Cmpt>
+    (
+        st1.ii() + t2.xx(), t2.xy(),
+        t2.yx(),            st1.ii() + t2.yy()
+    );
 }
 
 
@@ -418,11 +418,11 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator+(const Tensor2D<Cmpt>& t1, const SphericalTensor2D<Cmpt>& st2)
 {
-	return Tensor2D<Cmpt>
-	(
-		t1.xx() + st2.ii(), t1.xy(),
-		t1.yx(),            t1.yy() + st2.ii()
-	);
+    return Tensor2D<Cmpt>
+    (
+        t1.xx() + st2.ii(), t1.xy(),
+        t1.yx(),            t1.yy() + st2.ii()
+    );
 }
 
 
@@ -430,11 +430,11 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator-(const SphericalTensor2D<Cmpt>& st1, const Tensor2D<Cmpt>& t2)
 {
-	return Tensor2D<Cmpt>
-	(
-		st1.ii() - t2.xx(), -t2.xy(),
-	   -t2.yx(),             st1.ii() - t2.yy()
-	);
+    return Tensor2D<Cmpt>
+    (
+        st1.ii() - t2.xx(), -t2.xy(),
+       -t2.yx(),             st1.ii() - t2.yy()
+    );
 }
 
 
@@ -442,11 +442,11 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator-(const Tensor2D<Cmpt>& t1, const SphericalTensor2D<Cmpt>& st2)
 {
-	return Tensor2D<Cmpt>
-	(
-		t1.xx() - st2.ii(), t1.xy(),
-		t1.yx(),            t1.yy() - st2.ii()
-	);
+    return Tensor2D<Cmpt>
+    (
+        t1.xx() - st2.ii(), t1.xy(),
+        t1.yx(),            t1.yy() - st2.ii()
+    );
 }
 
 
@@ -455,13 +455,13 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator&(const SphericalTensor2D<Cmpt>& st1, const Tensor2D<Cmpt>& t2)
 {
-	return Tensor2D<Cmpt>
-	(
-		st1.ii()*t2.xx(),
-		st1.ii()*t2.xy(),
-					      st1.ii()*t2.yx(),
-					      st1.ii()*t2.yy()
-	);
+    return Tensor2D<Cmpt>
+    (
+        st1.ii()*t2.xx(),
+        st1.ii()*t2.xy(),
+                          st1.ii()*t2.yx(),
+                          st1.ii()*t2.yy()
+    );
 }
 
 
@@ -470,14 +470,14 @@ template<class Cmpt>
 inline Tensor2D<Cmpt>
 operator&(const Tensor2D<Cmpt>& t1, const SphericalTensor2D<Cmpt>& st2)
 {
-	return Tensor2D<Cmpt>
-	(
-		t1.xx()*st2.ii(),
-					      t1.xy()*st2.ii(),
+    return Tensor2D<Cmpt>
+    (
+        t1.xx()*st2.ii(),
+                          t1.xy()*st2.ii(),
 
-		t1.yx()*st2.ii(),
-					      t1.yy()*st2.ii()
-	);
+        t1.yx()*st2.ii(),
+                          t1.yy()*st2.ii()
+    );
 }
 
 
@@ -486,7 +486,7 @@ template<class Cmpt>
 inline Cmpt
 operator&&(const SphericalTensor2D<Cmpt>& st1, const Tensor2D<Cmpt>& t2)
 {
-	return(st1.ii()*t2.xx() + st1.ii()*t2.yy());
+    return(st1.ii()*t2.xx() + st1.ii()*t2.yy());
 }
 
 
@@ -495,7 +495,7 @@ template<class Cmpt>
 inline Cmpt
 operator&&(const Tensor2D<Cmpt>& t1, const SphericalTensor2D<Cmpt>& st2)
 {
-	return(t1.xx()*st2.ii() + t1.yy()*st2.ii());
+    return(t1.xx()*st2.ii() + t1.yy()*st2.ii());
 }
 
 
@@ -504,7 +504,7 @@ class typeOfSum<SphericalTensor2D<Cmpt>, Tensor2D<Cmpt> >
 {
 public:
 
-	typedef Tensor2D<Cmpt> type;
+    typedef Tensor2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -512,7 +512,7 @@ class typeOfSum<Tensor2D<Cmpt>, SphericalTensor2D<Cmpt> >
 {
 public:
 
-	typedef Tensor2D<Cmpt> type;
+    typedef Tensor2D<Cmpt> type;
 };
 
 
@@ -521,7 +521,7 @@ class innerProduct<Tensor2D<Cmpt>, Tensor2D<Cmpt> >
 {
 public:
 
-	typedef Tensor2D<Cmpt> type;
+    typedef Tensor2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -529,7 +529,7 @@ class innerProduct<SphericalTensor2D<Cmpt>, Tensor2D<Cmpt> >
 {
 public:
 
-	typedef Tensor2D<Cmpt> type;
+    typedef Tensor2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -537,7 +537,7 @@ class innerProduct<Tensor2D<Cmpt>, SphericalTensor2D<Cmpt> >
 {
 public:
 
-	typedef Tensor2D<Cmpt> type;
+    typedef Tensor2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -545,7 +545,7 @@ class innerProduct<Tensor2D<Cmpt>, Vector2D<Cmpt> >
 {
 public:
 
-	typedef Vector2D<Cmpt> type;
+    typedef Vector2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -553,7 +553,7 @@ class innerProduct<Vector2D<Cmpt>, Tensor2D<Cmpt> >
 {
 public:
 
-	typedef Vector2D<Cmpt> type;
+    typedef Vector2D<Cmpt> type;
 };
 
 

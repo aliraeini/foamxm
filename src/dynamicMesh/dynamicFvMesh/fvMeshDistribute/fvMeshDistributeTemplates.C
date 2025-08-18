@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -34,179 +34,179 @@ class listEq
 
 public:
 
-	template<class T>
-	void operator()(T& x, const T& y) const
-	{
-		forAll(y, i)
-		{
-			if (y[i].size())
-			{
-				x[i] = y[i];
-			}
-		}
-	}
+    template<class T>
+    void operator()(T& x, const T& y) const
+    {
+        forAll(y, i)
+        {
+            if (y[i].size())
+            {
+                x[i] = y[i];
+            }
+        }
+    }
 };
 
 
 template <class Container, class T>
 void Foam::fvMeshDistribute::exchange
 (
-	const List<Container >& sendBufs,
-	List<Container >& recvBufs,
-	labelListList& sizes
+    const List<Container >& sendBufs,
+    List<Container >& recvBufs,
+    labelListList& sizes
 )
 {
-	if (Pstream::parRun())
-	{
-		if (!contiguous<T>())
-		{
-			FatalErrorIn
-			(
-				"Pstream::exchange(..)"
-			)   << "Continuous data only." << Foam::abort(FatalError);
-		}
+    if (Pstream::parRun())
+    {
+        if (!contiguous<T>())
+        {
+            FatalErrorIn
+            (
+                "Pstream::exchange(..)"
+            )   << "Continuous data only." << Foam::abort(FatalError);
+        }
 
-		if (sendBufs.size() != Pstream::nProcs())
-		{
-			FatalErrorIn
-			(
-				"Pstream::exchange(..)"
-			)   << "Size of list:" << sendBufs.size()
-				<< " does not equal the number of processors:"
-				<< Pstream::nProcs()
-				<< Foam::abort(FatalError);
-		}
+        if (sendBufs.size() != Pstream::nProcs())
+        {
+            FatalErrorIn
+            (
+                "Pstream::exchange(..)"
+            )   << "Size of list:" << sendBufs.size()
+                << " does not equal the number of processors:"
+                << Pstream::nProcs()
+                << Foam::abort(FatalError);
+        }
 
-		sizes.setSize(Pstream::nProcs());
-		labelList& nsTransPs = sizes[Pstream::myProcNo()];
-		nsTransPs.setSize(Pstream::nProcs());
+        sizes.setSize(Pstream::nProcs());
+        labelList& nsTransPs = sizes[Pstream::myProcNo()];
+        nsTransPs.setSize(Pstream::nProcs());
 
-		forAll(sendBufs, procI)
-		{
-			nsTransPs[procI] = sendBufs[procI].size();
-		}
+        forAll(sendBufs, procI)
+        {
+            nsTransPs[procI] = sendBufs[procI].size();
+        }
 
-		Foam::combineReduce(sizes, listEq());
-
-
-		// Set up receives
-		// ~~~~~~~~~~~~~~~
-
-		recvBufs.setSize(sendBufs.size());
-		forAll(sizes, procI)
-		{
-			label nRecv = sizes[procI][Pstream::myProcNo()];
-
-			if (procI != Pstream::myProcNo() && nRecv > 0)
-			{
-				recvBufs[procI].setSize(nRecv);
-				IPstream::read
-				(
-					Pstream::nonBlocking,
-					procI,
-					reinterpret_cast<char*>(recvBufs[procI].begin()),
-					nRecv*sizeof(T)
-				);
-			}
-		}
+        Foam::combineReduce(sizes, listEq());
 
 
-		// Set up sends
-		// ~~~~~~~~~~~~
+        // Set up receives
+        // ~~~~~~~~~~~~~~~
 
-		forAll(sendBufs, procI)
-		{
-			if (procI != Pstream::myProcNo() && sendBufs[procI].size() > 0)
-			{
-				if
-				(
-				   !OPstream::write
-					(
-					    Pstream::nonBlocking,
-					    procI,
-					    reinterpret_cast<const char*>(sendBufs[procI].begin()),
-					    sendBufs[procI].size()*sizeof(T)
-					)
-				)
-				{
-					FatalErrorIn("Pstream::exchange(..)")
-					    << "Cannot send outgoing message. "
-					    << "to:" << procI << " nBytes:"
-					    << label(sendBufs[procI].size()*sizeof(T))
-					    << Foam::abort(FatalError);
-				}
-			}
-		}
+        recvBufs.setSize(sendBufs.size());
+        forAll(sizes, procI)
+        {
+            label nRecv = sizes[procI][Pstream::myProcNo()];
+
+            if (procI != Pstream::myProcNo() && nRecv > 0)
+            {
+                recvBufs[procI].setSize(nRecv);
+                IPstream::read
+                (
+                    Pstream::nonBlocking,
+                    procI,
+                    reinterpret_cast<char*>(recvBufs[procI].begin()),
+                    nRecv*sizeof(T)
+                );
+            }
+        }
 
 
-		// Wait for all to finish
-		// ~~~~~~~~~~~~~~~~~~~~~~
+        // Set up sends
+        // ~~~~~~~~~~~~
 
-		IPstream::waitRequests();
-		OPstream::waitRequests();
-	}
+        forAll(sendBufs, procI)
+        {
+            if (procI != Pstream::myProcNo() && sendBufs[procI].size() > 0)
+            {
+                if
+                (
+                   !OPstream::write
+                    (
+                        Pstream::nonBlocking,
+                        procI,
+                        reinterpret_cast<const char*>(sendBufs[procI].begin()),
+                        sendBufs[procI].size()*sizeof(T)
+                    )
+                )
+                {
+                    FatalErrorIn("Pstream::exchange(..)")
+                        << "Cannot send outgoing message. "
+                        << "to:" << procI << " nBytes:"
+                        << label(sendBufs[procI].size()*sizeof(T))
+                        << Foam::abort(FatalError);
+                }
+            }
+        }
 
-	// Do myself
-	recvBufs[Pstream::myProcNo()] = sendBufs[Pstream::myProcNo()];
+
+        // Wait for all to finish
+        // ~~~~~~~~~~~~~~~~~~~~~~
+
+        IPstream::waitRequests();
+        OPstream::waitRequests();
+    }
+
+    // Do myself
+    recvBufs[Pstream::myProcNo()] = sendBufs[Pstream::myProcNo()];
 }
 
 
 template<class GeoField>
 void Foam::fvMeshDistribute::printFieldInfo(const fvMesh& mesh)
 {
-	const HashTable<const GeoField*> flds
-	(
-		mesh.objectRegistry::lookupClass<GeoField>()
-	);
+    const HashTable<const GeoField*> flds
+    (
+        mesh.objectRegistry::lookupClass<GeoField>()
+    );
 
-	forAllConstIter (typename HashTable<const GeoField*>, flds, iter)
-	{
-		const GeoField& fld = *iter();
+    forAllConstIter (typename HashTable<const GeoField*>, flds, iter)
+    {
+        const GeoField& fld = *iter();
 
-		Pout<< "Field:" << iter.key() << " internalsize:" << fld.size()
-			//<< " value:" << fld
-			<< endl;
+        Pout<< "Field:" << iter.key() << " internalsize:" << fld.size()
+            //<< " value:" << fld
+            << endl;
 
-		forAll(fld.boundaryField(), patchI)
-		{
-			Pout<< "    " << patchI
-				<< ' ' << fld.boundaryField()[patchI].patch().name()
-				<< ' ' << fld.boundaryField()[patchI].type()
-				<< ' ' << fld.boundaryField()[patchI].size()
-				<< endl;
-		}
-	}
+        forAll(fld.boundaryField(), patchI)
+        {
+            Pout<< "    " << patchI
+                << ' ' << fld.boundaryField()[patchI].patch().name()
+                << ' ' << fld.boundaryField()[patchI].type()
+                << ' ' << fld.boundaryField()[patchI].size()
+                << endl;
+        }
+    }
 }
 
 
 template<class GeoField>
 void Foam::fvMeshDistribute::addPatchFields(const word& patchFieldType)
 {
-	HashTable<GeoField*> flds
-	(
-		mesh_.objectRegistry::lookupClass<GeoField>()
-	);
+    HashTable<GeoField*> flds
+    (
+        mesh_.objectRegistry::lookupClass<GeoField>()
+    );
 
-	forAllIter (typename HashTable<GeoField*>, flds, iter)
-	{
-		GeoField& fld = *iter();
+    forAllIter (typename HashTable<GeoField*>, flds, iter)
+    {
+        GeoField& fld = *iter();
 
-		typename GeoField::Boundary& bfld =
-			fld.boundaryField();
+        typename GeoField::GeometricBoundaryField& bfld =
+            fld.boundaryField();
 
-		label sz = bfld.size();
-		bfld.setSize(sz + 1);
-		bfld.set
-		(
-			sz,
-			GeoField::PatchFieldType::New
-			(
-				patchFieldType,
-				mesh_.boundary()[sz],
-				fld.dimensionedInternalField()
-			)
-		);
-	}
+        label sz = bfld.size();
+        bfld.setSize(sz + 1);
+        bfld.set
+        (
+            sz,
+            GeoField::PatchFieldType::New
+            (
+                patchFieldType,
+                mesh_.boundary()[sz],
+                fld.dimensionedInternalField()
+            )
+        );
+    }
 }
 
 
@@ -214,21 +214,21 @@ void Foam::fvMeshDistribute::addPatchFields(const word& patchFieldType)
 template<class GeoField>
 void Foam::fvMeshDistribute::deleteTrailingPatchFields()
 {
-	HashTable<GeoField*> flds
-	(
-		mesh_.objectRegistry::lookupClass<GeoField>()
-	);
+    HashTable<GeoField*> flds
+    (
+        mesh_.objectRegistry::lookupClass<GeoField>()
+    );
 
-	forAllIter (typename HashTable<GeoField*>, flds, iter)
-	{
-		GeoField& fld = *iter();
+    forAllIter (typename HashTable<GeoField*>, flds, iter)
+    {
+        GeoField& fld = *iter();
 
-		typename GeoField::Boundary& bfld =
-			fld.boundaryField();
+        typename GeoField::GeometricBoundaryField& bfld =
+            fld.boundaryField();
 
-		// Shrink patchFields
-		bfld.setSize(bfld.size() - 1);
-	}
+        // Shrink patchFields
+        bfld.setSize(bfld.size() - 1);
+    }
 }
 
 
@@ -236,28 +236,28 @@ void Foam::fvMeshDistribute::deleteTrailingPatchFields()
 template <class T, class Mesh>
 void Foam::fvMeshDistribute::saveBoundaryFields
 (
-	PtrList<FieldField<fvsPatchField, T> >& bflds
+    PtrList<FieldField<fvsPatchField, T> >& bflds
 ) const
 {
-	typedef const GeometricField<T, fvsPatchField, Mesh> fldType;
+    typedef const GeometricField<T, fvsPatchField, Mesh> fldType;
 
-	const HashTable<fldType*> flds
-	(
-		mesh_.objectRegistry::lookupClass<fldType>()
-	);
+    const HashTable<fldType*> flds
+    (
+        mesh_.objectRegistry::lookupClass<fldType>()
+    );
 
-	bflds.setSize(flds.size());
+    bflds.setSize(flds.size());
 
-	label i = 0;
+    label i = 0;
 
-	forAllConstIter (typename HashTable<const fldType*>, flds, iter)
-	{
-		const fldType& fld = *iter();
+    forAllConstIter (typename HashTable<const fldType*>, flds, iter)
+    {
+        const fldType& fld = *iter();
 
-		bflds.set(i, fld.boundaryField().clone().ptr());
+        bflds.set(i, fld.boundaryField().clone().ptr());
 
-		i++;
-	}
+        i++;
+    }
 }
 
 
@@ -265,64 +265,64 @@ void Foam::fvMeshDistribute::saveBoundaryFields
 template <class T, class Mesh>
 void Foam::fvMeshDistribute::mapBoundaryFields
 (
-	const mapPolyMesh& map,
-	const PtrList<FieldField<fvsPatchField, T> >& oldBflds
+    const mapPolyMesh& map,
+    const PtrList<FieldField<fvsPatchField, T> >& oldBflds
 )
 {
-	const labelList& oldPatchStarts = map.oldPatchStarts();
-	const labelList& faceMap = map.faceMap();
+    const labelList& oldPatchStarts = map.oldPatchStarts();
+    const labelList& faceMap = map.faceMap();
 
-	typedef GeometricField<T, fvsPatchField, Mesh> fldType;
+    typedef GeometricField<T, fvsPatchField, Mesh> fldType;
 
-	HashTable<fldType*> flds
-	(
-		mesh_.objectRegistry::lookupClass<fldType>()
-	);
+    HashTable<fldType*> flds
+    (
+        mesh_.objectRegistry::lookupClass<fldType>()
+    );
 
-	if (flds.size() != oldBflds.size())
-	{
-		FatalErrorIn("fvMeshDistribute::mapBoundaryFields(..)") << "problem"
-			<< abort(FatalError);
-	}
+    if (flds.size() != oldBflds.size())
+    {
+        FatalErrorIn("fvMeshDistribute::mapBoundaryFields(..)") << "problem"
+            << abort(FatalError);
+    }
 
-	label fieldI = 0;
+    label fieldI = 0;
 
-	forAllIter (typename HashTable<fldType*>, flds, iter)
-	{
-		fldType& fld = *iter();
-		typename fldType::Boundary& bfld =
-			fld.boundaryField();
+    forAllIter (typename HashTable<fldType*>, flds, iter)
+    {
+        fldType& fld = *iter();
+        typename fldType::GeometricBoundaryField& bfld =
+            fld.boundaryField();
 
-		const FieldField<fvsPatchField, T>& oldBfld = oldBflds[fieldI++];
+        const FieldField<fvsPatchField, T>& oldBfld = oldBflds[fieldI++];
 
-		// Pull from old boundary field into bfld.
+        // Pull from old boundary field into bfld.
 
-		forAll(bfld, patchI)
-		{
-			fvsPatchField<T>& patchFld = bfld[patchI];
-			label faceI = patchFld.patch().patch().start();
+        forAll(bfld, patchI)
+        {
+            fvsPatchField<T>& patchFld = bfld[patchI];
+            label faceI = patchFld.patch().patch().start();
 
-			forAll(patchFld, i)
-			{
-				label oldFaceI = faceMap[faceI++];
+            forAll(patchFld, i)
+            {
+                label oldFaceI = faceMap[faceI++];
 
-				// Find patch and local patch face oldFaceI was in.
-				forAll(oldPatchStarts, oldPatchI)
-				{
-					label oldLocalI = oldFaceI - oldPatchStarts[oldPatchI];
+                // Find patch and local patch face oldFaceI was in.
+                forAll(oldPatchStarts, oldPatchI)
+                {
+                    label oldLocalI = oldFaceI - oldPatchStarts[oldPatchI];
 
-					if
-					(
-					    oldLocalI >= 0
-					 && oldLocalI < oldBfld[oldPatchI].size()
-					)
-					{
-					    patchFld[i] = oldBfld[oldPatchI][oldLocalI];
-					}
-				}
-			}
-		}
-	}
+                    if
+                    (
+                        oldLocalI >= 0
+                     && oldLocalI < oldBfld[oldPatchI].size()
+                    )
+                    {
+                        patchFld[i] = oldBfld[oldPatchI][oldLocalI];
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -330,29 +330,29 @@ void Foam::fvMeshDistribute::mapBoundaryFields
 template<class GeoField, class PatchFieldType>
 void Foam::fvMeshDistribute::initPatchFields
 (
-	const typename GeoField::value_type& initVal
+    const typename GeoField::value_type& initVal
 )
 {
-	HashTable<GeoField*> flds
-	(
-		mesh_.objectRegistry::lookupClass<GeoField>()
-	);
+    HashTable<GeoField*> flds
+    (
+        mesh_.objectRegistry::lookupClass<GeoField>()
+    );
 
-	forAllIter (typename HashTable<GeoField*>, flds, iter)
-	{
-		GeoField& fld = *iter();
+    forAllIter (typename HashTable<GeoField*>, flds, iter)
+    {
+        GeoField& fld = *iter();
 
-		typename GeoField::Boundary& bfld =
-			fld.boundaryField();
+        typename GeoField::GeometricBoundaryField& bfld =
+            fld.boundaryField();
 
-		forAll(bfld, patchI)
-		{
-			if (isA<PatchFieldType>(bfld[patchI]))
-			{
-				bfld[patchI] == initVal;
-			}
-		}
-	}
+        forAll(bfld, patchI)
+        {
+            if (isA<PatchFieldType>(bfld[patchI]))
+            {
+                bfld[patchI] == initVal;
+            }
+        }
+    }
 }
 
 
@@ -377,35 +377,35 @@ void Foam::fvMeshDistribute::initPatchFields
 template<class GeoField>
 void Foam::fvMeshDistribute::sendFields
 (
-	const label domain,
-	const wordList& fieldNames,
-	const fvMeshSubset& subsetter,
-	OSstream& toNbr
+    const label domain,
+    const wordList& fieldNames,
+    const fvMeshSubset& subsetter,
+    OSstream& toNbr
 )
 {
-	toNbr<< GeoField::typeName << token::NL << token::BEGIN_BLOCK
-		<< token::NL;
-	forAll(fieldNames, i)
-	{
-		if (debug)
-		{
-			Pout<< "Subsetting field " << fieldNames[i]
-				<< " for domain:" << domain << endl;
-		}
+    toNbr<< GeoField::typeName << token::NL << token::BEGIN_BLOCK
+        << token::NL;
+    forAll(fieldNames, i)
+    {
+        if (debug)
+        {
+            Pout<< "Subsetting field " << fieldNames[i]
+                << " for domain:" << domain << endl;
+        }
 
-		// Send all fieldNames. This has to be exactly the same set as is
-		// being received!
-		const GeoField& fld =
-			subsetter.baseMesh().lookupObject<GeoField>(fieldNames[i]);
+        // Send all fieldNames. This has to be exactly the same set as is
+        // being received!
+        const GeoField& fld =
+            subsetter.baseMesh().lookupObject<GeoField>(fieldNames[i]);
 
-		tmp<GeoField> tsubfld = subsetter.interpolate(fld);
+        tmp<GeoField> tsubfld = subsetter.interpolate(fld);
 
-		toNbr
-			<< fieldNames[i] << token::NL << token::BEGIN_BLOCK
-			<< tsubfld
-			<< token::NL << token::END_BLOCK << token::NL;
-	}
-	toNbr << token::END_BLOCK << token::NL;
+        toNbr
+            << fieldNames[i] << token::NL << token::BEGIN_BLOCK
+            << tsubfld
+            << token::NL << token::END_BLOCK << token::NL;
+    }
+    toNbr << token::END_BLOCK << token::NL;
 }
 
 
@@ -413,47 +413,47 @@ void Foam::fvMeshDistribute::sendFields
 template<class GeoField>
 void Foam::fvMeshDistribute::receiveFields
 (
-	const label domain,
-	const wordList& fieldNames,
-	fvMesh& mesh,
-	PtrList<GeoField>& fields,
-	const dictionary& fieldDicts
+    const label domain,
+    const wordList& fieldNames,
+    fvMesh& mesh,
+    PtrList<GeoField>& fields,
+    const dictionary& fieldDicts
 )
 {
-	if (debug)
-	{
-		Pout<< "Receiving fields " << fieldNames
-			<< " from domain:" << domain << endl;
-	}
+    if (debug)
+    {
+        Pout<< "Receiving fields " << fieldNames
+            << " from domain:" << domain << endl;
+    }
 
-	fields.setSize(fieldNames.size());
+    fields.setSize(fieldNames.size());
 
-	forAll(fieldNames, i)
-	{
-		if (debug)
-		{
-			Pout<< "Constructing field " << fieldNames[i]
-				<< " from domain:" << domain << endl;
-		}
+    forAll(fieldNames, i)
+    {
+        if (debug)
+        {
+            Pout<< "Constructing field " << fieldNames[i]
+                << " from domain:" << domain << endl;
+        }
 
-		fields.set
-		(
-			i,
-			new GeoField
-			(
-				IOobject
-				(
-					fieldNames[i],
-					mesh.time().timeName(),
-					mesh,
-					IOobject::NO_READ,
-					IOobject::AUTO_WRITE
-				),
-				mesh,
-				fieldDicts.subDict(fieldNames[i])
-			)
-		);
-	}
+        fields.set
+        (
+            i,
+            new GeoField
+            (
+                IOobject
+                (
+                    fieldNames[i],
+                    mesh.time().timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh,
+                fieldDicts.subDict(fieldNames[i])
+            )
+        );
+    }
 }
 
 

@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	ggiRotor
+    ggiRotor
 
 Description
-	Single rotating region with GGI interfaces
+    Single rotating region with GGI interfaces
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.
 
 SourceFiles
-	ggiRotor.C
+    ggiRotor.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -51,85 +51,88 @@ namespace Foam
 class regionSplit;
 class polyTopoChanger;
 
+/*---------------------------------------------------------------------------*\
+                        Class ggiRotor Declaration
+\*---------------------------------------------------------------------------*/
 
 class ggiRotor
 {
-	// Private data
+    // Private data
 
-		//- Name
-		const word name_;
+        //- Name
+        const word name_;
 
-		//- Reference to mesh
-		const polyMesh& mesh_;
+        //- Reference to mesh
+        const polyMesh& mesh_;
 
-		//- Coordinate system
-		cylindricalCS cs_;
+        //- Coordinate system
+        cylindricalCS cs_;
 
-		// - Rotational speed in rotations per minute (rpm)
-		const scalar rpm_;
+        // - Rotational speed in rotations per minute (rpm)
+        const scalar rpm_;
 
-		//- Moving cells zone
-		const word movingCellsZoneName_;
+        //- Moving cells zone
+        const word movingCellsZoneName_;
 
-		//- Moving patches: for zones
-		const wordList movingPatches_;
+        //- Moving patches: for zones
+        const wordList movingPatches_;
 
-		//- Static patches: for zones
-		const wordList staticPatches_;
+        //- Static patches: for zones
+        const wordList staticPatches_;
 
-		//- Markup field for points.  Moving points marked with 1
-		mutable scalarField* movingPointsMaskPtr_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		ggiRotor(const ggiRotor&);
-
-		//- Disallow default bitwise assignment
-		void operator=(const ggiRotor&);
+        //- Markup field for points.  Moving points marked with 1
+        mutable scalarField* movingPointsMaskPtr_;
 
 
-		//- Return coordinate system
-		const cylindricalCS& cs() const
-		{
-			return cs_;
-		}
+    // Private Member Functions
 
-		//- Calculate moving mask
-		void calcMovingMask() const;
+        //- Disallow default bitwise copy construct
+        ggiRotor(const ggiRotor&);
 
-		//- Return moving points mask
-		const scalarField& movingPointsMask() const;
+        //- Disallow default bitwise assignment
+        void operator=(const ggiRotor&);
 
-		//- Clear moving points mask
-		void clearPointMask();
+
+        //- Return coordinate system
+        const cylindricalCS& cs() const
+        {
+            return cs_;
+        }
+
+        //- Calculate moving mask
+        void calcMovingMask() const;
+
+        //- Return moving points mask
+        const scalarField& movingPointsMask() const;
+
+        //- Clear moving points mask
+        void clearPointMask();
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from  dictionary
-		ggiRotor
-		(
-			const word& name,
-			const polyMesh& mesh,
-			const dictionary& dict
-		);
-
-
-	//- Destructor
-	virtual ~ggiRotor();
+        //- Construct from  dictionary
+        ggiRotor
+        (
+            const word& name,
+            const polyMesh& mesh,
+            const dictionary& dict
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~ggiRotor();
 
-		//- Return accumulative point motion
-		virtual tmp<vectorField> pointMotion() const;
 
-		//- Update topology
-		void updateTopology();
+    // Member Functions
+
+        //- Return accumulative point motion
+        virtual tmp<vectorField> pointMotion() const;
+
+        //- Update topology
+        void updateTopology();
 };
 
 

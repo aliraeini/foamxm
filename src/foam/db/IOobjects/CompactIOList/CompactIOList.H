@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::CompactIOList
+    Foam::CompactIOList
 
 Description
-	A List of objects of type \<T\> with automated input and output using
-	a compact storage. Behaves like IOList except when binary output in
-	case it writes a CompactListList.
+    A List of objects of type \<T\> with automated input and output using
+    a compact storage. Behaves like IOList except when binary output in
+    case it writes a CompactListList.
 
-	Useful for lists of small sublists e.g. faceList, cellList.
+    Useful for lists of small sublists e.g. faceList, cellList.
 
 SourceFiles
-	CompactIOList.C
+    CompactIOList.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,88 +56,90 @@ template<class T, class BaseType> class CompactIOList;
 
 template<class T, class BaseType> Istream& operator>>
 (
-	Istream&,
-	CompactIOList<T, BaseType>&
+    Istream&,
+    CompactIOList<T, BaseType>&
 );
 template<class T, class BaseType> Ostream& operator<<
 (
-	Ostream&,
-	const CompactIOList<T, BaseType>&
+    Ostream&,
+    const CompactIOList<T, BaseType>&
 );
 
 
+/*---------------------------------------------------------------------------*\
+                        Class CompactIOList Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class T, class BaseType>
 class CompactIOList
 :
-	public regIOobject,
-	public List<T>
+    public regIOobject,
+    public List<T>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read according to header type
-		void readFromStream();
+        //- Read according to header type
+        void readFromStream();
 
 public:
 
-	//- Runtime type information
-	TypeName("CompactList");
+    //- Runtime type information
+    TypeName("CompactList");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject
-		CompactIOList(const IOobject&);
+        //- Construct from IOobject
+        CompactIOList(const IOobject&);
 
-		//- Construct from IOobject and size of CompactIOList
-		CompactIOList(const IOobject&, const label);
+        //- Construct from IOobject and size of CompactIOList
+        CompactIOList(const IOobject&, const label);
 
-		//- Construct from IOobject and a List
-		CompactIOList(const IOobject&, const List<T>&);
+        //- Construct from IOobject and a List
+        CompactIOList(const IOobject&, const List<T>&);
 
-		//- Construct by transferring the List contents
-		CompactIOList(const IOobject&, const Xfer<List<T> >&);
-
-
-	// Destructor
-
-		virtual ~CompactIOList();
+        //- Construct by transferring the List contents
+        CompactIOList(const IOobject&, const Xfer<List<T> >&);
 
 
-	// Member functions
-
-		virtual bool writeObject
-		(
-			IOstream::streamFormat,
-			IOstream::versionNumber,
-			IOstream::compressionType
-		) const;
-
-		virtual bool writeData(Ostream&) const;
+    //- Destructor
+    virtual ~CompactIOList() = default;
 
 
-	// Member operators
+    // Member functions
 
-		void operator=(const CompactIOList<T, BaseType>&);
+        virtual bool writeObject
+        (
+            IOstream::streamFormat,
+            IOstream::versionNumber,
+            IOstream::compressionType
+        ) const;
 
-		void operator=(const List<T>&);
+        virtual bool writeData(Ostream&) const;
 
 
-	// IOstream operators
+    // Member operators
 
-		//- Read List from Istream, discarding contents of existing List.
-		friend Istream& operator>> <T, BaseType>
-		(
-			Istream&,
-			CompactIOList<T, BaseType>&
-		);
+        void operator=(const CompactIOList<T, BaseType>&);
 
-		// Write List to Ostream.
-		friend Ostream& operator<< <T, BaseType>
-		(
-			Ostream&,
-			const CompactIOList<T, BaseType>&
-		);
+        void operator=(const List<T>&);
+
+
+    // IOstream operators
+
+        //- Read List from Istream, discarding contents of existing List.
+        friend Istream& operator>> <T, BaseType>
+        (
+            Istream&,
+            CompactIOList<T, BaseType>&
+        );
+
+        // Write List to Ostream.
+        friend Ostream& operator<< <T, BaseType>
+        (
+            Ostream&,
+            const CompactIOList<T, BaseType>&
+        );
 };
 
 
@@ -148,7 +150,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "CompactIOList.C"
+#   include "CompactIOList.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

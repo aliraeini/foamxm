@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,8 +35,8 @@ License
 
 const char *Foam::clock::monthNames[] =
 {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 };
 
 
@@ -44,68 +44,68 @@ const char *Foam::clock::monthNames[] =
 
 time_t Foam::clock::getTime()
 {
-	return ::time(reinterpret_cast<time_t*>(0));
+    return ::time(reinterpret_cast<time_t*>(0));
 }
 
 
 const struct tm Foam::clock::rawDate()
 {
-	time_t t = getTime();
-	struct tm *timeStruct = localtime(&t);
-	return *timeStruct;
+    time_t t = getTime();
+    struct tm *timeStruct = localtime(&t);
+    return *timeStruct;
 }
 
 
 Foam::string Foam::clock::dateTime()
 {
-	std::ostringstream osBuffer;
+    std::ostringstream osBuffer;
 
-	time_t t = getTime();
-	struct tm *timeStruct = localtime(&t);
+    time_t t = getTime();
+    struct tm *timeStruct = localtime(&t);
 
-	osBuffer
-		<< std::setfill('0')
-		<< std::setw(4) << timeStruct->tm_year + 1900
-		<< '-' << std::setw(2) << timeStruct->tm_mon + 1
-		<< '-' << std::setw(2) << timeStruct->tm_mday
-		<< 'T'
-		<< std::setw(2) << timeStruct->tm_hour
-		<< ':' << std::setw(2) << timeStruct->tm_min
-		<< ':' << std::setw(2) << timeStruct->tm_sec;
+    osBuffer
+        << std::setfill('0')
+        << std::setw(4) << timeStruct->tm_year + 1900
+        << '-' << std::setw(2) << timeStruct->tm_mon + 1
+        << '-' << std::setw(2) << timeStruct->tm_mday
+        << 'T'
+        << std::setw(2) << timeStruct->tm_hour
+        << ':' << std::setw(2) << timeStruct->tm_min
+        << ':' << std::setw(2) << timeStruct->tm_sec;
 
-	return osBuffer.str();
+    return osBuffer.str();
 }
 
 Foam::string Foam::clock::date()
 {
-	std::ostringstream osBuffer;
+    std::ostringstream osBuffer;
 
-	time_t t = getTime();
-	struct tm *timeStruct = localtime(&t);
+    time_t t = getTime();
+    struct tm *timeStruct = localtime(&t);
 
-	osBuffer
-		<< monthNames[timeStruct->tm_mon]
-		<< ' ' << std::setw(2) << std::setfill('0') << timeStruct->tm_mday
-		<< ' ' << std::setw(4) << timeStruct->tm_year + 1900;
+    osBuffer
+        << monthNames[timeStruct->tm_mon]
+        << ' ' << std::setw(2) << std::setfill('0') << timeStruct->tm_mday
+        << ' ' << std::setw(4) << timeStruct->tm_year + 1900;
 
-	return osBuffer.str();
+    return osBuffer.str();
 }
 
 
 Foam::string Foam::clock::clockTime()
 {
-	std::ostringstream osBuffer;
+    std::ostringstream osBuffer;
 
-	time_t t = getTime();
-	struct tm *timeStruct = localtime(&t);
+    time_t t = getTime();
+    struct tm *timeStruct = localtime(&t);
 
-	osBuffer
-		<< std::setfill('0')
-		<< std::setw(2) << timeStruct->tm_hour
-		<< ':' << std::setw(2) << timeStruct->tm_min
-		<< ':' << std::setw(2) << timeStruct->tm_sec;
+    osBuffer
+        << std::setfill('0')
+        << std::setw(2) << timeStruct->tm_hour
+        << ':' << std::setw(2) << timeStruct->tm_min
+        << ':' << std::setw(2) << timeStruct->tm_sec;
 
-	return osBuffer.str();
+    return osBuffer.str();
 }
 
 
@@ -113,9 +113,9 @@ Foam::string Foam::clock::clockTime()
 
 Foam::clock::clock()
 :
-	startTime_(getTime()),
-	lastTime_(startTime_),
-	newTime_(startTime_)
+    startTime_(getTime()),
+    lastTime_(startTime_),
+    newTime_(startTime_)
 {}
 
 
@@ -123,16 +123,16 @@ Foam::clock::clock()
 
 time_t Foam::clock::elapsedClockTime() const
 {
-	newTime_ = getTime();
-	return newTime_ - startTime_;
+    newTime_ = getTime();
+    return newTime_ - startTime_;
 }
 
 
 time_t Foam::clock::clockTimeIncrement() const
 {
-	lastTime_ = newTime_;
-	newTime_ = getTime();
-	return newTime_ - lastTime_;
+    lastTime_ = newTime_;
+    newTime_ = getTime();
+    return newTime_ - lastTime_;
 }
 
 

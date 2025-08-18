@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::LUST
+    Foam::LUST
 
 Description
-	LUST: Linear-upwind stabilised transport.
+    LUST: Linear-upwind stabilised transport.
 
-	Interpolation scheme class derived from linearUpwind which returns blended
-	linear/linear-upwind weighting factors and also applies a explicit
-	gradient-based correction obtained from the linearUpwind scheme.  The
-	blending-factor is set to 0.75 linear which optimises the balance between
-	accuracy and stability on a range of LES cases with a range of mesh quality.
+    Interpolation scheme class derived from linearUpwind which returns blended
+    linear/linear-upwind weighting factors and also applies a explicit
+    gradient-based correction obtained from the linearUpwind scheme.  The
+    blending-factor is set to 0.75 linear which optimises the balance between
+    accuracy and stability on a range of LES cases with a range of mesh quality.
 
 SourceFiles
-	LUST.C
+    LUST.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,79 +48,86 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class LUST Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class LUST
 :
-	public linearUpwind<Type>
+    public linearUpwind<Type>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		LUST(const LUST&);
+        //- Disallow default bitwise copy construct
+        LUST(const LUST&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const LUST&);
+        //- Disallow default bitwise assignment
+        void operator=(const LUST&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("LUST");
+    //- Runtime type information
+    TypeName("LUST");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh and Istream
-		LUST
-		(
-			const fvMesh& mesh,
-			Istream& schemeData
-		)
-		:
-			linearUpwind<Type>(mesh, schemeData)
-		{}
+        //- Construct from mesh and Istream
+        LUST
+        (
+            const fvMesh& mesh,
+            Istream& schemeData
+        )
+        :
+            linearUpwind<Type>(mesh, schemeData)
+        {}
 
-		//- Construct from mesh, faceFlux and Istream
-		LUST
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField& faceFlux,
-			Istream& schemeData
-		)
-		:
-			linearUpwind<Type>(mesh, faceFlux, schemeData)
-		{}
+        //- Construct from mesh, faceFlux and Istream
+        LUST
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField& faceFlux,
+            Istream& schemeData
+        )
+        :
+            linearUpwind<Type>(mesh, faceFlux, schemeData)
+        {}
 
 
-	// Member Functions
+    //- Destructor
+    ~LUST() = default;
 
-		//- Return the interpolation weighting factors
-		virtual tmp<surfaceScalarField> weights
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) const
-		{
-			return
-				0.75*this->mesh().surfaceInterpolation::weights()
-			  + 0.25*linearUpwind<Type>::weights();
-		}
 
-		//- Return true if this scheme uses an explicit correction
-		virtual bool corrected() const
-		{
-			return true;
-		}
+    // Member Functions
 
-		//- Return the explicit correction to the face-interpolate
-		virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh>>
-		correction
-		(
-			const GeometricField<Type, fvPatchField, volMesh>& vf
-		) const
-		{
-			return 0.25*linearUpwind<Type>::correction(vf);
-		}
+        //- Return the interpolation weighting factors
+        virtual tmp<surfaceScalarField> weights
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const
+        {
+            return
+                0.75*this->mesh().surfaceInterpolation::weights()
+              + 0.25*linearUpwind<Type>::weights();
+        }
+
+        //- Return true if this scheme uses an explicit correction
+        virtual bool corrected() const
+        {
+            return true;
+        }
+
+        //- Return the explicit correction to the face-interpolate
+        virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh>>
+        correction
+        (
+            const GeometricField<Type, fvPatchField, volMesh>& vf
+        ) const
+        {
+            return 0.25*linearUpwind<Type>::correction(vf);
+        }
 };
 
 

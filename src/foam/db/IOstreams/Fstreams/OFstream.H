@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::OFstream
+    Foam::OFstream
 
 Description
-	Output to file stream.
+    Output to file stream.
 
 SourceFiles
-	OFstream.C
+    OFstream.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,96 +49,102 @@ namespace Foam
 
 class OFstream;
 
+/*---------------------------------------------------------------------------*\
+                      Class OFstreamAllocator Declaration
+\*---------------------------------------------------------------------------*/
 
 //- A std::ostream with ability to handle compressed files
 class OFstreamAllocator
 {
-	friend class OFstream;
+    friend class OFstream;
 
-	ostream* ofPtr_;
+    ostream* ofPtr_;
 
-	// Constructors
+    // Constructors
 
-		//- Construct from pathname
-		OFstreamAllocator
-		(
-			const fileName& pathname,
-			ios_base::openmode mode,
-			IOstream::compressionType compression = IOstream::UNCOMPRESSED
+        //- Construct from pathname
+        OFstreamAllocator
+        (
+            const fileName& pathname,
+            ios_base::openmode mode,
+            IOstream::compressionType compression = IOstream::UNCOMPRESSED
 
-		);
+        );
 
-	//- Destructor
-	~OFstreamAllocator();
+    //- Destructor
+    ~OFstreamAllocator();
 
 };
 
 
+/*---------------------------------------------------------------------------*\
+                          Class OFstream Declaration
+\*---------------------------------------------------------------------------*/
 
 class OFstream
 :
-	private OFstreamAllocator,
-	public OSstream
+    private OFstreamAllocator,
+    public OSstream
 {
-	// Private data
+    // Private data
 
-		fileName pathname_;
+        fileName pathname_;
 
 
 public:
 
-	// Declare name of the class and its debug switch
-	ClassName("OFstream");
+    // Declare name of the class and its debug switch
+    ClassName("OFstream");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from pathname
-		OFstream
-		(
-			const fileName& pathname,
-			ios_base::openmode mode = ios_base::out|ios_base::trunc,
-			streamFormat format = ASCII,
-			versionNumber version = currentVersion,
-			compressionType compression = UNCOMPRESSED
-		);
-
-
-	// Destructor
-
-		~OFstream();
+        //- Construct from pathname
+        OFstream
+        (
+            const fileName& pathname,
+            ios_base::openmode mode = ios_base::out|ios_base::trunc,
+            streamFormat format = ASCII,
+            versionNumber version = currentVersion,
+            compressionType compression = UNCOMPRESSED
+        );
 
 
-	// Member functions
+    // Destructor
 
-		// Access
-
-			//- Return the name of the stream
-			const fileName& name() const
-			{
-				return pathname_;
-			}
-
-			//- Return non-const access to the name of the stream
-			fileName& name()
-			{
-				return pathname_;
-			}
+        ~OFstream();
 
 
-		// STL stream
+    // Member functions
 
-			//- Access to underlying std::ostream
-			virtual ostream& stdStream();
+        // Access
 
-			//- Const access to underlying std::ostream
-			virtual const ostream& stdStream() const;
+            //- Return the name of the stream
+            const fileName& name() const
+            {
+                return pathname_;
+            }
+
+            //- Return non-const access to the name of the stream
+            fileName& name()
+            {
+                return pathname_;
+            }
 
 
-		// Print
+        // STL stream
 
-			//- Print description of IOstream to Ostream
-			void print(Ostream&) const;
+            //- Access to underlying std::ostream
+            virtual ostream& stdStream();
+
+            //- Const access to underlying std::ostream
+            virtual const ostream& stdStream() const;
+
+
+        // Print
+
+            //- Print description of IOstream to Ostream
+            void print(Ostream&) const;
 };
 
 

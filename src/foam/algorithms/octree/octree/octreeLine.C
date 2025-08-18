@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -32,68 +32,68 @@ License
 template <class Type>
 void Foam::octreeLine<Type>::calcSortedIntersections()
 {
-	// Determine intersections and sort acc. to distance to start
+    // Determine intersections and sort acc. to distance to start
 
-	const labelList& indices = currentLeaf_->indices();
+    const labelList& indices = currentLeaf_->indices();
 
-	sortedIntersections_.setSize(indices.size());
+    sortedIntersections_.setSize(indices.size());
 
-	const vector direction = endPoint_ - realStartPoint_;
+    const vector direction = endPoint_ - realStartPoint_;
 
-	label nHits = 0;
+    label nHits = 0;
 
-	forAll(indices, elemI)
-	{
-		point pt;
-		bool hit = tree_.shapes().intersects
-		(
-			indices[elemI],
-			realStartPoint_,
-			direction,
-			pt
-		);
+    forAll(indices, elemI)
+    {
+        point pt;
+        bool hit = tree_.shapes().intersects
+        (
+            indices[elemI],
+            realStartPoint_,
+            direction,
+            pt
+        );
 
-		if (hit && (indices[elemI] != lastElem_))
-		{
-		   sortedIntersections_[nHits++] = pointHitSort
-			(
-				pointHit
-				(
-					true,
-					pt,
-					Foam::magSqr(pt - leafExitPoint_),
-					false
-				),
-				indices[elemI]
-			);
-		}
-	}
+        if (hit && (indices[elemI] != lastElem_))
+        {
+           sortedIntersections_[nHits++] = pointHitSort
+            (
+                pointHit
+                (
+                    true,
+                    pt,
+                    Foam::magSqr(pt - leafExitPoint_),
+                    false
+                ),
+                indices[elemI]
+            );
+        }
+    }
 
-	sortedIntersections_.setSize(nHits);
+    sortedIntersections_.setSize(nHits);
 
-	Foam::sort(sortedIntersections_);
+    Foam::sort(sortedIntersections_);
 
-	//// After sorting
-	//forAll(sortedIntersections_, i)
-	//{
-	//    Pout<< "calcSortedIntersections: After sorting:"
-	//        << i << "  distance:"
-	//        << sortedIntersections_[i].inter().distance()
-	//        << "  index:" << sortedIntersections_[i].index()
-	//        << endl;
-	//}
+    //// After sorting
+    //forAll(sortedIntersections_, i)
+    //{
+    //    Pout<< "calcSortedIntersections: After sorting:"
+    //        << i << "  distance:"
+    //        << sortedIntersections_[i].inter().distance()
+    //        << "  index:" << sortedIntersections_[i].index()
+    //        << endl;
+    //}
 
-	lastElem_ = -1;
+    lastElem_ = -1;
 
-	if (nHits > 0)
-	{
-		lastElem_ = sortedIntersections_[nHits - 1].index();
+    if (nHits > 0)
+    {
+        lastElem_ = sortedIntersections_[nHits - 1].index();
 
-		//Pout<< "Storing lastElem_:" << lastElem_ << endl;
-	}
+        //Pout<< "Storing lastElem_:" << lastElem_ << endl;
+    }
 
-	// Reset index into sortedIntersections_
-	sortedI_ = -1;
+    // Reset index into sortedIntersections_
+    sortedI_ = -1;
 }
 
 
@@ -102,26 +102,26 @@ void Foam::octreeLine<Type>::calcSortedIntersections()
 template <class Type>
 bool Foam::octreeLine<Type>::getNextLeaf()
 {
-	do
-	{
-		// No current leaf. Find first one.
-		// Note: search starts from top every time
+    do
+    {
+        // No current leaf. Find first one.
+        // Note: search starts from top every time
 
-		point start(leafExitPoint_);
-		currentLeaf_ = tree_.findLeafLine(start, endPoint_, leafExitPoint_);
+        point start(leafExitPoint_);
+        currentLeaf_ = tree_.findLeafLine(start, endPoint_, leafExitPoint_);
 
-		if (!currentLeaf_)
-		{
-			// No leaf found. Give up.
-			return false;
-		}
+        if (!currentLeaf_)
+        {
+            // No leaf found. Give up.
+            return false;
+        }
 
-		// Get intersections and sort.
-		calcSortedIntersections();
-	}
-	while (sortedIntersections_.empty());
+        // Get intersections and sort.
+        calcSortedIntersections();
+    }
+    while (sortedIntersections_.empty());
 
-	return true;
+    return true;
 }
 
 
@@ -130,20 +130,20 @@ bool Foam::octreeLine<Type>::getNextLeaf()
 template <class Type>
 Foam::octreeLine<Type>::octreeLine
 (
-	const octree<Type>& tree,
-	const point& startPoint,
-	const point& endPoint
+    const octree<Type>& tree,
+    const point& startPoint,
+    const point& endPoint
 )
 :
-	tree_(tree),
-	startPoint_(startPoint),
-	endPoint_(endPoint),
-	realStartPoint_(startPoint),
-	leafExitPoint_(startPoint_),
-	currentLeaf_(nullptr),
-	sortedIntersections_(0),
-	lastElem_(-1),
-	sortedI_(-1)
+    tree_(tree),
+    startPoint_(startPoint),
+    endPoint_(endPoint),
+    realStartPoint_(startPoint),
+    leafExitPoint_(startPoint_),
+    currentLeaf_(nullptr),
+    sortedIntersections_(0),
+    lastElem_(-1),
+    sortedI_(-1)
 {}
 
 
@@ -159,22 +159,22 @@ Foam::octreeLine<Type>::~octreeLine()
 template <class Type>
 bool Foam::octreeLine<Type>::getIntersection()
 {
-	// Go to next element in sortedIntersections
+    // Go to next element in sortedIntersections
 
-	sortedI_++;
+    sortedI_++;
 
-	if (sortedI_ >= sortedIntersections_.size())
-	{
-		// Past all sortedIntersections in current leaf. Go to next one.
-		if (!getNextLeaf())
-		{
-			// No valid leaf found
-			return false;
-		}
-		sortedI_ = 0;
-	}
+    if (sortedI_ >= sortedIntersections_.size())
+    {
+        // Past all sortedIntersections in current leaf. Go to next one.
+        if (!getNextLeaf())
+        {
+            // No valid leaf found
+            return false;
+        }
+        sortedI_ = 0;
+    }
 
-	return true;
+    return true;
 }
 
 // ************************************************************************* //

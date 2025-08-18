@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -30,69 +30,85 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(wallPolyPatch, 0);
+    defineTypeNameAndDebug(wallPolyPatch, 0);
 
-	addToRunTimeSelectionTable(polyPatch, wallPolyPatch, word);
-	addToRunTimeSelectionTable(polyPatch, wallPolyPatch, dictionary);
+    addToRunTimeSelectionTable(polyPatch, wallPolyPatch, word);
+    addToRunTimeSelectionTable(polyPatch, wallPolyPatch, dictionary);
 }
 
 // * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * * * * * //
 
 Foam::wallPolyPatch::wallPolyPatch
 (
-	const word& name,
-	const label size,
-	const label start,
-	const label index,
-	const polyBoundaryMesh& bm
+    const word& name,
+    const label size,
+    const label start,
+    const label index,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(name, size, start, index, bm)
+    polyPatch(name, size, start, index, bm),
+    closedSolidBodyMotion_(false)
 {}
 
 
 Foam::wallPolyPatch::wallPolyPatch
 (
-	const word& name,
-	const dictionary& dict,
-	const label index,
-	const polyBoundaryMesh& bm
+    const word& name,
+    const dictionary& dict,
+    const label index,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(name, dict, index, bm)
+    polyPatch(name, dict, index, bm),
+    closedSolidBodyMotion_
+    (
+        dict.lookupOrDefault<Switch>("closedSolidBodyMotion", false)
+    )
 {}
 
 
 Foam::wallPolyPatch::wallPolyPatch
 (
-	const wallPolyPatch& pp,
-	const polyBoundaryMesh& bm,
-	const label index,
-	const label newSize,
-	const label newStart
+    const wallPolyPatch& pp,
+    const polyBoundaryMesh& bm,
+    const label index,
+    const label newSize,
+    const label newStart
 )
 :
-	polyPatch(pp, bm, index, newSize, newStart)
+    polyPatch(pp, bm, index, newSize, newStart),
+    closedSolidBodyMotion_(pp.closedSolidBodyMotion_)
 {}
 
 
 Foam::wallPolyPatch::wallPolyPatch
 (
-	const wallPolyPatch& pp
+    const wallPolyPatch& pp
 )
 :
-	polyPatch(pp)
+    polyPatch(pp),
+    closedSolidBodyMotion_(pp.closedSolidBodyMotion_)
 {}
 
 
 Foam::wallPolyPatch::wallPolyPatch
 (
-	const wallPolyPatch& pp,
-	const polyBoundaryMesh& bm
+    const wallPolyPatch& pp,
+    const polyBoundaryMesh& bm
 )
 :
-	polyPatch(pp, bm)
+    polyPatch(pp, bm),
+    closedSolidBodyMotion_(pp.closedSolidBodyMotion_)
 {}
+
+
+void Foam::wallPolyPatch::write(Ostream& os) const
+{
+    polyPatch::write(os);
+    os.writeKeyword("closedSolidBodyMotion") << closedSolidBodyMotion_
+        << token::END_STATEMENT << nl;
+}
 
 
 // ************************************************************************* //

@@ -1,44 +1,44 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::PhiScheme
+    Foam::PhiScheme
 
 Description
-	Class to create the weighting-factors based on the face-flux.
+    Class to create the weighting-factors based on the face-flux.
 
-	The particular differencing scheme class is supplied as a template
-	argument, the weight function of which is called by the weight function
-	of this class for the internal faces as well as faces of coupled
-	patches (e.g. processor-processor patches). The weight function is
-	supplied with the central-differencing weighting factor, the face-flux,
-	the face neighbour cell values and the face area.
+    The particular differencing scheme class is supplied as a template
+    argument, the weight function of which is called by the weight function
+    of this class for the internal faces as well as faces of coupled
+    patches (e.g. processor-processor patches). The weight function is
+    supplied with the central-differencing weighting factor, the face-flux,
+    the face neighbour cell values and the face area.
 
-	This code organisation is both neat and efficient, allowing for
-	convenient implementation of new schemes to run on parallelised cases.
+    This code organisation is both neat and efficient, allowing for
+    convenient implementation of new schemes to run on parallelised cases.
 
 SourceFiles
-	PhiScheme.C
+    PhiScheme.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,75 +52,78 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class PhiScheme Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type, class PhiLimiter>
 class PhiScheme
 :
-	public limitedSurfaceInterpolationScheme<Type>,
-	public PhiLimiter
+    public limitedSurfaceInterpolationScheme<Type>,
+    public PhiLimiter
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		PhiScheme(const PhiScheme&);
+        //- Disallow default bitwise copy construct
+        PhiScheme(const PhiScheme&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const PhiScheme&);
+        //- Disallow default bitwise assignment
+        void operator=(const PhiScheme&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("PhiScheme");
+    //- Runtime type information
+    TypeName("PhiScheme");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh, faceFlux and blendingFactor
-		PhiScheme
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField& faceFlux,
-			const PhiLimiter& weight
-		)
-		:
-			limitedSurfaceInterpolationScheme<Type>(mesh, faceFlux),
-			PhiLimiter(weight)
-		{}
+        //- Construct from mesh, faceFlux and blendingFactor
+        PhiScheme
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField& faceFlux,
+            const PhiLimiter& weight
+        )
+        :
+            limitedSurfaceInterpolationScheme<Type>(mesh, faceFlux),
+            PhiLimiter(weight)
+        {}
 
-		//- Construct from mesh and Istream.
-		//  The name of the flux field is read from the Istream and looked-up
-		//  from the mesh objectRegistry
-		PhiScheme
-		(
-			const fvMesh& mesh,
-			Istream& is
-		)
-		:
-			limitedSurfaceInterpolationScheme<Type>(mesh, is),
-			PhiLimiter(is)
-		{}
+        //- Construct from mesh and Istream.
+        //  The name of the flux field is read from the Istream and looked-up
+        //  from the mesh objectRegistry
+        PhiScheme
+        (
+            const fvMesh& mesh,
+            Istream& is
+        )
+        :
+            limitedSurfaceInterpolationScheme<Type>(mesh, is),
+            PhiLimiter(is)
+        {}
 
-		//- Construct from mesh, faceFlux and Istream
-		PhiScheme
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField& faceFlux,
-			Istream& is
-		)
-		:
-			limitedSurfaceInterpolationScheme<Type>(mesh, faceFlux),
-			PhiLimiter(is)
-		{}
+        //- Construct from mesh, faceFlux and Istream
+        PhiScheme
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField& faceFlux,
+            Istream& is
+        )
+        :
+            limitedSurfaceInterpolationScheme<Type>(mesh, faceFlux),
+            PhiLimiter(is)
+        {}
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Return the interpolation weighting factors
-		virtual tmp<surfaceScalarField> limiter
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) const;
+        //- Return the interpolation weighting factors
+        virtual tmp<surfaceScalarField> limiter
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 };
 
 
@@ -133,26 +136,26 @@ public:
 // Add the patch constructor functions to the hash tables
 
 #define makePhiSurfaceInterpolationScheme(SS, WEIGHT, TYPE)                    \
-					                                                           \
+                                                                               \
 typedef PhiScheme<TYPE, WEIGHT> Phischeme##WEIGHT_;                            \
 defineTemplateTypeNameAndDebugWithName(Phischeme##WEIGHT_, #SS, 0);            \
-					                                                           \
+                                                                               \
 surfaceInterpolationScheme<TYPE>::addMeshConstructorToTable                    \
 <PhiScheme<TYPE, WEIGHT> > add##SS##TYPE##MeshConstructorToTable_;             \
-					                                                           \
+                                                                               \
 surfaceInterpolationScheme<TYPE>::addMeshFluxConstructorToTable                \
 <PhiScheme<TYPE, WEIGHT> > add##SS##TYPE##MeshFluxConstructorToTable_;         \
-					                                                           \
+                                                                               \
 limitedSurfaceInterpolationScheme<TYPE>::addMeshConstructorToTable             \
 <PhiScheme<TYPE, WEIGHT> > add##SS##TYPE##MeshConstructorToLimitedTable_;      \
-					                                                           \
+                                                                               \
 limitedSurfaceInterpolationScheme<TYPE>::addMeshFluxConstructorToTable         \
 <PhiScheme<TYPE, WEIGHT> > add##SS##TYPE##MeshFluxConstructorToLimitedTable_;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "PhiScheme.C"
+#   include "PhiScheme.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

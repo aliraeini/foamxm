@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::objectMap
+    Foam::objectMap
 
 Description
-	An objectMap is a pair of labels defining the mapping of an object from
-	another object, e.g. a cell mapped from a point.
+    An objectMap is a pair of labels defining the mapping of an object from
+    another object, e.g. a cell mapped from a point.
 
 SourceFiles
-	objectMapI.H
+    objectMapI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,54 +52,56 @@ inline Ostream& operator<<(Ostream&, const objectMap&);
 inline Istream& operator>>(Istream&, objectMap&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class objectMap Declaration
+\*---------------------------------------------------------------------------*/
 
 class objectMap
 {
-	// Private data
+    // Private data
 
-		//- Object index
-		label index_;
+        //- Object index
+        label index_;
 
-		//- Master object index
-		labelList masterObjects_;
+        //- Master object index
+        labelList masterObjects_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Null constructor for lists
-		inline objectMap();
+        //- Null constructor for lists
+        inline objectMap();
 
-		//- Construct from components
-		inline objectMap(const label index, const labelList& master);
+        //- Construct from components
+        inline objectMap(const label index, const labelList& master);
 
-		//- Construct from Istream
-		inline objectMap(Istream&);
-
-
-	// Member Functions
-
-		//- Return object index
-		inline label& index();
-		inline label index() const;
-
-		//- Return master object index
-		inline labelList& masterObjects();
-		inline const labelList& masterObjects() const;
+        //- Construct from Istream
+        inline objectMap(Istream&);
 
 
-	// Friend Operators
+    // Member Functions
 
-		friend bool operator==(const objectMap& a, const objectMap& b);
-		friend bool operator!=(const objectMap& a, const objectMap& b);
+        //- Return object index
+        inline label& index();
+        inline label index() const;
+
+        //- Return master object index
+        inline labelList& masterObjects();
+        inline const labelList& masterObjects() const;
 
 
-	// IOstream Operators
+    // Friend Operators
 
-		friend Ostream& operator<<(Ostream&, const objectMap&);
+        friend bool operator==(const objectMap& a, const objectMap& b);
+        friend bool operator!=(const objectMap& a, const objectMap& b);
 
-		friend Istream& operator>>(Istream&, objectMap&);
+
+    // IOstream Operators
+
+        friend Ostream& operator<<(Ostream&, const objectMap&);
+        friend Istream& operator>>(Istream&, objectMap&);
 };
 
 

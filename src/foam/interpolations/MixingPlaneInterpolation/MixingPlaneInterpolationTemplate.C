@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Mixing plane class dealing with transfer of data between two
-	primitivePatches
+    Mixing plane class dealing with transfer of data between two
+    primitivePatches
 
 Author
-	Martin Beaudoin, Hydro-Quebec, 2009.  All rights reserved
+    Martin Beaudoin, Hydro-Quebec, 2009.  All rights reserved
 
 Contributor
-	Hrvoje Jasak, Wikki Ltd.
+    Hrvoje Jasak, Wikki Ltd.
 
 \*---------------------------------------------------------------------------*/
 
@@ -50,46 +50,46 @@ template<class MasterPatch, class SlavePatch>
 Foam::direction
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::sweepAxisSwitch() const
 {
-	// SweepAxis switch
-	switch (sweepAxisType_)
-	{
-		case SWEEP_X:
-		case SWEEP_R:
-		{
-			return vector::X;
-		}
-		break;
+    // SweepAxis switch
+    switch (sweepAxisType_)
+    {
+        case SWEEP_X:
+        case SWEEP_R:
+        {
+            return vector::X;
+        }
+        break;
 
-		case SWEEP_Y:
-		case SWEEP_THETA:
-		{
-			return vector::Y;
-		}
-		break;
+        case SWEEP_Y:
+        case SWEEP_THETA:
+        {
+            return vector::Y;
+        }
+        break;
 
-		case SWEEP_Z:
-		{
-			return vector::Z;
-		}
-		break;
+        case SWEEP_Z:
+        {
+            return vector::Z;
+        }
+        break;
 
-		default:
-		{
-			FatalErrorIn
-			(
-				"direction MixingPlaneInterpolation<MasterPatch, "
-				"SlavePatch>::sweepAxisSwitch() const"
-			)   << "Bad sweepAxis type: "
-				<< MixingPlaneInterpolationName::sweepAxisNames_
-					   [sweepAxisType_]
-				<< "Available types: "
-				<< MixingPlaneInterpolationName::sweepAxisNames_
-				<< abort(FatalError);
+        default:
+        {
+            FatalErrorIn
+            (
+                "direction MixingPlaneInterpolation<MasterPatch, "
+                "SlavePatch>::sweepAxisSwitch() const"
+            )   << "Bad sweepAxis type: "
+                << MixingPlaneInterpolationName::sweepAxisNames_
+                       [sweepAxisType_]
+                << "Available types: "
+                << MixingPlaneInterpolationName::sweepAxisNames_
+                << abort(FatalError);
 
-			// Dummy return
-			return vector::X;
-		}
-	}
+            // Dummy return
+            return vector::X;
+        }
+    }
 }
 
 
@@ -97,57 +97,57 @@ template<class MasterPatch, class SlavePatch>
 Foam::direction
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::stackAxisSwitch() const
 {
-	// stackAxis switch
-	switch (stackAxisType_)
-	{
-		case STACK_X:
-		case STACK_R:
-		{
-			return vector::X;
-		}
-		break;
+    // stackAxis switch
+    switch (stackAxisType_)
+    {
+        case STACK_X:
+        case STACK_R:
+        {
+            return vector::X;
+        }
+        break;
 
-		case STACK_Y:
-		case STACK_THETA:
-		{
-			return vector::Y;
-		}
-		break;
+        case STACK_Y:
+        case STACK_THETA:
+        {
+            return vector::Y;
+        }
+        break;
 
-		case STACK_Z:
-		{
-			return vector::Z;
-		}
-		break;
+        case STACK_Z:
+        {
+            return vector::Z;
+        }
+        break;
 
-		default:
-		{
-			FatalErrorIn
-			(
-				"direction MixingPlaneInterpolation<MasterPatch, "
-				"SlavePatch>::stackAxisSwitch() const"
-			)   << "Bad stackAxis type: "
-				<< MixingPlaneInterpolationName::stackAxisNames_
-					   [stackAxisType_]
-				<< "Available types: "
-				<< MixingPlaneInterpolationName::stackAxisNames_
-				<< abort(FatalError);
+        default:
+        {
+            FatalErrorIn
+            (
+                "direction MixingPlaneInterpolation<MasterPatch, "
+                "SlavePatch>::stackAxisSwitch() const"
+            )   << "Bad stackAxis type: "
+                << MixingPlaneInterpolationName::stackAxisNames_
+                       [stackAxisType_]
+                << "Available types: "
+                << MixingPlaneInterpolationName::stackAxisNames_
+                << abort(FatalError);
 
-			// Dummy return
-			return vector::X;
-		}
-	}
+            // Dummy return
+            return vector::X;
+        }
+    }
 }
 
 
 template<class MasterPatch, class SlavePatch>
 void MixingPlaneInterpolation<MasterPatch, SlavePatch>::clearOut()
 {
-	clearTransfomedPatches();
-	clearMixingPlanePatch();
+    clearTransfomedPatches();
+    clearMixingPlanePatch();
 
-	clearAddressing();
-	clearTransforms();
+    clearAddressing();
+    clearTransforms();
 }
 
 
@@ -157,70 +157,70 @@ template<class MasterPatch, class SlavePatch>
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 MixingPlaneInterpolation
 (
-	const MasterPatch& masterPatch,
-	const SlavePatch& slavePatch,
-	const coordinateSystem& cs,
-	const MixingPlaneInterpolationName::discretisation& discretisationType,
-	const MixingPlaneInterpolationName::sweepAxis& sweepAxisType,
-	const MixingPlaneInterpolationName::stackAxis& stackAxisType,
-	const pointField& interpolationProfile
+    const MasterPatch& masterPatch,
+    const SlavePatch& slavePatch,
+    const coordinateSystem& cs,
+    const MixingPlaneInterpolationName::discretisation& discretisationType,
+    const MixingPlaneInterpolationName::sweepAxis& sweepAxisType,
+    const MixingPlaneInterpolationName::stackAxis& stackAxisType,
+    const pointField& interpolationProfile
 )
 :
-	masterPatch_(masterPatch),
-	slavePatch_(slavePatch),
-	cs_(cs),
-	discretisationType_(discretisationType),
-	sweepAxisType_(sweepAxisType),
-	stackAxisType_(stackAxisType),
-	interpolationProfile_(interpolationProfile),
+    masterPatch_(masterPatch),
+    slavePatch_(slavePatch),
+    cs_(cs),
+    discretisationType_(discretisationType),
+    sweepAxisType_(sweepAxisType),
+    stackAxisType_(stackAxisType),
+    interpolationProfile_(interpolationProfile),
 
-	forwardT_(),
-	reverseT_(),
-	forwardSep_(),
+    forwardT_(),
+    reverseT_(),
+    forwardSep_(),
 
-	transformedMasterPatchPtr_(nullptr),
-	transformedShadowPatchPtr_(nullptr),
-	mixingPlanePatchPtr_(nullptr),
+    transformedMasterPatchPtr_(nullptr),
+    transformedShadowPatchPtr_(nullptr),
+    mixingPlanePatchPtr_(nullptr),
 
-	masterPatchToProfileTPtr_(nullptr),
-	masterProfileToPatchTPtr_(nullptr),
-	slavePatchToProfileTPtr_(nullptr),
-	slaveProfileToPatchTPtr_(nullptr),
+    masterPatchToProfileTPtr_(nullptr),
+    masterProfileToPatchTPtr_(nullptr),
+    slavePatchToProfileTPtr_(nullptr),
+    slaveProfileToPatchTPtr_(nullptr),
 
-	masterPatchToProfileAddrPtr_(nullptr),
-	masterProfileToPatchAddrPtr_(nullptr),
-	masterPatchToProfileWeightsPtr_(nullptr),
-	masterProfileToPatchWeightsPtr_(nullptr),
+    masterPatchToProfileAddrPtr_(nullptr),
+    masterProfileToPatchAddrPtr_(nullptr),
+    masterPatchToProfileWeightsPtr_(nullptr),
+    masterProfileToPatchWeightsPtr_(nullptr),
 
-	slavePatchToProfileAddrPtr_(nullptr),
-	slaveProfileToPatchAddrPtr_(nullptr),
-	slavePatchToProfileWeightsPtr_(nullptr),
-	slaveProfileToPatchWeightsPtr_(nullptr)
+    slavePatchToProfileAddrPtr_(nullptr),
+    slaveProfileToPatchAddrPtr_(nullptr),
+    slavePatchToProfileWeightsPtr_(nullptr),
+    slaveProfileToPatchWeightsPtr_(nullptr)
 
 {
-	// Check size of transform.  They should be equal to slave patch size
-	// if the transform is not constant
-	if (forwardT_.size() > 1 || reverseT_.size() > 1)
-	{
-		if
-		(
-			forwardT_.size() != slavePatch_.size()
-		 || reverseT_.size() != masterPatch_.size()
-		)
-		{
-			FatalErrorIn
-			(
-				"MixingPlaneInterpolation<MasterPatch, "
-				"SlavePatch>::MixingPlaneInterpolation"
-			)   << "Incorrectly defined transform: forwardT: "
-				<< forwardT_.size() << " patch: " << slavePatch_.size()
-				<< " reverseT: " << reverseT_.size()
-				<< " patch: " << masterPatch_.size()
-				<< abort(FatalError);
-		}
-	}
+    // Check size of transform.  They should be equal to slave patch size
+    // if the transform is not constant
+    if (forwardT_.size() > 1 || reverseT_.size() > 1)
+    {
+        if
+        (
+            forwardT_.size() != slavePatch_.size()
+         || reverseT_.size() != masterPatch_.size()
+        )
+        {
+            FatalErrorIn
+            (
+                "MixingPlaneInterpolation<MasterPatch, "
+                "SlavePatch>::MixingPlaneInterpolation"
+            )   << "Incorrectly defined transform: forwardT: "
+                << forwardT_.size() << " patch: " << slavePatch_.size()
+                << " reverseT: " << reverseT_.size()
+                << " patch: " << masterPatch_.size()
+                << abort(FatalError);
+        }
+    }
 
-	masterPatchToProfileAddr();
+    masterPatchToProfileAddr();
 }
 
 
@@ -229,7 +229,7 @@ MixingPlaneInterpolation
 template<class MasterPatch, class SlavePatch>
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::~MixingPlaneInterpolation()
 {
-	clearOut();
+    clearOut();
 }
 
 
@@ -239,12 +239,12 @@ template<class MasterPatch, class SlavePatch>
 const Foam::standAlonePatch&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::mixingPlanePatch() const
 {
-	if (!mixingPlanePatchPtr_)
-	{
-		calcMixingPlanePatch();
-	}
+    if (!mixingPlanePatchPtr_)
+    {
+        calcMixingPlanePatch();
+    }
 
-	return *mixingPlanePatchPtr_;
+    return *mixingPlanePatchPtr_;
 }
 
 
@@ -253,12 +253,12 @@ const Foam::standAlonePatch&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 transformedMasterPatch() const
 {
-	if (!transformedMasterPatchPtr_)
-	{
-		calcTransformedPatches();
-	}
+    if (!transformedMasterPatchPtr_)
+    {
+        calcTransformedPatches();
+    }
 
-	return *transformedMasterPatchPtr_;
+    return *transformedMasterPatchPtr_;
 }
 
 
@@ -267,12 +267,12 @@ const Foam::standAlonePatch&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 transformedShadowPatch() const
 {
-	if (!transformedShadowPatchPtr_)
-	{
-		calcTransformedPatches();
-	}
+    if (!transformedShadowPatchPtr_)
+    {
+        calcTransformedPatches();
+    }
 
-	return *transformedShadowPatchPtr_;
+    return *transformedShadowPatchPtr_;
 }
 
 
@@ -281,12 +281,12 @@ const labelListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterPatchToProfileAddr() const
 {
-	if (!masterPatchToProfileAddrPtr_)
-	{
-		calcAddressing();
-	}
+    if (!masterPatchToProfileAddrPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *masterPatchToProfileAddrPtr_;
+    return *masterPatchToProfileAddrPtr_;
 }
 
 
@@ -295,12 +295,12 @@ const labelListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterProfileToPatchAddr() const
 {
-	if (!masterProfileToPatchAddrPtr_)
-	{
-		calcAddressing();
-	}
+    if (!masterProfileToPatchAddrPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *masterProfileToPatchAddrPtr_;
+    return *masterProfileToPatchAddrPtr_;
 }
 
 
@@ -309,12 +309,12 @@ const scalarListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterPatchToProfileWeights() const
 {
-	if (!masterPatchToProfileWeightsPtr_)
-	{
-		calcAddressing();
-	}
+    if (!masterPatchToProfileWeightsPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *masterPatchToProfileWeightsPtr_;
+    return *masterPatchToProfileWeightsPtr_;
 }
 
 
@@ -323,12 +323,12 @@ const scalarListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterProfileToPatchWeights() const
 {
-	if (!masterProfileToPatchWeightsPtr_)
-	{
-		calcAddressing();
-	}
+    if (!masterProfileToPatchWeightsPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *masterProfileToPatchWeightsPtr_;
+    return *masterProfileToPatchWeightsPtr_;
 }
 
 
@@ -337,12 +337,12 @@ const labelListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 slavePatchToProfileAddr() const
 {
-	if (!slavePatchToProfileAddrPtr_)
-	{
-		calcAddressing();
-	}
+    if (!slavePatchToProfileAddrPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *slavePatchToProfileAddrPtr_;
+    return *slavePatchToProfileAddrPtr_;
 }
 
 
@@ -351,12 +351,12 @@ const labelListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 slaveProfileToPatchAddr() const
 {
-	if (!slaveProfileToPatchAddrPtr_)
-	{
-		calcAddressing();
-	}
+    if (!slaveProfileToPatchAddrPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *slaveProfileToPatchAddrPtr_;
+    return *slaveProfileToPatchAddrPtr_;
 }
 
 
@@ -365,12 +365,12 @@ const scalarListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 slavePatchToProfileWeights() const
 {
-	if (!slavePatchToProfileWeightsPtr_)
-	{
-		calcAddressing();
-	}
+    if (!slavePatchToProfileWeightsPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *slavePatchToProfileWeightsPtr_;
+    return *slavePatchToProfileWeightsPtr_;
 }
 
 
@@ -379,12 +379,12 @@ const scalarListList&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 slaveProfileToPatchWeights() const
 {
-	if (!slaveProfileToPatchWeightsPtr_)
-	{
-		calcAddressing();
-	}
+    if (!slaveProfileToPatchWeightsPtr_)
+    {
+        calcAddressing();
+    }
 
-	return *slaveProfileToPatchWeightsPtr_;
+    return *slaveProfileToPatchWeightsPtr_;
 }
 
 
@@ -393,12 +393,12 @@ const tensorField&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterPatchToProfileT() const
 {
-	if (!masterPatchToProfileTPtr_)
-	{
-		calcTransforms();
-	}
+    if (!masterPatchToProfileTPtr_)
+    {
+        calcTransforms();
+    }
 
-	return *masterPatchToProfileTPtr_;
+    return *masterPatchToProfileTPtr_;
 }
 
 
@@ -407,12 +407,12 @@ const tensorField&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::
 masterProfileToPatchT() const
 {
-	if (!masterProfileToPatchTPtr_)
-	{
-		calcTransforms();
-	}
+    if (!masterProfileToPatchTPtr_)
+    {
+        calcTransforms();
+    }
 
-	return *masterProfileToPatchTPtr_;
+    return *masterProfileToPatchTPtr_;
 }
 
 
@@ -420,12 +420,12 @@ template<class MasterPatch, class SlavePatch>
 const tensorField&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::slavePatchToProfileT() const
 {
-	if (!slavePatchToProfileTPtr_)
-	{
-		calcTransforms();
-	}
+    if (!slavePatchToProfileTPtr_)
+    {
+        calcTransforms();
+    }
 
-	return *slavePatchToProfileTPtr_;
+    return *slavePatchToProfileTPtr_;
 }
 
 
@@ -433,21 +433,21 @@ template<class MasterPatch, class SlavePatch>
 const tensorField&
 MixingPlaneInterpolation<MasterPatch, SlavePatch>::slaveProfileToPatchT() const
 {
-	if (!slaveProfileToPatchTPtr_)
-	{
-		calcTransforms();
-	}
+    if (!slaveProfileToPatchTPtr_)
+    {
+        calcTransforms();
+    }
 
-	return *slaveProfileToPatchTPtr_;
+    return *slaveProfileToPatchTPtr_;
 }
 
 
 template<class MasterPatch, class SlavePatch>
 bool MixingPlaneInterpolation<MasterPatch, SlavePatch>::movePoints()
 {
-	clearOut();
+    clearOut();
 
-	return true;
+    return true;
 }
 
 

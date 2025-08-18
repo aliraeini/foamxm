@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::UPtrList
+    Foam::UPtrList
 
 Description
-	A 1D array of pointers to objects of type \<T\>, where the size of the
-	array is known and used for subscript bounds checking, etc.
+    A 1D array of pointers to objects of type \<T\>, where the size of the
+    array is known and used for subscript bounds checking, etc.
 
-	The element operator [] returns a reference to the object rather than a
-	pointer.  Storage is not allocated during construction or use but is
-	supplied to the constructor as an argument.
+    The element operator [] returns a reference to the object rather than a
+    pointer.  Storage is not allocated during construction or use but is
+    supplied to the constructor as an argument.
 
 SourceFiles
-	UPtrList.C
-	UPtrListIO.C
+    UPtrList.C
+    UPtrListIO.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,29 +55,29 @@ template<class T> class UPtrList;
 template<class T>
 inline typename UPtrList<T>::iterator operator+
 (
-	const typename UPtrList<T>::iterator&,
-	label
+    const typename UPtrList<T>::iterator&,
+    label
 );
 
 template<class T>
 inline typename UPtrList<T>::iterator operator+
 (
-	label,
-	const typename UPtrList<T>::iterator&
+    label,
+    const typename UPtrList<T>::iterator&
 );
 
 template<class T>
 inline typename UPtrList<T>::iterator operator-
 (
-	const typename UPtrList<T>::iterator&,
-	label
+    const typename UPtrList<T>::iterator&,
+    label
 );
 
 template<class T>
 inline label operator-
 (
-	const typename UPtrList<T>::iterator&,
-	const typename UPtrList<T>::iterator&
+    const typename UPtrList<T>::iterator&,
+    const typename UPtrList<T>::iterator&
 );
 
 template<class T>
@@ -87,168 +87,171 @@ template<class T>
 Ostream& operator<<(Ostream&, const UPtrList<T>&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class UPtrList Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class T>
 class UPtrList
 {
-	// Private data
+    // Private data
 
-		List<T*> ptrs_;
+        List<T*> ptrs_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Null Constructor.
-		UPtrList();
+        //- Null Constructor.
+        UPtrList();
 
-		//- Construct with length specified.
-		explicit UPtrList(const label);
+        //- Construct with length specified.
+        explicit UPtrList(const label);
 
-		//- Construct by transferring the parameter contents
-		UPtrList(const Xfer<UPtrList<T> >&);
+        //- Construct by transferring the parameter contents
+        UPtrList(const Xfer<UPtrList<T> >&);
 
-		//- Construct as copy or re-use as specified.
-		UPtrList(UPtrList<T>&, bool reUse);
-
-
-	// Member functions
-
-		// Access
-
-			//- Return the number of elements in the UPtrList
-			inline label size() const;
-
-			//- Return true if the UPtrList is empty (ie, size() is zero).
-			inline bool empty() const;
+        //- Construct as copy or re-use as specified.
+        UPtrList(UPtrList<T>&, bool reUse);
 
 
-		// Edit
+    // Member functions
 
-			//- Reset size of UPtrList.  This can only be used to set the size
-			//  of an empty UPtrList, extend a UPtrList, remove entries from
-			//  the end of a UPtrList.
-			void setSize(const label);
+        // Access
 
-			//- Reset size of UPtrList.  This can only be used to set the size
-			//  of an empty UPtrList, extend a UPtrList, remove entries from
-			//  the end of a UPtrList.
-			inline void resize(const label);
+            //- Return the number of elements in the UPtrList
+            inline label size() const;
 
-			//- Clear the UPtrList, i.e. set size to zero
-			void clear();
-
-			//- Transfer the contents of the argument UPtrList into this
-			//  UPtrList and annull the argument list.
-			void transfer(UPtrList<T>&);
-
-			//- Transfer contents to the Xfer container
-			inline Xfer<UPtrList<T> > xfer();
-
-			//- Is element set
-			inline bool set(const label) const;
-
-			//- Set element. Return old element (can be nullptr).
-			//  No checks on new element.
-			inline T* set(const label, T*);
-
-			//- Reorders elements. Ordering does not have to be done in
-			//  ascending or descending order. Reordering has to be unique.
-			//  (is shuffle)
-			void reorder(const UList<label>&);
+            //- Return true if the UPtrList is empty (ie, size() is zero).
+            inline bool empty() const;
 
 
-	// Member operators
+        // Edit
 
-		//- Return element const reference.
-		inline const T& operator[](const label) const;
+            //- Reset size of UPtrList.  This can only be used to set the size
+            //  of an empty UPtrList, extend a UPtrList, remove entries from
+            //  the end of a UPtrList.
+            void setSize(const label);
 
-		//- Return element reference.
-		inline T& operator[](const label);
+            //- Reset size of UPtrList.  This can only be used to set the size
+            //  of an empty UPtrList, extend a UPtrList, remove entries from
+            //  the end of a UPtrList.
+            inline void resize(const label);
 
-		//- Return element const pointer.
-		inline const T* operator()(const label) const;
+            //- Clear the UPtrList, i.e. set size to zero
+            void clear();
 
+            //- Transfer the contents of the argument UPtrList into this
+            //  UPtrList and annull the argument list.
+            void transfer(UPtrList<T>&);
 
-	// STL type definitions
+            //- Transfer contents to the Xfer container
+            inline Xfer<UPtrList<T> > xfer();
 
-		//- Type of values the UPtrList contains.
-		typedef T value_type;
+            //- Is element set
+            inline bool set(const label) const;
 
-		//- Type that can be used for storing into UPtrList::value_type objects
-		typedef T& reference;
+            //- Set element. Return old element (can be nullptr).
+            //  No checks on new element.
+            inline T* set(const label, T*);
 
-		//- Type that can be used for storing into constant
-		//  UPtrList::value_type objects.
-		typedef const T& const_reference;
-
-
-	// STL iterator
-	// Random access iterator for traversing UPtrList.
-
-		class iterator;
-		friend class iterator;
-
-		//- An STL iterator
-		class iterator
-		{
-			T** ptr_;
-
-		public:
-
-			//- Construct for a given UPtrList entry
-			inline iterator(T**);
-
-			// Member operators
-
-				inline bool operator==(const iterator&) const;
-				inline bool operator!=(const iterator&) const;
-
-				inline T& operator*();
-				inline T& operator()();
-
-				inline iterator operator++();
-				inline iterator operator++(int);
-
-				inline iterator operator--();
-				inline iterator operator--(int);
-
-				inline iterator operator+=(label);
-
-				friend iterator operator+ <T>(const iterator&, label);
-				friend iterator operator+ <T>(label, const iterator&);
-
-				inline iterator operator-=(label);
-
-				friend iterator operator- <T>(const iterator&, label);
-
-				friend label operator- <T>
-				(
-					const iterator&,
-					const iterator&
-				);
-
-				inline T& operator[](label);
-
-				inline bool operator<(const iterator&) const;
-				inline bool operator>(const iterator&) const;
-
-				inline bool operator<=(const iterator&) const;
-				inline bool operator>=(const iterator&) const;
-		};
-
-		//- Return an iterator to begin traversing the UPtrList.
-		inline iterator begin();
-
-		//- Return an iterator to end traversing the UPtrList.
-		inline iterator end();
+            //- Reorders elements. Ordering does not have to be done in
+            //  ascending or descending order. Reordering has to be unique.
+            //  (is shuffle)
+            void reorder(const UList<label>&);
 
 
-	// IOstream operator
+    // Member operators
 
-		// Write List to Ostream.
-		friend Ostream& operator<< <T>(Ostream&, const UPtrList<T>&);
+        //- Return element const reference.
+        inline const T& operator[](const label) const;
+
+        //- Return element reference.
+        inline T& operator[](const label);
+
+        //- Return element const pointer.
+        inline const T* operator()(const label) const;
+
+
+    // STL type definitions
+
+        //- Type of values the UPtrList contains.
+        typedef T value_type;
+
+        //- Type that can be used for storing into UPtrList::value_type objects
+        typedef T& reference;
+
+        //- Type that can be used for storing into constant
+        //  UPtrList::value_type objects.
+        typedef const T& const_reference;
+
+
+    // STL iterator
+    // Random access iterator for traversing UPtrList.
+
+        class iterator;
+        friend class iterator;
+
+        //- An STL iterator
+        class iterator
+        {
+            T** ptr_;
+
+        public:
+
+            //- Construct for a given UPtrList entry
+            inline iterator(T**);
+
+            // Member operators
+
+                inline bool operator==(const iterator&) const;
+                inline bool operator!=(const iterator&) const;
+
+                inline T& operator*();
+                inline T& operator()();
+
+                inline iterator operator++();
+                inline iterator operator++(int);
+
+                inline iterator operator--();
+                inline iterator operator--(int);
+
+                inline iterator operator+=(label);
+
+                friend iterator operator+ <T>(const iterator&, label);
+                friend iterator operator+ <T>(label, const iterator&);
+
+                inline iterator operator-=(label);
+
+                friend iterator operator- <T>(const iterator&, label);
+
+                friend label operator- <T>
+                (
+                    const iterator&,
+                    const iterator&
+                );
+
+                inline T& operator[](label);
+
+                inline bool operator<(const iterator&) const;
+                inline bool operator>(const iterator&) const;
+
+                inline bool operator<=(const iterator&) const;
+                inline bool operator>=(const iterator&) const;
+        };
+
+        //- Return an iterator to begin traversing the UPtrList.
+        inline iterator begin();
+
+        //- Return an iterator to end traversing the UPtrList.
+        inline iterator end();
+
+
+    // IOstream operator
+
+        // Write List to Ostream.
+        friend Ostream& operator<< <T>(Ostream&, const UPtrList<T>&);
 };
 
 
@@ -258,12 +261,12 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#	include "UPtrListI.H"
+#   include "UPtrListI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "UPtrList.C"
+#   include "UPtrList.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

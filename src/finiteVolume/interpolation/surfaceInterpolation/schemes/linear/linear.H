@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::linear
+    Foam::linear
 
 Description
-	Central-differencing interpolation scheme class
+    Central-differencing interpolation scheme class
 
 SourceFiles
-	linear.C
+    linear.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,60 +43,63 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class linear Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class linear
 :
-	public surfaceInterpolationScheme<Type>
+    public surfaceInterpolationScheme<Type>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise assignment
-		void operator=(const linear&);
+        //- Disallow default bitwise assignment
+        void operator=(const linear&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("linear");
+    //- Runtime type information
+    TypeName("linear");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh
-		linear(const fvMesh& mesh)
-		:
-			surfaceInterpolationScheme<Type>(mesh)
-		{}
+        //- Construct from mesh
+        linear(const fvMesh& mesh)
+        :
+            surfaceInterpolationScheme<Type>(mesh)
+        {}
 
-		//- Construct from Istream
-		linear(const fvMesh& mesh, Istream&)
-		:
-			surfaceInterpolationScheme<Type>(mesh)
-		{}
+        //- Construct from Istream
+        linear(const fvMesh& mesh, Istream&)
+        :
+            surfaceInterpolationScheme<Type>(mesh)
+        {}
 
-		//- Construct from faceFlux and Istream
-		linear
-		(
-			const fvMesh& mesh,
-			const surfaceScalarField&,
-			Istream&
-		)
-		:
-			surfaceInterpolationScheme<Type>(mesh)
-		{}
+        //- Construct from faceFlux and Istream
+        linear
+        (
+            const fvMesh& mesh,
+            const surfaceScalarField&,
+            Istream&
+        )
+        :
+            surfaceInterpolationScheme<Type>(mesh)
+        {}
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Return the interpolation weighting factors
-		tmp<surfaceScalarField> weights
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) const
-		{
-			return this->mesh().surfaceInterpolation::weights();
-		}
+        //- Return the interpolation weighting factors
+        tmp<surfaceScalarField> weights
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const
+        {
+            return this->mesh().surfaceInterpolation::weights();
+        }
 };
 
 
@@ -104,11 +107,11 @@ template<class Type>
 tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
 linearInterpolate(const GeometricField<Type, fvPatchField, volMesh>& vf)
 {
-	return surfaceInterpolationScheme<Type>::interpolate
-	(
-		vf,
-		vf.mesh().surfaceInterpolation::weights()
-	);
+    return surfaceInterpolationScheme<Type>::interpolate
+    (
+        vf,
+        vf.mesh().surfaceInterpolation::weights()
+    );
 }
 
 
@@ -116,10 +119,10 @@ template<class Type>
 tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
 linearInterpolate(const tmp<GeometricField<Type, fvPatchField, volMesh> >& tvf)
 {
-	tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
-		linearInterpolate(tvf());
-	tvf.clear();
-	return tinterp;
+    tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tinterp =
+        linearInterpolate(tvf());
+    tvf.clear();
+    return tinterp;
 }
 
 

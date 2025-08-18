@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Return intersection of a line with the face
+    Return intersection of a line with the face
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,188 +44,188 @@ Description
 
 Foam::pointHit Foam::face::ray
 (
-	const point& p,
-	const vector& n,
-	const pointField& meshPoints,
-	const intersection::algorithm alg,
-	const intersection::direction dir
+    const point& p,
+    const vector& n,
+    const pointField& meshPoints,
+    const intersection::algorithm alg,
+    const intersection::direction dir
 ) const
 {
-	point ctr = Foam::average(points(meshPoints));
+    point ctr = Foam::average(points(meshPoints));
 
-	scalar nearestHitDist = GREAT;
+    scalar nearestHitDist = GREAT;
 
-	scalar nearestMissDist = GREAT;
-	bool eligible = false;
+    scalar nearestMissDist = GREAT;
+    bool eligible = false;
 
-	// Initialize to miss, distance = GREAT
-	pointHit nearest(p);
+    // Initialize to miss, distance = GREAT
+    pointHit nearest(p);
 
-	const labelList& f = *this;
+    const labelList& f = *this;
 
-	label nPoints = size();
+    label nPoints = size();
 
-	point nextPoint = ctr;
+    point nextPoint = ctr;
 
-	for (label pI = 0; pI < nPoints; pI++)
-	{
-		nextPoint = meshPoints[f[fcIndex(pI)]];
+    for (label pI = 0; pI < nPoints; pI++)
+    {
+        nextPoint = meshPoints[f[fcIndex(pI)]];
 
-		// Note: for best accuracy, centre point always comes last
-		// HJ, 9/Sep/2001
-		pointHit curHit = triPointRef
-		(
-			meshPoints[f[pI]],
-			nextPoint,
-			ctr
-		).ray(p, n, alg, dir);
+        // Note: for best accuracy, centre point always comes last
+        // HJ, 9/Sep/2001
+        pointHit curHit = triPointRef
+        (
+            meshPoints[f[pI]],
+            nextPoint,
+            ctr
+        ).ray(p, n, alg, dir);
 
-		if (curHit.hit())
-		{
-			if (Foam::mag(curHit.distance()) < Foam::mag(nearestHitDist))
-			{
-				nearestHitDist = curHit.distance();
-				nearest.setHit();
-				nearest.setPoint(curHit.hitPoint());
-			}
-		}
-		else if (!nearest.hit())
-		{
-			// Miss and no hit yet. Update miss statistics.
-			if (curHit.eligibleMiss())
-			{
-				eligible = true;
+        if (curHit.hit())
+        {
+            if (Foam::mag(curHit.distance()) < Foam::mag(nearestHitDist))
+            {
+                nearestHitDist = curHit.distance();
+                nearest.setHit();
+                nearest.setPoint(curHit.hitPoint());
+            }
+        }
+        else if (!nearest.hit())
+        {
+            // Miss and no hit yet. Update miss statistics.
+            if (curHit.eligibleMiss())
+            {
+                eligible = true;
 
-				// Miss distance is the distance between the plane intersection
-				// point and the nearest point of the triangle
-				scalar missDist =
-					Foam::mag
-					(
-					    p + curHit.distance()*n
-					  - curHit.missPoint()
-					);
+                // Miss distance is the distance between the plane intersection
+                // point and the nearest point of the triangle
+                scalar missDist =
+                    Foam::mag
+                    (
+                        p + curHit.distance()*n
+                      - curHit.missPoint()
+                    );
 
-				if (missDist < nearestMissDist)
-				{
-					nearestMissDist = missDist;
-					nearest.setDistance(curHit.distance());
-					nearest.setPoint(curHit.missPoint());
-				}
-			}
-		}
-	}
+                if (missDist < nearestMissDist)
+                {
+                    nearestMissDist = missDist;
+                    nearest.setDistance(curHit.distance());
+                    nearest.setPoint(curHit.missPoint());
+                }
+            }
+        }
+    }
 
-	if (nearest.hit())
-	{
-		nearest.setDistance(nearestHitDist);
-	}
-	else
-	{
-		// Haven't hit a single face triangle
-		nearest.setMiss(eligible);
-	}
+    if (nearest.hit())
+    {
+        nearest.setDistance(nearestHitDist);
+    }
+    else
+    {
+        // Haven't hit a single face triangle
+        nearest.setMiss(eligible);
+    }
 
-	return nearest;
+    return nearest;
 }
 
 
 Foam::pointHit Foam::face::fastIntersection
 (
-	const point& p,
-	const vector& q,
-	const point& ctr,
-	const pointField& meshPoints,
-	const intersection::algorithm alg,
-	const scalar tol
+    const point& p,
+    const vector& q,
+    const point& ctr,
+    const pointField& meshPoints,
+    const intersection::algorithm alg,
+    const scalar tol
 ) const
 {
-	scalar nearestHitDist = VGREAT;
+    scalar nearestHitDist = VGREAT;
 
-	// Initialize to miss, distance = GREAT
-	pointHit nearest(p);
+    // Initialize to miss, distance = GREAT
+    pointHit nearest(p);
 
-	const labelList& f = *this;
+    const labelList& f = *this;
 
-	forAll(f, pI)
-	{
-		// Note: for best accuracy, centre point always comes last
-		pointHit curHit = triPointRef
-		(
-			meshPoints[f[pI]],
-			meshPoints[f[fcIndex(pI)]],
-			ctr
-		).fastIntersection(p, q, alg, tol);
+    forAll(f, pI)
+    {
+        // Note: for best accuracy, centre point always comes last
+        pointHit curHit = triPointRef
+        (
+            meshPoints[f[pI]],
+            meshPoints[f[fcIndex(pI)]],
+            ctr
+        ).fastIntersection(p, q, alg, tol);
 
-		if (curHit.hit())
-		{
-			if (Foam::mag(curHit.distance()) < nearestHitDist)
-			{
-				nearestHitDist = Foam::mag(curHit.distance());
-				nearest.setHit();
-				nearest.setPoint(curHit.hitPoint());
-			}
-		}
-	}
+        if (curHit.hit())
+        {
+            if (Foam::mag(curHit.distance()) < nearestHitDist)
+            {
+                nearestHitDist = Foam::mag(curHit.distance());
+                nearest.setHit();
+                nearest.setPoint(curHit.hitPoint());
+            }
+        }
+    }
 
-	if (nearest.hit())
-	{
-		nearest.setDistance(nearestHitDist);
-	}
+    if (nearest.hit())
+    {
+        nearest.setDistance(nearestHitDist);
+    }
 
-	return nearest;
+    return nearest;
 }
 
 
 Foam::pointHit Foam::face::nearestPoint
 (
-	const point& p,
-	const pointField& meshPoints
+    const point& p,
+    const pointField& meshPoints
 ) const
 {
-	const face& f = *this;
-	point ctr = centre(meshPoints);
+    const face& f = *this;
+    point ctr = centre(meshPoints);
 
-	// Initialize to miss, distance=GREAT
-	pointHit nearest(p);
+    // Initialize to miss, distance=GREAT
+    pointHit nearest(p);
 
-	label nPoints = f.size();
+    label nPoints = f.size();
 
-	point nextPoint = ctr;
+    point nextPoint = ctr;
 
-	for (label pI = 0; pI < nPoints; pI++)
-	{
-		nextPoint = meshPoints[f[fcIndex(pI)]];
+    for (label pI = 0; pI < nPoints; pI++)
+    {
+        nextPoint = meshPoints[f[fcIndex(pI)]];
 
-		// Note: for best accuracy, centre point always comes last
-		// HJ, 9/Sep/2001
-		triPointRef tri
-		(
-			meshPoints[f[pI]],
-			nextPoint,
-			ctr
-		);
+        // Note: for best accuracy, centre point always comes last
+        // HJ, 9/Sep/2001
+        triPointRef tri
+        (
+            meshPoints[f[pI]],
+            nextPoint,
+            ctr
+        );
 
-		pointHit curHit = tri.nearestPoint(p);
+        pointHit curHit = tri.nearestPoint(p);
 
-		if (Foam::mag(curHit.distance()) < Foam::mag(nearest.distance()))
-		{
-			nearest.setDistance(curHit.distance());
+        if (Foam::mag(curHit.distance()) < Foam::mag(nearest.distance()))
+        {
+            nearest.setDistance(curHit.distance());
 
-			if (curHit.hit())
-			{
-				nearest.setHit();
-				nearest.setPoint(curHit.hitPoint());
-			}
-			else
-			{
-				// In nearest point, miss is always eligible
-				nearest.setMiss(true);
-				nearest.setPoint(curHit.missPoint());
-			}
-		}
-	}
+            if (curHit.hit())
+            {
+                nearest.setHit();
+                nearest.setPoint(curHit.hitPoint());
+            }
+            else
+            {
+                // In nearest point, miss is always eligible
+                nearest.setMiss(true);
+                nearest.setPoint(curHit.missPoint());
+            }
+        }
+    }
 
-	return nearest;
+    return nearest;
 }
 
 

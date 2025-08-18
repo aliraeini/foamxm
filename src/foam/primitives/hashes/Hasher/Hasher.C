@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Hashing functions, mostly from Bob Jenkins
+    Hashing functions, mostly from Bob Jenkins
 \*---------------------------------------------------------------------------*/
 
 #include "Hasher.H"
 #include "HasherInt.H"
 
 #if defined (__GLIBC__)
-#	include <endian.h>
+#   include <endian.h>
 #endif
 
 // Left-rotate a 32-bit value and carry by nBits
@@ -114,14 +114,14 @@ Description
 // ----------------------------------------------------------------------------
 
 #define bitMixer(a, b, c)                                                     \
-	{                                                                         \
-		a -= c; a ^= bitRotateLeft(c, 4); c += b;                             \
-		b -= a; b ^= bitRotateLeft(a, 6); a += c;                             \
-		c -= b; c ^= bitRotateLeft(b, 8); b += a;                             \
-		a -= c; a ^= bitRotateLeft(c,16); c += b;                             \
-		b -= a; b ^= bitRotateLeft(a,19); a += c;                             \
-		c -= b; c ^= bitRotateLeft(b, 4); b += a;                             \
-	}
+    {                                                                         \
+        a -= c; a ^= bitRotateLeft(c, 4); c += b;                             \
+        b -= a; b ^= bitRotateLeft(a, 6); a += c;                             \
+        c -= b; c ^= bitRotateLeft(b, 8); b += a;                             \
+        a -= c; a ^= bitRotateLeft(c,16); c += b;                             \
+        b -= a; b ^= bitRotateLeft(a,19); a += c;                             \
+        c -= b; c ^= bitRotateLeft(b, 4); b += a;                             \
+    }
 
 
 // ----------------------------------------------------------------------------
@@ -149,15 +149,15 @@ Description
 // ----------------------------------------------------------------------------
 
 #define bitMixerFinal(a, b, c)                                                \
-	{                                                                         \
-		c ^= b; c -= bitRotateLeft(b, 14);                                    \
-		a ^= c; a -= bitRotateLeft(c, 11);                                    \
-		b ^= a; b -= bitRotateLeft(a, 25);                                    \
-		c ^= b; c -= bitRotateLeft(b, 16);                                    \
-		a ^= c; a -= bitRotateLeft(c, 4);                                     \
-		b ^= a; b -= bitRotateLeft(a, 14);                                    \
-		c ^= b; c -= bitRotateLeft(b, 24);                                    \
-	}
+    {                                                                         \
+        c ^= b; c -= bitRotateLeft(b, 14);                                    \
+        a ^= c; a -= bitRotateLeft(c, 11);                                    \
+        b ^= a; b -= bitRotateLeft(a, 25);                                    \
+        c ^= b; c -= bitRotateLeft(b, 16);                                    \
+        a ^= c; a -= bitRotateLeft(c, 4);                                     \
+        b ^= a; b -= bitRotateLeft(a, 14);                                    \
+        c ^= b; c -= bitRotateLeft(b, 24);                                    \
+    }
 
 
 // * * * * * * * * * * * * * * Static Functions  * * * * * * * * * * * * * * //
@@ -191,168 +191,168 @@ Description
 #if !defined (__BYTE_ORDER) || (__BYTE_ORDER == __LITTLE_ENDIAN)
 static unsigned jenkins_hashlittle
 (
-	const void *key,
-	size_t length,
-	unsigned initval
+    const void *key,
+    size_t length,
+    unsigned initval
 )
 {
-	uint32_t a, b, c;
-	union { const void *ptr; size_t i; } u; // to cast key to (size_t) happily
+    uint32_t a, b, c;
+    union { const void *ptr; size_t i; } u; // to cast key to (size_t) happily
 
-	// Set up the internal state
-	a = b = c = 0xdeadbeef + static_cast<uint32_t>(length) + initval;
+    // Set up the internal state
+    a = b = c = 0xdeadbeef + static_cast<uint32_t>(length) + initval;
 
-	u.ptr = key;
-	if ((u.i & 0x3) == 0)
-	{
-		// 32-bit chunks
-		const uint32_t *k = reinterpret_cast<const uint32_t*>(key);
+    u.ptr = key;
+    if ((u.i & 0x3) == 0)
+    {
+        // 32-bit chunks
+        const uint32_t *k = reinterpret_cast<const uint32_t*>(key);
 
-		// all but last block: aligned reads and affect 32 bits of (a,b,c)
-		while (length > 12)
-		{
-			a += k[0];
-			b += k[1];
-			c += k[2];
-			bitMixer(a,b,c);
-			length -= 12;
-			k += 3;
-		}
+        // all but last block: aligned reads and affect 32 bits of (a,b,c)
+        while (length > 12)
+        {
+            a += k[0];
+            b += k[1];
+            c += k[2];
+            bitMixer(a,b,c);
+            length -= 12;
+            k += 3;
+        }
 
-		// handle the last (probably partial) block byte-wise
-		const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
-		switch (length)
-		{
-			case 12: c += k[2]; b += k[1]; a += k[0]; break;
-			case 11: c += static_cast<uint32_t>(k8[10]) << 16; [[fallthrough]];
-			case 10: c += static_cast<uint32_t>(k8[9])  << 8;  [[fallthrough]];
-			case 9 : c += k8[8];                               [[fallthrough]];
-			case 8 : b += k[1]; a += k[0]; break;
-			case 7 : b += static_cast<uint32_t>(k8[6]) << 16;  [[fallthrough]];
-			case 6 : b += static_cast<uint32_t>(k8[5]) << 8;   [[fallthrough]];
-			case 5 : b += k8[4];                               [[fallthrough]];
-			case 4 : a += k[0]; break;
-			case 3 : a += static_cast<uint32_t>(k8[2]) << 16;  [[fallthrough]];
-			case 2 : a += static_cast<uint32_t>(k8[1]) << 8;   [[fallthrough]];
-			case 1 : a += k8[0]; break;
-			case 0 : return c;  // zero-length requires no mixing
-		}
-	}
-	else if ((u.i & 0x1) == 0)
-	{
-		// 16-bit chunks
-		const uint16_t *k = reinterpret_cast<const uint16_t*>(key);
+        // handle the last (probably partial) block byte-wise
+        const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
+        switch (length)
+        {
+            case 12: c += k[2]; b += k[1]; a += k[0]; break;
+            case 11: c += static_cast<uint32_t>(k8[10]) << 16; [[fallthrough]];
+            case 10: c += static_cast<uint32_t>(k8[9])  << 8;  [[fallthrough]];
+            case 9 : c += k8[8];                               [[fallthrough]];
+            case 8 : b += k[1]; a += k[0]; break;
+            case 7 : b += static_cast<uint32_t>(k8[6]) << 16;  [[fallthrough]];
+            case 6 : b += static_cast<uint32_t>(k8[5]) << 8;   [[fallthrough]];
+            case 5 : b += k8[4];                               [[fallthrough]];
+            case 4 : a += k[0]; break;
+            case 3 : a += static_cast<uint32_t>(k8[2]) << 16;  [[fallthrough]];
+            case 2 : a += static_cast<uint32_t>(k8[1]) << 8;   [[fallthrough]];
+            case 1 : a += k8[0]; break;
+            case 0 : return c;  // zero-length requires no mixing
+        }
+    }
+    else if ((u.i & 0x1) == 0)
+    {
+        // 16-bit chunks
+        const uint16_t *k = reinterpret_cast<const uint16_t*>(key);
 
-		// all but last block: aligned reads and different mixing
-		while (length > 12)
-		{
-			a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-			b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
-			c += k[4] + (static_cast<uint32_t>(k[5]) << 16);
-			bitMixer(a,b,c);
-			length -= 12;
-			k += 6;
-		}
+        // all but last block: aligned reads and different mixing
+        while (length > 12)
+        {
+            a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+            b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
+            c += k[4] + (static_cast<uint32_t>(k[5]) << 16);
+            bitMixer(a,b,c);
+            length -= 12;
+            k += 6;
+        }
 
-		// handle the last (probably partial) block
-		const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
-		switch (length)
-		{
-			case 12:
-				c += k[4] + (static_cast<uint32_t>(k[5]) << 16);
-				b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
-				a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-				break;
-			case 11:
-				c += static_cast<uint32_t>(k8[10]) << 16;
-				[[fallthrough]];
-			case 10:
-				c += k[4];
-				b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
-				a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-				break;
-			case 9 :
-				c += k8[8];
-				[[fallthrough]];
-			case 8 :
-				b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
-				a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-				break;
-			case 7 :
-				b += static_cast<uint32_t>(k8[6]) << 16;
-				[[fallthrough]];
-			case 6 :
-				b += k[2];
-				a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-				break;
-			case 5 :
-				b += k8[4];
-				[[fallthrough]];
-			case 4 :
-				a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
-				break;
-			case 3 :
-				a += static_cast<uint32_t>(k8[2]) << 16;
-				[[fallthrough]];
-			case 2 :
-				a += k[0];
-				break;
-			case 1 :
-				a += k8[0];
-				break;
-			case 0 : return c;     // zero-length requires no mixing
-		}
-	}
-	else
-	{
-		const uint8_t *k = reinterpret_cast<const uint8_t*>(key);
+        // handle the last (probably partial) block
+        const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
+        switch (length)
+        {
+            case 12:
+                c += k[4] + (static_cast<uint32_t>(k[5]) << 16);
+                b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
+                a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+                break;
+            case 11:
+                c += static_cast<uint32_t>(k8[10]) << 16;
+                [[fallthrough]];
+            case 10:
+                c += k[4];
+                b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
+                a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+                break;
+            case 9 :
+                c += k8[8];
+                [[fallthrough]];
+            case 8 :
+                b += k[2] + (static_cast<uint32_t>(k[3]) << 16);
+                a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+                break;
+            case 7 :
+                b += static_cast<uint32_t>(k8[6]) << 16;
+                [[fallthrough]];
+            case 6 :
+                b += k[2];
+                a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+                break;
+            case 5 :
+                b += k8[4];
+                [[fallthrough]];
+            case 4 :
+                a += k[0] + (static_cast<uint32_t>(k[1]) << 16);
+                break;
+            case 3 :
+                a += static_cast<uint32_t>(k8[2]) << 16;
+                [[fallthrough]];
+            case 2 :
+                a += k[0];
+                break;
+            case 1 :
+                a += k8[0];
+                break;
+            case 0 : return c;     // zero-length requires no mixing
+        }
+    }
+    else
+    {
+        const uint8_t *k = reinterpret_cast<const uint8_t*>(key);
 
-		// all but the last block: affect some 32 bits of (a,b,c)
-		while (length > 12)
-		{
-			a += k[0];
-			a += static_cast<uint32_t>(k[1]) << 8;
-			a += static_cast<uint32_t>(k[2]) << 16;
-			a += static_cast<uint32_t>(k[3]) << 24;
-			b += k[4];
-			b += static_cast<uint32_t>(k[5]) << 8;
-			b += static_cast<uint32_t>(k[6]) << 16;
-			b += static_cast<uint32_t>(k[7]) << 24;
-			c += k[8];
-			c += static_cast<uint32_t>(k[9])  << 8;
-			c += static_cast<uint32_t>(k[10]) << 16;
-			c += static_cast<uint32_t>(k[11]) << 24;
+        // all but the last block: affect some 32 bits of (a,b,c)
+        while (length > 12)
+        {
+            a += k[0];
+            a += static_cast<uint32_t>(k[1]) << 8;
+            a += static_cast<uint32_t>(k[2]) << 16;
+            a += static_cast<uint32_t>(k[3]) << 24;
+            b += k[4];
+            b += static_cast<uint32_t>(k[5]) << 8;
+            b += static_cast<uint32_t>(k[6]) << 16;
+            b += static_cast<uint32_t>(k[7]) << 24;
+            c += k[8];
+            c += static_cast<uint32_t>(k[9])  << 8;
+            c += static_cast<uint32_t>(k[10]) << 16;
+            c += static_cast<uint32_t>(k[11]) << 24;
 
-			bitMixer(a,b,c);
-			length -= 12;
-			k += 12;
-		}
+            bitMixer(a,b,c);
+            length -= 12;
+            k += 12;
+        }
 
-		// last block: affect all 32 bits of (c)
-		switch (length) // most case statements fall through
-		{
-			case 12: c += static_cast<uint32_t>(k[11]) << 24; [[fallthrough]];
-			case 11: c += static_cast<uint32_t>(k[10]) << 16; [[fallthrough]];
-			case 10: c += static_cast<uint32_t>(k[9]) << 8; [[fallthrough]];
-			case 9 : c += k[8]; [[fallthrough]];
+        // last block: affect all 32 bits of (c)
+        switch (length) // most case statements fall through
+        {
+            case 12: c += static_cast<uint32_t>(k[11]) << 24; [[fallthrough]];
+            case 11: c += static_cast<uint32_t>(k[10]) << 16; [[fallthrough]];
+            case 10: c += static_cast<uint32_t>(k[9]) << 8; [[fallthrough]];
+            case 9 : c += k[8]; [[fallthrough]];
 
-			case 8 : b += static_cast<uint32_t>(k[7]) << 24; [[fallthrough]];
-			case 7 : b += static_cast<uint32_t>(k[6]) << 16; [[fallthrough]];
-			case 6 : b += static_cast<uint32_t>(k[5]) << 8; [[fallthrough]];
-			case 5 : b += k[4]; [[fallthrough]];
+            case 8 : b += static_cast<uint32_t>(k[7]) << 24; [[fallthrough]];
+            case 7 : b += static_cast<uint32_t>(k[6]) << 16; [[fallthrough]];
+            case 6 : b += static_cast<uint32_t>(k[5]) << 8; [[fallthrough]];
+            case 5 : b += k[4]; [[fallthrough]];
 
-			case 4 : a += static_cast<uint32_t>(k[3]) << 24; [[fallthrough]];
-			case 3 : a += static_cast<uint32_t>(k[2]) << 16; [[fallthrough]];
-			case 2 : a += static_cast<uint32_t>(k[1]) << 8; [[fallthrough]];
-			case 1 : a += k[0];
-				break;
+            case 4 : a += static_cast<uint32_t>(k[3]) << 24; [[fallthrough]];
+            case 3 : a += static_cast<uint32_t>(k[2]) << 16; [[fallthrough]];
+            case 2 : a += static_cast<uint32_t>(k[1]) << 8; [[fallthrough]];
+            case 1 : a += k[0];
+                break;
 
-			case 0 : return c;
-		}
-	}
+            case 0 : return c;
+        }
+    }
 
-	bitMixerFinal(a,b,c);
-	return c;
+    bitMixerFinal(a,b,c);
+    return c;
 }
 #endif
 
@@ -369,101 +369,101 @@ static unsigned jenkins_hashlittle
 #if !defined (__BYTE_ORDER) || (__BYTE_ORDER == __BIG_ENDIAN)
 static unsigned jenkins_hashbig
 (
-	const void *key,
-	size_t length,
-	unsigned initval
+    const void *key,
+    size_t length,
+    unsigned initval
 )
 {
-	uint32_t a, b, c;
-	union { const void *ptr; size_t i; } u; // to cast key to (size_t) happily
+    uint32_t a, b, c;
+    union { const void *ptr; size_t i; } u; // to cast key to (size_t) happily
 
-	// Set up the internal state
-	a = b = c = 0xdeadbeef + static_cast<uint32_t>(length) + initval;
+    // Set up the internal state
+    a = b = c = 0xdeadbeef + static_cast<uint32_t>(length) + initval;
 
-	u.ptr = key;
-	if ((u.i & 0x3) == 0)
-	{
-		// 32-bit chunks
-		const uint32_t *k = reinterpret_cast<const uint32_t*>(key);
+    u.ptr = key;
+    if ((u.i & 0x3) == 0)
+    {
+        // 32-bit chunks
+        const uint32_t *k = reinterpret_cast<const uint32_t*>(key);
 
-		// all but last block: aligned reads and affect 32 bits of (a,b,c)
-		while (length > 12)
-		{
-			a += k[0];
-			b += k[1];
-			c += k[2];
-			bitMixer(a,b,c);
-			length -= 12;
-			k += 3;
-		}
+        // all but last block: aligned reads and affect 32 bits of (a,b,c)
+        while (length > 12)
+        {
+            a += k[0];
+            b += k[1];
+            c += k[2];
+            bitMixer(a,b,c);
+            length -= 12;
+            k += 3;
+        }
 
-		// handle the last (probably partial) block byte-wise
-		const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
+        // handle the last (probably partial) block byte-wise
+        const uint8_t *k8 = reinterpret_cast<const uint8_t*>(k);
 
-		switch (length) // most the case statements fall through
-		{
-			case 12: c += k[2]; b += k[1]; a += k[0]; break;
-			case 11: c += static_cast<uint32_t>(k8[10]) << 8; [[fallthrough]];
-			case 10: c += static_cast<uint32_t>(k8[9]) << 16; [[fallthrough]];
-			case 9 : c += static_cast<uint32_t>(k8[8]) << 24; [[fallthrough]];
-			case 8 : b += k[1]; a += k[0]; break;
-			case 7 : b += static_cast<uint32_t>(k8[6]) << 8;  [[fallthrough]];
-			case 6 : b += static_cast<uint32_t>(k8[5]) << 16; [[fallthrough]];
-			case 5 : b += static_cast<uint32_t>(k8[4]) << 24; [[fallthrough]];
-			case 4 : a += k[0]; break;
-			case 3 : a += static_cast<uint32_t>(k8[2]) << 8;  [[fallthrough]];
-			case 2 : a += static_cast<uint32_t>(k8[1]) << 16; [[fallthrough]];
-			case 1 : a += static_cast<uint32_t>(k8[0]) << 24; break;
-			case 0 : return c;
-		}
-	}
-	else
-	{
-		// need to read the key one byte at a time
-		const uint8_t *k = reinterpret_cast<const uint8_t*>(key);
+        switch (length) // most the case statements fall through
+        {
+            case 12: c += k[2]; b += k[1]; a += k[0]; break;
+            case 11: c += static_cast<uint32_t>(k8[10]) << 8; [[fallthrough]];
+            case 10: c += static_cast<uint32_t>(k8[9]) << 16; [[fallthrough]];
+            case 9 : c += static_cast<uint32_t>(k8[8]) << 24; [[fallthrough]];
+            case 8 : b += k[1]; a += k[0]; break;
+            case 7 : b += static_cast<uint32_t>(k8[6]) << 8;  [[fallthrough]];
+            case 6 : b += static_cast<uint32_t>(k8[5]) << 16; [[fallthrough]];
+            case 5 : b += static_cast<uint32_t>(k8[4]) << 24; [[fallthrough]];
+            case 4 : a += k[0]; break;
+            case 3 : a += static_cast<uint32_t>(k8[2]) << 8;  [[fallthrough]];
+            case 2 : a += static_cast<uint32_t>(k8[1]) << 16; [[fallthrough]];
+            case 1 : a += static_cast<uint32_t>(k8[0]) << 24; break;
+            case 0 : return c;
+        }
+    }
+    else
+    {
+        // need to read the key one byte at a time
+        const uint8_t *k = reinterpret_cast<const uint8_t*>(key);
 
-		// all but the last block: affect some 32 bits of (a,b,c)
-		while (length > 12)
-		{
-			a += static_cast<uint32_t>(k[0]) << 24;
-			a += static_cast<uint32_t>(k[1]) << 16;
-			a += static_cast<uint32_t>(k[2]) << 8;
-			a += static_cast<uint32_t>(k[3]);
-			b += static_cast<uint32_t>(k[4]) << 24;
-			b += static_cast<uint32_t>(k[5]) << 16;
-			b += static_cast<uint32_t>(k[6]) << 8;
-			b += static_cast<uint32_t>(k[7]);
-			c += static_cast<uint32_t>(k[8]) << 24;
-			c += static_cast<uint32_t>(k[9]) << 16;
-			c += static_cast<uint32_t>(k[10]) << 8;
-			c += static_cast<uint32_t>(k[11]);
+        // all but the last block: affect some 32 bits of (a,b,c)
+        while (length > 12)
+        {
+            a += static_cast<uint32_t>(k[0]) << 24;
+            a += static_cast<uint32_t>(k[1]) << 16;
+            a += static_cast<uint32_t>(k[2]) << 8;
+            a += static_cast<uint32_t>(k[3]);
+            b += static_cast<uint32_t>(k[4]) << 24;
+            b += static_cast<uint32_t>(k[5]) << 16;
+            b += static_cast<uint32_t>(k[6]) << 8;
+            b += static_cast<uint32_t>(k[7]);
+            c += static_cast<uint32_t>(k[8]) << 24;
+            c += static_cast<uint32_t>(k[9]) << 16;
+            c += static_cast<uint32_t>(k[10]) << 8;
+            c += static_cast<uint32_t>(k[11]);
 
-			bitMixer(a,b,c);
-			length -= 12;
-			k += 12;
-		}
+            bitMixer(a,b,c);
+            length -= 12;
+            k += 12;
+        }
 
-		// last block: affect all 32 bits of (c)
-		switch (length) // the case statements fall through
-		{
-			case 12: c += k[11]; [[fallthrough]];
-			case 11: c += static_cast<uint32_t>(k[10]) << 8; [[fallthrough]];
-			case 10: c += static_cast<uint32_t>(k[9]) << 16; [[fallthrough]];
-			case 9 : c += static_cast<uint32_t>(k[8]) << 24; [[fallthrough]];
-			case 8 : b += k[7]; [[fallthrough]];
-			case 7 : b += static_cast<uint32_t>(k[6]) << 8; [[fallthrough]];
-			case 6 : b += static_cast<uint32_t>(k[5]) << 16; [[fallthrough]];
-			case 5 : b += static_cast<uint32_t>(k[4]) << 24; [[fallthrough]];
-			case 4 : a += k[3]; [[fallthrough]];
-			case 3 : a += static_cast<uint32_t>(k[2]) << 8; [[fallthrough]];
-			case 2 : a += static_cast<uint32_t>(k[1]) << 16; [[fallthrough]];
-			case 1 : a += static_cast<uint32_t>(k[0]) << 24; break;
-			case 0 : return c;
-		}
-	}
+        // last block: affect all 32 bits of (c)
+        switch (length) // the case statements fall through
+        {
+            case 12: c += k[11]; [[fallthrough]];
+            case 11: c += static_cast<uint32_t>(k[10]) << 8; [[fallthrough]];
+            case 10: c += static_cast<uint32_t>(k[9]) << 16; [[fallthrough]];
+            case 9 : c += static_cast<uint32_t>(k[8]) << 24; [[fallthrough]];
+            case 8 : b += k[7]; [[fallthrough]];
+            case 7 : b += static_cast<uint32_t>(k[6]) << 8; [[fallthrough]];
+            case 6 : b += static_cast<uint32_t>(k[5]) << 16; [[fallthrough]];
+            case 5 : b += static_cast<uint32_t>(k[4]) << 24; [[fallthrough]];
+            case 4 : a += k[3]; [[fallthrough]];
+            case 3 : a += static_cast<uint32_t>(k[2]) << 8; [[fallthrough]];
+            case 2 : a += static_cast<uint32_t>(k[1]) << 16; [[fallthrough]];
+            case 1 : a += static_cast<uint32_t>(k[0]) << 24; break;
+            case 0 : return c;
+        }
+    }
 
-	bitMixerFinal(a,b,c);
-	return c;
+    bitMixerFinal(a,b,c);
+    return c;
 }
 #endif
 
@@ -473,30 +473,30 @@ static unsigned jenkins_hashbig
 
 unsigned Foam::Hasher
 (
-	const void *key,
-	size_t length,
-	unsigned initval
+    const void *key,
+    size_t length,
+    unsigned initval
 )
 {
 #ifdef __BYTE_ORDER
 #if (__BYTE_ORDER == __BIG_ENDIAN)
-	return jenkins_hashbig(key, length, initval);
+    return jenkins_hashbig(key, length, initval);
 #else
-	return jenkins_hashlittle(key, length, initval);
+    return jenkins_hashlittle(key, length, initval);
 #endif
 #else
-	// endian-ness not known at compile-time: runtime endian test
-	const short endianTest = 0x0100;
+    // endian-ness not known at compile-time: runtime endian test
+    const short endianTest = 0x0100;
 
-	// yields 0x01 for big endian
-	if (*(reinterpret_cast<const char *>(&endianTest)))
-	{
-		return jenkins_hashbig(key, length, initval);
-	}
-	else
-	{
-		return jenkins_hashlittle(key, length, initval);
-	}
+    // yields 0x01 for big endian
+    if (*(reinterpret_cast<const char *>(&endianTest)))
+    {
+        return jenkins_hashbig(key, length, initval);
+    }
+    else
+    {
+        return jenkins_hashlittle(key, length, initval);
+    }
 #endif
 }
 
@@ -514,40 +514,40 @@ unsigned Foam::Hasher
 // ----------------------------------------------------------------------------
 unsigned Foam::HasherInt
 (
-	const uint32_t *k,
-	size_t length,
-	unsigned seed
+    const uint32_t *k,
+    size_t length,
+    unsigned seed
 )
 {
-	uint32_t a, b, c;
+    uint32_t a, b, c;
 
-	// Set up the internal state
-	a = b = c = 0xdeadbeef + (static_cast<uint32_t>(length) << 2) + seed;
+    // Set up the internal state
+    a = b = c = 0xdeadbeef + (static_cast<uint32_t>(length) << 2) + seed;
 
-	// handle most of the key
-	while (length > 3)
-	{
-		a += k[0];
-		b += k[1];
-		c += k[2];
-		bitMixer(a,b,c);
-		length -= 3;
-		k += 3;
-	}
+    // handle most of the key
+    while (length > 3)
+    {
+        a += k[0];
+        b += k[1];
+        c += k[2];
+        bitMixer(a,b,c);
+        length -= 3;
+        k += 3;
+    }
 
-	// handle the last 3 uint32_t's
-	switch (length)  // all case statements fall through
-	{
-		case 3 : c += k[2]; [[fallthrough]];
-		case 2 : b += k[1]; [[fallthrough]];
-		case 1 : a += k[0];
-			bitMixerFinal(a,b,c);
-			[[fallthrough]];
-		case 0 :  // case 0: nothing left to add
-			break;
-	}
+    // handle the last 3 uint32_t's
+    switch (length)  // all case statements fall through
+    {
+        case 3 : c += k[2]; [[fallthrough]];
+        case 2 : b += k[1]; [[fallthrough]];
+        case 1 : a += k[0];
+            bitMixerFinal(a,b,c);
+            [[fallthrough]];
+        case 0 :  // case 0: nothing left to add
+            break;
+    }
 
-	return c;
+    return c;
 }
 
 
@@ -559,47 +559,47 @@ unsigned Foam::HasherInt
 // ----------------------------------------------------------------------------
 unsigned Foam::HasherDual
 (
-	const uint32_t *k,
-	size_t length,
-	unsigned& hash1,  // IN: seed OUT: primary hash value
-	unsigned& hash2   // IN: more seed OUT: secondary hash value
+    const uint32_t *k,
+    size_t length,
+    unsigned& hash1,  // IN: seed OUT: primary hash value
+    unsigned& hash2   // IN: more seed OUT: secondary hash value
 )
 {
-	uint32_t a, b, c;
+    uint32_t a, b, c;
 
-	// Set up the internal state
-	a = b = c = 0xdeadbeef + (static_cast<uint32_t>(length) << 2) + hash1;
-	c += hash2;
+    // Set up the internal state
+    a = b = c = 0xdeadbeef + (static_cast<uint32_t>(length) << 2) + hash1;
+    c += hash2;
 
-	// handle most of the key
-	while (length > 3)
-	{
-		a += k[0];
-		b += k[1];
-		c += k[2];
-		bitMixer(a,b,c);
-		length -= 3;
-		k += 3;
-	}
+    // handle most of the key
+    while (length > 3)
+    {
+        a += k[0];
+        b += k[1];
+        c += k[2];
+        bitMixer(a,b,c);
+        length -= 3;
+        k += 3;
+    }
 
-	// handle the last 3 uint32_t's
-	switch (length)  // all case statements fall through
-	{
-		case 3 : c += k[2]; [[fallthrough]];
-		case 2 : b += k[1]; [[fallthrough]];
-		case 1 : a += k[0];
-			bitMixerFinal(a,b,c);
-			[[fallthrough]];
-		case 0 :  // case 0: nothing left to add
-			break;
-	}
+    // handle the last 3 uint32_t's
+    switch (length)  // all case statements fall through
+    {
+        case 3 : c += k[2]; [[fallthrough]];
+        case 2 : b += k[1]; [[fallthrough]];
+        case 1 : a += k[0];
+            bitMixerFinal(a,b,c);
+            [[fallthrough]];
+        case 0 :  // case 0: nothing left to add
+            break;
+    }
 
-	// report the result
-	hash1 = c;
-	hash2 = b;
+    // report the result
+    hash1 = c;
+    hash2 = b;
 
-	// return primary hash value
-	return c;
+    // return primary hash value
+    return c;
 }
 
 

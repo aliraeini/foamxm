@@ -1,51 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
-  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2016 OpenFOAM Foundation
-     \\/     M anipulation  | Copyright (C) 2018 OpenCFD Ltd.
--------------------------------------------------------------------------------
-License
-    This file is part of OpenFOAM.
-
-    OpenFOAM is free software: you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
-
-\*---------------------------------------------------------------------------*/
-
-
-/*---------------------------------------------------------------------------*\
-  =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -59,20 +33,20 @@ License
 template<class Face>
 void Foam::fileFormats::VTKsurfaceFormat<Face>::writeHeaderPolygons
 (
-	Ostream& os,
-	const UList<Face>& faceLst
+    Ostream& os,
+    const UList<Face>& faceLst
 )
 {
-	label nNodes = 0;
+    label nNodes = 0;
 
-	forAll(faceLst, faceI)
-	{
-		nNodes += faceLst[faceI].size();
-	}
+    forAll(faceLst, faceI)
+    {
+        nNodes += faceLst[faceI].size();
+    }
 
-	os  << nl
-		<< "POLYGONS " << faceLst.size() << ' '
-		<< faceLst.size() + nNodes << nl;
+    os  << nl
+        << "POLYGONS " << faceLst.size() << ' '
+        << faceLst.size() + nNodes << nl;
 }
 
 
@@ -102,58 +76,58 @@ void readField
     const word& arrayName,
     const word& dataType,
     const label size
-) 
+)
 {
 
-	if(dataType=="VTK_INT"
-		||dataType=="VTK_UINT"
-		||dataType=="VTK_LONG"
-		||dataType=="VTK_ULONG"
-		||dataType=="int"
-		||dataType=="VTK_ID")
-	{
-		labelField& fieldVals = dbset(obj, arrayName, new labelField(size));
-		readBlock(inFile, fieldVals.size(), fieldVals);
-	}
+    if(dataType=="VTK_INT"
+        ||dataType=="VTK_UINT"
+        ||dataType=="VTK_LONG"
+        ||dataType=="VTK_ULONG"
+        ||dataType=="int"
+        ||dataType=="VTK_ID")
+    {
+        labelField& fieldVals = dbset(obj, arrayName, new labelField(size));
+        readBlock(inFile, fieldVals.size(), fieldVals);
+    }
 
 
-	else if(dataType=="VTK_FLOAT" || dataType=="VTK_DOUBLE")
-	{
-		scalarField& fieldVals = dbset(obj, arrayName, new scalarField(size));
-		readBlock(inFile, fieldVals.size(), fieldVals);
-	}
-	else if(dataType=="VTK_STRING")
-	{
-		//if (debug)
-		//{
-			//Info<< "Reading strings:" << size << endl;
-		//}
-		autoPtr<stringList> fieldVals
-		(
-			new stringList
-			(
-				size
-			)
-		);
-		// Consume current line.
-		inFile.getLine(fieldVals()[0]);
+    else if(dataType=="VTK_FLOAT" || dataType=="VTK_DOUBLE")
+    {
+        scalarField& fieldVals = dbset(obj, arrayName, new scalarField(size));
+        readBlock(inFile, fieldVals.size(), fieldVals);
+    }
+    else if(dataType=="VTK_STRING")
+    {
+        //if (debug)
+        //{
+            //Info<< "Reading strings:" << size << endl;
+        //}
+        autoPtr<stringList> fieldVals
+        (
+            new stringList
+            (
+                size
+            )
+        );
+        // Consume current line.
+        inFile.getLine(fieldVals()[0]);
 
-		// Read without parsing
-		forAll(fieldVals(), i)
-		{
-			inFile.getLine(fieldVals()[i]);
-		}
-		//regIOobject::store(fieldVals);
-	}
-	else
-	{
-		IOWarningInFunction(inFile)
-			<< "Unhandled type " << dataType << endl
-			<< "Skipping " << size
-			<< " words." << endl;
-		scalarField fieldVals;
-		readBlock(inFile, size, fieldVals);
-	}
+        // Read without parsing
+        forAll(fieldVals(), i)
+        {
+            inFile.getLine(fieldVals()[i]);
+        }
+        //regIOobject::store(fieldVals);
+    }
+    else
+    {
+        IOWarningInFunction(inFile)
+            << "Unhandled type " << dataType << endl
+            << "Skipping " << size
+            << " words." << endl;
+        scalarField fieldVals;
+        readBlock(inFile, size, fieldVals);
+    }
 
 }
 
@@ -163,7 +137,7 @@ wordList readFieldArray
     ISstream& inFile,
     objRegistry& obj,
     const label wantedSize
-) 
+)
 {
     DynamicList<word> fields;
 
@@ -227,33 +201,33 @@ Foam::fileFormats::VTKsurfaceFormat<Face>::VTKsurfaceFormat
 template<class Face>
 bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 (
-	const fileName& filename
+    const fileName& filename
 )
 {
-	const bool mustTriangulate = this->isTri();
-	this->clear();
+    const bool mustTriangulate = this->isTri();
+    this->clear();
 
-	IFstream is(filename);
-	if (!is.good())
-	{
+    IFstream is(filename);
+    if (!is.good())
+    {
         FatalErrorInFunction
-			<< "Cannot read file " << filename
-			<< exit(FatalError);
-	}
+            << "Cannot read file " << filename
+            << exit(FatalError);
+    }
 
     // assume that the groups are not intermixed
     bool sorted = true;
 
 
-	//pointField points;
-	DynamicList<point>  dynPoints;
-	DynamicList<Face>  faces;
+    //pointField points;
+    DynamicList<point>  dynPoints;
+    DynamicList<Face>  faces;
 
-	//dynamicLabelList zones;
-	dynamicLabelList zoneSizes;
+    //dynamicLabelList zones;
+    dynamicLabelList zoneSizes;
 
 
-	bool debug=true;
+    bool debug=true;
 
     //- Header
     string header_;
@@ -266,17 +240,17 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 
 
     is.getLine(header_);
-										if (debug)  Info<< "Header   : " << header_ << endl; 
+                                        if (debug)  Info<< "Header   : " << header_ << endl;
     is.getLine(title_);
-									if (debug)  Info<< "Title    : " << title_ << endl; 
+                                    if (debug)  Info<< "Title    : " << title_ << endl;
     is.getLine(dataType_);
-									if (debug)  Info<< "dataType : " << dataType_ << endl; 
+                                    if (debug)  Info<< "dataType : " << dataType_ << endl;
 
-										if (dataType_ == "BINARY")
-										{
-											FatalIOErrorInFunction(is)
-												<< "Binary reading not supported " << exit(FatalIOError);
-										}
+                                        if (dataType_ == "BINARY")
+                                        {
+                                            FatalIOErrorInFunction(is)
+                                                << "Binary reading not supported " << exit(FatalIOError);
+                                        }
 
     string readMode = "None";
     label wantedSize = -1;
@@ -371,7 +345,7 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             }
             labelList lineVerts;
             readBlock(is, nNumbers, lineVerts);
-			labelListList lines_;
+            labelListList lines_;
 
             label lineI = lines_.size();
             lines_.setSize(lineI+nLines);
@@ -427,12 +401,12 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             wantedSize = dynPoints.size();
 
             label nPoints(readLabel(is));
-															if (nPoints != wantedSize)
-															{
-																FatalIOErrorInFunction(is)
-																	<< "Reading POINT_DATA : expected " << wantedSize
-																	<< " but read " << nPoints << exit(FatalIOError);
-															}
+                                                            if (nPoints != wantedSize)
+                                                            {
+                                                                FatalIOErrorInFunction(is)
+                                                                    << "Reading POINT_DATA : expected " << wantedSize
+                                                                    << " but read " << nPoints << exit(FatalIOError);
+                                                            }
         }
         else if (tag == "CELL_DATA")
         {
@@ -440,18 +414,18 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             wantedSize = faces.size();//+cells_.size()+lines_.size();
 
             label nCells(readLabel(is));
-															if (nCells != wantedSize)
-															{
-																FatalIOErrorInFunction(is)
-																	<< "Reading CELL_DATA : expected "
-																	<< wantedSize
-																	<< " but read " << nCells << exit(FatalIOError);
-															}
+                                                            if (nCells != wantedSize)
+                                                            {
+                                                                FatalIOErrorInFunction(is)
+                                                                    << "Reading CELL_DATA : expected "
+                                                                    << wantedSize
+                                                                    << " but read " << nCells << exit(FatalIOError);
+                                                            }
         }
         else if (tag == "FIELD")
         {
             // wantedSize already set according to type we expected to read.
-            readFieldArray(is,selectRegistry(readMode), wantedSize);//, 
+            readFieldArray(is,selectRegistry(readMode), wantedSize);//,
         }
         else if (tag == "SCALARS")
         {
@@ -462,21 +436,21 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             word dataType(is);
             //label numComp(readLabel(is));
 
-																	if (debug)
-																	{
-																		Info<< "Reading scalar " << dataName
-																			<< " of type " << dataType
-																			<< " from lookup table" << endl;
-																	}
+                                                                    if (debug)
+                                                                    {
+                                                                        Info<< "Reading scalar " << dataName
+                                                                            << " of type " << dataType
+                                                                            << " from lookup table" << endl;
+                                                                    }
 
-																word lookupTableTag(is);
-																if (lookupTableTag != "LOOKUP_TABLE")
-																{
-																	FatalIOErrorInFunction(is)
-																		<< "Expected tag LOOKUP_TABLE but read "
-																		<< lookupTableTag
-																		<< exit(FatalIOError);
-																}
+                                                                word lookupTableTag(is);
+                                                                if (lookupTableTag != "LOOKUP_TABLE")
+                                                                {
+                                                                    FatalIOErrorInFunction(is)
+                                                                        << "Expected tag LOOKUP_TABLE but read "
+                                                                        << lookupTableTag
+                                                                        << exit(FatalIOError);
+                                                                }
 
             word lookupTableName(is);
 
@@ -497,11 +471,11 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             IStringStream is(line);
             word dataName(is);
             word dataType(is);
-																if (debug)
-																{
-																	Info<< "Reading vector " << dataName
-																		<< " of type " << dataType << endl;
-																}
+                                                                if (debug)
+                                                                {
+                                                                    Info<< "Reading vector " << dataName
+                                                                        << " of type " << dataType << endl;
+                                                                }
 
 
             readField
@@ -639,9 +613,9 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
         }
     }
 
-	//AQ copied from of-v1606+
+    //AQ copied from of-v1606+
     // Assume all faces in zone0 unless a region field is present
-    labelList zones(faces.size(), 0); 
+    labelList zones(faces.size(), 0);
     Info<<"\ncellData_: ";
     for(auto&d:cellData_) Info<<d.first<<endl;
     if (cellData_.find("zone")!=cellData_.end())
@@ -674,8 +648,8 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 
 
 
-	// Read faces - ignore optional zone information     OFF format
-	// use a DynamicList for possible on-the-fly triangulation
+    // Read faces - ignore optional zone information     OFF format
+    // use a DynamicList for possible on-the-fly triangulation
 
     label nTri = 0;
     if (mustTriangulate)
@@ -684,47 +658,47 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
         {
             nTri += faces[faceI].size()-2;
         }
- 
-	 DynamicList<Face>  dynTriFs;
+
+     DynamicList<Face>  dynTriFs;
         dynamicLabelList dynZones(nTri);
         forAll(faces, faceI)
-	 {
+     {
 
 
             const face& f = faces[faceI];
 
-		if (f.size() > 3)
-		{
-			for (label fp1 = 1; fp1 < f.size() - 1; fp1++)
-			{
-				label fp2 = f.fcIndex(fp1);
+        if (f.size() > 3)
+        {
+            for (label fp1 = 1; fp1 < f.size() - 1; fp1++)
+            {
+                label fp2 = f.fcIndex(fp1);
 
-				dynTriFs.append(triFace(f[0], f[fp1], f[fp2]));
+                dynTriFs.append(triFace(f[0], f[fp1], f[fp2]));
                 dynZones.append(zones[faceI]);
-			}
-		}
-		else
-		{
-			dynTriFs.append(Face(f));
-		}
-	 }
+            }
+        }
+        else
+        {
+            dynTriFs.append(Face(f));
+        }
+     }
         // Count
         labelList zoneSizes(nZones, 0);
         forAll(dynZones, triI)
         {
             zoneSizes[dynZones[triI]]++;
         }
-	 
-		this->storedPoints().transfer(dynPoints);		// transfer to normal lists
+
+        this->storedPoints().transfer(dynPoints);        // transfer to normal lists
 
 
-		//this->sortFacesAndStore(dynTriFs.xfer(), dynTriZones.xfer(), sorted);
+        //this->sortFacesAndStore(dynTriFs.xfer(), dynTriZones.xfer(), sorted);
 
-		this->addZones(zoneSizes, zoneNames, true);			// add zones, culling empty ones
-	}
-	else
-	{
-		this->storedPoints().transfer(dynPoints);		// transfer to normal lists
+        this->addZones(zoneSizes, zoneNames, true);            // add zones, culling empty ones
+    }
+    else
+    {
+        this->storedPoints().transfer(dynPoints);        // transfer to normal lists
 
         // Count
         labelList zoneSizes(nZones, 0);
@@ -733,135 +707,135 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             zoneSizes[zones[faceI]]++;
         }
 
-		this->sortFacesAndStore(faces.xfer(), zones.xfer(), sorted);
+        this->sortFacesAndStore(faces.xfer(), zones.xfer(), sorted);
 
-		this->addZones(zoneSizes, zoneNames, true);		// add zones, culling empty ones
-	}
+        this->addZones(zoneSizes, zoneNames, true);        // add zones, culling empty ones
+    }
 
 
 
-	return true;
+    return true;
 }
 
 
 template<class Face>
 void Foam::fileFormats::VTKsurfaceFormat<Face>::write
 (
-	const fileName& filename,
-	const MeshedSurfaceProxy<Face>& surf
+    const fileName& filename,
+    const MeshedSurfaceProxy<Face>& surf
 )
 {
-	
-	OFstream os(filename);
-	if (!os.good())
-	{
-		FatalErrorIn
-		(
-			"fileFormats::VTKsurfaceFormat::write"
-			"(const fileName&, const MeshedSurfaceProxy<Face>&)"
-		)
-			<< "Cannot open file for writing " << filename
-			<< exit(FatalError);
-	}
-	write(os,surf);
+
+    OFstream os(filename);
+    if (!os.good())
+    {
+        FatalErrorIn
+        (
+            "fileFormats::VTKsurfaceFormat::write"
+            "(const fileName&, const MeshedSurfaceProxy<Face>&)"
+        )
+            << "Cannot open file for writing " << filename
+            << exit(FatalError);
+    }
+    write(os,surf);
 }
 template<class Face>
 void Foam::fileFormats::VTKsurfaceFormat<Face>::write
 (
-	Ostream& os,
-	const MeshedSurfaceProxy<Face>& surf
+    Ostream& os,
+    const MeshedSurfaceProxy<Face>& surf
 )
 {
-	const pointField& pointLst = surf.points();
-	const List<Face>&  faceLst = surf.faces();
-	const labelList& faceMap = surf.faceMap();
+    const pointField& pointLst = surf.points();
+    const List<Face>&  faceLst = surf.faces();
+    const labelList& faceMap = surf.faceMap();
 
-	const List<surfZone>& zones =
-	(
-		surf.surfZones().size() > 1
-	  ? surf.surfZones()
-	  : VTKsurfaceFormat::oneZone(faceLst)
-	);
+    const List<surfZone>& zones =
+    (
+        surf.surfZones().size() > 1
+      ? surf.surfZones()
+      : VTKsurfaceFormat::oneZone(faceLst)
+    );
 
-	const bool useFaceMap = (surf.useFaceMap() && zones.size() > 1);
+    const bool useFaceMap = (surf.useFaceMap() && zones.size() > 1);
 
 
-	writeHeader(os, pointLst);
-	writeHeaderPolygons(os, faceLst);
+    writeHeader(os, pointLst);
+    writeHeaderPolygons(os, faceLst);
 
-	label faceIndex = 0;
-	forAll(zones, zoneI)
-	{
-		const surfZone& zone = zones[zoneI];
+    label faceIndex = 0;
+    forAll(zones, zoneI)
+    {
+        const surfZone& zone = zones[zoneI];
 
-		if (useFaceMap)
-		{
-			forAll(zone, localFaceI)
-			{
-				const Face& f = faceLst[faceMap[faceIndex++]];
+        if (useFaceMap)
+        {
+            forAll(zone, localFaceI)
+            {
+                const Face& f = faceLst[faceMap[faceIndex++]];
 
-				os << f.size();
-				forAll(f, fp)
-				{
-					os << ' ' << f[fp];
-				}
-				os << ' ' << nl;
-			}
-		}
-		else
-		{
-			forAll(zone, localFaceI)
-			{
-				const Face& f = faceLst[faceIndex++];
+                os << f.size();
+                forAll(f, fp)
+                {
+                    os << ' ' << f[fp];
+                }
+                os << ' ' << nl;
+            }
+        }
+        else
+        {
+            forAll(zone, localFaceI)
+            {
+                const Face& f = faceLst[faceIndex++];
 
-				os << f.size();
-				forAll(f, fp)
-				{
-					os << ' ' << f[fp];
-				}
-				os << ' ' << nl;
-			}
-		}
-	}
+                os << f.size();
+                forAll(f, fp)
+                {
+                    os << ' ' << f[fp];
+                }
+                os << ' ' << nl;
+            }
+        }
+    }
 
-	writeTail(os, zones);
+    writeTail(os, zones);
 }
 
 
 template<class Face>
 void Foam::fileFormats::VTKsurfaceFormat<Face>::write
 (
-	const fileName& filename,
-	const UnsortedMeshedSurface<Face>& surf
+    const fileName& filename,
+    const UnsortedMeshedSurface<Face>& surf
 )
 {
-	OFstream os(filename);
-	if (!os.good())
-	{
+    OFstream os(filename);
+    if (!os.good())
+    {
         FatalErrorInFunction
-			<< "Cannot open file for writing " << filename
-			<< exit(FatalError);
-	}
+            << "Cannot open file for writing " << filename
+            << exit(FatalError);
+    }
 
 
-	const List<Face>& faceLst = surf.faces();
+    const List<Face>& faceLst = surf.faces();
 
-	writeHeader(os, surf.points());
-	writeHeaderPolygons(os, faceLst);
+    writeHeader(os, surf.points());
+    writeHeaderPolygons(os, faceLst);
 
-	forAll(faceLst, faceI)
-	{
-		const Face& f = faceLst[faceI];
+    forAll(faceLst, faceI)
+    {
+        const Face& f = faceLst[faceI];
 
-		os << f.size();
-		forAll(f, fp)
-		{
-			os << ' ' << f[fp];
-		}
-		os << ' ' << nl;
-	}
+        os << f.size();
+        forAll(f, fp)
+        {
+            os << ' ' << f[fp];
+        }
+        os << ' ' << nl;
+    }
 
-	writeTail(os, surf.zoneIds());
+    writeTail(os, surf.zoneIds());
 }
 
 

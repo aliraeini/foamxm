@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::repatchCoverage
+    Foam::repatchCoverage
 
 Description
-	Repatch boundary mesh modifier.  This modifier is used to move uncovered
-	faces of a partially covered patch pair into a separate patch for
-	master and slave side separately.
+    Repatch boundary mesh modifier.  This modifier is used to move uncovered
+    faces of a partially covered patch pair into a separate patch for
+    master and slave side separately.
 
 SourceFiles
-	repatchCoverage.C
+    repatchCoverage.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,110 +47,112 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                          Class repatchCoverage Declaration
+\*---------------------------------------------------------------------------*/
 
 class repatchCoverage
 :
-	public polyMeshModifier
+    public polyMeshModifier
 {
-	// Private data
+    // Private data
 
-		//- Master covered patch ID
-		polyPatchID masterCoveredPatchID_;
+        //- Master covered patch ID
+        polyPatchID masterCoveredPatchID_;
 
-		//- Master uncovered patch ID
-		polyPatchID masterUncoveredPatchID_;
+        //- Master uncovered patch ID
+        polyPatchID masterUncoveredPatchID_;
 
-		//- Slave covered patch ID
-		polyPatchID slaveCoveredPatchID_;
+        //- Slave covered patch ID
+        polyPatchID slaveCoveredPatchID_;
 
-		//- Slave uncovered patch ID
-		polyPatchID slaveUncoveredPatchID_;
+        //- Slave uncovered patch ID
+        polyPatchID slaveUncoveredPatchID_;
 
-		//- Repatch threshold
-		scalar repatchThreshold_;
-
-
-		//- Demand-driven data
-
-			//- Uncovered master face indicator
-			mutable boolList uncMaster_;
-
-			//- Uncovered slave face indicator
-			mutable boolList uncSlave_;
+        //- Repatch threshold
+        scalar repatchThreshold_;
 
 
-	// Private Member Functions
+        //- Demand-driven data
 
-		//- Disallow default bitwise copy construct
-		repatchCoverage(const repatchCoverage&);
+            //- Uncovered master face indicator
+            mutable boolList uncMaster_;
 
-		//- Disallow default bitwise assignment
-		void operator=(const repatchCoverage&);
+            //- Uncovered slave face indicator
+            mutable boolList uncSlave_;
 
 
-		// Helper functions
+    // Private Member Functions
 
-			//- Check validity of construction data
-			void checkDefinition();
+        //- Disallow default bitwise copy construct
+        repatchCoverage(const repatchCoverage&) = delete;
+
+        //- Disallow default bitwise assignment
+        void operator=(const repatchCoverage&) = delete;
+
+
+        // Helper functions
+
+            //- Check validity of construction data
+            void checkDefinition();
 
 
 public:
 
-	//- Runtime type information
-	TypeName("repatchCoverage");
+    //- Runtime type information
+    TypeName("repatchCoverage");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		repatchCoverage
-		(
-			const word& name,
-			const label index,
-			const polyTopoChanger& mme,
-			const word& masterCoveredPatchName,
-			const word& masterUncoveredPatchName,
-			const word& slaveCoveredPatchName,
-			const word& slaveUncoveredPatchName,
-			const scalar repatchThreshold
-		);
+        //- Construct from components
+        repatchCoverage
+        (
+            const word& name,
+            const label index,
+            const polyTopoChanger& mme,
+            const word& masterCoveredPatchName,
+            const word& masterUncoveredPatchName,
+            const word& slaveCoveredPatchName,
+            const word& slaveUncoveredPatchName,
+            const scalar repatchThreshold
+        );
 
-		//- Construct from dictionary
-		repatchCoverage
-		(
-			const word& name,
-			const dictionary& dict,
-			const label index,
-			const polyTopoChanger& mme
-		);
-
-
-	// Destructor
-
-		virtual ~repatchCoverage();
+        //- Construct from dictionary
+        repatchCoverage
+        (
+            const word& name,
+            const dictionary& dict,
+            const label index,
+            const polyTopoChanger& mme
+        );
 
 
-	// Member Functions
-
-		//- Check for topology change
-		virtual bool changeTopology() const;
-
-		//- Insert the layer addition/removal instructions
-		//  into the topological change
-		virtual void setRefinement(polyTopoChange&) const;
-
-		//- Modify motion points to comply with the topological change
-		virtual void modifyMotionPoints(pointField& motionPoints) const;
-
-		//- Force recalculation of locally stored data on topological change
-		virtual void updateMesh(const mapPolyMesh&);
+    //- Destructor
+    virtual ~repatchCoverage() = default;
 
 
-		//- Write
-		virtual void write(Ostream&) const;
+    // Member Functions
 
-		//- Write dictionary
-		virtual void writeDict(Ostream&) const;
+        //- Check for topology change
+        virtual bool changeTopology() const;
+
+        //- Insert the layer addition/removal instructions
+        //  into the topological change
+        virtual void setRefinement(polyTopoChange&) const;
+
+        //- Modify motion points to comply with the topological change
+        virtual void modifyMotionPoints(pointField& motionPoints) const;
+
+        //- Force recalculation of locally stored data on topological change
+        virtual void updateMesh(const mapPolyMesh&);
+
+
+        //- Write
+        virtual void write(Ostream&) const;
+
+        //- Write dictionary
+        virtual void writeDict(Ostream&) const;
 };
 
 

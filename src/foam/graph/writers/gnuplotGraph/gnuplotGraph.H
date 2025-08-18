@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::gnuplotGraph
+    Foam::gnuplotGraph
 
 Description
-	Output in gnuplot (http://www.gnuplot.info) format
+    Output in gnuplot (http://www.gnuplot.info) format
 
 SourceFiles
-	gnuplotGraph.C
+    gnuplotGraph.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,49 +42,52 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class gnuplotGraph Declaration
+\*---------------------------------------------------------------------------*/
 
 class gnuplotGraph
 :
-	public graph::writer
+    public graph::writer
 {
 
 public:
 
-	//- Runtime type information
-	TypeName("gnuplot");
+    //- Runtime type information
+    TypeName("gnuplot");
 
-	//- FileName extension  for this graph format
-	static const word ext_;
-
-
-	// Constructors
-
-		//- Construct null
-		gnuplotGraph()
-		{}
+    //- FileName extension  for this graph format
+    static const word ext_;
 
 
-	// Destructor
+    // Constructors
 
-		~gnuplotGraph()
-		{}
-
-
-	// Member Functions
-
-		// Access
-
-			//- Return the appropriate fileName extension
-			//  for this graph format
-			const word& ext() const
-			{
-				return ext_;
-			}
+        //- Construct null
+        gnuplotGraph()
+        {}
 
 
-		// Write
+    // Destructor
 
-			void write(const graph&, Ostream& os) const;
+        ~gnuplotGraph()
+        {}
+
+
+    // Member Functions
+
+        // Access
+
+            //- Return the appropriate fileName extension
+            //  for this graph format
+            const word& ext() const
+            {
+                return ext_;
+            }
+
+
+        // Write
+
+            void write(const graph&, Ostream& os) const;
 };
 
 

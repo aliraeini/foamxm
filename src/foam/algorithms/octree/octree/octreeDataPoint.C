@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ License
 // Construct from components
 Foam::octreeDataPoint::octreeDataPoint(const pointField& points)
 :
-	points_(points)
+    points_(points)
 {}
 
 
@@ -45,134 +45,134 @@ Foam::octreeDataPoint::octreeDataPoint(const pointField& points)
 //- Get type of volume
 Foam::label Foam::octreeDataPoint::getSampleType
 (
-	const octree<octreeDataPoint>&,
-	const point&
+    const octree<octreeDataPoint>&,
+    const point&
 ) const
 {
-	return octree<octreeDataPoint>::UNKNOWN;
+    return octree<octreeDataPoint>::UNKNOWN;
 }
 
 
 bool Foam::octreeDataPoint::overlaps
 (
-	const label index,
-	const treeBoundBox& sampleBb
+    const label index,
+    const treeBoundBox& sampleBb
 ) const
 {
-	return sampleBb.contains(points_[index]);
+    return sampleBb.contains(points_[index]);
 }
 
 
 bool Foam::octreeDataPoint::contains
 (
-	const label,
-	const point&
+    const label,
+    const point&
 ) const
 {
-	notImplemented
-	(
-		"octreeDataPoint::contains(const label, const point&)"
-	);
+    notImplemented
+    (
+        "octreeDataPoint::contains(const label, const point&)"
+    );
 
-	return false;
+    return false;
 }
 
 
 bool Foam::octreeDataPoint::intersects
 (
-	const label,
-	const point&,
-	const point&,
-	point&
+    const label,
+    const point&,
+    const point&,
+    point&
 ) const
 {
-	notImplemented
-	(
-		"octreeDataPoint::intersects(const label, const point&,"
-		"const point&, point&)"
-	);
+    notImplemented
+    (
+        "octreeDataPoint::intersects(const label, const point&,"
+        "const point&, point&)"
+    );
 
-	return false;
+    return false;
 }
 
 
 bool Foam::octreeDataPoint::findTightest
 (
-	const label,
-	const point&,
-	treeBoundBox&
+    const label,
+    const point&,
+    treeBoundBox&
 ) const
 {
-	notImplemented
-	(
-		"octreeDataPoint::findTightest(const label, const point&,"
-		"treeBoundBox&)"
-	);
+    notImplemented
+    (
+        "octreeDataPoint::findTightest(const label, const point&,"
+        "treeBoundBox&)"
+    );
 
-	return false;
+    return false;
 }
 
 
 Foam::scalar Foam::octreeDataPoint::calcSign
 (
-	const label,
-	const point&,
-	vector& n
+    const label,
+    const point&,
+    vector& n
 ) const
 {
-	n = vector::zero;
+    n = vector::zero;
 
-	return 1;
+    return 1;
 }
 
 
 // Calculate nearest point on/in shapei
 inline Foam::scalar Foam::octreeDataPoint::calcNearest
 (
-	const label index,
-	const point& sample,
-	point& nearest
+    const label index,
+    const point& sample,
+    point& nearest
 ) const
 {
-	nearest = points_[index];
-	return magSqr(points_[index] - sample);
+    nearest = points_[index];
+    return magSqr(points_[index] - sample);
 }
 
 
 void Foam::octreeDataPoint::write
 (
-	Ostream& os,
-	const label index
+    Ostream& os,
+    const label index
 ) const
 {
-	if ((index < 0) || (index > points().size()))
-	{
-		FatalErrorIn("octreeDataPoint::write(Ostream&, const label)")
-			<< "Index " << index << " outside 0.." << points().size()
-			<< abort(FatalError);
-	}
-	os << ' ' << points()[index];
+    if ((index < 0) || (index > points().size()))
+    {
+        FatalErrorIn("octreeDataPoint::write(Ostream&, const label)")
+            << "Index " << index << " outside 0.." << points().size()
+            << abort(FatalError);
+    }
+    os << ' ' << points()[index];
 }
 
 
 // Calculate nearest point on/in shapei
 Foam::scalar Foam::octreeDataPoint::calcNearest
 (
-	const label index,
-	const linePointRef& ln,
-	point& linePt,
-	point& shapePt
+    const label index,
+    const linePointRef& ln,
+    point& linePt,
+    point& shapePt
 ) const
 {
-	// Nearest point on shape
-	shapePt = points_[index];
+    // Nearest point on shape
+    shapePt = points_[index];
 
-	// Nearest point on line
-	pointHit pHit = ln.nearestDist(shapePt);
+    // Nearest point on line
+    pointHit pHit = ln.nearestDist(shapePt);
 
-	linePt = pHit.rawPoint();
+    linePt = pHit.rawPoint();
 
-	return pHit.distance();
+    return pHit.distance();
 }
 
 
@@ -181,13 +181,13 @@ Foam::scalar Foam::octreeDataPoint::calcNearest
 namespace Foam
 {
 
-	Ostream& operator<<
+Ostream& operator<<
 (
-		Ostream& os,
-		const octreeDataPoint& ocPts
+    Ostream& os,
+    const octreeDataPoint& ocPts
 )
 {
-	return os << ocPts.points();
+    return os << ocPts.points();
 }
 }
 

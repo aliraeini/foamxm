@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -34,17 +34,17 @@ namespace Foam
 template<class T>
 threadHandler<T>::threadHandler
 (
-	T& tRef,
-	const multiThreader& threader
+    T& tRef,
+    const multiThreader& threader
 )
 :
-	tRef_(tRef),
-	threader_(threader),
-	argList_(0),
-	nThreads_(threader.getNumThreads()),
-	pthreadID_(pthread_self()),
-	master_(false),
-	predicate_(false)
+    tRef_(tRef),
+    threader_(threader),
+    argList_(0),
+    nThreads_(threader.getNumThreads()),
+    pthreadID_(pthread_self()),
+    master_(false),
+    predicate_(false)
 {}
 
 
@@ -53,12 +53,12 @@ threadHandler<T>::threadHandler
 template<class T>
 threadHandler<T>::~threadHandler()
 {
-	// Null the argument list pointer copies
-	// to avoid multiple deallocations.
-	forAll(argList_, indexI)
-	{
-		argList_[indexI] = nullptr;
-	}
+    // Null the argument list pointer copies
+    // to avoid multiple deallocations.
+    forAll(argList_, indexI)
+    {
+        argList_[indexI] = nullptr;
+    }
 }
 
 
@@ -68,7 +68,7 @@ threadHandler<T>::~threadHandler()
 template<class T>
 inline T& threadHandler<T>::reference()
 {
-	return tRef_;
+    return tRef_;
 }
 
 
@@ -76,10 +76,10 @@ inline T& threadHandler<T>::reference()
 template<class T>
 inline void threadHandler<T>::setSize
 (
-	const label size
+    const label size
 )
 {
-	argList_.setSize(size, nullptr);
+    argList_.setSize(size, nullptr);
 }
 
 
@@ -87,26 +87,26 @@ inline void threadHandler<T>::setSize
 template<class T>
 inline void threadHandler<T>::set
 (
-	const label index,
-	void* argPtr
+    const label index,
+    void* argPtr
 )
 {
-	if (!argList_.size())
-	{
-		FatalErrorIn("threadHandler<T>::set")
-			<< "Attempt to access element from zero sized list"
-			<< abort(FatalError);
-	}
-	else
-	if (index < 0 || index >= argList_.size())
-	{
-		FatalErrorIn("threadHandler<T>::set")
-			<< "index " << index << " out of range 0 ... "
-			<< argList_.size()-1
-			<< abort(FatalError);
-	}
+    if (!argList_.size())
+    {
+        FatalErrorIn("threadHandler<T>::set")
+            << "Attempt to access element from zero sized list"
+            << abort(FatalError);
+    }
+    else
+    if (index < 0 || index >= argList_.size())
+    {
+        FatalErrorIn("threadHandler<T>::set")
+            << "index " << index << " out of range 0 ... "
+            << argList_.size()-1
+            << abort(FatalError);
+    }
 
-	argList_[index] = argPtr;
+    argList_[index] = argPtr;
 }
 
 
@@ -114,7 +114,7 @@ inline void threadHandler<T>::set
 template<class T>
 inline const multiThreader& threadHandler<T>::threader() const
 {
-	return threader_;
+    return threader_;
 }
 
 
@@ -122,7 +122,7 @@ inline const multiThreader& threadHandler<T>::threader() const
 template<class T>
 inline label threadHandler<T>::nThreads() const
 {
-	return nThreads_;
+    return nThreads_;
 }
 
 
@@ -130,7 +130,7 @@ inline label threadHandler<T>::nThreads() const
 template<class T>
 inline void threadHandler<T>::setMaster() const
 {
-	master_ = true;
+    master_ = true;
 }
 
 
@@ -138,7 +138,7 @@ inline void threadHandler<T>::setMaster() const
 template<class T>
 inline void threadHandler<T>::setSlave() const
 {
-	master_ = false;
+    master_ = false;
 }
 
 
@@ -146,7 +146,7 @@ inline void threadHandler<T>::setSlave() const
 template<class T>
 inline bool threadHandler<T>::master() const
 {
-	return (master_ == true);
+    return (master_ == true);
 }
 
 
@@ -154,7 +154,7 @@ inline bool threadHandler<T>::master() const
 template<class T>
 inline bool threadHandler<T>::slave() const
 {
-	return !master();
+    return !master();
 }
 
 
@@ -162,18 +162,18 @@ inline bool threadHandler<T>::slave() const
 template<class T>
 inline void threadHandler<T>::lock
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	if (sType == START)
-	{
-		startMutex_.lock();
-	}
-	else
-	if (sType == STOP)
-	{
-		stopMutex_.lock();
-	}
+    if (sType == START)
+    {
+        startMutex_.lock();
+    }
+    else
+    if (sType == STOP)
+    {
+        stopMutex_.lock();
+    }
 }
 
 
@@ -181,18 +181,18 @@ inline void threadHandler<T>::lock
 template<class T>
 inline void threadHandler<T>::unlock
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	if (sType == START)
-	{
-		startMutex_.unlock();
-	}
-	else
-	if (sType == STOP)
-	{
-		stopMutex_.unlock();
-	}
+    if (sType == START)
+    {
+        startMutex_.unlock();
+    }
+    else
+    if (sType == STOP)
+    {
+        stopMutex_.unlock();
+    }
 }
 
 
@@ -200,46 +200,46 @@ inline void threadHandler<T>::unlock
 template<class T>
 inline void threadHandler<T>::sendSignal
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	lock(sType);
+    lock(sType);
 
-	if (predicate(sType))
-	{
-		InfoIn("threadHandler::sendSignal()")
-			<< "Predicate is already set."
-			<< endl;
-	}
-	else
-	{
-		// Set predicate before signalling
-		setPredicate(sType);
-	}
+    if (predicate(sType))
+    {
+        InfoIn("threadHandler::sendSignal()")
+            << "Predicate is already set."
+            << endl;
+    }
+    else
+    {
+        // Set predicate before signalling
+        setPredicate(sType);
+    }
 
-	if (sType == START)
-	{
-		threader().signal
-		(
-			startConditional_
-		);
-	}
-	else
-	if (sType == STOP)
-	{
-		threader().signal
-		(
-			stopConditional_
-		);
-	}
-	else
-	{
-		FatalErrorIn("threadHandler::sendSignal()")
-			<< "Undefined enumerant."
-			<< abort(FatalError);
-	}
+    if (sType == START)
+    {
+        threader().signal
+        (
+            startConditional_
+        );
+    }
+    else
+    if (sType == STOP)
+    {
+        threader().signal
+        (
+            stopConditional_
+        );
+    }
+    else
+    {
+        FatalErrorIn("threadHandler::sendSignal()")
+            << "Undefined enumerant."
+            << abort(FatalError);
+    }
 
-	unlock(sType);
+    unlock(sType);
 }
 
 
@@ -247,44 +247,44 @@ inline void threadHandler<T>::sendSignal
 template<class T>
 inline void threadHandler<T>::waitForSignal
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	if (sType == START)
-	{
-		threader().waitForCondition
-		(
-			startConditional_,
-			startMutex_
-		);
-	}
-	else
-	if (sType == STOP)
-	{
-		threader().waitForCondition
-		(
-			stopConditional_,
-			stopMutex_
-		);
-	}
-	else
-	{
-		FatalErrorIn("threadHandler::waitForSignal()")
-			<< "Undefined enumerant."
-			<< abort(FatalError);
-	}
+    if (sType == START)
+    {
+        threader().waitForCondition
+        (
+            startConditional_,
+            startMutex_
+        );
+    }
+    else
+    if (sType == STOP)
+    {
+        threader().waitForCondition
+        (
+            stopConditional_,
+            stopMutex_
+        );
+    }
+    else
+    {
+        FatalErrorIn("threadHandler::waitForSignal()")
+            << "Undefined enumerant."
+            << abort(FatalError);
+    }
 
-	if (!predicate(sType))
-	{
-		FatalErrorIn("threadHandler::waitForSignal()")
-			<< "Spurious wake-up."
-			<< abort(FatalError);
-	}
+    if (!predicate(sType))
+    {
+        FatalErrorIn("threadHandler::waitForSignal()")
+            << "Spurious wake-up."
+            << abort(FatalError);
+    }
 
-	unsetPredicate(sType);
+    unsetPredicate(sType);
 
-	// Unlock the acquired mutex
-	unlock(sType);
+    // Unlock the acquired mutex
+    unlock(sType);
 }
 
 
@@ -292,10 +292,10 @@ inline void threadHandler<T>::waitForSignal
 template<class T>
 inline bool threadHandler<T>::predicate
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	return predicate_[sType];
+    return predicate_[sType];
 }
 
 
@@ -303,10 +303,10 @@ inline bool threadHandler<T>::predicate
 template<class T>
 inline void threadHandler<T>::setPredicate
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	predicate_[sType] = true;
+    predicate_[sType] = true;
 }
 
 
@@ -314,10 +314,10 @@ inline void threadHandler<T>::setPredicate
 template<class T>
 inline void threadHandler<T>::unsetPredicate
 (
-	const signalType sType
+    const signalType sType
 ) const
 {
-	predicate_[sType] = false;
+    predicate_[sType] = false;
 }
 
 
@@ -325,7 +325,7 @@ inline void threadHandler<T>::unsetPredicate
 template<class T>
 inline void threadHandler<T>::setID(const pthread_t& pt)
 {
-	pthreadID_ = pt;
+    pthreadID_ = pt;
 }
 
 
@@ -333,7 +333,7 @@ inline void threadHandler<T>::setID(const pthread_t& pt)
 template<class T>
 inline pthread_t threadHandler<T>::ID() const
 {
-	return pthreadID_;
+    return pthreadID_;
 }
 
 
@@ -341,7 +341,7 @@ inline pthread_t threadHandler<T>::ID() const
 template<class T>
 inline bool threadHandler<T>::self() const
 {
-	return pthread_equal(ID(), pthread_self());
+    return pthread_equal(ID(), pthread_self());
 }
 
 
@@ -349,32 +349,32 @@ inline bool threadHandler<T>::self() const
 template<class T>
 inline void * threadHandler<T>::operator()
 (
-	const label index
+    const label index
 )
 {
-	if (!argList_.size())
-	{
-		FatalErrorIn("threadHandler<T>::operator()")
-			<< "Attempt to access element from zero sized list"
-			<< abort(FatalError);
-	}
-	else
-	if (index < 0 || index >= argList_.size())
-	{
-		FatalErrorIn("threadHandler<T>::operator()")
-			<< "index " << index << " out of range 0 ... "
-			<< argList_.size()-1
-			<< abort(FatalError);
-	}
-	else
-	if (!argList_[index])
-	{
-		FatalErrorIn("threadHandler<T>::operator()")
-			<< "Hanging pointer. This is not allowed."
-			<< abort(FatalError);
-	}
+    if (!argList_.size())
+    {
+        FatalErrorIn("threadHandler<T>::operator()")
+            << "Attempt to access element from zero sized list"
+            << abort(FatalError);
+    }
+    else
+    if (index < 0 || index >= argList_.size())
+    {
+        FatalErrorIn("threadHandler<T>::operator()")
+            << "index " << index << " out of range 0 ... "
+            << argList_.size()-1
+            << abort(FatalError);
+    }
+    else
+    if (!argList_[index])
+    {
+        FatalErrorIn("threadHandler<T>::operator()")
+            << "Hanging pointer. This is not allowed."
+            << abort(FatalError);
+    }
 
-	return argList_[index];
+    return argList_[index];
 }
 
 
@@ -384,18 +384,18 @@ inline void * threadHandler<T>::operator()
 template <class T>
 void lockThreads
 (
-	const List<label>& sequence,
-	const PtrList<threadHandler<T> >& handler
+    const List<label>& sequence,
+    const PtrList<threadHandler<T> >& handler
 )
 {
-	forAll(sequence, i)
-	{
-		handler[sequence[i]].lock(threadHandler<T>::START);
-		handler[sequence[i]].lock(threadHandler<T>::STOP);
+    forAll(sequence, i)
+    {
+        handler[sequence[i]].lock(threadHandler<T>::START);
+        handler[sequence[i]].lock(threadHandler<T>::STOP);
 
-		handler[sequence[i]].unsetPredicate(threadHandler<T>::START);
-		handler[sequence[i]].unsetPredicate(threadHandler<T>::STOP);
-	}
+        handler[sequence[i]].unsetPredicate(threadHandler<T>::START);
+        handler[sequence[i]].unsetPredicate(threadHandler<T>::STOP);
+    }
 }
 
 
@@ -403,15 +403,15 @@ void lockThreads
 template <class T>
 void synchronizeThreads
 (
-	const List<label>& sequence,
-	const PtrList<threadHandler<T> >& handler
+    const List<label>& sequence,
+    const PtrList<threadHandler<T> >& handler
 )
 {
-	forAll(sequence, i)
-	{
-		// Wait for a signal from this thread before moving on.
-		handler[sequence[i]].waitForSignal(threadHandler<T>::STOP);
-	}
+    forAll(sequence, i)
+    {
+        // Wait for a signal from this thread before moving on.
+        handler[sequence[i]].waitForSignal(threadHandler<T>::STOP);
+    }
 }
 
 
@@ -419,45 +419,45 @@ void synchronizeThreads
 template <class T>
 void executeThreads
 (
-	const List<label>& sequence,
-	PtrList<threadHandler<T> >& handler,
-	void (*tFunction)(void*)
+    const List<label>& sequence,
+    PtrList<threadHandler<T> >& handler,
+    void (*tFunction)(void*)
 )
 {
-	if (!handler.size())
-	{
-		FatalErrorIn
-		(
-			"\n\n"
-			"template <class T>\n"
-			"void executeThreads\n"
-			"(\n"
-			"    const List<label>& sequence,\n"
-			"    PtrList<threadHandler<T> >& handler,\n"
-			"    void (*tFunction)(void*)\n"
-			")\n"
-		)
-			<< "Empty handler list."
-			<< abort(FatalError);
-	}
+    if (!handler.size())
+    {
+        FatalErrorIn
+        (
+            "\n\n"
+            "template <class T>\n"
+            "void executeThreads\n"
+            "(\n"
+            "    const List<label>& sequence,\n"
+            "    PtrList<threadHandler<T> >& handler,\n"
+            "    void (*tFunction)(void*)\n"
+            ")\n"
+        )
+            << "Empty handler list."
+            << abort(FatalError);
+    }
 
-	// Fetch threader reference
-	const multiThreader& threader = handler[0].threader();
+    // Fetch threader reference
+    const multiThreader& threader = handler[0].threader();
 
-	// Lock slave threads by sequence
-	lockThreads(sequence, handler);
+    // Lock slave threads by sequence
+    lockThreads(sequence, handler);
 
-	forAll(sequence, i)
-	{
-		// Submit jobs to the work queue
-		threader.addToWorkQueue(tFunction, &(handler[sequence[i]]));
+    forAll(sequence, i)
+    {
+        // Submit jobs to the work queue
+        threader.addToWorkQueue(tFunction, &(handler[sequence[i]]));
 
-		// Wait for a signal from this thread before moving on.
-		handler[sequence[i]].waitForSignal(threadHandler<T>::START);
-	}
+        // Wait for a signal from this thread before moving on.
+        handler[sequence[i]].waitForSignal(threadHandler<T>::START);
+    }
 
-	// Synchronize threads
-	synchronizeThreads(sequence, handler);
+    // Synchronize threads
+    synchronizeThreads(sequence, handler);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

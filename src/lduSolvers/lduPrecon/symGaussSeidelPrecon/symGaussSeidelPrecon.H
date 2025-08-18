@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	symGaussSeidelPrecon
+    symGaussSeidelPrecon
 
 Description
-	Symmetric Gauss-Seidel preconditioning
+    Symmetric Gauss-Seidel preconditioning
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 SourceFiles
-	symGaussSeidelPrecon.C
+    symGaussSeidelPrecon.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,78 +45,79 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class symGaussSeidelPrecon Declaration
+\*---------------------------------------------------------------------------*/
 
 class symGaussSeidelPrecon
 :
-	public lduMatrix::preconditioner
+    public lduMatrix::preconditioner
 {
-	// Private Data
+    // Private Data
 
-		//- Temporary space for solution intermediate
-		mutable scalarField bPrime_;
+        //- Temporary space for solution intermediate
+        mutable scalarField bPrime_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		symGaussSeidelPrecon(const symGaussSeidelPrecon&);
+        //- Disallow default bitwise copy construct
+        symGaussSeidelPrecon(const symGaussSeidelPrecon&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const symGaussSeidelPrecon&);
+        //- Disallow default bitwise assignment
+        void operator=(const symGaussSeidelPrecon&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	TypeName("SymGaussSeidel");
+    //- Runtime type information
+    TypeName("SymGaussSeidel");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		symGaussSeidelPrecon
-		(
-			const lduMatrix& matrix,
-			const FieldField<Field, scalar>& coupleBouCoeffs,
-			const FieldField<Field, scalar>& coupleIntCoeffs,
-			const lduInterfaceFieldPtrsList& interfaces
-		);
-
-
-		//- Construct from dictionary
-		symGaussSeidelPrecon
-		(
-			const lduMatrix& matrix,
-			const FieldField<Field, scalar>& coupleBouCoeffs,
-			const FieldField<Field, scalar>& coupleIntCoeffs,
-			const lduInterfaceFieldPtrsList& interfaces,
-			const dictionary& dict
-		);
+        //- Construct from components
+        symGaussSeidelPrecon
+        (
+            const lduMatrix& matrix,
+            const FieldField<Field, scalar>& coupleBouCoeffs,
+            const FieldField<Field, scalar>& coupleIntCoeffs,
+            const lduInterfaceFieldPtrsList& interfaces
+        );
 
 
-	// Destructor
+        //- Construct from dictionary
+        symGaussSeidelPrecon
+        (
+            const lduMatrix& matrix,
+            const FieldField<Field, scalar>& coupleBouCoeffs,
+            const FieldField<Field, scalar>& coupleIntCoeffs,
+            const lduInterfaceFieldPtrsList& interfaces,
+            const dictionary& dict
+        );
 
-		virtual ~symGaussSeidelPrecon()
-		{}
+
+    //- Destructor
+    virtual ~symGaussSeidelPrecon() = default;
 
 
-	// Member Functions
+    // Member Functions
 
-		//- Execute preconditioning
-		virtual void precondition
-		(
-			scalarField& wA,
-			const scalarField& rA,
-			const direction cmpt = 0
-		) const;
+        //- Execute preconditioning
+        virtual void precondition
+        (
+            scalarField& wA,
+            const scalarField& rA,
+            const direction cmpt = 0
+        ) const;
 
-		//- Execute preconditioning on a transpose matrix
-		virtual void preconditionT
-		(
-			scalarField& wT,
-			const scalarField& rT,
-			const direction cmpt = 0
-		) const;
+        //- Execute preconditioning on a transpose matrix
+        virtual void preconditionT
+        (
+            scalarField& wT,
+            const scalarField& rT,
+            const direction cmpt = 0
+        ) const;
 };
 
 

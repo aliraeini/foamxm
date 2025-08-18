@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*----------------------------------------------------------------------------*/
 
@@ -51,266 +51,266 @@ const Foam::scalar Foam::faceCoupleInfo::angleTol_ = 1E-3;
 //- Write edges
 void Foam::faceCoupleInfo::writeOBJ
 (
-	const fileName& fName,
-	const edgeList& edges,
-	const pointField& points,
-	const bool compact
+    const fileName& fName,
+    const edgeList& edges,
+    const pointField& points,
+    const bool compact
 )
 {
-	OFstream str(fName);
+    OFstream str(fName);
 
-	labelList pointMap(points.size(), -1);
+    labelList pointMap(points.size(), -1);
 
-	if (compact)
-	{
-		label newPointI = 0;
+    if (compact)
+    {
+        label newPointI = 0;
 
-		forAll(edges, edgeI)
-		{
-			const edge& e = edges[edgeI];
+        forAll(edges, edgeI)
+        {
+            const edge& e = edges[edgeI];
 
-			forAll(e, eI)
-			{
-				label pointI = e[eI];
+            forAll(e, eI)
+            {
+                label pointI = e[eI];
 
-				if (pointMap[pointI] == -1)
-				{
-					pointMap[pointI] = newPointI++;
+                if (pointMap[pointI] == -1)
+                {
+                    pointMap[pointI] = newPointI++;
 
-					meshTools::writeOBJ(str, points[pointI]);
-				}
-			}
-		}
-	}
-	else
-	{
-		forAll(points, pointI)
-		{
-			meshTools::writeOBJ(str, points[pointI]);
-		}
+                    meshTools::writeOBJ(str, points[pointI]);
+                }
+            }
+        }
+    }
+    else
+    {
+        forAll(points, pointI)
+        {
+            meshTools::writeOBJ(str, points[pointI]);
+        }
 
-		pointMap = identity(points.size());
-	}
+        pointMap = identity(points.size());
+    }
 
-	forAll(edges, edgeI)
-	{
-		const edge& e = edges[edgeI];
+    forAll(edges, edgeI)
+    {
+        const edge& e = edges[edgeI];
 
-		str<< "l " << pointMap[e[0]]+1 << ' ' << pointMap[e[1]]+1 << nl;
-	}
+        str<< "l " << pointMap[e[0]]+1 << ' ' << pointMap[e[1]]+1 << nl;
+    }
 }
 
 
 //- Writes edges.
 void Foam::faceCoupleInfo::writeOBJ
 (
-	const fileName& fName,
-	const pointField& points0,
-	const pointField& points1
+    const fileName& fName,
+    const pointField& points0,
+    const pointField& points1
 )
 {
-	Pout<< "Writing connections as edges to " << fName << endl;
+    Pout<< "Writing connections as edges to " << fName << endl;
 
-	OFstream str(fName);
+    OFstream str(fName);
 
-	label vertI = 0;
+    label vertI = 0;
 
-	forAll(points0, i)
-	{
-		meshTools::writeOBJ(str, points0[i]);
-		vertI++;
-		meshTools::writeOBJ(str, points1[i]);
-		vertI++;
-		str << "l " << vertI-1 << ' ' << vertI << nl;
-	}
+    forAll(points0, i)
+    {
+        meshTools::writeOBJ(str, points0[i]);
+        vertI++;
+        meshTools::writeOBJ(str, points1[i]);
+        vertI++;
+        str << "l " << vertI-1 << ' ' << vertI << nl;
+    }
 }
 
 
 //- Writes face and point connectivity as .obj files.
 void Foam::faceCoupleInfo::writePointsFaces() const
 {
-	const indirectPrimitivePatch& m = masterPatch();
-	const indirectPrimitivePatch& s = slavePatch();
-	const primitiveFacePatch& c = cutFaces();
+    const indirectPrimitivePatch& m = masterPatch();
+    const indirectPrimitivePatch& s = slavePatch();
+    const primitiveFacePatch& c = cutFaces();
 
-	// Patches
-	{
-		OFstream str("masterPatch.obj");
-		Pout<< "Writing masterPatch to " << str.name() << endl;
-		meshTools::writeOBJ(str, m.localFaces(), m.localPoints());
-	}
-	{
-		OFstream str("slavePatch.obj");
-		Pout<< "Writing slavePatch to " << str.name() << endl;
-		meshTools::writeOBJ(str, s.localFaces(), s.localPoints());
-	}
-	{
-		OFstream str("cutFaces.obj");
-		Pout<< "Writing cutFaces to " << str.name() << endl;
-		meshTools::writeOBJ(str, c.localFaces(), c.localPoints());
-	}
+    // Patches
+    {
+        OFstream str("masterPatch.obj");
+        Pout<< "Writing masterPatch to " << str.name() << endl;
+        meshTools::writeOBJ(str, m.localFaces(), m.localPoints());
+    }
+    {
+        OFstream str("slavePatch.obj");
+        Pout<< "Writing slavePatch to " << str.name() << endl;
+        meshTools::writeOBJ(str, s.localFaces(), s.localPoints());
+    }
+    {
+        OFstream str("cutFaces.obj");
+        Pout<< "Writing cutFaces to " << str.name() << endl;
+        meshTools::writeOBJ(str, c.localFaces(), c.localPoints());
+    }
 
-	// Point connectivity
-	{
-		Pout<< "Writing cutToMasterPoints to cutToMasterPoints.obj" << endl;
+    // Point connectivity
+    {
+        Pout<< "Writing cutToMasterPoints to cutToMasterPoints.obj" << endl;
 
-		writeOBJ
-		(
-			"cutToMasterPoints.obj",
-			m.localPoints(),
-			pointField
-			(
-				IndirectList<point>(c.localPoints(), masterToCutPoints_)()
-			)
-		);
-	}
-	{
-		Pout<< "Writing cutToSlavePoints to cutToSlavePoints.obj" << endl;
+        writeOBJ
+        (
+            "cutToMasterPoints.obj",
+            m.localPoints(),
+            pointField
+            (
+                IndirectList<point>(c.localPoints(), masterToCutPoints_)()
+            )
+        );
+    }
+    {
+        Pout<< "Writing cutToSlavePoints to cutToSlavePoints.obj" << endl;
 
-		writeOBJ
-		(
-			"cutToSlavePoints.obj",
-			s.localPoints(),
-			pointField
-			(
-				IndirectList<point>(c.localPoints(), slaveToCutPoints_)()
-			)
-		);
-	}
+        writeOBJ
+        (
+            "cutToSlavePoints.obj",
+            s.localPoints(),
+            pointField
+            (
+                IndirectList<point>(c.localPoints(), slaveToCutPoints_)()
+            )
+        );
+    }
 
-	// Face connectivity
-	{
-		Pout<< "Writing cutToMasterFaces to cutToMasterFaces.obj" << endl;
+    // Face connectivity
+    {
+        Pout<< "Writing cutToMasterFaces to cutToMasterFaces.obj" << endl;
 
-		pointField equivMasterFaces(c.size());
+        pointField equivMasterFaces(c.size());
 
-		forAll(cutToMasterFaces(), cutFaceI)
-		{
-			label masterFaceI = cutToMasterFaces()[cutFaceI];
+        forAll(cutToMasterFaces(), cutFaceI)
+        {
+            label masterFaceI = cutToMasterFaces()[cutFaceI];
 
-			if (masterFaceI != -1)
-			{
-				equivMasterFaces[cutFaceI] = m[masterFaceI].centre(m.points());
-			}
-			else
-			{
-				WarningIn("writePointsFaces()")
-					<< "No master face for cut face " << cutFaceI
-					<< " at position " << c[cutFaceI].centre(c.points())
-					<< endl;
+            if (masterFaceI != -1)
+            {
+                equivMasterFaces[cutFaceI] = m[masterFaceI].centre(m.points());
+            }
+            else
+            {
+                WarningIn("writePointsFaces()")
+                    << "No master face for cut face " << cutFaceI
+                    << " at position " << c[cutFaceI].centre(c.points())
+                    << endl;
 
-				equivMasterFaces[cutFaceI] = vector::zero;
-			}
-		}
+                equivMasterFaces[cutFaceI] = vector::zero;
+            }
+        }
 
-		writeOBJ
-		(
-			"cutToMasterFaces.obj",
-			calcFaceCentres<List>(c, cutPoints(), 0, c.size()),
-			equivMasterFaces
-		);
-	}
+        writeOBJ
+        (
+            "cutToMasterFaces.obj",
+            calcFaceCentres<List>(c, cutPoints(), 0, c.size()),
+            equivMasterFaces
+        );
+    }
 
-	{
-		Pout<< "Writing cutToSlaveFaces to cutToSlaveFaces.obj" << endl;
+    {
+        Pout<< "Writing cutToSlaveFaces to cutToSlaveFaces.obj" << endl;
 
-		pointField equivSlaveFaces(c.size());
+        pointField equivSlaveFaces(c.size());
 
-		forAll(cutToSlaveFaces(), cutFaceI)
-		{
-			label slaveFaceI = cutToSlaveFaces()[cutFaceI];
+        forAll(cutToSlaveFaces(), cutFaceI)
+        {
+            label slaveFaceI = cutToSlaveFaces()[cutFaceI];
 
-			equivSlaveFaces[cutFaceI] = s[slaveFaceI].centre(s.points());
-		}
+            equivSlaveFaces[cutFaceI] = s[slaveFaceI].centre(s.points());
+        }
 
-		writeOBJ
-		(
-			"cutToSlaveFaces.obj",
-			calcFaceCentres<List>(c, cutPoints(), 0, c.size()),
-			equivSlaveFaces
-		);
-	}
+        writeOBJ
+        (
+            "cutToSlaveFaces.obj",
+            calcFaceCentres<List>(c, cutPoints(), 0, c.size()),
+            equivSlaveFaces
+        );
+    }
 
-	Pout<< endl;
+    Pout<< endl;
 }
 
 
 void Foam::faceCoupleInfo::writeEdges
 (
-	const labelList& cutToMasterEdges,
-	const labelList& cutToSlaveEdges
+    const labelList& cutToMasterEdges,
+    const labelList& cutToSlaveEdges
 ) const
 {
-	const indirectPrimitivePatch& m = masterPatch();
-	const indirectPrimitivePatch& s = slavePatch();
-	const primitiveFacePatch& c = cutFaces();
+    const indirectPrimitivePatch& m = masterPatch();
+    const indirectPrimitivePatch& s = slavePatch();
+    const primitiveFacePatch& c = cutFaces();
 
-	// Edge connectivity
-	{
-		OFstream str("cutToMasterEdges.obj");
-		Pout<< "Writing cutToMasterEdges to " << str.name() << endl;
+    // Edge connectivity
+    {
+        OFstream str("cutToMasterEdges.obj");
+        Pout<< "Writing cutToMasterEdges to " << str.name() << endl;
 
-		label vertI = 0;
+        label vertI = 0;
 
-		forAll(cutToMasterEdges, cutEdgeI)
-		{
-			if (cutToMasterEdges[cutEdgeI] != -1)
-			{
-				const edge& masterEdge =
-					m.edges()[cutToMasterEdges[cutEdgeI]];
-				const edge& cutEdge = c.edges()[cutEdgeI];
+        forAll(cutToMasterEdges, cutEdgeI)
+        {
+            if (cutToMasterEdges[cutEdgeI] != -1)
+            {
+                const edge& masterEdge =
+                    m.edges()[cutToMasterEdges[cutEdgeI]];
+                const edge& cutEdge = c.edges()[cutEdgeI];
 
-				meshTools::writeOBJ(str, m.localPoints()[masterEdge[0]]);
-				vertI++;
-				meshTools::writeOBJ(str, m.localPoints()[masterEdge[1]]);
-				vertI++;
-				meshTools::writeOBJ(str, c.localPoints()[cutEdge[0]]);
-				vertI++;
-				meshTools::writeOBJ(str, c.localPoints()[cutEdge[1]]);
-				vertI++;
-				str << "l " << vertI-3 << ' ' << vertI-2 << nl;
-				str << "l " << vertI-3 << ' ' << vertI-1 << nl;
-				str << "l " << vertI-3 << ' ' << vertI << nl;
-				str << "l " << vertI-2 << ' ' << vertI-1 << nl;
-				str << "l " << vertI-2 << ' ' << vertI << nl;
-				str << "l " << vertI-1 << ' ' << vertI << nl;
-			}
-		}
-	}
-	{
-		OFstream str("cutToSlaveEdges.obj");
-		Pout<< "Writing cutToSlaveEdges to " << str.name() << endl;
+                meshTools::writeOBJ(str, m.localPoints()[masterEdge[0]]);
+                vertI++;
+                meshTools::writeOBJ(str, m.localPoints()[masterEdge[1]]);
+                vertI++;
+                meshTools::writeOBJ(str, c.localPoints()[cutEdge[0]]);
+                vertI++;
+                meshTools::writeOBJ(str, c.localPoints()[cutEdge[1]]);
+                vertI++;
+                str << "l " << vertI-3 << ' ' << vertI-2 << nl;
+                str << "l " << vertI-3 << ' ' << vertI-1 << nl;
+                str << "l " << vertI-3 << ' ' << vertI << nl;
+                str << "l " << vertI-2 << ' ' << vertI-1 << nl;
+                str << "l " << vertI-2 << ' ' << vertI << nl;
+                str << "l " << vertI-1 << ' ' << vertI << nl;
+            }
+        }
+    }
+    {
+        OFstream str("cutToSlaveEdges.obj");
+        Pout<< "Writing cutToSlaveEdges to " << str.name() << endl;
 
-		label vertI = 0;
+        label vertI = 0;
 
-		labelList slaveToCut(invert(s.nEdges(), cutToSlaveEdges));
+        labelList slaveToCut(invert(s.nEdges(), cutToSlaveEdges));
 
-		forAll(slaveToCut, edgeI)
-		{
-			if (slaveToCut[edgeI] != -1)
-			{
-				const edge& slaveEdge = s.edges()[edgeI];
-				const edge& cutEdge = c.edges()[slaveToCut[edgeI]];
+        forAll(slaveToCut, edgeI)
+        {
+            if (slaveToCut[edgeI] != -1)
+            {
+                const edge& slaveEdge = s.edges()[edgeI];
+                const edge& cutEdge = c.edges()[slaveToCut[edgeI]];
 
-				meshTools::writeOBJ(str, s.localPoints()[slaveEdge[0]]);
-				vertI++;
-				meshTools::writeOBJ(str, s.localPoints()[slaveEdge[1]]);
-				vertI++;
-				meshTools::writeOBJ(str, c.localPoints()[cutEdge[0]]);
-				vertI++;
-				meshTools::writeOBJ(str, c.localPoints()[cutEdge[1]]);
-				vertI++;
-				str << "l " << vertI-3 << ' ' << vertI-2 << nl;
-				str << "l " << vertI-3 << ' ' << vertI-1 << nl;
-				str << "l " << vertI-3 << ' ' << vertI << nl;
-				str << "l " << vertI-2 << ' ' << vertI-1 << nl;
-				str << "l " << vertI-2 << ' ' << vertI << nl;
-				str << "l " << vertI-1 << ' ' << vertI << nl;
-			}
-		}
-	}
+                meshTools::writeOBJ(str, s.localPoints()[slaveEdge[0]]);
+                vertI++;
+                meshTools::writeOBJ(str, s.localPoints()[slaveEdge[1]]);
+                vertI++;
+                meshTools::writeOBJ(str, c.localPoints()[cutEdge[0]]);
+                vertI++;
+                meshTools::writeOBJ(str, c.localPoints()[cutEdge[1]]);
+                vertI++;
+                str << "l " << vertI-3 << ' ' << vertI-2 << nl;
+                str << "l " << vertI-3 << ' ' << vertI-1 << nl;
+                str << "l " << vertI-3 << ' ' << vertI << nl;
+                str << "l " << vertI-2 << ' ' << vertI-1 << nl;
+                str << "l " << vertI-2 << ' ' << vertI << nl;
+                str << "l " << vertI-1 << ' ' << vertI << nl;
+            }
+        }
+    }
 
-	Pout<< endl;
+    Pout<< endl;
 }
 
 
@@ -318,30 +318,30 @@ void Foam::faceCoupleInfo::writeEdges
 // the corresponding patch edges.
 Foam::labelList Foam::faceCoupleInfo::findMappedEdges
 (
-	const edgeList& edges,
-	const labelList& pointMap,
-	const indirectPrimitivePatch& patch
+    const edgeList& edges,
+    const labelList& pointMap,
+    const indirectPrimitivePatch& patch
 )
 {
-	labelList toPatchEdges(edges.size());
+    labelList toPatchEdges(edges.size());
 
-	forAll(toPatchEdges, edgeI)
-	{
-		const edge& e = edges[edgeI];
+    forAll(toPatchEdges, edgeI)
+    {
+        const edge& e = edges[edgeI];
 
-		label v0 = pointMap[e[0]];
-		label v1 = pointMap[e[1]];
+        label v0 = pointMap[e[0]];
+        label v1 = pointMap[e[1]];
 
-		toPatchEdges[edgeI] =
-			meshTools::findEdge
-			(
-				patch.edges(),
-				patch.pointEdges()[v0],
-				v0,
-				v1
-			);
-	}
-	return toPatchEdges;
+        toPatchEdges[edgeI] =
+            meshTools::findEdge
+            (
+                patch.edges(),
+                patch.pointEdges()[v0],
+                v0,
+                v1
+            );
+    }
+    return toPatchEdges;
 }
 
 
@@ -349,42 +349,42 @@ Foam::labelList Foam::faceCoupleInfo::findMappedEdges
 // polyPatches.
 bool Foam::faceCoupleInfo::regionEdge
 (
-	const polyMesh& slaveMesh,
-	const label slaveEdgeI
+    const polyMesh& slaveMesh,
+    const label slaveEdgeI
 ) const
 {
-	const labelList& eFaces = slavePatch().edgeFaces()[slaveEdgeI];
+    const labelList& eFaces = slavePatch().edgeFaces()[slaveEdgeI];
 
-	if (eFaces.size() == 1)
-	{
-		return true;
-	}
-	else
-	{
-		// Count how many different patches connected to this edge.
+    if (eFaces.size() == 1)
+    {
+        return true;
+    }
+    else
+    {
+        // Count how many different patches connected to this edge.
 
-		label patch0 = -1;
+        label patch0 = -1;
 
-		forAll(eFaces, i)
-		{
-			label faceI = eFaces[i];
+        forAll(eFaces, i)
+        {
+            label faceI = eFaces[i];
 
-			label meshFaceI = slavePatch().addressing()[faceI];
+            label meshFaceI = slavePatch().addressing()[faceI];
 
-			label patchI = slaveMesh.boundaryMesh().whichPatch(meshFaceI);
+            label patchI = slaveMesh.boundaryMesh().whichPatch(meshFaceI);
 
-			if (patch0 == -1)
-			{
-				patch0 = patchI;
-			}
-			else if (patchI != patch0)
-			{
-				// Found two different patches connected to this edge.
-				return true;
-			}
-		}
-		return false;
-	}
+            if (patch0 == -1)
+            {
+                patch0 = patchI;
+            }
+            else if (patchI != patch0)
+            {
+                // Found two different patches connected to this edge.
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 
@@ -393,259 +393,259 @@ bool Foam::faceCoupleInfo::regionEdge
 // patch information to match edges.
 Foam::label Foam::faceCoupleInfo::mostAlignedCutEdge
 (
-	const bool report,
-	const polyMesh& slaveMesh,
-	const bool patchDivision,
-	const labelList& cutToMasterEdges,
-	const labelList& cutToSlaveEdges,
-	const label pointI,
-	const label edgeStart,
-	const label edgeEnd
+    const bool report,
+    const polyMesh& slaveMesh,
+    const bool patchDivision,
+    const labelList& cutToMasterEdges,
+    const labelList& cutToSlaveEdges,
+    const label pointI,
+    const label edgeStart,
+    const label edgeEnd
 ) const
 {
-	const pointField& localPoints = cutFaces().localPoints();
+    const pointField& localPoints = cutFaces().localPoints();
 
-	const labelList& pEdges = cutFaces().pointEdges()[pointI];
+    const labelList& pEdges = cutFaces().pointEdges()[pointI];
 
-	if (report)
-	{
-		Pout<< "mostAlignedEdge : finding nearest edge among "
-			<< IndirectList<edge>(cutFaces().edges(), pEdges)()
-			<< " connected to point " << pointI
-			<< " coord:" << localPoints[pointI]
-			<< " running between " << edgeStart << " coord:"
-			<< localPoints[edgeStart]
-			<< " and " << edgeEnd << " coord:"
-			<< localPoints[edgeEnd]
-			<< endl;
-	}
+    if (report)
+    {
+        Pout<< "mostAlignedEdge : finding nearest edge among "
+            << IndirectList<edge>(cutFaces().edges(), pEdges)()
+            << " connected to point " << pointI
+            << " coord:" << localPoints[pointI]
+            << " running between " << edgeStart << " coord:"
+            << localPoints[edgeStart]
+            << " and " << edgeEnd << " coord:"
+            << localPoints[edgeEnd]
+            << endl;
+    }
 
-	// Find the edge that gets us nearest end.
+    // Find the edge that gets us nearest end.
 
-	label maxEdgeI = -1;
-	scalar maxCos = -GREAT;
+    label maxEdgeI = -1;
+    scalar maxCos = -GREAT;
 
-	forAll(pEdges, i)
-	{
-		label edgeI = pEdges[i];
+    forAll(pEdges, i)
+    {
+        label edgeI = pEdges[i];
 
-		if
-		(
-		   !(
-				patchDivision
-			 && cutToMasterEdges[edgeI] == -1
-			)
-		 || (
-				patchDivision
-			 && regionEdge(slaveMesh, cutToSlaveEdges[edgeI])
-			)
-		)
-		{
-			const edge& e = cutFaces().edges()[edgeI];
+        if
+        (
+           !(
+                patchDivision
+             && cutToMasterEdges[edgeI] == -1
+            )
+         || (
+                patchDivision
+             && regionEdge(slaveMesh, cutToSlaveEdges[edgeI])
+            )
+        )
+        {
+            const edge& e = cutFaces().edges()[edgeI];
 
-			label otherPointI = e.otherVertex(pointI);
+            label otherPointI = e.otherVertex(pointI);
 
-			if (otherPointI == edgeEnd)
-			{
-				// Shortcut: found edge end point.
-				if (report)
-				{
-					Pout<< "    mostAlignedEdge : found end point " << edgeEnd
-						<< endl;
-				}
-				return edgeI;
-			}
+            if (otherPointI == edgeEnd)
+            {
+                // Shortcut: found edge end point.
+                if (report)
+                {
+                    Pout<< "    mostAlignedEdge : found end point " << edgeEnd
+                        << endl;
+                }
+                return edgeI;
+            }
 
-			// Get angle between edge and edge to masterEnd
+            // Get angle between edge and edge to masterEnd
 
-			vector eVec(localPoints[otherPointI] - localPoints[pointI]);
+            vector eVec(localPoints[otherPointI] - localPoints[pointI]);
 
-			scalar magEVec = mag(eVec);
+            scalar magEVec = mag(eVec);
 
-			if (magEVec < VSMALL)
-			{
-				WarningIn("faceCoupleInfo::mostAlignedEdge")
-					<< "Crossing zero sized edge " << edgeI
-					<< " coords:" << localPoints[otherPointI]
-					<< localPoints[pointI]
-					<< " when walking from " << localPoints[edgeStart]
-					<< " to " << localPoints[edgeEnd]
-					<< endl;
-				return edgeI;
-			}
+            if (magEVec < VSMALL)
+            {
+                WarningIn("faceCoupleInfo::mostAlignedEdge")
+                    << "Crossing zero sized edge " << edgeI
+                    << " coords:" << localPoints[otherPointI]
+                    << localPoints[pointI]
+                    << " when walking from " << localPoints[edgeStart]
+                    << " to " << localPoints[edgeEnd]
+                    << endl;
+                return edgeI;
+            }
 
-			eVec /= magEVec;
+            eVec /= magEVec;
 
-			vector eToEndPoint(localPoints[edgeEnd] - localPoints[otherPointI]);
-			eToEndPoint /= mag(eToEndPoint);
+            vector eToEndPoint(localPoints[edgeEnd] - localPoints[otherPointI]);
+            eToEndPoint /= mag(eToEndPoint);
 
-			scalar cosAngle = eVec & eToEndPoint;
+            scalar cosAngle = eVec & eToEndPoint;
 
-			if (report)
-			{
-				Pout<< "    edge:" << e << " points:" << localPoints[pointI]
-					<< localPoints[otherPointI]
-					<< "  vec:" << eVec
-					<< "  vecToEnd:" << eToEndPoint
-					<< " cosAngle:" << cosAngle
-					<< endl;
-			}
+            if (report)
+            {
+                Pout<< "    edge:" << e << " points:" << localPoints[pointI]
+                    << localPoints[otherPointI]
+                    << "  vec:" << eVec
+                    << "  vecToEnd:" << eToEndPoint
+                    << " cosAngle:" << cosAngle
+                    << endl;
+            }
 
-			if (cosAngle > maxCos)
-			{
-				maxCos = cosAngle;
-				maxEdgeI = edgeI;
-			}
-		}
-	}
+            if (cosAngle > maxCos)
+            {
+                maxCos = cosAngle;
+                maxEdgeI = edgeI;
+            }
+        }
+    }
 
-	if (maxCos > 1 - angleTol_)
-	{
-		return maxEdgeI;
-	}
-	else
-	{
-		return -1;
-	}
+    if (maxCos > 1 - angleTol_)
+    {
+        return maxEdgeI;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 
 // Construct points to split points map (in cut addressing)
 void Foam::faceCoupleInfo::setCutEdgeToPoints(const labelList& cutToMasterEdges)
 {
-	labelListList masterToCutEdges
-	(
-		invertOneToMany
-		(
-			masterPatch().nEdges(),
-			cutToMasterEdges
-		)
-	);
+    labelListList masterToCutEdges
+    (
+        invertOneToMany
+        (
+            masterPatch().nEdges(),
+            cutToMasterEdges
+        )
+    );
 
-	const edgeList& cutEdges = cutFaces().edges();
+    const edgeList& cutEdges = cutFaces().edges();
 
-	// Size extra big so searching is faster
-	cutEdgeToPoints_.resize
-	(
-		masterPatch().nEdges()
-	  + slavePatch().nEdges()
-	  + cutEdges.size()
-	);
+    // Size extra big so searching is faster
+    cutEdgeToPoints_.resize
+    (
+        masterPatch().nEdges()
+      + slavePatch().nEdges()
+      + cutEdges.size()
+    );
 
-	forAll(masterToCutEdges, masterEdgeI)
-	{
-		const edge& masterE = masterPatch().edges()[masterEdgeI];
+    forAll(masterToCutEdges, masterEdgeI)
+    {
+        const edge& masterE = masterPatch().edges()[masterEdgeI];
 
-		//Pout<< "Master:" << masterPatch().localPoints()[masterE[0]] << ' '
-		//	<< masterPatch().localPoints()[masterE[1]] << endl;
+        //Pout<< "Master:" << masterPatch().localPoints()[masterE[0]] << ' '
+        //    << masterPatch().localPoints()[masterE[1]] << endl;
 
-		const labelList& stringedEdges = masterToCutEdges[masterEdgeI];
+        const labelList& stringedEdges = masterToCutEdges[masterEdgeI];
 
-		if (stringedEdges.size() == 0)
-		{
-			FatalErrorIn
-			(
-				"faceCoupleInfo::setCutEdgeToPoints"
-				"(const labelList&)"
-			)   << "Did not match all of master edges to cutFace edges"
-				<< nl
-				<< "First unmatched edge:" << masterEdgeI << " endPoints:"
-				<< masterPatch().localPoints()[masterE[0]]
-				<< masterPatch().localPoints()[masterE[1]]
-				<< endl
-				<< "This usually means that the slave patch is not a"
-				<< " subdivision of the master patch"
-				<< abort(FatalError);
-		}
-		else if (stringedEdges.size() > 1)
-		{
-			// String up the edges between e[0] and e[1]. Store the points
-			// inbetween e[0] and e[1] (all in cutFaces() labels)
+        if (stringedEdges.size() == 0)
+        {
+            FatalErrorIn
+            (
+                "faceCoupleInfo::setCutEdgeToPoints"
+                "(const labelList&)"
+            )   << "Did not match all of master edges to cutFace edges"
+                << nl
+                << "First unmatched edge:" << masterEdgeI << " endPoints:"
+                << masterPatch().localPoints()[masterE[0]]
+                << masterPatch().localPoints()[masterE[1]]
+                << endl
+                << "This usually means that the slave patch is not a"
+                << " subdivision of the master patch"
+                << abort(FatalError);
+        }
+        else if (stringedEdges.size() > 1)
+        {
+            // String up the edges between e[0] and e[1]. Store the points
+            // inbetween e[0] and e[1] (all in cutFaces() labels)
 
-			dynamicLabelList splitPoints(stringedEdges.size()-1);
+            dynamicLabelList splitPoints(stringedEdges.size()-1);
 
-			// Unsplit edge endpoints
-			const edge unsplitEdge
-			(
-				masterToCutPoints_[masterE[0]],
-				masterToCutPoints_[masterE[1]]
-			);
+            // Unsplit edge endpoints
+            const edge unsplitEdge
+            (
+                masterToCutPoints_[masterE[0]],
+                masterToCutPoints_[masterE[1]]
+            );
 
-			label startVertI = unsplitEdge[0];
-			label startEdgeI = -1;
+            label startVertI = unsplitEdge[0];
+            label startEdgeI = -1;
 
-			while (startVertI != unsplitEdge[1])
-			{
-				// Loop over all string of edges. Update
-				// - startVertI : previous vertex
-				// - startEdgeI : previous edge
-				// and insert any points into splitPoints
+            while (startVertI != unsplitEdge[1])
+            {
+                // Loop over all string of edges. Update
+                // - startVertI : previous vertex
+                // - startEdgeI : previous edge
+                // and insert any points into splitPoints
 
-				// For checking
-				label oldStart = startVertI;
+                // For checking
+                label oldStart = startVertI;
 
-				forAll(stringedEdges, i)
-				{
-					label edgeI = stringedEdges[i];
+                forAll(stringedEdges, i)
+                {
+                    label edgeI = stringedEdges[i];
 
-					if (edgeI != startEdgeI)
-					{
-						const edge& e = cutEdges[edgeI];
+                    if (edgeI != startEdgeI)
+                    {
+                        const edge& e = cutEdges[edgeI];
 
-						//Pout<< "    cut:" << e << " at:"
-						//	<< cutFaces().localPoints()[e[0]]
-						//	<< ' ' << cutFaces().localPoints()[e[1]] << endl;
+                        //Pout<< "    cut:" << e << " at:"
+                        //    << cutFaces().localPoints()[e[0]]
+                        //    << ' ' << cutFaces().localPoints()[e[1]] << endl;
 
-						if (e[0] == startVertI)
-						{
-							startEdgeI = edgeI;
-							startVertI = e[1];
-							if (e[1] != unsplitEdge[1])
-							{
-								splitPoints.append(e[1]);
-							}
-							break;
-						}
-						else if (e[1] == startVertI)
-						{
-							startEdgeI = edgeI;
-							startVertI = e[0];
-							if (e[0] != unsplitEdge[1])
-							{
-								splitPoints.append(e[0]);
-							}
-							break;
-						}
-					}
-				}
+                        if (e[0] == startVertI)
+                        {
+                            startEdgeI = edgeI;
+                            startVertI = e[1];
+                            if (e[1] != unsplitEdge[1])
+                            {
+                                splitPoints.append(e[1]);
+                            }
+                            break;
+                        }
+                        else if (e[1] == startVertI)
+                        {
+                            startEdgeI = edgeI;
+                            startVertI = e[0];
+                            if (e[0] != unsplitEdge[1])
+                            {
+                                splitPoints.append(e[0]);
+                            }
+                            break;
+                        }
+                    }
+                }
 
-				// Check
-				if (oldStart == startVertI)
-				{
-					FatalErrorIn
-					(
-						"faceCoupleInfo::setCutEdgeToPoints"
-						"(const labelList&)"
-					)   << " unsplitEdge:" << unsplitEdge
-						<< " does not correspond to split edges "
-						<< IndirectList<edge>(cutEdges, stringedEdges)()
-						<< abort(FatalError);
-				}
-			}
+                // Check
+                if (oldStart == startVertI)
+                {
+                    FatalErrorIn
+                    (
+                        "faceCoupleInfo::setCutEdgeToPoints"
+                        "(const labelList&)"
+                    )   << " unsplitEdge:" << unsplitEdge
+                        << " does not correspond to split edges "
+                        << IndirectList<edge>(cutEdges, stringedEdges)()
+                        << abort(FatalError);
+                }
+            }
 
-			//Pout<< "For master edge:"
-			//	<< unsplitEdge
-			//	<< " Found stringed points "
-			//	<<  IndirectList<point>
-			//		(
-			//			cutFaces().localPoints(),
-			//			splitPoints.shrink()
-			//		)()
-			//	<< endl;
+            //Pout<< "For master edge:"
+            //    << unsplitEdge
+            //    << " Found stringed points "
+            //    <<  IndirectList<point>
+            //        (
+            //            cutFaces().localPoints(),
+            //            splitPoints.shrink()
+            //        )()
+            //    << endl;
 
-			cutEdgeToPoints_.insert(unsplitEdge, splitPoints.shrink());
-		}
-	}
+            cutEdgeToPoints_.insert(unsplitEdge, splitPoints.shrink());
+        }
+    }
 }
 
 
@@ -653,89 +653,89 @@ void Foam::faceCoupleInfo::setCutEdgeToPoints(const labelList& cutToMasterEdges)
 // the first point of f1.
 Foam::label Foam::faceCoupleInfo::matchFaces
 (
-	const scalar absTol,
-	const pointField& points0,
-	const face& f0,
-	const pointField& points1,
-	const face& f1,
-	const bool sameOrientation
+    const scalar absTol,
+    const pointField& points0,
+    const face& f0,
+    const pointField& points1,
+    const face& f1,
+    const bool sameOrientation
 )
 {
-	if (f0.size() != f1.size())
-	{
-		FatalErrorIn
-		(
-			"faceCoupleInfo::matchFaces"
-			"(const scalar, const face&, const pointField&"
-			", const face&, const pointField&)"
-		)   << "Different sizes for supposedly matching faces." << nl
-			<< "f0:" << f0 << " coords:" << IndirectList<point>(points0, f0)()
-			<< nl
-			<< "f1:" << f1 << " coords:" << IndirectList<point>(points1, f1)()
-			<< abort(FatalError);
-	}
+    if (f0.size() != f1.size())
+    {
+        FatalErrorIn
+        (
+            "faceCoupleInfo::matchFaces"
+            "(const scalar, const face&, const pointField&"
+            ", const face&, const pointField&)"
+        )   << "Different sizes for supposedly matching faces." << nl
+            << "f0:" << f0 << " coords:" << IndirectList<point>(points0, f0)()
+            << nl
+            << "f1:" << f1 << " coords:" << IndirectList<point>(points1, f1)()
+            << abort(FatalError);
+    }
 
-	const scalar absTolSqr = sqr(absTol);
+    const scalar absTolSqr = sqr(absTol);
 
 
-	label matchFp = -1;
+    label matchFp = -1;
 
-	forAll(f0, startFp)
-	{
-		// See -if starting from startFp on f0- the two faces match.
-		bool fullMatch = true;
+    forAll(f0, startFp)
+    {
+        // See -if starting from startFp on f0- the two faces match.
+        bool fullMatch = true;
 
-		label fp0 = startFp;
-		label fp1 = 0;
+        label fp0 = startFp;
+        label fp1 = 0;
 
-		forAll(f1, i)
-		{
-			scalar distSqr = Foam::magSqr(points0[f0[fp0]] - points1[f1[fp1]]);
+        forAll(f1, i)
+        {
+            scalar distSqr = Foam::magSqr(points0[f0[fp0]] - points1[f1[fp1]]);
 
-			if (distSqr > absTolSqr)
-			{
-				fullMatch = false;
-				break;
-			}
+            if (distSqr > absTolSqr)
+            {
+                fullMatch = false;
+                break;
+            }
 
-			fp0 = f0.fcIndex(fp0);  // walk forward
+            fp0 = f0.fcIndex(fp0);  // walk forward
 
-			if (sameOrientation)
-			{
-				fp1 = f1.fcIndex(fp1);
-			}
-			else
-			{
-				fp1 = f1.rcIndex(fp1);
-			}
-		}
+            if (sameOrientation)
+            {
+                fp1 = f1.fcIndex(fp1);
+            }
+            else
+            {
+                fp1 = f1.rcIndex(fp1);
+            }
+        }
 
-		if (fullMatch)
-		{
-			matchFp = startFp;
-			break;
-		}
-	}
+        if (fullMatch)
+        {
+            matchFp = startFp;
+            break;
+        }
+    }
 
-	if (matchFp == -1)
-	{
-		FatalErrorIn
-		(
-			"faceCoupleInfo::matchFaces"
-			"(const scalar, const face&, const pointField&"
-			", const face&, const pointField&)"
-		)   << "No unique match between two faces" << nl
-			<< "Face " << f0 << " coords "
-			<< IndirectList<point>(points0, f0)()
-			<< nl
-			<< "Face " << f1 << " coords "
-			<< IndirectList<point>(points1, f1)()
-			<< "when using tolerance " << absTol
-			<< " and forwardMatching:" << sameOrientation
-			<< abort(FatalError);
-	}
+    if (matchFp == -1)
+    {
+        FatalErrorIn
+        (
+            "faceCoupleInfo::matchFaces"
+            "(const scalar, const face&, const pointField&"
+            ", const face&, const pointField&)"
+        )   << "No unique match between two faces" << nl
+            << "Face " << f0 << " coords "
+            << IndirectList<point>(points0, f0)()
+            << nl
+            << "Face " << f1 << " coords "
+            << IndirectList<point>(points1, f1)()
+            << "when using tolerance " << absTol
+            << " and forwardMatching:" << sameOrientation
+            << abort(FatalError);
+    }
 
-	return matchFp;
+    return matchFp;
 }
 
 
@@ -746,257 +746,257 @@ Foam::label Foam::faceCoupleInfo::matchFaces
 // Returns true if there are any duplicates.
 bool Foam::faceCoupleInfo::matchPointsThroughFaces
 (
-	const scalar absTol,
-	const pointField& cutPoints,
-	const faceList& cutFaces,
-	const pointField& patchPoints,
-	const faceList& patchFaces,
-	const bool sameOrientation,
+    const scalar absTol,
+    const pointField& cutPoints,
+    const faceList& cutFaces,
+    const pointField& patchPoints,
+    const faceList& patchFaces,
+    const bool sameOrientation,
 
-	labelList& patchToCutPoints,	// patch to (uncompacted) cut points
-	labelList& cutToCompact,		// compaction list for cut points
-	labelList& compactToCut		 // inverse ,,
+    labelList& patchToCutPoints,    // patch to (uncompacted) cut points
+    labelList& cutToCompact,        // compaction list for cut points
+    labelList& compactToCut         // inverse ,,
 )
 {
 
-	// From slave to cut point
-	patchToCutPoints.setSize(patchPoints.size());
-	patchToCutPoints = -1;
+    // From slave to cut point
+    patchToCutPoints.setSize(patchPoints.size());
+    patchToCutPoints = -1;
 
-	// Compaction list for cut points: either -1 or index into master which
-	// gives the point to compact to.
-	labelList cutPointRegion(cutPoints.size(), -1);
-	dynamicLabelList cutPointRegionMaster;
+    // Compaction list for cut points: either -1 or index into master which
+    // gives the point to compact to.
+    labelList cutPointRegion(cutPoints.size(), -1);
+    dynamicLabelList cutPointRegionMaster;
 
-	forAll(patchFaces, patchFaceI)
-	{
-		const face& patchF = patchFaces[patchFaceI];
+    forAll(patchFaces, patchFaceI)
+    {
+        const face& patchF = patchFaces[patchFaceI];
 
-		//const face& cutF = cutFaces[patchToCutFaces[patchFaceI]];
-		const face& cutF = cutFaces[patchFaceI];
+        //const face& cutF = cutFaces[patchToCutFaces[patchFaceI]];
+        const face& cutF = cutFaces[patchFaceI];
 
-		// Do geometric matching to get position of cutF[0] in patchF
-		label patchFp = matchFaces
-		(
-			absTol,
-			patchPoints,
-			patchF,
-			cutPoints,
-			cutF,
-			sameOrientation		// orientation
-		);
+        // Do geometric matching to get position of cutF[0] in patchF
+        label patchFp = matchFaces
+        (
+            absTol,
+            patchPoints,
+            patchF,
+            cutPoints,
+            cutF,
+            sameOrientation        // orientation
+        );
 
-		forAll(cutF, cutFp)
-		{
-			label cutPointI = cutF[cutFp];
-			label patchPointI = patchF[patchFp];
+        forAll(cutF, cutFp)
+        {
+            label cutPointI = cutF[cutFp];
+            label patchPointI = patchF[patchFp];
 
-			//const point& cutPt = cutPoints[cutPointI];
-			//const point& patchPt = patchPoints[patchPointI];
-			//if (mag(cutPt - patchPt) > SMALL)
-			//{
-			//	FatalErrorIn("matchPointsThroughFaces")
-			//	<< "cutP:" << cutPt
-			//	<< " patchP:" << patchPt
-			//	<< abort(FatalError);
-			//}
+            //const point& cutPt = cutPoints[cutPointI];
+            //const point& patchPt = patchPoints[patchPointI];
+            //if (mag(cutPt - patchPt) > SMALL)
+            //{
+            //    FatalErrorIn("matchPointsThroughFaces")
+            //    << "cutP:" << cutPt
+            //    << " patchP:" << patchPt
+            //    << abort(FatalError);
+            //}
 
-			if (patchToCutPoints[patchPointI] == -1)
-			{
-				patchToCutPoints[patchPointI] = cutPointI;
-			}
-			else if (patchToCutPoints[patchPointI] != cutPointI)
-			{
-				// Multiple cut points connecting to same patch.
-				// Check if already have region & region master for this set
-				label otherCutPointI = patchToCutPoints[patchPointI];
+            if (patchToCutPoints[patchPointI] == -1)
+            {
+                patchToCutPoints[patchPointI] = cutPointI;
+            }
+            else if (patchToCutPoints[patchPointI] != cutPointI)
+            {
+                // Multiple cut points connecting to same patch.
+                // Check if already have region & region master for this set
+                label otherCutPointI = patchToCutPoints[patchPointI];
 
-				//Pout<< "PatchPoint:" << patchPt
-				//	<< " matches to:" << cutPointI
-				//	<< " coord:" << cutPoints[cutPointI]
-				//	<< " and to:" << otherCutPointI
-				//	<< " coord:" << cutPoints[otherCutPointI]
-				//	<< endl;
+                //Pout<< "PatchPoint:" << patchPt
+                //    << " matches to:" << cutPointI
+                //    << " coord:" << cutPoints[cutPointI]
+                //    << " and to:" << otherCutPointI
+                //    << " coord:" << cutPoints[otherCutPointI]
+                //    << endl;
 
-				if (cutPointRegion[otherCutPointI] != -1)
-				{
-					// Have region for this set. Copy.
-					label region = cutPointRegion[otherCutPointI];
-					cutPointRegion[cutPointI] = region;
+                if (cutPointRegion[otherCutPointI] != -1)
+                {
+                    // Have region for this set. Copy.
+                    label region = cutPointRegion[otherCutPointI];
+                    cutPointRegion[cutPointI] = region;
 
-					// Update region master with min point label
-					cutPointRegionMaster[region] = min
-					(
-						cutPointRegionMaster[region],
-						cutPointI
-					);
-				}
-				else
-				{
-					// Create new region.
-					label region = cutPointRegionMaster.size();
-					cutPointRegionMaster.append
-					(
-						min(cutPointI, otherCutPointI)
-					);
-					cutPointRegion[cutPointI] = region;
-					cutPointRegion[otherCutPointI] = region;
-				}
-			}
+                    // Update region master with min point label
+                    cutPointRegionMaster[region] = min
+                    (
+                        cutPointRegionMaster[region],
+                        cutPointI
+                    );
+                }
+                else
+                {
+                    // Create new region.
+                    label region = cutPointRegionMaster.size();
+                    cutPointRegionMaster.append
+                    (
+                        min(cutPointI, otherCutPointI)
+                    );
+                    cutPointRegion[cutPointI] = region;
+                    cutPointRegion[otherCutPointI] = region;
+                }
+            }
 
-			if (sameOrientation)
-			{
-				patchFp = patchF.fcIndex(patchFp);
-			}
-			else
-			{
-				patchFp = patchF.rcIndex(patchFp);
-			}
-		}
-	}
+            if (sameOrientation)
+            {
+                patchFp = patchF.fcIndex(patchFp);
+            }
+            else
+            {
+                patchFp = patchF.rcIndex(patchFp);
+            }
+        }
+    }
 
-	// Rework region&master into compaction array
-	compactToCut.setSize(cutPointRegion.size());
-	cutToCompact.setSize(cutPointRegion.size());
-	cutToCompact = -1;
-	label compactPointI = 0;
+    // Rework region&master into compaction array
+    compactToCut.setSize(cutPointRegion.size());
+    cutToCompact.setSize(cutPointRegion.size());
+    cutToCompact = -1;
+    label compactPointI = 0;
 
-	forAll(cutPointRegion, i)
-	{
-		if (cutPointRegion[i] == -1)
-		{
-			// Unduplicated point. Allocate new compacted point.
-			cutToCompact[i] = compactPointI;
-			compactToCut[compactPointI] = i;
-			compactPointI++;
-		}
-		else
-		{
-			// Duplicate point. Get master.
+    forAll(cutPointRegion, i)
+    {
+        if (cutPointRegion[i] == -1)
+        {
+            // Unduplicated point. Allocate new compacted point.
+            cutToCompact[i] = compactPointI;
+            compactToCut[compactPointI] = i;
+            compactPointI++;
+        }
+        else
+        {
+            // Duplicate point. Get master.
 
-			label masterPointI = cutPointRegionMaster[cutPointRegion[i]];
+            label masterPointI = cutPointRegionMaster[cutPointRegion[i]];
 
-			if (cutToCompact[masterPointI] == -1)
-			{
-				cutToCompact[masterPointI] = compactPointI;
-				compactToCut[compactPointI] = masterPointI;
-				compactPointI++;
-			}
-			cutToCompact[i] = cutToCompact[masterPointI];
-		}
-	}
-	compactToCut.setSize(compactPointI);
+            if (cutToCompact[masterPointI] == -1)
+            {
+                cutToCompact[masterPointI] = compactPointI;
+                compactToCut[compactPointI] = masterPointI;
+                compactPointI++;
+            }
+            cutToCompact[i] = cutToCompact[masterPointI];
+        }
+    }
+    compactToCut.setSize(compactPointI);
 
-	return compactToCut.size() != cutToCompact.size();
+    return compactToCut.size() != cutToCompact.size();
 }
 
 
 // Return max distance from any point on cutF to masterF
 Foam::scalar Foam::faceCoupleInfo::maxDistance
 (
-	const face& cutF,
-	const pointField& cutPoints,
-	const face& masterF,
-	const pointField& masterPoints
+    const face& cutF,
+    const pointField& cutPoints,
+    const face& masterF,
+    const pointField& masterPoints
 )
 {
-	scalar maxDist = -GREAT;
+    scalar maxDist = -GREAT;
 
-	forAll(cutF, fp)
-	{
-		const point& cutPt = cutPoints[cutF[fp]];
+    forAll(cutF, fp)
+    {
+        const point& cutPt = cutPoints[cutF[fp]];
 
-		pointHit pHit = masterF.nearestPoint(cutPt, masterPoints);
+        pointHit pHit = masterF.nearestPoint(cutPt, masterPoints);
 
-		maxDist = max(maxDist, pHit.distance());
-	}
-	return maxDist;
+        maxDist = max(maxDist, pHit.distance());
+    }
+    return maxDist;
 }
 
 
 void Foam::faceCoupleInfo::findPerfectMatchingFaces
 (
-	const primitiveMesh& mesh0,
-	const primitiveMesh& mesh1,
-	const scalar absTol,
+    const primitiveMesh& mesh0,
+    const primitiveMesh& mesh1,
+    const scalar absTol,
 
-	labelList& mesh0Faces,
-	labelList& mesh1Faces
+    labelList& mesh0Faces,
+    labelList& mesh1Faces
 )
 {
-	// Face centres of external faces (without invoking
-	// mesh.faceCentres since mesh might have been clearedOut)
+    // Face centres of external faces (without invoking
+    // mesh.faceCentres since mesh might have been clearedOut)
 
-	pointField fc0
-	(
-		calcFaceCentres<List>
-		(
-			mesh0.faces(),
-			mesh0.points(),
-			mesh0.nInternalFaces(),
-			mesh0.nFaces() - mesh0.nInternalFaces()
-		)
-	);
+    pointField fc0
+    (
+        calcFaceCentres<List>
+        (
+            mesh0.faces(),
+            mesh0.points(),
+            mesh0.nInternalFaces(),
+            mesh0.nFaces() - mesh0.nInternalFaces()
+        )
+    );
 
-	pointField fc1
-	(
-		calcFaceCentres<List>
-		(
-			mesh1.faces(),
-			mesh1.points(),
-			mesh1.nInternalFaces(),
-			mesh1.nFaces() - mesh1.nInternalFaces()
-		)
-	);
-
-
-	if (debug)
-	{
-		Pout<< "Face matching tolerance : " << absTol << endl;
-	}
+    pointField fc1
+    (
+        calcFaceCentres<List>
+        (
+            mesh1.faces(),
+            mesh1.points(),
+            mesh1.nInternalFaces(),
+            mesh1.nFaces() - mesh1.nInternalFaces()
+        )
+    );
 
 
-	// Match geometrically
-	labelList from1To0;
-	bool matchedAllFaces = matchPoints
-	(
-		fc1,
-		fc0,
-		scalarField(fc1.size(), absTol),
-		false,
-		from1To0
-	);
-
-	if (matchedAllFaces)
-	{
-		Warning
-			<< "faceCoupleInfo::faceCoupleInfo : "
-			<< "Matched ALL " << fc1.size()
-			<< " boundary faces of mesh0 to boundary faces of mesh1." << endl
-			<< "This is only valid if the mesh to add is fully"
-			<< " enclosed by the mesh it is added to." << endl;
-	}
+    if (debug)
+    {
+        Pout<< "Face matching tolerance : " << absTol << endl;
+    }
 
 
-	// Collect matches.
-	label nMatched = 0;
+    // Match geometrically
+    labelList from1To0;
+    bool matchedAllFaces = matchPoints
+    (
+        fc1,
+        fc0,
+        scalarField(fc1.size(), absTol),
+        false,
+        from1To0
+    );
 
-	mesh0Faces.setSize(fc0.size());
-	mesh1Faces.setSize(fc1.size());
+    if (matchedAllFaces)
+    {
+        Warning
+            << "faceCoupleInfo::faceCoupleInfo : "
+            << "Matched ALL " << fc1.size()
+            << " boundary faces of mesh0 to boundary faces of mesh1." << endl
+            << "This is only valid if the mesh to add is fully"
+            << " enclosed by the mesh it is added to." << endl;
+    }
 
-	forAll(from1To0, i)
-	{
-		if (from1To0[i] != -1)
-		{
-			mesh1Faces[nMatched] = i + mesh1.nInternalFaces();
-			mesh0Faces[nMatched] = from1To0[i] + mesh0.nInternalFaces();
 
-			nMatched++;
-		}
-	}
+    // Collect matches.
+    label nMatched = 0;
 
-	mesh0Faces.setSize(nMatched);
-	mesh1Faces.setSize(nMatched);
+    mesh0Faces.setSize(fc0.size());
+    mesh1Faces.setSize(fc1.size());
+
+    forAll(from1To0, i)
+    {
+        if (from1To0[i] != -1)
+        {
+            mesh1Faces[nMatched] = i + mesh1.nInternalFaces();
+            mesh0Faces[nMatched] = from1To0[i] + mesh0.nInternalFaces();
+
+            nMatched++;
+        }
+    }
+
+    mesh0Faces.setSize(nMatched);
+    mesh1Faces.setSize(nMatched);
 }
 
 

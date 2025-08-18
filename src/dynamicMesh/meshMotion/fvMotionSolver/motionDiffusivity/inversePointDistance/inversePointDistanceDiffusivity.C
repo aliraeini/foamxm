@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,14 +33,14 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(inversePointDistanceDiffusivity, 0);
+    defineTypeNameAndDebug(inversePointDistanceDiffusivity, 0);
 
-	addToRunTimeSelectionTable
-	(
-		motionDiffusivity,
-		inversePointDistanceDiffusivity,
-		Istream
-	);
+    addToRunTimeSelectionTable
+    (
+        motionDiffusivity,
+        inversePointDistanceDiffusivity,
+        Istream
+    );
 }
 
 
@@ -48,14 +48,14 @@ namespace Foam
 
 Foam::inversePointDistanceDiffusivity::inversePointDistanceDiffusivity
 (
-	const fvMotionSolver& mSolver,
-	Istream& mdData
+    const fvMotionSolver& mSolver,
+    Istream& mdData
 )
 :
-	uniformDiffusivity(mSolver, mdData),
-	patchNames_(mdData)
+    uniformDiffusivity(mSolver, mdData),
+    patchNames_(mdData)
 {
-	correct();
+    correct();
 }
 
 
@@ -69,145 +69,145 @@ Foam::inversePointDistanceDiffusivity::~inversePointDistanceDiffusivity()
 
 void Foam::inversePointDistanceDiffusivity::correct()
 {
-	const polyMesh& mesh = mSolver().mesh();
-	const polyBoundaryMesh& bdry = mesh.boundaryMesh();
+    const polyMesh& mesh = mSolver().mesh();
+    const polyBoundaryMesh& bdry = mesh.boundaryMesh();
 
-	labelHashSet patchSet(bdry.size());
+    labelHashSet patchSet(bdry.size());
 
-	label nPatchEdges = 0;
+    label nPatchEdges = 0;
 
-	forAll (patchNames_, i)
-	{
-		label pID = bdry.findPatchID(patchNames_[i]);
+    forAll (patchNames_, i)
+    {
+        label pID = bdry.findPatchID(patchNames_[i]);
 
-		if (pID > -1)
-		{
-			patchSet.insert(pID);
-			nPatchEdges += bdry[pID].nEdges();
-		}
-	}
+        if (pID > -1)
+        {
+            patchSet.insert(pID);
+            nPatchEdges += bdry[pID].nEdges();
+        }
+    }
 
-	// Distance to wall on points and edges.
-	List<pointEdgePoint> pointWallDist(mesh.nPoints());
-	List<pointEdgePoint> edgeWallDist(mesh.nEdges());
+    // Distance to wall on points and edges.
+    List<pointEdgePoint> pointWallDist(mesh.nPoints());
+    List<pointEdgePoint> edgeWallDist(mesh.nEdges());
 
-	{
-		// Seeds
-		List<pointEdgePoint> seedInfo(nPatchEdges);
-		labelList seedPoints(nPatchEdges);
+    {
+        // Seeds
+        List<pointEdgePoint> seedInfo(nPatchEdges);
+        labelList seedPoints(nPatchEdges);
 
-		nPatchEdges = 0;
+        nPatchEdges = 0;
 
-		forAllConstIter(labelHashSet, patchSet, iter)
-		{
-			const polyPatch& patch = bdry[iter.key()];
+        forAllConstIter(labelHashSet, patchSet, iter)
+        {
+            const polyPatch& patch = bdry[iter.key()];
 
-			const labelList& meshPoints = patch.meshPoints();
+            const labelList& meshPoints = patch.meshPoints();
 
-			forAll(meshPoints, i)
-			{
-				label pointI = meshPoints[i];
+            forAll(meshPoints, i)
+            {
+                label pointI = meshPoints[i];
 
-				if (!pointWallDist[pointI].valid())
-				{
-					// Not yet seeded
-					seedInfo[nPatchEdges] = pointEdgePoint
-					(
-						mesh.points()[pointI],
-						0.0
-					);
-					seedPoints[nPatchEdges] = pointI;
-					pointWallDist[pointI] = seedInfo[nPatchEdges];
+                if (!pointWallDist[pointI].valid())
+                {
+                    // Not yet seeded
+                    seedInfo[nPatchEdges] = pointEdgePoint
+                    (
+                        mesh.points()[pointI],
+                        0.0
+                    );
+                    seedPoints[nPatchEdges] = pointI;
+                    pointWallDist[pointI] = seedInfo[nPatchEdges];
 
-					nPatchEdges++;
-				}
-			}
-		}
-		seedInfo.setSize(nPatchEdges);
-		seedPoints.setSize(nPatchEdges);
+                    nPatchEdges++;
+                }
+            }
+        }
+        seedInfo.setSize(nPatchEdges);
+        seedPoints.setSize(nPatchEdges);
 
-		// Do calculations
-		PointEdgeWave<pointEdgePoint> waveInfo
-		(
-			mesh,
-			seedPoints,
-			seedInfo,
+        // Do calculations
+        PointEdgeWave<pointEdgePoint> waveInfo
+        (
+            mesh,
+            seedPoints,
+            seedInfo,
 
-			pointWallDist,
-			edgeWallDist,
-			mesh.globalData().nTotalPoints() // max iterations
-		);
-	}
+            pointWallDist,
+            edgeWallDist,
+            mesh.globalData().nTotalPoints() // max iterations
+        );
+    }
 
 
-	for (label faceI=0; faceI<mesh.nInternalFaces(); faceI++)
-	{
-		const face& f = mesh.faces()[faceI];
+    for (label faceI=0; faceI<mesh.nInternalFaces(); faceI++)
+    {
+        const face& f = mesh.faces()[faceI];
 
-		scalar dist = 0;
+        scalar dist = 0;
 
-		forAll(f, fp)
-		{
-			dist += sqrt(pointWallDist[f[fp]].distSqr());
-		}
-		dist /= f.size();
+        forAll(f, fp)
+        {
+            dist += sqrt(pointWallDist[f[fp]].distSqr());
+        }
+        dist /= f.size();
 
-		faceDiffusivity_[faceI] = 1.0/dist;
-	}
+        faceDiffusivity_[faceI] = 1.0/dist;
+    }
 
-	forAll(faceDiffusivity_.boundaryField(), patchI)
-	{
-		fvsPatchScalarField& bfld = faceDiffusivity_.boundaryField()[patchI];
+    forAll(faceDiffusivity_.boundaryField(), patchI)
+    {
+        fvsPatchScalarField& bfld = faceDiffusivity_.boundaryField()[patchI];
 
-		if (patchSet.found(patchI))
-		{
-			const unallocLabelList& faceCells = bfld.patch().faceCells();
+        if (patchSet.found(patchI))
+        {
+            const labelUList& faceCells = bfld.patch().faceCells();
 
-			forAll(bfld, i)
-			{
-				const cell& ownFaces = mesh.cells()[faceCells[i]];
+            forAll(bfld, i)
+            {
+                const cell& ownFaces = mesh.cells()[faceCells[i]];
 
-				labelHashSet cPoints(4*ownFaces.size());
+                labelHashSet cPoints(4*ownFaces.size());
 
-				scalar dist = 0;
+                scalar dist = 0;
 
-				forAll(ownFaces, ownFaceI)
-				{
-					const face& f = mesh.faces()[ownFaces[ownFaceI]];
+                forAll(ownFaces, ownFaceI)
+                {
+                    const face& f = mesh.faces()[ownFaces[ownFaceI]];
 
-					forAll(f, fp)
-					{
-						if (cPoints.insert(f[fp]))
-						{
-							dist += sqrt(pointWallDist[f[fp]].distSqr());
-						}
-					}
-				}
-				dist /= cPoints.size();
+                    forAll(f, fp)
+                    {
+                        if (cPoints.insert(f[fp]))
+                        {
+                            dist += sqrt(pointWallDist[f[fp]].distSqr());
+                        }
+                    }
+                }
+                dist /= cPoints.size();
 
-				bfld[i] = 1.0/dist;
-			}
-		}
-		else
-		{
-			label start = bfld.patch().patch().start();
+                bfld[i] = 1.0/dist;
+            }
+        }
+        else
+        {
+            label start = bfld.patch().patch().start();
 
-			forAll(bfld, i)
-			{
-				const face& f = mesh.faces()[start+i];
+            forAll(bfld, i)
+            {
+                const face& f = mesh.faces()[start+i];
 
-				scalar dist = 0;
+                scalar dist = 0;
 
-				forAll(f, fp)
-				{
-					dist += sqrt(pointWallDist[f[fp]].distSqr());
-				}
-				dist /= f.size();
+                forAll(f, fp)
+                {
+                    dist += sqrt(pointWallDist[f[fp]].distSqr());
+                }
+                dist /= f.size();
 
-				bfld[i] = 1.0/dist;
-			}
-		}
-	}
+                bfld[i] = 1.0/dist;
+            }
+        }
+    }
 }
 
 

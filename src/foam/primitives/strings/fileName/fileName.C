@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,8 +36,8 @@ const char* const Foam::fileName::typeName = "fileName";
 Foam::debug::debugSwitch
 Foam::fileName::debug
 (
-	fileName::typeName,
-	0
+    fileName::typeName,
+    0
 );
 
 const Foam::fileName Foam::fileName::null;
@@ -47,10 +47,10 @@ const Foam::fileName Foam::fileName::null;
 
 Foam::fileName::fileName(const wordList& lst)
 {
-	forAll(lst, elemI)
-	{
-		operator=((*this)/lst[elemI]);
-	}
+    forAll(lst, elemI)
+    {
+        operator=((*this)/lst[elemI]);
+    }
 }
 
 
@@ -58,286 +58,286 @@ Foam::fileName::fileName(const wordList& lst)
 
 Foam::fileName::Type Foam::fileName::type() const
 {
-	return ::Foam::type(*this);
+    return ::Foam::type(*this);
 }
 
 
 bool Foam::fileName::isAbsolute() const
 {
-	// HR 12.02.18: This is system specific and should not be here!
-	return !empty() && (operator[](0) == '/' || operator[](1) == ':');
+    // HR 12.02.18: This is system specific and should not be here!
+    return !empty() && (operator[](0) == '/' || operator[](1) == ':');
 }
 
 
 Foam::fileName& Foam::fileName::toAbsolute()
 {
-	fileName& f = *this;
+    fileName& f = *this;
 
-	if (!f.isAbsolute())
-	{
-		f = cwd()/f;
-		f.clean();
-	}
+    if (!f.isAbsolute())
+    {
+        f = cwd()/f;
+        f.clean();
+    }
 
-	return f;
+    return f;
 }
 
 
 bool Foam::fileName::clean()
 {
-	// The top slash - we are never allowed to go above it
-	string::size_type top = this->find('/');
+    // The top slash - we are never allowed to go above it
+    string::size_type top = this->find('/');
 
-	// No slashes - nothing to do
-	if (top == string::npos)
-	{
-		return false;
-	}
+    // No slashes - nothing to do
+    if (top == string::npos)
+    {
+        return false;
+    }
 
-	// Start with the '/' found:
-	char prev = '/';
-	string::size_type nChar  = top+1;
-	string::size_type maxLen = this->size();
+    // Start with the '/' found:
+    char prev = '/';
+    string::size_type nChar  = top+1;
+    string::size_type maxLen = this->size();
 
-	for
-	(
-		string::size_type src = nChar;
-		src < maxLen;
-	)
-	{
-		char c = operator[](src++);
+    for
+    (
+        string::size_type src = nChar;
+        src < maxLen;
+    )
+    {
+        char c = operator[](src++);
 
-		if (prev == '/')
-		{
-			// Repeated '/' - skip it
-			if (c == '/')
-			{
-				continue;
-			}
+        if (prev == '/')
+        {
+            // Repeated '/' - skip it
+            if (c == '/')
+            {
+                continue;
+            }
 
-			// Could be '/./' or '/../'
-			if (c == '.')
-			{
-				// Found trailing '/.' - skip it
-				if (src >= maxLen)
-				{
-					continue;
-				}
+            // Could be '/./' or '/../'
+            if (c == '.')
+            {
+                // Found trailing '/.' - skip it
+                if (src >= maxLen)
+                {
+                    continue;
+                }
 
 
-				// Peek at the next character
-				char c1 = operator[](src);
+                // Peek at the next character
+                char c1 = operator[](src);
 
-				// Found '/./' - skip it
-				if (c1 == '/')
-				{
-					src++;
-					continue;
-				}
+                // Found '/./' - skip it
+                if (c1 == '/')
+                {
+                    src++;
+                    continue;
+                }
 
-				// It is '/..' or '/../'
-				if (c1 == '.' && (src+1 >= maxLen || operator[](src+1) == '/'))
-				{
-					string::size_type parent;
+                // It is '/..' or '/../'
+                if (c1 == '.' && (src+1 >= maxLen || operator[](src+1) == '/'))
+                {
+                    string::size_type parent;
 
-					// Backtrack to find the parent directory
-					// Minimum of 3 characters:  '/x/../'
-					// Strip it, provided it is above the top point
-					if
-					(
-					    nChar > 2
-					 && (parent = this->rfind('/', nChar-2)) != string::npos
-					 && parent >= top
-					)
-					{
-					    nChar = parent + 1;   // Retain '/' from the parent
-					    src += 2;
-					    continue;
-					}
+                    // Backtrack to find the parent directory
+                    // Minimum of 3 characters:  '/x/../'
+                    // Strip it, provided it is above the top point
+                    if
+                    (
+                        nChar > 2
+                     && (parent = this->rfind('/', nChar-2)) != string::npos
+                     && parent >= top
+                    )
+                    {
+                        nChar = parent + 1;   // Retain '/' from the parent
+                        src += 2;
+                        continue;
+                    }
 
-					// Bad resolution, eg 'abc/../../'
-					// Retain the sequence, but move the top to avoid it being
-					// considered a valid parent later
-					top = nChar + 2;
-				}
-			}
-		}
-		operator[](nChar++) = prev = c;
-	}
+                    // Bad resolution, eg 'abc/../../'
+                    // Retain the sequence, but move the top to avoid it being
+                    // considered a valid parent later
+                    top = nChar + 2;
+                }
+            }
+        }
+        operator[](nChar++) = prev = c;
+    }
 
-	// Remove trailing slash
-	if (nChar > 1 && operator[](nChar-1) == '/')
-	{
-		nChar--;
-	}
+    // Remove trailing slash
+    if (nChar > 1 && operator[](nChar-1) == '/')
+    {
+        nChar--;
+    }
 
-	this->resize(nChar);
+    this->resize(nChar);
 
-	return (nChar != maxLen);
+    return (nChar != maxLen);
 }
 
 
 Foam::fileName Foam::fileName::clean() const
 {
-	fileName fName(*this);
-	fName.clean();
-	return fName;
+    fileName fName(*this);
+    fName.clean();
+    return fName;
 }
 
 
 Foam::word Foam::fileName::name() const
 {
-	size_type i = rfind('/');
+    size_type i = rfind('/');
 
-	if (i == npos)
-	{
-		return *this;
-	}
-	else
-	{
-		return substr(i+1, npos);
-	}
+    if (i == npos)
+    {
+        return *this;
+    }
+    else
+    {
+        return substr(i+1, npos);
+    }
 }
 
 
 Foam::string Foam::fileName::caseName() const
 {
-	string cName = *this;
+    string cName = *this;
 
-	const string caseStr(getEnv("FOAM_CASE"));
+    const string caseStr(getEnv("FOAM_CASE"));
 
-	const size_type i = find(caseStr);
+    const size_type i = find(caseStr);
 
-	if (i == npos)
-	{
-		return cName;
-	}
-	else
-	{
-		return cName.replace(i, caseStr.size(), string("$FOAM_CASE"));
-	}
+    if (i == npos)
+    {
+        return cName;
+    }
+    else
+    {
+        return cName.replace(i, caseStr.size(), string("$FOAM_CASE"));
+    }
 }
 
 
 Foam::word Foam::fileName::name(const bool noExt) const
 {
-	if (noExt)
-	{
-		size_type beg = rfind('/');
-		if (beg == npos)
-		{
-			beg = 0;
-		}
-		else
-		{
-			++beg;
-		}
+    if (noExt)
+    {
+        size_type beg = rfind('/');
+        if (beg == npos)
+        {
+            beg = 0;
+        }
+        else
+        {
+            ++beg;
+        }
 
-		size_type dot = rfind('.');
-		if (dot != npos && dot <= beg)
-		{
-			dot = npos;
-		}
+        size_type dot = rfind('.');
+        if (dot != npos && dot <= beg)
+        {
+            dot = npos;
+        }
 
-		if (dot == npos)
-		{
-			return substr(beg, npos);
-		}
-		else
-		{
-			return substr(beg, dot - beg);
-		}
-	}
-	else
-	{
-		return this->name();
-	}
+        if (dot == npos)
+        {
+            return substr(beg, npos);
+        }
+        else
+        {
+            return substr(beg, dot - beg);
+        }
+    }
+    else
+    {
+        return this->name();
+    }
 }
 
 
 Foam::fileName Foam::fileName::path() const
 {
-	size_type i = rfind('/');
+    size_type i = rfind('/');
 
-	if (i == npos)
-	{
-		return ".";
-	}
-	else if (i)
-	{
-		return substr(0, i);
-	}
-	else
-	{
-		return "/";
-	}
+    if (i == npos)
+    {
+        return ".";
+    }
+    else if (i)
+    {
+        return substr(0, i);
+    }
+    else
+    {
+        return "/";
+    }
 }
 
 
 Foam::fileName Foam::fileName::lessExt() const
 {
-	size_type i = find_last_of("./");
+    size_type i = find_last_of("./");
 
-	if (i == npos || i == 0 || operator[](i) == '/')
-	{
-		return *this;
-	}
-	else
-	{
-		return substr(0, i);
-	}
+    if (i == npos || i == 0 || operator[](i) == '/')
+    {
+        return *this;
+    }
+    else
+    {
+        return substr(0, i);
+    }
 }
 
 
 Foam::word Foam::fileName::ext() const
 {
-	size_type i = find_last_of("./");
+    size_type i = find_last_of("./");
 
-	if (i == npos || i == 0 || operator[](i) == '/')
-	{
-		return word::null;
-	}
-	else
-	{
-		return substr(i+1, npos);
-	}
+    if (i == npos || i == 0 || operator[](i) == '/')
+    {
+        return word::null;
+    }
+    else
+    {
+        return substr(i+1, npos);
+    }
 }
 
 
 Foam::wordList Foam::fileName::components(const char delimiter) const
 {
-	DynamicList<word> wrdList(20);
+    DynamicList<word> wrdList(20);
 
-	size_type beg=0, end=0;
+    size_type beg=0, end=0;
 
-	while ((end = find(delimiter, beg)) != npos)
-	{
-		// Avoid empty element (caused by doubled slashes)
-		if (beg < end)
-		{
-			wrdList.append(substr(beg, end-beg));
-		}
-		beg = end + 1;
-	}
+    while ((end = find(delimiter, beg)) != npos)
+    {
+        // Avoid empty element (caused by doubled slashes)
+        if (beg < end)
+        {
+            wrdList.append(substr(beg, end-beg));
+        }
+        beg = end + 1;
+    }
 
-	// Avoid empty trailing element
-	if (beg < size())
-	{
-		wrdList.append(substr(beg, npos));
-	}
+    // Avoid empty trailing element
+    if (beg < size())
+    {
+        wrdList.append(substr(beg, npos));
+    }
 
-	// Transfer to wordList
-	return wordList(wrdList.xfer());
+    // Transfer to wordList
+    return wordList(wrdList.xfer());
 }
 
 
 Foam::word Foam::fileName::component
 (
-	const size_type cmpt,
-	const char delimiter
+    const size_type cmpt,
+    const char delimiter
 ) const
 {
-	return components(delimiter)[cmpt];
+    return components(delimiter)[cmpt];
 }
 
 
@@ -345,34 +345,34 @@ Foam::word Foam::fileName::component
 
 void Foam::fileName::operator=(const fileName& str)
 {
-	string::operator=(str);
+    string::operator=(str);
 }
 
 
 void Foam::fileName::operator=(const word& str)
 {
-	string::operator=(str);
+    string::operator=(str);
 }
 
 
 void Foam::fileName::operator=(const string& str)
 {
-	string::operator=(str);
-	stripInvalid();
+    string::operator=(str);
+    stripInvalid();
 }
 
 
 void Foam::fileName::operator=(const std::string& str)
 {
-	string::operator=(str);
-	stripInvalid();
+    string::operator=(str);
+    stripInvalid();
 }
 
 
 void Foam::fileName::operator=(const char* str)
 {
-	string::operator=(str);
-	stripInvalid();
+    string::operator=(str);
+    stripInvalid();
 }
 
 
@@ -380,28 +380,28 @@ void Foam::fileName::operator=(const char* str)
 
 Foam::fileName Foam::operator/(const string& a, const string& b)
 {
-	if (a.size())           // First string non-null
-	{
-		if (b.size())       // Second string non-null
-		{
-			return fileName(a + '/' + b);
-		}
-		else                // Second string null
-		{
-			return a;
-		}
-	}
-	else                    // First string null
-	{
-		if (b.size())       // Second string non-null
-		{
-			return b;
-		}
-		else                // Second string null
-		{
-			return fileName();
-		}
-	}
+    if (a.size())           // First string non-null
+    {
+        if (b.size())       // Second string non-null
+        {
+            return fileName(a + '/' + b);
+        }
+        else                // Second string null
+        {
+            return a;
+        }
+    }
+    else                    // First string null
+    {
+        if (b.size())       // Second string non-null
+        {
+            return b;
+        }
+        else                // Second string null
+        {
+            return fileName();
+        }
+    }
 }
 
 
@@ -409,28 +409,28 @@ Foam::fileName Foam::operator/(const string& a, const string& b)
 
 Foam::fileName Foam::search(const word& file, const fileName& directory)
 {
-	// Search the current directory for the file
-	fileNameList files(readDir(directory));
-	forAll(files, i)
-	{
-		if (files[i] == file)
-		{
-			return directory/file;
-		}
-	}
+    // Search the current directory for the file
+    fileNameList files(readDir(directory));
+    forAll(files, i)
+    {
+        if (files[i] == file)
+        {
+            return directory/file;
+        }
+    }
 
-	// If not found search each of the sub-directories
-	fileNameList dirs(readDir(directory, fileName::DIRECTORY));
-	forAll(dirs, i)
-	{
-		fileName path = search(file, directory/dirs[i]);
-		if (path != fileName::null)
-		{
-			return path;
-		}
-	}
+    // If not found search each of the sub-directories
+    fileNameList dirs(readDir(directory, fileName::DIRECTORY));
+    forAll(dirs, i)
+    {
+        fileName path = search(file, directory/dirs[i]);
+        if (path != fileName::null)
+        {
+            return path;
+        }
+    }
 
-	return fileName::null;
+    return fileName::null;
 }
 
 

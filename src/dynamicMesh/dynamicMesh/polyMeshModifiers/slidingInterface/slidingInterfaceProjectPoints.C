@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	slidingInterface
+    slidingInterface
 
 Description
-	Sliding interface, point projection
+    Sliding interface, point projection
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,36 +47,36 @@ Author
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::pointMergeTol_
 (
-	"slidingPointMergeTol",
-	0.2
+    "slidingPointMergeTol",
+    0.2
 );
 
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::edgeMergeTol_
 (
-	"slidingEdgeMergeTol",
-	0.05
+    "slidingEdgeMergeTol",
+    0.05
 );
 
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::integralAdjTol_
 (
-	"slidingIntegralAdjTol",
-	0.15
+    "slidingIntegralAdjTol",
+    0.15
 );
 
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::edgeMasterCatchFraction_
 (
-	"slidingEdgeMasterCatchFraction",
-	0.4
+    "slidingEdgeMasterCatchFraction",
+    0.4
 );
 
 const Foam::debug::tolerancesSwitch
 Foam::slidingInterface::edgeEndCutoffTol_
 (
-	"slidingEdgeEndCutoffTol",
-	0.0001
+    "slidingEdgeEndCutoffTol",
+    0.0001
 );
 
 
@@ -104,900 +104,900 @@ const Foam::label Foam::slidingInterface::edgeFaceEscapeLimit_ = 20;
 // x - reversal of direction in edge-to-face interaction detection
 // + - complete edge-to-face interaction detection
 // z - incomplete edge-to-face interaction detection.  This may be OK for edges
-//	 crossing from one to the other side of multiply connected master patch
+//     crossing from one to the other side of multiply connected master patch
 // * - colinear triangle: adjusting projection with slave face normal
 // m - master point inserted into the edge
 
 bool Foam::slidingInterface::projectPoints() const
 {
-	if (debug)
-	{
-		Pout<< "bool slidingInterface::projectPoints() for object "
-			<< name() << " : "
-			<< "Projecting slave points onto master surface using ";
-
-	const Foam::debug::optimisationSwitch nSquaredProjection
-	(
-		"nSquaredProjection",
-		0
-	);
-
-		if (nSquaredProjection() > 0)
-		{
-			Pout<< "N-squared point projection" << endl;
-		}
-		else
-		{
-			Pout<< "optimised point projection" << endl;
-		}
-	}
-
-	// Algorithm:
-	// 1) Go through all the points of the master and slave patch and calculate
-	//	minimum edge length coming from the point.  Calculate the point
-	//	merge tolerance as the fraction of mimimum edge length.
-	// 2) Project all the slave points onto the master patch
-	//	in the normal direction.
-	// 3) If some points have missed and the match is integral, the
-	//	points in question will be adjusted.  Find the nearest face for
-	//	those points and continue with the procedure.
-	// 4) For every point, check all the points of the face it has hit.
-	//	For every pair of points find if their distance is smaller than
-	//	both the master and slave merge tolerance.  If so, the slave point
-	//	is moved to the location of the master point.  Remember the master
-	//	point index.
-	// 5) For every unmerged slave point, check its distance to all the
-	//	edges of the face it has hit.  If the distance is smaller than the
-	//	edge merge tolerance, the point will be moved onto the edge.
-	//	Remember the master edge index.
-	// 6) The remaning slave points will be projected into faces.  Remember the
-	//	master face index.
-	// 7) For the points that miss the master patch, grab the nearest face
-	//	on the master and leave the slave point where it started
-	//	from and the miss is recorded.
-
-	const polyMesh& mesh = topoChanger().mesh();
-
-	const primitiveFacePatch& masterPatch =
-		mesh.faceZones()[masterFaceZoneID_.index()]();
-
-	const primitiveFacePatch& slavePatch =
-		mesh.faceZones()[slaveFaceZoneID_.index()]();
-
-	if (debug)
-	{
-		Pout<< "Master patch size = " << masterPatch.size()
-			<< " Slave patch size = " << slavePatch.size() << endl;
-	}
-
-	// Get references to local points, local edges and local faces
-	// for master and slave patch
-//	 const labelList& masterMeshPoints = masterPatch.meshPoints();
-	const pointField& masterLocalPoints = masterPatch.localPoints();
-	const faceList& masterLocalFaces = masterPatch.localFaces();
-	const edgeList& masterEdges = masterPatch.edges();
-	const labelListList& masterEdgeFaces = masterPatch.edgeFaces();
-	const labelListList& masterFaceEdges = masterPatch.faceEdges();
-	const labelListList& masterFaceFaces = masterPatch.faceFaces();
-//	 Pout<< "Master patch.  Local points: " << masterLocalPoints << nl
-//		 << "Master patch.  Mesh points: " << masterPatch.meshPoints() << nl
-//		 << "Local faces: " << masterLocalFaces << nl
-//		 << "local edges: " << masterEdges
-//		 << endl;
-
-//	 const labelList& slaveMeshPoints = slavePatch.meshPoints();
-	const pointField& slaveLocalPoints = slavePatch.localPoints();
-	const edgeList& slaveEdges = slavePatch.edges();
-	const labelListList& slaveEdgeFaces = slavePatch.edgeFaces();
-	const vectorField& slavePointNormals = slavePatch.pointNormals();
-//	 const vectorField& slaveFaceNormals = slavePatch.faceNormals();
-//	 Pout<< "Slave patch.  Local points: " << slaveLocalPoints << nl
-//		 << "Slave patch.  Mesh points: " << slavePatch.meshPoints() << nl
-//		 << "Local faces: " << slavePatch.localFaces() << nl
-//		 << "local edges: " << slaveEdges
-//		 << endl;
-
-	// Calculate min edge distance for points and faces
-
-	// Calculate min edge length for the points and faces of master patch
-	scalarField minMasterPointLength(masterLocalPoints.size(), GREAT);
-	scalarField minMasterFaceLength(masterPatch.size(), GREAT);
-
-	forAll (masterEdges, edgeI)
-	{
-		const edge& curEdge = masterEdges[edgeI];
-
-		const scalar curLength =
-			masterEdges[edgeI].mag(masterLocalPoints);
-
-		// Do points
-		minMasterPointLength[curEdge.start()] =
-			min
-			(
-				minMasterPointLength[curEdge.start()],
-				curLength
-			);
-
-		minMasterPointLength[curEdge.end()] =
-			min
-			(
-				minMasterPointLength[curEdge.end()],
-				curLength
-			);
-
-		// Do faces
-		const labelList& curFaces = masterEdgeFaces[edgeI];
-
-		forAll (curFaces, faceI)
-		{
-			minMasterFaceLength[curFaces[faceI]] =
-				min
-				(
-					minMasterFaceLength[curFaces[faceI]],
-					curLength
-				);
-		}
-	}
-
-//	 Pout << "min length for master points: " << minMasterPointLength << endl
-//		 << "min length for master faces: " << minMasterFaceLength << endl;
-
-	// Calculate min edge length for the points and faces of slave patch
-	scalarField minSlavePointLength(slaveLocalPoints.size(), GREAT);
-	scalarField minSlaveFaceLength(slavePatch.size(), GREAT);
-
-	forAll (slaveEdges, edgeI)
-	{
-		const edge& curEdge = slaveEdges[edgeI];
-
-		const scalar curLength =
-			slaveEdges[edgeI].mag(slaveLocalPoints);
-
-		// Do points
-		minSlavePointLength[curEdge.start()] =
-			min
-			(
-				minSlavePointLength[curEdge.start()],
-				curLength
-			);
-
-		minSlavePointLength[curEdge.end()] =
-			min
-			(
-				minSlavePointLength[curEdge.end()],
-				curLength
-			);
-
-		// Do faces
-		const labelList& curFaces = slaveEdgeFaces[edgeI];
-
-		forAll (curFaces, faceI)
-		{
-			minSlaveFaceLength[curFaces[faceI]] =
-				min
-				(
-					minSlaveFaceLength[curFaces[faceI]],
-					curLength
-				);
-		}
-	}
-
-//	 Pout << "min length for slave points: " << minSlavePointLength << endl
-//		 << "min length for slave faces: " << minSlaveFaceLength << endl;
-
-	// Project slave points onto the master patch
-
-	// Face hit by the slave point
-	List<objectHit> slavePointFaceHits =
-		slavePatch.projectPoints
-		(
-			masterPatch,
-			slavePointNormals,
-			projectionAlgo_
-		);
-
-	if (debug)
-	{
-		label nHits = 0;
-
-		forAll (slavePointFaceHits, pointI)
-		{
-			if (slavePointFaceHits[pointI].hit())
-			{
-				nHits++;
-			}
-		}
-
-		Pout<< "Number of hits in point projection: " << nHits
-			<< " out of " << slavePointFaceHits.size() << " points."
-			<< endl;
-	}
-
-	// Projected slave points are stored for mesh motion correction
-	if (projectedSlavePointsPtr_)
-	{
-		delete projectedSlavePointsPtr_;
-	}
-
-	projectedSlavePointsPtr_ =
-		new pointField(slavePointFaceHits.size(), vector::zero);
-	pointField& projectedSlavePoints = *projectedSlavePointsPtr_;
-
-	// Adjust projection to type of match
-
-	label nAdjustedPoints = 0;
-
-	// If the match is integral and some points have missed,
-	// find nearest master face
-	if (matchType_ == INTEGRAL)
-	{
-		if (debug)
-		{
-			Pout<< "bool slidingInterface::projectPoints() for object "
-				<< name() << " : "
-				<< "Adjusting point projection for integral match: ";
-		}
-
-		forAll (slavePointFaceHits, pointI)
-		{
-			if (slavePointFaceHits[pointI].hit())
-			{
-				// Grab the hit point
-				projectedSlavePoints[pointI] =
-					masterLocalFaces
-						[slavePointFaceHits[pointI].hitObject()].ray
-						(
-							slaveLocalPoints[pointI],
-							slavePointNormals[pointI],
-							masterLocalPoints,
-							projectionAlgo_
-						).hitPoint();
-			}
-			else
-			{
-				// Check if point has been adjusted
-				bool adjusted = false;
-
-				if (slavePointFaceHits[pointI].hitObject() > -1)
-				{
-					// Grab the nearest point on the face (edge)
-					pointHit missAdjust =
-						masterLocalFaces
-						[slavePointFaceHits[pointI].hitObject()].ray
-						(
-							slaveLocalPoints[pointI],
-							slavePointNormals[pointI],
-							masterLocalPoints,
-							projectionAlgo_
-						);
-
-					const point nearPoint = missAdjust.missPoint();
-					const point missPoint =
-						slaveLocalPoints[pointI]
-					  + slavePointNormals[pointI]*missAdjust.distance();
-
-					// Calculate the tolerance
-					const scalar mergeTol =
-						integralAdjTol_()*minSlavePointLength[pointI];
-
-					// Adjust the hit
-					if (mag(nearPoint - missPoint) < mergeTol)
-					{
-						if (debug)
-						{
-							Pout << "a";
-						}
-
-//						 Pout<< "Moving slave point in integral adjustment "
-//							 << pointI << " miss point: " << missPoint
-//							 << " near point: " << nearPoint
-//							 << " mergeTol: " << mergeTol
-//							 << " dist: " << mag(nearPoint - missPoint)
-//							 << " global point index: "
-//							 << slavePatch.meshPoints()[pointI]
-//							 << endl;
-
-						projectedSlavePoints[pointI] = nearPoint;
-
-						slavePointFaceHits[pointI] =
-							objectHit
-							(
-								true,
-								slavePointFaceHits[pointI].hitObject()
-							);
-
-						adjusted = true;
-						nAdjustedPoints++;
-					}
-				}
-
-				if (!adjusted)
-				{
-					projectedSlavePoints[pointI] = slaveLocalPoints[pointI];
-
-					if (debug)
-					{
-						Pout << "n";
-					}
-				}
-			}
-		}
-
-		if (debug)
-		{
-			Pout << " done." << endl;
-		}
-	}
-	else if (matchType_ == PARTIAL)
-	{
-		forAll (slavePointFaceHits, pointI)
-		{
-			if (slavePointFaceHits[pointI].hit())
-			{
-				// Grab the hit point
-				projectedSlavePoints[pointI] =
-					masterLocalFaces
-						[slavePointFaceHits[pointI].hitObject()].ray
-						(
-							slaveLocalPoints[pointI],
-							slavePointNormals[pointI],
-							masterLocalPoints,
-							projectionAlgo_
-						).hitPoint();
-			}
-			else
-			{
-				// The point remains where it started from
-				projectedSlavePoints[pointI] = slaveLocalPoints[pointI];
-			}
-		}
-	}
-	else
-	{
-		FatalErrorIn
-		(
-			"bool slidingInterface::projectPoints() const"
-		)   << "Problem in point projection.  Unknown sliding match type "
-			<< " for object " << name()
-			<< abort(FatalError);
-	}
-
-	if (debug)
-	{
-		Pout<< "Number of adjusted points in projection: "
-			<< nAdjustedPoints << endl;
-
-		// Check for zero-length edges in slave projection
-		scalar minEdgeLength = GREAT;
-		scalar el = 0;
-		label nShortEdges = 0;
-
-		forAll (slaveEdges, edgeI)
-		{
-			el = slaveEdges[edgeI].mag(projectedSlavePoints);
-
-			if (el < SMALL)
-			{
-				Pout<< "Point projection problems for edge: "
-					<< slaveEdges[edgeI] << ". Length = " << el
-					<< endl;
-
-				nShortEdges++;
-			}
-
-			minEdgeLength = min(minEdgeLength, el);
-		}
-
-		if (nShortEdges > 0)
-		{
-			FatalErrorIn
-			(
-				"bool slidingInterface::projectPoints() const"
-			)   << "Problem in point projection.  " << nShortEdges
-				<< " short projected edges "
-				<< "after adjustment for object " << name()
-				<< abort(FatalError);
-		}
-		else
-		{
-			Pout << " ... projection OK." << endl;
-		}
-	}
-//	 scalarField magDiffs(mag(slaveLocalPoints - projectedSlavePoints));
-//	 Pout<< "Slave point face hits: " << slavePointFaceHits << nl
-//		 << "slave points: " << slaveLocalPoints << nl
-//		 << "Projected slave points: " << projectedSlavePoints
-//		 << "diffs: " << magDiffs << endl;
-
-	// Merge projected points against master points
-
-	if (debug > 1)
-	{
-		Info<< "Writing VTK files for raw projection"
-			<< "Sliding interface " << name()
-			<< " Master patch: " << masterPatchID_.name()
-			<< " Slave patch: " << slavePatchID_.name()
-			<< endl;
-
-		fileName fvPath(mesh.time().path()/"VTK");
-		mkDir(fvPath);
-
-		standAlonePatch::writeVTK
-		(
-			fvPath/fileName(masterFaceZoneID_.name() + "Master"),
-			masterPatch.localFaces(),
-			masterLocalPoints
-		);
-
-		standAlonePatch::writeVTKNormals
-		(
-			fvPath/fileName(masterFaceZoneID_.name() + "MasterNormals"),
-			masterPatch.localFaces(),
-			masterLocalPoints
-		);
-
-		standAlonePatch::writeVTK
-		(
-			fvPath/fileName(slaveFaceZoneID_.name() + "Slave"),
-			slavePatch.localFaces(),
-			slaveLocalPoints
-		);
-
-		standAlonePatch::writeVTKNormals
-		(
-			fvPath/fileName(slaveFaceZoneID_.name() + "SlaveNormals"),
-			slavePatch.localFaces(),
-			slaveLocalPoints
-		);
-
-		standAlonePatch::writeVTK
-		(
-			fvPath/fileName(slaveFaceZoneID_.name() + "RawProjectedSlave"),
-			slavePatch.localFaces(),
-			projectedSlavePoints
-		);
-	}
-
-	labelList slavePointPointHits(slaveLocalPoints.size(), -1);
-	labelList masterPointPointHits(masterLocalPoints.size(), -1);
-
-	// Go through all the slave points and compare them against all the points
-	// in the master face they hit.  If the distance between the projected
-	// point and any of the master face points is smaller than
-	// both tolerances, merge the projected point by:
-	// 1) adjusting the projected point to coincide with the
-	//	master point it merges with
-	// 2) remembering the hit master point index in slavePointPointHits
-	// 3) resetting the hit face to -1
-	// 4) If a master point has been hit directly, it cannot be merged
-	// into the edge. Mark it as used in the reverse list
-
-	label nMergedPoints = 0;
-
-	forAll (projectedSlavePoints, pointI)
-	{
-		if (slavePointFaceHits[pointI].hit())
-		{
-			// Taking a non-const reference so the point can be adjusted
-			point& curPoint = projectedSlavePoints[pointI];
-
-			// Get the hit face
-			const face& hitFace =
-				masterLocalFaces[slavePointFaceHits[pointI].hitObject()];
-
-			label mergePoint = -1;
-			scalar mergeDist = GREAT;
-
-			// Try all point before deciding on best fit.
-			forAll (hitFace, hitPointI)
-			{
-				scalar dist =
-					mag(masterLocalPoints[hitFace[hitPointI]] - curPoint);
-
-				// Calculate the tolerance
-				const scalar mergeTol =
-					pointMergeTol_()*
-					min
-					(
-						minSlavePointLength[pointI],
-						minMasterPointLength[hitFace[hitPointI]]
-					);
-
-				if (dist < mergeTol && dist < mergeDist)
-				{
-					mergePoint = hitFace[hitPointI];
-					mergeDist = dist;
-
-//					 Pout<< "Merging slave point "
-//						 << slavePatch.meshPoints()[pointI] << " at "
-//						 << slaveLocalPoints[pointI] << " with master "
-//						 << masterPatch.meshPoints()[mergePoint] << " at "
-//						 << masterLocalPoints[mergePoint]
-//						 << ". dist: " << mergeDist
-//						 << " mergeTol: " << mergeTol << endl;
-				}
-			}
-
-			if (mergePoint > -1)
-			{
-				// Point is to be merged with master point
-				nMergedPoints++;
-
-				slavePointPointHits[pointI] = mergePoint;
-				curPoint = masterLocalPoints[mergePoint];
-				masterPointPointHits[mergePoint] = pointI;
-			}
-		}
-	}
-
-//	 Pout<< "slavePointPointHits: " << slavePointPointHits << nl
-//		 << "masterPointPointHits: " << masterPointPointHits << endl;
-
-	if (debug)
-	{
-		// Check for zero-length edges in slave projection
-		scalar minEdgeLength = GREAT;
-		scalar el = 0;
-
-		forAll (slaveEdges, edgeI)
-		{
-			el = slaveEdges[edgeI].mag(projectedSlavePoints);
-
-			if (el < SMALL)
-			{
-				Pout<< "Point projection problems for edge: "
-					<< slaveEdges[edgeI] << ". Length = " << el
-					<< endl;
-			}
-
-			minEdgeLength = min(minEdgeLength, el);
-		}
-
-		if (minEdgeLength < SMALL)
-		{
-			FatalErrorIn
-			(
-				"bool slidingInterface::projectPoints() const"
-			)   << "Problem in point projection.  Short projected edge "
-				<< " after point merge for object " << name()
-				<< abort(FatalError);
-		}
-		else
-		{
-			Pout << " ... point merge OK." << endl;
-		}
-	}
-
-	// Merge projected points against master edges
-
-	labelList slavePointEdgeHits(slaveLocalPoints.size(), -1);
-
-	label nMovedPoints = 0;
-
-	forAll (projectedSlavePoints, pointI)
-	{
-		// Eliminate the points merged into points
-		if
-		(
-			slavePointPointHits[pointI] < 0
-		 && slavePointFaceHits[pointI].hit()
-		)
-		{
-			// Get current point position
-			point& curPoint = projectedSlavePoints[pointI];
-
-			// Get the hit face
-			const labelList& hitFaceEdges =
-				masterFaceEdges[slavePointFaceHits[pointI].hitObject()];
-
-			// Calculate the tolerance
-			const scalar mergeLength =
-				min
-				(
-					minSlavePointLength[pointI],
-					minMasterFaceLength[slavePointFaceHits[pointI].hitObject()]
-				);
-
-			const scalar mergeTol = pointMergeTol_()*mergeLength;
-
-			scalar minDistance = GREAT;
-
-			forAll (hitFaceEdges, edgeI)
-			{
-				const edge& curEdge = masterEdges[hitFaceEdges[edgeI]];
-
-				pointHit edgeHit =
-					curEdge.line(masterLocalPoints).nearestDist(curPoint);
-
-				if (edgeHit.hit())
-				{
-					scalar dist =
-						mag(edgeHit.hitPoint() - projectedSlavePoints[pointI]);
-
-					if (dist < mergeTol && dist < minDistance)
-					{
-						// Point is to be moved onto master edge
-						nMovedPoints++;
-
-						slavePointEdgeHits[pointI] = hitFaceEdges[edgeI];
-						projectedSlavePoints[pointI] = edgeHit.hitPoint();
-
-						minDistance = dist;
-
-//						 Pout<< "Moving slave point "
-//							 << slavePatch.meshPoints()[pointI]
-//							 << " (" << pointI
-//							 << ") at " << slaveLocalPoints[pointI]
-//							 << " onto master edge " << hitFaceEdges[edgeI]
-//							 << " " << curEdge
-//							 << " or ("
-//							 << masterLocalPoints[curEdge.start()] << " "
-//							 << masterLocalPoints[curEdge.end()]
-//							 << " ) hit: " << edgeHit.hitPoint()
-//							 << ". dist: " << dist
-//							 << " mergeTol: " << mergeTol << endl;
-					}
-				}
-			} // end of hit face edges
-
-			if (slavePointEdgeHits[pointI] > -1)
-			{
-				// Projected slave point has moved.  Re-attempt merge with
-				// master points of the edge
-				point& curPoint = projectedSlavePoints[pointI];
-
-				const edge& hitMasterEdge =
-					masterEdges[slavePointEdgeHits[pointI]];
-
-				label mergePoint = -1;
-				scalar mergeDist = GREAT;
-
-				forAll (hitMasterEdge, hmeI)
-				{
-					scalar hmeDist =
-						mag(masterLocalPoints[hitMasterEdge[hmeI]] - curPoint);
-
-					// Calculate the tolerance
-					const scalar mergeTol =
-						pointMergeTol_()*
-						min
-						(
-							minSlavePointLength[pointI],
-							minMasterPointLength[hitMasterEdge[hmeI]]
-					);
-
-					if (hmeDist < mergeTol && hmeDist < mergeDist)
-					{
-						mergePoint = hitMasterEdge[hmeI];
-						mergeDist = hmeDist;
-
-//					 Pout<< "Merging slave point; SECOND TRY "
-//						 << slavePatch.meshPoints()[pointI] << " local "
-//						 << pointI << " at "
-//						 << slaveLocalPoints[pointI] << " with master "
-//						 << masterPatch.meshPoints()[mergePoint] << " at "
-//						 << masterLocalPoints[mergePoint]
-//						 << ". hmeDist: " << mergeDist
-//						 << " mergeTol: " << mergeTol << endl;
-					}
-				}
-
-				if (mergePoint > -1)
-				{
-					// Point is to be merged with master point
-					slavePointPointHits[pointI] = mergePoint;
-					curPoint = masterLocalPoints[mergePoint];
-					masterPointPointHits[mergePoint] = pointI;
-
-					slavePointFaceHits[pointI] =
-						objectHit(true, slavePointFaceHits[pointI].hitObject());
-
-
-					// Disable edge merge
-					slavePointEdgeHits[pointI] = -1;
-				}
-			}
-		}
-	}
-
-	if (debug)
-	{
-		Pout<< "Number of merged master points: " << nMergedPoints << nl
-			<< "Number of adjusted slave points: " << nMovedPoints << endl;
-
-		// Check for zero-length edges in slave projection
-		scalar minEdgeLength = GREAT;
-		scalar el = 0;
-
-		forAll (slaveEdges, edgeI)
-		{
-			el = slaveEdges[edgeI].mag(projectedSlavePoints);
-
-			if (el < SMALL)
-			{
-				Pout<< "Point projection problems for edge: "
-					<< slaveEdges[edgeI] << ". Length = " << el
-					<< endl;
-			}
-
-			minEdgeLength = min(minEdgeLength, el);
-		}
-
-		if (minEdgeLength < SMALL)
-		{
-			FatalErrorIn
-			(
-				"bool slidingInterface::projectPoints() const"
-			)   << "Problem in point projection.  Short projected edge "
-			<< " after correction for object " << name()
-			<< abort(FatalError);
-		}
-	}
-
-//	 Pout << "slavePointEdgeHits: " << slavePointEdgeHits << endl;
-
-	// Insert the master points into closest slave edge if appropriate
-
-	// Algorithm:
-	//	The face potentially interacts with all the points of the
-	//	faces covering the path between its two ends.  Since we are
-	//	examining an arbitrary shadow of the edge on a non-Euclidian
-	//	surface, it is typically quite hard to do a geometric point
-	//	search (under a shadow of a straight line).  Therefore, the
-	//	search will be done topologically.
-	//
-	// I) Point collection
-	// -------------------
-	// 1) Grab the master faces to which the end points of the edge
-	//	have been projected.
-	// 2) Starting from the face containing the edge start, grab all
-	//	its points and put them into the point lookup map.  Put the
-	//	face onto the face lookup map.
-	// 3) If the face of the end point is on the face lookup, complete
-	//	the point collection step (this is checked during insertion.
-	// 4) Start a new round of insertion.  Visit all faces in the face
-	//	lookup and add their neighbours which are not already on the
-	//	map.  Every time the new neighbour is found, add its points to
-	//	the point lookup.  If the face of the end point is inserted,
-	//	continue with the current roundof insertion and stop the
-	//	algorithm.
-	//
-	// II) Point check
-	// ---------------
-	//	Grab all the points from the point collection and check them
-	//	against the current edge.  If the edge-to-point distance is
-	//	smaller than the smallest tolerance in the game (min of
-	//	master point tolerance and left and right slave face around
-	//	the edge tolerance) and the nearest point hits the edge, the
-	//	master point will break the slave edge.  Check the actual
-	//	distance of the original master position from the edge.  If
-	//	the distance is smaller than a fraction of slave edge
-	//	length, the hit is considered valid.  Store the slave edge
-	//	index for every master point.
-
-	labelList masterPointEdgeHits(masterLocalPoints.size(), -1);
-	scalarField masterPointEdgeDist(masterLocalPoints.size(), GREAT);
-
-	// Note.  "Processing slave edges" code is repeated twice in the
-	// sliding intergace coupling in order to allow the point
-	// projection to be done separately from the actual cutting.
-	// Please change consistently with coupleSlidingInterface.C
-
-	if (debug)
-	{
-		Pout << "Processing slave edges " << endl;
-	}
-
-	// Create a map of faces the edge can interact with
-	labelHashSet curFaceMap
-	(
-		nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
-	);
-
-	labelHashSet addedFaces(2*primitiveMesh::edgesPerFace_);
-
-	forAll (slaveEdges, edgeI)
-	{
-		const edge& curEdge = slaveEdges[edgeI];
-
-		if
-		(
-			slavePointFaceHits[curEdge.start()].hit()
-		 || slavePointFaceHits[curEdge.end()].hit()
-		)
-		{
-			// Clear the maps
-			curFaceMap.clear();
-			addedFaces.clear();
-
-			// Grab the faces for start and end points
-			const label startFace =
-				Foam::max
-				(
-					slavePointFaceHits[curEdge.start()].hitObject(),
-					slavePointFaceHits[curEdge.end()].hitObject()
-				);
-			const label endFace =
-				Foam::min
-				(
-					slavePointFaceHits[curEdge.start()].hitObject(),
-					slavePointFaceHits[curEdge.end()].hitObject()
-				);
-
-//			 Pout<< "Doing edge " << edgeI << " or " << curEdge
-//				 << " start: "
-//				 << slavePointFaceHits[curEdge.start()].hitObject()
-//				 << " end "
-//				 << slavePointFaceHits[curEdge.end()].hitObject()
-//				 << endl;
-
-			// If the end face is on the list, the face collection is finished
-			label nSweeps = 0;
-			bool completed = false;
-
-			while (nSweeps < edgeFaceEscapeLimit_)
-			{
-				nSweeps++;
-
-				if (addedFaces.found(endFace))
-				{
-					completed = true;
-				}
-
-				// Add all face neighbours of face in the map
-				const labelList cf = addedFaces.toc();
-				addedFaces.clear();
-
-				forAll (cf, cfI)
-				{
-					const labelList& curNbrs = masterFaceFaces[cf[cfI]];
-
-					forAll (curNbrs, nbrI)
-					{
-						if (!curFaceMap.found(curNbrs[nbrI]))
-						{
-							curFaceMap.insert(curNbrs[nbrI]);
-							addedFaces.insert(curNbrs[nbrI]);
-						}
-					}
-				}
-
-				if (completed) break;
-
-				if (debug)
-				{
-					Pout << ".";
-				}
-			}
-
-			if (!completed)
-			{
-				if (debug)
-				{
-					Pout << "x";
-				}
-
-				// It is impossible to reach the end from the start, probably
-				// due to disconnected domain.  Do search in opposite direction
-
-				label nReverseSweeps = 0;
-
-				addedFaces.clear();
-				curFaceMap.insert(endFace);
-				addedFaces.insert(endFace);
-
-				while (nReverseSweeps < edgeFaceEscapeLimit_)
-				{
-					nReverseSweeps++;
-
-					if (addedFaces.found(startFace))
-					{
-						completed = true;
-					}
-
-					// Add all face neighbours of face in the map
-					const labelList cf = addedFaces.toc();
-					addedFaces.clear();
+    if (debug)
+    {
+        Pout<< "bool slidingInterface::projectPoints() for object "
+            << name() << " : "
+            << "Projecting slave points onto master surface using ";
+
+    const Foam::debug::optimisationSwitch nSquaredProjection
+    (
+        "nSquaredProjection",
+        0
+    );
+
+        if (nSquaredProjection() > 0)
+        {
+            Pout<< "N-squared point projection" << endl;
+        }
+        else
+        {
+            Pout<< "optimised point projection" << endl;
+        }
+    }
+
+    // Algorithm:
+    // 1) Go through all the points of the master and slave patch and calculate
+    //    minimum edge length coming from the point.  Calculate the point
+    //    merge tolerance as the fraction of mimimum edge length.
+    // 2) Project all the slave points onto the master patch
+    //    in the normal direction.
+    // 3) If some points have missed and the match is integral, the
+    //    points in question will be adjusted.  Find the nearest face for
+    //    those points and continue with the procedure.
+    // 4) For every point, check all the points of the face it has hit.
+    //    For every pair of points find if their distance is smaller than
+    //    both the master and slave merge tolerance.  If so, the slave point
+    //    is moved to the location of the master point.  Remember the master
+    //    point index.
+    // 5) For every unmerged slave point, check its distance to all the
+    //    edges of the face it has hit.  If the distance is smaller than the
+    //    edge merge tolerance, the point will be moved onto the edge.
+    //    Remember the master edge index.
+    // 6) The remaning slave points will be projected into faces.  Remember the
+    //    master face index.
+    // 7) For the points that miss the master patch, grab the nearest face
+    //    on the master and leave the slave point where it started
+    //    from and the miss is recorded.
+
+    const polyMesh& mesh = topoChanger().mesh();
+
+    const primitiveFacePatch& masterPatch =
+        mesh.faceZones()[masterFaceZoneID_.index()]();
+
+    const primitiveFacePatch& slavePatch =
+        mesh.faceZones()[slaveFaceZoneID_.index()]();
+
+    if (debug)
+    {
+        Pout<< "Master patch size = " << masterPatch.size()
+            << " Slave patch size = " << slavePatch.size() << endl;
+    }
+
+    // Get references to local points, local edges and local faces
+    // for master and slave patch
+//     const labelList& masterMeshPoints = masterPatch.meshPoints();
+    const pointField& masterLocalPoints = masterPatch.localPoints();
+    const faceList& masterLocalFaces = masterPatch.localFaces();
+    const edgeList& masterEdges = masterPatch.edges();
+    const labelListList& masterEdgeFaces = masterPatch.edgeFaces();
+    const labelListList& masterFaceEdges = masterPatch.faceEdges();
+    const labelListList& masterFaceFaces = masterPatch.faceFaces();
+//     Pout<< "Master patch.  Local points: " << masterLocalPoints << nl
+//         << "Master patch.  Mesh points: " << masterPatch.meshPoints() << nl
+//         << "Local faces: " << masterLocalFaces << nl
+//         << "local edges: " << masterEdges
+//         << endl;
+
+//     const labelList& slaveMeshPoints = slavePatch.meshPoints();
+    const pointField& slaveLocalPoints = slavePatch.localPoints();
+    const edgeList& slaveEdges = slavePatch.edges();
+    const labelListList& slaveEdgeFaces = slavePatch.edgeFaces();
+    const vectorField& slavePointNormals = slavePatch.pointNormals();
+//     const vectorField& slaveFaceNormals = slavePatch.faceNormals();
+//     Pout<< "Slave patch.  Local points: " << slaveLocalPoints << nl
+//         << "Slave patch.  Mesh points: " << slavePatch.meshPoints() << nl
+//         << "Local faces: " << slavePatch.localFaces() << nl
+//         << "local edges: " << slaveEdges
+//         << endl;
+
+    // Calculate min edge distance for points and faces
+
+    // Calculate min edge length for the points and faces of master patch
+    scalarField minMasterPointLength(masterLocalPoints.size(), GREAT);
+    scalarField minMasterFaceLength(masterPatch.size(), GREAT);
+
+    forAll (masterEdges, edgeI)
+    {
+        const edge& curEdge = masterEdges[edgeI];
+
+        const scalar curLength =
+            masterEdges[edgeI].mag(masterLocalPoints);
+
+        // Do points
+        minMasterPointLength[curEdge.start()] =
+            min
+            (
+                minMasterPointLength[curEdge.start()],
+                curLength
+            );
+
+        minMasterPointLength[curEdge.end()] =
+            min
+            (
+                minMasterPointLength[curEdge.end()],
+                curLength
+            );
+
+        // Do faces
+        const labelList& curFaces = masterEdgeFaces[edgeI];
+
+        forAll (curFaces, faceI)
+        {
+            minMasterFaceLength[curFaces[faceI]] =
+                min
+                (
+                    minMasterFaceLength[curFaces[faceI]],
+                    curLength
+                );
+        }
+    }
+
+//     Pout << "min length for master points: " << minMasterPointLength << endl
+//         << "min length for master faces: " << minMasterFaceLength << endl;
+
+    // Calculate min edge length for the points and faces of slave patch
+    scalarField minSlavePointLength(slaveLocalPoints.size(), GREAT);
+    scalarField minSlaveFaceLength(slavePatch.size(), GREAT);
+
+    forAll (slaveEdges, edgeI)
+    {
+        const edge& curEdge = slaveEdges[edgeI];
+
+        const scalar curLength =
+            slaveEdges[edgeI].mag(slaveLocalPoints);
+
+        // Do points
+        minSlavePointLength[curEdge.start()] =
+            min
+            (
+                minSlavePointLength[curEdge.start()],
+                curLength
+            );
+
+        minSlavePointLength[curEdge.end()] =
+            min
+            (
+                minSlavePointLength[curEdge.end()],
+                curLength
+            );
+
+        // Do faces
+        const labelList& curFaces = slaveEdgeFaces[edgeI];
+
+        forAll (curFaces, faceI)
+        {
+            minSlaveFaceLength[curFaces[faceI]] =
+                min
+                (
+                    minSlaveFaceLength[curFaces[faceI]],
+                    curLength
+                );
+        }
+    }
+
+//     Pout << "min length for slave points: " << minSlavePointLength << endl
+//         << "min length for slave faces: " << minSlaveFaceLength << endl;
+
+    // Project slave points onto the master patch
+
+    // Face hit by the slave point
+    List<objectHit> slavePointFaceHits =
+        slavePatch.projectPoints
+        (
+            masterPatch,
+            slavePointNormals,
+            projectionAlgo_
+        );
+
+    if (debug)
+    {
+        label nHits = 0;
+
+        forAll (slavePointFaceHits, pointI)
+        {
+            if (slavePointFaceHits[pointI].hit())
+            {
+                nHits++;
+            }
+        }
+
+        Pout<< "Number of hits in point projection: " << nHits
+            << " out of " << slavePointFaceHits.size() << " points."
+            << endl;
+    }
+
+    // Projected slave points are stored for mesh motion correction
+    if (projectedSlavePointsPtr_)
+    {
+        delete projectedSlavePointsPtr_;
+    }
+
+    projectedSlavePointsPtr_ =
+        new pointField(slavePointFaceHits.size(), vector::zero);
+    pointField& projectedSlavePoints = *projectedSlavePointsPtr_;
+
+    // Adjust projection to type of match
+
+    label nAdjustedPoints = 0;
+
+    // If the match is integral and some points have missed,
+    // find nearest master face
+    if (matchType_ == INTEGRAL)
+    {
+        if (debug)
+        {
+            Pout<< "bool slidingInterface::projectPoints() for object "
+                << name() << " : "
+                << "Adjusting point projection for integral match: ";
+        }
+
+        forAll (slavePointFaceHits, pointI)
+        {
+            if (slavePointFaceHits[pointI].hit())
+            {
+                // Grab the hit point
+                projectedSlavePoints[pointI] =
+                    masterLocalFaces
+                        [slavePointFaceHits[pointI].hitObject()].ray
+                        (
+                            slaveLocalPoints[pointI],
+                            slavePointNormals[pointI],
+                            masterLocalPoints,
+                            projectionAlgo_
+                        ).hitPoint();
+            }
+            else
+            {
+                // Check if point has been adjusted
+                bool adjusted = false;
+
+                if (slavePointFaceHits[pointI].hitObject() > -1)
+                {
+                    // Grab the nearest point on the face (edge)
+                    pointHit missAdjust =
+                        masterLocalFaces
+                        [slavePointFaceHits[pointI].hitObject()].ray
+                        (
+                            slaveLocalPoints[pointI],
+                            slavePointNormals[pointI],
+                            masterLocalPoints,
+                            projectionAlgo_
+                        );
+
+                    const point nearPoint = missAdjust.missPoint();
+                    const point missPoint =
+                        slaveLocalPoints[pointI]
+                      + slavePointNormals[pointI]*missAdjust.distance();
+
+                    // Calculate the tolerance
+                    const scalar mergeTol =
+                        integralAdjTol_()*minSlavePointLength[pointI];
+
+                    // Adjust the hit
+                    if (mag(nearPoint - missPoint) < mergeTol)
+                    {
+                        if (debug)
+                        {
+                            Pout << "a";
+                        }
+
+//                         Pout<< "Moving slave point in integral adjustment "
+//                             << pointI << " miss point: " << missPoint
+//                             << " near point: " << nearPoint
+//                             << " mergeTol: " << mergeTol
+//                             << " dist: " << mag(nearPoint - missPoint)
+//                             << " global point index: "
+//                             << slavePatch.meshPoints()[pointI]
+//                             << endl;
+
+                        projectedSlavePoints[pointI] = nearPoint;
+
+                        slavePointFaceHits[pointI] =
+                            objectHit
+                            (
+                                true,
+                                slavePointFaceHits[pointI].hitObject()
+                            );
+
+                        adjusted = true;
+                        nAdjustedPoints++;
+                    }
+                }
+
+                if (!adjusted)
+                {
+                    projectedSlavePoints[pointI] = slaveLocalPoints[pointI];
+
+                    if (debug)
+                    {
+                        Pout << "n";
+                    }
+                }
+            }
+        }
+
+        if (debug)
+        {
+            Pout << " done." << endl;
+        }
+    }
+    else if (matchType_ == PARTIAL)
+    {
+        forAll (slavePointFaceHits, pointI)
+        {
+            if (slavePointFaceHits[pointI].hit())
+            {
+                // Grab the hit point
+                projectedSlavePoints[pointI] =
+                    masterLocalFaces
+                        [slavePointFaceHits[pointI].hitObject()].ray
+                        (
+                            slaveLocalPoints[pointI],
+                            slavePointNormals[pointI],
+                            masterLocalPoints,
+                            projectionAlgo_
+                        ).hitPoint();
+            }
+            else
+            {
+                // The point remains where it started from
+                projectedSlavePoints[pointI] = slaveLocalPoints[pointI];
+            }
+        }
+    }
+    else
+    {
+        FatalErrorIn
+        (
+            "bool slidingInterface::projectPoints() const"
+        )   << "Problem in point projection.  Unknown sliding match type "
+            << " for object " << name()
+            << abort(FatalError);
+    }
+
+    if (debug)
+    {
+        Pout<< "Number of adjusted points in projection: "
+            << nAdjustedPoints << endl;
+
+        // Check for zero-length edges in slave projection
+        scalar minEdgeLength = GREAT;
+        scalar el = 0;
+        label nShortEdges = 0;
+
+        forAll (slaveEdges, edgeI)
+        {
+            el = slaveEdges[edgeI].mag(projectedSlavePoints);
+
+            if (el < SMALL)
+            {
+                Pout<< "Point projection problems for edge: "
+                    << slaveEdges[edgeI] << ". Length = " << el
+                    << endl;
+
+                nShortEdges++;
+            }
+
+            minEdgeLength = min(minEdgeLength, el);
+        }
+
+        if (nShortEdges > 0)
+        {
+            FatalErrorIn
+            (
+                "bool slidingInterface::projectPoints() const"
+            )   << "Problem in point projection.  " << nShortEdges
+                << " short projected edges "
+                << "after adjustment for object " << name()
+                << abort(FatalError);
+        }
+        else
+        {
+            Pout << " ... projection OK." << endl;
+        }
+    }
+//     scalarField magDiffs(mag(slaveLocalPoints - projectedSlavePoints));
+//     Pout<< "Slave point face hits: " << slavePointFaceHits << nl
+//         << "slave points: " << slaveLocalPoints << nl
+//         << "Projected slave points: " << projectedSlavePoints
+//         << "diffs: " << magDiffs << endl;
+
+    // Merge projected points against master points
+
+    if (debug > 1)
+    {
+        Info<< "Writing VTK files for raw projection"
+            << "Sliding interface " << name()
+            << " Master patch: " << masterPatchID_.name()
+            << " Slave patch: " << slavePatchID_.name()
+            << endl;
+
+        fileName fvPath(mesh.time().path()/"VTK");
+        mkDir(fvPath);
+
+        standAlonePatch::writeVTK
+        (
+            fvPath/fileName(masterFaceZoneID_.name() + "Master"),
+            masterPatch.localFaces(),
+            masterLocalPoints
+        );
+
+        standAlonePatch::writeVTKNormals
+        (
+            fvPath/fileName(masterFaceZoneID_.name() + "MasterNormals"),
+            masterPatch.localFaces(),
+            masterLocalPoints
+        );
+
+        standAlonePatch::writeVTK
+        (
+            fvPath/fileName(slaveFaceZoneID_.name() + "Slave"),
+            slavePatch.localFaces(),
+            slaveLocalPoints
+        );
+
+        standAlonePatch::writeVTKNormals
+        (
+            fvPath/fileName(slaveFaceZoneID_.name() + "SlaveNormals"),
+            slavePatch.localFaces(),
+            slaveLocalPoints
+        );
+
+        standAlonePatch::writeVTK
+        (
+            fvPath/fileName(slaveFaceZoneID_.name() + "RawProjectedSlave"),
+            slavePatch.localFaces(),
+            projectedSlavePoints
+        );
+    }
+
+    labelList slavePointPointHits(slaveLocalPoints.size(), -1);
+    labelList masterPointPointHits(masterLocalPoints.size(), -1);
+
+    // Go through all the slave points and compare them against all the points
+    // in the master face they hit.  If the distance between the projected
+    // point and any of the master face points is smaller than
+    // both tolerances, merge the projected point by:
+    // 1) adjusting the projected point to coincide with the
+    //    master point it merges with
+    // 2) remembering the hit master point index in slavePointPointHits
+    // 3) resetting the hit face to -1
+    // 4) If a master point has been hit directly, it cannot be merged
+    // into the edge. Mark it as used in the reverse list
+
+    label nMergedPoints = 0;
+
+    forAll (projectedSlavePoints, pointI)
+    {
+        if (slavePointFaceHits[pointI].hit())
+        {
+            // Taking a non-const reference so the point can be adjusted
+            point& curPoint = projectedSlavePoints[pointI];
+
+            // Get the hit face
+            const face& hitFace =
+                masterLocalFaces[slavePointFaceHits[pointI].hitObject()];
+
+            label mergePoint = -1;
+            scalar mergeDist = GREAT;
+
+            // Try all point before deciding on best fit.
+            forAll (hitFace, hitPointI)
+            {
+                scalar dist =
+                    mag(masterLocalPoints[hitFace[hitPointI]] - curPoint);
+
+                // Calculate the tolerance
+                const scalar mergeTol =
+                    pointMergeTol_()*
+                    min
+                    (
+                        minSlavePointLength[pointI],
+                        minMasterPointLength[hitFace[hitPointI]]
+                    );
+
+                if (dist < mergeTol && dist < mergeDist)
+                {
+                    mergePoint = hitFace[hitPointI];
+                    mergeDist = dist;
+
+//                     Pout<< "Merging slave point "
+//                         << slavePatch.meshPoints()[pointI] << " at "
+//                         << slaveLocalPoints[pointI] << " with master "
+//                         << masterPatch.meshPoints()[mergePoint] << " at "
+//                         << masterLocalPoints[mergePoint]
+//                         << ". dist: " << mergeDist
+//                         << " mergeTol: " << mergeTol << endl;
+                }
+            }
+
+            if (mergePoint > -1)
+            {
+                // Point is to be merged with master point
+                nMergedPoints++;
+
+                slavePointPointHits[pointI] = mergePoint;
+                curPoint = masterLocalPoints[mergePoint];
+                masterPointPointHits[mergePoint] = pointI;
+            }
+        }
+    }
+
+//     Pout<< "slavePointPointHits: " << slavePointPointHits << nl
+//         << "masterPointPointHits: " << masterPointPointHits << endl;
+
+    if (debug)
+    {
+        // Check for zero-length edges in slave projection
+        scalar minEdgeLength = GREAT;
+        scalar el = 0;
+
+        forAll (slaveEdges, edgeI)
+        {
+            el = slaveEdges[edgeI].mag(projectedSlavePoints);
+
+            if (el < SMALL)
+            {
+                Pout<< "Point projection problems for edge: "
+                    << slaveEdges[edgeI] << ". Length = " << el
+                    << endl;
+            }
+
+            minEdgeLength = min(minEdgeLength, el);
+        }
+
+        if (minEdgeLength < SMALL)
+        {
+            FatalErrorIn
+            (
+                "bool slidingInterface::projectPoints() const"
+            )   << "Problem in point projection.  Short projected edge "
+                << " after point merge for object " << name()
+                << abort(FatalError);
+        }
+        else
+        {
+            Pout << " ... point merge OK." << endl;
+        }
+    }
+
+    // Merge projected points against master edges
+
+    labelList slavePointEdgeHits(slaveLocalPoints.size(), -1);
+
+    label nMovedPoints = 0;
+
+    forAll (projectedSlavePoints, pointI)
+    {
+        // Eliminate the points merged into points
+        if
+        (
+            slavePointPointHits[pointI] < 0
+         && slavePointFaceHits[pointI].hit()
+        )
+        {
+            // Get current point position
+            point& curPoint = projectedSlavePoints[pointI];
+
+            // Get the hit face
+            const labelList& hitFaceEdges =
+                masterFaceEdges[slavePointFaceHits[pointI].hitObject()];
+
+            // Calculate the tolerance
+            const scalar mergeLength =
+                min
+                (
+                    minSlavePointLength[pointI],
+                    minMasterFaceLength[slavePointFaceHits[pointI].hitObject()]
+                );
+
+            const scalar mergeTol = pointMergeTol_()*mergeLength;
+
+            scalar minDistance = GREAT;
+
+            forAll (hitFaceEdges, edgeI)
+            {
+                const edge& curEdge = masterEdges[hitFaceEdges[edgeI]];
+
+                pointHit edgeHit =
+                    curEdge.line(masterLocalPoints).nearestDist(curPoint);
+
+                if (edgeHit.hit())
+                {
+                    scalar dist =
+                        mag(edgeHit.hitPoint() - projectedSlavePoints[pointI]);
+
+                    if (dist < mergeTol && dist < minDistance)
+                    {
+                        // Point is to be moved onto master edge
+                        nMovedPoints++;
+
+                        slavePointEdgeHits[pointI] = hitFaceEdges[edgeI];
+                        projectedSlavePoints[pointI] = edgeHit.hitPoint();
+
+                        minDistance = dist;
+
+//                         Pout<< "Moving slave point "
+//                             << slavePatch.meshPoints()[pointI]
+//                             << " (" << pointI
+//                             << ") at " << slaveLocalPoints[pointI]
+//                             << " onto master edge " << hitFaceEdges[edgeI]
+//                             << " " << curEdge
+//                             << " or ("
+//                             << masterLocalPoints[curEdge.start()] << " "
+//                             << masterLocalPoints[curEdge.end()]
+//                             << " ) hit: " << edgeHit.hitPoint()
+//                             << ". dist: " << dist
+//                             << " mergeTol: " << mergeTol << endl;
+                    }
+                }
+            } // end of hit face edges
+
+            if (slavePointEdgeHits[pointI] > -1)
+            {
+                // Projected slave point has moved.  Re-attempt merge with
+                // master points of the edge
+                point& curPoint = projectedSlavePoints[pointI];
+
+                const edge& hitMasterEdge =
+                    masterEdges[slavePointEdgeHits[pointI]];
+
+                label mergePoint = -1;
+                scalar mergeDist = GREAT;
+
+                forAll (hitMasterEdge, hmeI)
+                {
+                    scalar hmeDist =
+                        mag(masterLocalPoints[hitMasterEdge[hmeI]] - curPoint);
+
+                    // Calculate the tolerance
+                    const scalar mergeTol =
+                        pointMergeTol_()*
+                        min
+                        (
+                            minSlavePointLength[pointI],
+                            minMasterPointLength[hitMasterEdge[hmeI]]
+                    );
+
+                    if (hmeDist < mergeTol && hmeDist < mergeDist)
+                    {
+                        mergePoint = hitMasterEdge[hmeI];
+                        mergeDist = hmeDist;
+
+//                     Pout<< "Merging slave point; SECOND TRY "
+//                         << slavePatch.meshPoints()[pointI] << " local "
+//                         << pointI << " at "
+//                         << slaveLocalPoints[pointI] << " with master "
+//                         << masterPatch.meshPoints()[mergePoint] << " at "
+//                         << masterLocalPoints[mergePoint]
+//                         << ". hmeDist: " << mergeDist
+//                         << " mergeTol: " << mergeTol << endl;
+                    }
+                }
+
+                if (mergePoint > -1)
+                {
+                    // Point is to be merged with master point
+                    slavePointPointHits[pointI] = mergePoint;
+                    curPoint = masterLocalPoints[mergePoint];
+                    masterPointPointHits[mergePoint] = pointI;
+
+                    slavePointFaceHits[pointI] =
+                        objectHit(true, slavePointFaceHits[pointI].hitObject());
+
+
+                    // Disable edge merge
+                    slavePointEdgeHits[pointI] = -1;
+                }
+            }
+        }
+    }
+
+    if (debug)
+    {
+        Pout<< "Number of merged master points: " << nMergedPoints << nl
+            << "Number of adjusted slave points: " << nMovedPoints << endl;
+
+        // Check for zero-length edges in slave projection
+        scalar minEdgeLength = GREAT;
+        scalar el = 0;
+
+        forAll (slaveEdges, edgeI)
+        {
+            el = slaveEdges[edgeI].mag(projectedSlavePoints);
+
+            if (el < SMALL)
+            {
+                Pout<< "Point projection problems for edge: "
+                    << slaveEdges[edgeI] << ". Length = " << el
+                    << endl;
+            }
+
+            minEdgeLength = min(minEdgeLength, el);
+        }
+
+        if (minEdgeLength < SMALL)
+        {
+            FatalErrorIn
+            (
+                "bool slidingInterface::projectPoints() const"
+            )   << "Problem in point projection.  Short projected edge "
+            << " after correction for object " << name()
+            << abort(FatalError);
+        }
+    }
+
+//     Pout << "slavePointEdgeHits: " << slavePointEdgeHits << endl;
+
+    // Insert the master points into closest slave edge if appropriate
+
+    // Algorithm:
+    //    The face potentially interacts with all the points of the
+    //    faces covering the path between its two ends.  Since we are
+    //    examining an arbitrary shadow of the edge on a non-Euclidian
+    //    surface, it is typically quite hard to do a geometric point
+    //    search (under a shadow of a straight line).  Therefore, the
+    //    search will be done topologically.
+    //
+    // I) Point collection
+    // -------------------
+    // 1) Grab the master faces to which the end points of the edge
+    //    have been projected.
+    // 2) Starting from the face containing the edge start, grab all
+    //    its points and put them into the point lookup map.  Put the
+    //    face onto the face lookup map.
+    // 3) If the face of the end point is on the face lookup, complete
+    //    the point collection step (this is checked during insertion.
+    // 4) Start a new round of insertion.  Visit all faces in the face
+    //    lookup and add their neighbours which are not already on the
+    //    map.  Every time the new neighbour is found, add its points to
+    //    the point lookup.  If the face of the end point is inserted,
+    //    continue with the current roundof insertion and stop the
+    //    algorithm.
+    //
+    // II) Point check
+    // ---------------
+    //    Grab all the points from the point collection and check them
+    //    against the current edge.  If the edge-to-point distance is
+    //    smaller than the smallest tolerance in the game (min of
+    //    master point tolerance and left and right slave face around
+    //    the edge tolerance) and the nearest point hits the edge, the
+    //    master point will break the slave edge.  Check the actual
+    //    distance of the original master position from the edge.  If
+    //    the distance is smaller than a fraction of slave edge
+    //    length, the hit is considered valid.  Store the slave edge
+    //    index for every master point.
+
+    labelList masterPointEdgeHits(masterLocalPoints.size(), -1);
+    scalarField masterPointEdgeDist(masterLocalPoints.size(), GREAT);
+
+    // Note.  "Processing slave edges" code is repeated twice in the
+    // sliding intergace coupling in order to allow the point
+    // projection to be done separately from the actual cutting.
+    // Please change consistently with coupleSlidingInterface.C
+
+    if (debug)
+    {
+        Pout << "Processing slave edges " << endl;
+    }
+
+    // Create a map of faces the edge can interact with
+    labelHashSet curFaceMap
+    (
+        nFacesPerSlaveEdge_*primitiveMesh::edgesPerFace_
+    );
+
+    labelHashSet addedFaces(2*primitiveMesh::edgesPerFace_);
+
+    forAll (slaveEdges, edgeI)
+    {
+        const edge& curEdge = slaveEdges[edgeI];
+
+        if
+        (
+            slavePointFaceHits[curEdge.start()].hit()
+         || slavePointFaceHits[curEdge.end()].hit()
+        )
+        {
+            // Clear the maps
+            curFaceMap.clear();
+            addedFaces.clear();
+
+            // Grab the faces for start and end points
+            const label startFace =
+                Foam::max
+                (
+                    slavePointFaceHits[curEdge.start()].hitObject(),
+                    slavePointFaceHits[curEdge.end()].hitObject()
+                );
+            const label endFace =
+                Foam::min
+                (
+                    slavePointFaceHits[curEdge.start()].hitObject(),
+                    slavePointFaceHits[curEdge.end()].hitObject()
+                );
+
+//             Pout<< "Doing edge " << edgeI << " or " << curEdge
+//                 << " start: "
+//                 << slavePointFaceHits[curEdge.start()].hitObject()
+//                 << " end "
+//                 << slavePointFaceHits[curEdge.end()].hitObject()
+//                 << endl;
+
+            // If the end face is on the list, the face collection is finished
+            label nSweeps = 0;
+            bool completed = false;
+
+            while (nSweeps < edgeFaceEscapeLimit_)
+            {
+                nSweeps++;
+
+                if (addedFaces.found(endFace))
+                {
+                    completed = true;
+                }
+
+                // Add all face neighbours of face in the map
+                const labelList cf = addedFaces.toc();
+                addedFaces.clear();
+
+                forAll (cf, cfI)
+                {
+                    const labelList& curNbrs = masterFaceFaces[cf[cfI]];
+
+                    forAll (curNbrs, nbrI)
+                    {
+                        if (!curFaceMap.found(curNbrs[nbrI]))
+                        {
+                            curFaceMap.insert(curNbrs[nbrI]);
+                            addedFaces.insert(curNbrs[nbrI]);
+                        }
+                    }
+                }
+
+                if (completed) break;
+
+                if (debug)
+                {
+                    Pout << ".";
+                }
+            }
+
+            if (!completed)
+            {
+                if (debug)
+                {
+                    Pout << "x";
+                }
+
+                // It is impossible to reach the end from the start, probably
+                // due to disconnected domain.  Do search in opposite direction
+
+                label nReverseSweeps = 0;
+
+                addedFaces.clear();
+                curFaceMap.insert(endFace);
+                addedFaces.insert(endFace);
+
+                while (nReverseSweeps < edgeFaceEscapeLimit_)
+                {
+                    nReverseSweeps++;
+
+                    if (addedFaces.found(startFace))
+                    {
+                        completed = true;
+                    }
+
+                    // Add all face neighbours of face in the map
+                    const labelList cf = addedFaces.toc();
+                    addedFaces.clear();
 
                     forAll (cf, cfI)
                     {

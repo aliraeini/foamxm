@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::FieldField
+    Foam::FieldField
 
 Description
-	Generic field type.
+    Generic field type.
 
 SourceFiles
-	FieldField.C
+    FieldField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -54,148 +54,149 @@ class FieldField;
 template<template<class> class Field, class Type>
 Ostream& operator<<
 (
-	Ostream&,
-	const FieldField<Field, Type>&
+    Ostream&,
+    const FieldField<Field, Type>&
 );
 
 template<template<class> class Field, class Type>
 Ostream& operator<<
 (
-	Ostream&,
-	const tmp<FieldField<Field, Type> >&
+    Ostream&,
+    const tmp<FieldField<Field, Type> >&
 );
 
 
+/*---------------------------------------------------------------------------*\
+                           Class FieldField Declaration
+\*---------------------------------------------------------------------------*/
 
 template<template<class> class Field, class Type>
 class FieldField
 :
-	public refCount,
-	public PtrList<Field<Type> >
+    public refCount,
+    public PtrList<Field<Type> >
 {
 
 public:
 
-	//- Component type
-	typedef typename pTraits<Type>::cmptType cmptType;
+    //- Component type
+    typedef typename pTraits<Type>::cmptType cmptType;
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		//  Used for temporary fields which are initialised after construction
-		FieldField();
+        //- Construct null
+        //  Used for temporary fields which are initialised after construction
+        FieldField();
 
-		//- Construct given size
-		//  Used for temporary fields which are initialised after construction
-		explicit FieldField(const label);
+        //- Construct given size
+        //  Used for temporary fields which are initialised after construction
+        explicit FieldField(const label);
 
-		//- Construct using the Field sizes from the given FieldField
-		//  and the given Field type.
-		//  Used for temporary fields which are initialised after construction
-		FieldField(const word&, const FieldField<Field, Type>&);
+        //- Construct using the Field sizes from the given FieldField
+        //  and the given Field type.
+        //  Used for temporary fields which are initialised after construction
+        FieldField(const word&, const FieldField<Field, Type>&);
 
-		//- Construct as copy
-		FieldField(const FieldField<Field, Type>&);
+        //- Construct as copy
+        FieldField(const FieldField<Field, Type>&);
 
-		//- Construct as copy or re-use as specified.
-		FieldField(FieldField<Field, Type>&, bool reUse);
+        //- Construct as copy or re-use as specified.
+        FieldField(FieldField<Field, Type>&, bool reUse);
 
-		//- Construct as copy of a PtrList<Field, Type>
-		FieldField(const PtrList<Field<Type> >&);
+        //- Construct as copy of a PtrList<Field, Type>
+        FieldField(const PtrList<Field<Type> >&);
 
-		//- Construct as copy of tmp<FieldField>
-#		ifdef ConstructFromTmp
-		FieldField(const tmp<FieldField<Field, Type> >&);
-#		endif
+        //- Construct from Istream
+        FieldField(Istream&);
 
-		//- Construct from Istream
-		FieldField(Istream&);
+        //- Clone
+        tmp<FieldField<Field, Type> > clone() const;
 
-		//- Clone
-		tmp<FieldField<Field, Type> > clone() const;
+        //- Return a pointer to a new calculatedFvPatchFieldField created on
+        //  freestore without setting patchField values
+        template<class Type2>
+        static tmp<FieldField<Field, Type> > NewCalculatedType
+        (
+            const FieldField<Field, Type2>& ff
+        )
+#       ifdef __INTEL_COMPILER
+        {
+            FieldField<Field, Type>* nffPtr
+            (
+                new FieldField<Field, Type>(ff.size())
+            );
 
-		//- Return a pointer to a new calculatedFvPatchFieldField created on
-		//  freestore without setting patchField values
-		template<class Type2>
-		static tmp<FieldField<Field, Type> > NewCalculatedType
-		(
-			const FieldField<Field, Type2>& ff
-		)
-#		ifdef __INTEL_COMPILER
-		{
-			FieldField<Field, Type>* nffPtr
-			(
-				new FieldField<Field, Type>(ff.size())
-			);
+            forAll(*nffPtr, i)
+            {
+                nffPtr->set(i, Field<Type>::NewCalculatedType(ff[i]).ptr());
+            }
 
-			forAll(*nffPtr, i)
-			{
-				nffPtr->set(i, Field<Type>::NewCalculatedType(ff[i]).ptr());
-			}
+            return tmp<FieldField<Field, Type> >(nffPtr);
+        }
+#       else
+        ;
+#       endif
 
-			return tmp<FieldField<Field, Type> >(nffPtr);
-		}
-#		else
-		;
-#		endif
+    // Member functions
 
-	// Member functions
+        //- Negate this field
+        void negate();
 
-		//- Negate this field
-		void negate();
+        //- Return a component field of the field
+        tmp<FieldField<Field, cmptType> > component(const direction) const;
 
-		//- Return a component field of the field
-		tmp<FieldField<Field, cmptType> > component(const direction) const;
+        //- Replace a component field of the field
+        void replace(const direction, const FieldField<Field, cmptType>&);
 
-		//- Replace a component field of the field
-		void replace(const direction, const FieldField<Field, cmptType>&);
+        //- Replace a component field of the field
+        void replace(const direction, const cmptType&);
 
-		//- Replace a component field of the field
-		void replace(const direction, const cmptType&);
+        //- Return the field transpose (only defined for second rank tensors)
+        tmp<FieldField<Field, Type> > T() const;
 
-		//- Return the field transpose (only defined for second rank tensors)
-		tmp<FieldField<Field, Type> > T() const;
+       //- Clear field caches
+        void clearCaches() const;
 
 
-	// Member operators
+    // Member operators
 
-		void operator=(const FieldField<Field, Type>&);
-		void operator=(const tmp<FieldField<Field, Type> >&);
-		void operator=(const Type&);
+        void operator=(const FieldField<Field, Type>&);
+        void operator=(const tmp<FieldField<Field, Type> >&);
+        void operator=(const Type&);
 
-		void operator+=(const FieldField<Field, Type>&);
-		void operator+=(const tmp<FieldField<Field, Type> >&);
+        void operator+=(const FieldField<Field, Type>&);
+        void operator+=(const tmp<FieldField<Field, Type> >&);
 
-		void operator-=(const FieldField<Field, Type>&);
-		void operator-=(const tmp<FieldField<Field, Type> >&);
+        void operator-=(const FieldField<Field, Type>&);
+        void operator-=(const tmp<FieldField<Field, Type> >&);
 
-		void operator*=(const FieldField<Field, scalar>&);
-		void operator*=(const tmp<FieldField<Field, scalar> >&);
+        void operator*=(const FieldField<Field, scalar>&);
+        void operator*=(const tmp<FieldField<Field, scalar> >&);
 
-		void operator/=(const FieldField<Field, scalar>&);
-		void operator/=(const tmp<FieldField<Field, scalar> >&);
+        void operator/=(const FieldField<Field, scalar>&);
+        void operator/=(const tmp<FieldField<Field, scalar> >&);
 
-		void operator+=(const Type&);
-		void operator-=(const Type&);
+        void operator+=(const Type&);
+        void operator-=(const Type&);
 
-		void operator*=(const scalar&);
-		void operator/=(const scalar&);
+        void operator*=(const scalar&);
+        void operator/=(const scalar&);
 
 
-	// IOstream operators
+    // IOstream operators
 
-		friend Ostream& operator<< <Field, Type>
-		(
-			Ostream&,
-			const FieldField<Field, Type>&
-		);
+        friend Ostream& operator<< <Field, Type>
+        (
+            Ostream&,
+            const FieldField<Field, Type>&
+        );
 
-		friend Ostream& operator<< <Field, Type>
-		(
-			Ostream&,
-			const tmp<FieldField<Field, Type> >&
-		);
+        friend Ostream& operator<< <Field, Type>
+        (
+            Ostream&,
+            const tmp<FieldField<Field, Type> >&
+        );
 };
 
 
@@ -208,7 +209,7 @@ public:
 #include "FieldFieldFunctions.H"
 
 #ifdef NoRepository
-#	include "FieldField.C"
+#   include "FieldField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

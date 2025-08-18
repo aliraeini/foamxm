@@ -1,25 +1,25 @@
 /*--------------------------------*- C++ -*----------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,10 +42,10 @@ using namespace Foam;
 //! @cond dummy
 int yyFlexLexer::yylex()
 {
-	FatalErrorIn("yyFlexLexer::yylex()")
-		<< "Should not have called this function"
-		<< abort(FatalError);
-	return 0;
+    FatalErrorIn("yyFlexLexer::yylex()")
+        << "Should not have called this function"
+        << abort(FatalError);
+    return 0;
 }
 //! @endcond dummy
 
@@ -59,85 +59,85 @@ extern "C" int yywrap()
 int yyFlexLexer::yywrap()
 #endif
 {
-	return 1;
+    return 1;
 }
 //! @endcond dummy
 
 
 class STLLexer
 :
-	public yyFlexLexer
+    public yyFlexLexer
 {
-	// Private data
+    // Private data
 
-		label nTriangles_;
-		short region_;       // current region
-		short maxRegion_;    // max region
+        label nTriangles_;
+        short region_;       // current region
+        short maxRegion_;    // max region
 
-		label lineNo_;
-		word startError_;
+        label lineNo_;
+        word startError_;
 
-		DynamicList<STLpoint> STLpoints_;
-		//DynamicList<STLpoint> STLnormals_;
-		DynamicList<label> STLlabels_;
-		HashTable<label, word> STLsolidNames_;
+        DynamicList<STLpoint> STLpoints_;
+        //DynamicList<STLpoint> STLnormals_;
+        DynamicList<label> STLlabels_;
+        HashTable<label, word> STLsolidNames_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- From input stream and the approximate number of vertices in the STL
-	STLLexer(std::istream* is, const label approxNpoints);
+        //- From input stream and the approximate number of vertices in the STL
+    STLLexer(std::istream* is, const label approxNpoints);
 
 
-	// Member Functions
+    // Member Functions
 
-		//- The lexer function itself
-		int lex();
+        //- The lexer function itself
+        int lex();
 
-	// Access
+    // Access
 
-		label nTriangles() const
-		{
-			return nTriangles_;
-		}
+        label nTriangles() const
+        {
+            return nTriangles_;
+        }
 
-		DynamicList<STLpoint>& STLpoints()
-		{
-			return STLpoints_;
-		}
+        DynamicList<STLpoint>& STLpoints()
+        {
+            return STLpoints_;
+        }
 
-		//DynamicList<STLpoint>& STLnormals()
-		//{
-		//    return STLnormals_;
-		//}
+        //DynamicList<STLpoint>& STLnormals()
+        //{
+        //    return STLnormals_;
+        //}
 
-		DynamicList<label>& STLlabels()
-		{
-			return STLlabels_;
-		}
+        DynamicList<label>& STLlabels()
+        {
+            return STLlabels_;
+        }
 
-		const HashTable<label, word>& STLsolidNames() const
-		{
-			return STLsolidNames_;
-		}
+        const HashTable<label, word>& STLsolidNames() const
+        {
+            return STLsolidNames_;
+        }
 };
 
 
 STLLexer::STLLexer(std::istream* is, const label approxNpoints)
 :
-	yyFlexLexer(is),
+    yyFlexLexer(is),
 
-	nTriangles_(0),
-	region_(-1),
-	maxRegion_(0),
+    nTriangles_(0),
+    region_(-1),
+    maxRegion_(0),
 
-	lineNo_(1),
+    lineNo_(1),
 
-	STLpoints_(approxNpoints),
-	//STLnormals_(approxNpoints),
-	STLlabels_(approxNpoints)
+    STLpoints_(approxNpoints),
+    //STLnormals_(approxNpoints),
+    STLlabels_(approxNpoints)
 {}
 
 
@@ -192,7 +192,7 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 
 
  /* ------------------------------------------------------------------------ *\
-					  -----  Exclusive start states -----
+                      -----  Exclusive start states -----
  \* ------------------------------------------------------------------------ */
 
 %option stack
@@ -207,141 +207,141 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 %%
 
 %{
-	// End of read character pointer returned by strtof
-	//char* endPtr;
+    // End of read character pointer returned by strtof
+    //char* endPtr;
 
-	STLpoint normal;
-	STLpoint vertex;
-	label cmpt = 0;   // component index used for reading vertex
+    STLpoint normal;
+    STLpoint vertex;
+    label cmpt = 0;   // component index used for reading vertex
 
-	static const char* stateNames[7] =
-	{
-		"reading solid",
-		"reading solid name",
-		"reading facet",
-		"reading normal",
-		"reading vertices",
-		"reading vertex",
-		"error"
-	};
+    static const char* stateNames[7] =
+    {
+        "reading solid",
+        "reading solid name",
+        "reading facet",
+        "reading normal",
+        "reading vertices",
+        "reading vertex",
+        "error"
+    };
 
-	static const char* stateExpects[7] =
-	{
-		"'solid', 'color', 'facet' or 'endsolid'",
-		"<string>",
-		"'normal', 'outer loop' or 'endfacet'",
-		"<float> <float> <float>",
-		"'vertex' or 'endloop'",
-		"<float> <float> <float>",
-		""
-	};
+    static const char* stateExpects[7] =
+    {
+        "'solid', 'color', 'facet' or 'endsolid'",
+        "<string>",
+        "'normal', 'outer loop' or 'endfacet'",
+        "<float> <float> <float>",
+        "'vertex' or 'endloop'",
+        "<float> <float> <float>",
+        ""
+    };
 %}
 
 
  /* ------------------------------------------------------------------------ *\
-					        ------ Start Lexing ------
+                            ------ Start Lexing ------
  \* ------------------------------------------------------------------------ */
 
  /*                      ------ Reading control header ------                */
 
 {solid} {
-		BEGIN(readSolidName);
-	}
+        BEGIN(readSolidName);
+    }
 
 <readSolidName>{string} {
-		word solidName(Foam::string::validate<word>(YYText()));
-		if (STLsolidNames_.found(solidName))
-		{
-			region_ = STLsolidNames_[solidName];
-		}
-		else
-		{
-			region_ = maxRegion_++;
-			STLsolidNames_.insert(solidName, region_);
-		}
-		BEGIN(INITIAL);
-	}
+        word solidName(Foam::string::validate<word>(YYText()));
+        if (STLsolidNames_.found(solidName))
+        {
+            region_ = STLsolidNames_[solidName];
+        }
+        else
+        {
+            region_ = maxRegion_++;
+            STLsolidNames_.insert(solidName, region_);
+        }
+        BEGIN(INITIAL);
+    }
 
 <readSolidName>{space}\n {
-		word solidName("solid");
-		if (STLsolidNames_.found(solidName))
-		{
-			region_ = STLsolidNames_[solidName];
-		}
-		else
-		{
-			region_ = maxRegion_++;
-			STLsolidNames_.insert(solidName, region_);
-		}
+        word solidName("solid");
+        if (STLsolidNames_.found(solidName))
+        {
+            region_ = STLsolidNames_[solidName];
+        }
+        else
+        {
+            region_ = maxRegion_++;
+            STLsolidNames_.insert(solidName, region_);
+        }
 
-		lineNo_++;
+        lineNo_++;
 
-		BEGIN(INITIAL);
-	}
+        BEGIN(INITIAL);
+    }
 
 {color} {
-	}
+    }
 
 {facet} {
-		BEGIN(readFacet);
-	}
+        BEGIN(readFacet);
+    }
 
 <readFacet>{normal} {
-		BEGIN(readNormal);
-	}
+        BEGIN(readNormal);
+    }
 
 <readNormal>{point} {
-		/*
-		normal.x() = strtof(YYText(), &endPtr);
-		normal.y() = strtof(endPtr, &endPtr);
-		normal.z() = strtof(endPtr, &endPtr);
-		STLnormals_.append(normal);
-		*/
-		BEGIN(readFacet);
-	}
+        /*
+        normal.x() = strtof(YYText(), &endPtr);
+        normal.y() = strtof(endPtr, &endPtr);
+        normal.z() = strtof(endPtr, &endPtr);
+        STLnormals_.append(normal);
+        */
+        BEGIN(readFacet);
+    }
 
 <readFacet>{outerloop} {
-		BEGIN(readVertices);
-	}
+        BEGIN(readVertices);
+    }
 
 <readVertices>{vertex} {
-		BEGIN(readVertex);
-	}
+        BEGIN(readVertex);
+    }
 
 <readVertex>{space}{signedInteger}{space} {
-		vertex[cmpt++] = atol(YYText());
+        vertex[cmpt++] = atol(YYText());
 
-		if (cmpt == 3)
-		{
-			cmpt = 0;
-			STLpoints_.append(vertex);
-			BEGIN(readVertices);
-		}
-	}
+        if (cmpt == 3)
+        {
+            cmpt = 0;
+            STLpoints_.append(vertex);
+            BEGIN(readVertices);
+        }
+    }
 
 <readVertex>{space}{float}{space} {
-		vertex[cmpt++] = atof(YYText());
+        vertex[cmpt++] = atof(YYText());
 
-		if (cmpt == 3)
-		{
-			cmpt = 0;
-			STLpoints_.append(vertex);
-			BEGIN(readVertices);
-		}
-	}
+        if (cmpt == 3)
+        {
+            cmpt = 0;
+            STLpoints_.append(vertex);
+            BEGIN(readVertices);
+        }
+    }
 
 <readVertices>{endloop} {
-		BEGIN(readFacet);
-	}
+        BEGIN(readFacet);
+    }
 
 <readFacet>{endfacet} {
-		nTriangles_++;
-		STLlabels_.append(region_);
-		BEGIN(INITIAL);
-	}
+        nTriangles_++;
+        STLlabels_.append(region_);
+        BEGIN(INITIAL);
+    }
 
 {endsolid} {
-	}
+    }
 
 
  /* ------------------ Ignore remaining space and \n s. -------------------- */
@@ -353,30 +353,30 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
  /* ------------------- Any other characters are errors -------------------- */
 
 <*>. {
-		startError_ = YYText();
-		yy_push_state(stlerror);
-	}
+        startError_ = YYText();
+        yy_push_state(stlerror);
+    }
 
 
  /* ---------------------------- Error handler ----------------------------- */
 
 <stlerror>.* {
-		yy_pop_state();
-		FatalErrorIn
-		(
-			"triSurface::readSTLASCII(const fileName& STLfileName)"
-		)   << "while " << stateNames[YY_START] << " on line " << lineNo_ << nl
-			<< "    expected " << stateExpects[YY_START]
-			<< " but found '" << startError_.c_str() << YYText() << "'"
-			<< exit(FatalError);
-	}
+        yy_pop_state();
+        FatalErrorIn
+        (
+            "triSurface::readSTLASCII(const fileName& STLfileName)"
+        )   << "while " << stateNames[YY_START] << " on line " << lineNo_ << nl
+            << "    expected " << stateExpects[YY_START]
+            << " but found '" << startError_.c_str() << YYText() << "'"
+            << exit(FatalError);
+    }
 
 
  /*  ------------------------ On EOF terminate ----------------------------  */
 
 <<EOF>> {
-			yyterminate();
-	}
+            yyterminate();
+    }
 %%
 
 
@@ -384,87 +384,87 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 
 bool triSurface::readSTLASCII(const fileName& STLfileName)
 {
-	IFstream STLstream(STLfileName);
+    IFstream STLstream(STLfileName);
 
-	if (!STLstream)
-	{
-		FatalErrorIn
-		(
-			"triSurface::readSTLASCII(const fileName&)"
-		)   << "file " << STLfileName << " not found"
-			<< exit(FatalError);
-	}
+    if (!STLstream)
+    {
+        FatalErrorIn
+        (
+            "triSurface::readSTLASCII(const fileName&)"
+        )   << "file " << STLfileName << " not found"
+            << exit(FatalError);
+    }
 
-	// Create the lexer obtaining the approximate number of vertices in the STL
-	// from the file size
-	STLLexer lexer(&STLstream.stdStream(), Foam::fileSize(STLfileName)/400);
-	while(lexer.lex() != 0)
-	{}
+    // Create the lexer obtaining the approximate number of vertices in the STL
+    // from the file size
+    STLLexer lexer(&STLstream.stdStream(), Foam::fileSize(STLfileName)/400);
+    while(lexer.lex() != 0)
+    {}
 
-	DynamicList<STLpoint>& STLpoints = lexer.STLpoints();
+    DynamicList<STLpoint>& STLpoints = lexer.STLpoints();
 
-	/*
-	DynamicList<STLpoint>& STLnormals = lexer.STLnormals();
+    /*
+    DynamicList<STLpoint>& STLnormals = lexer.STLnormals();
 
-	if (STLpoints.size() != 3*STLnormals.size())
-	{
-		FatalErrorIn
-		(
-			"triSurface::readSTLASCII(const fileName& STLfileName)"
-		)   << "in file " << STLfileName << endl
-			<< "Problem: read " << STLnormals.size() << " normals"
-			<< " but " << STLpoints.size() << " points"
-			<< exit(FatalError);
-	}
-	*/
+    if (STLpoints.size() != 3*STLnormals.size())
+    {
+        FatalErrorIn
+        (
+            "triSurface::readSTLASCII(const fileName& STLfileName)"
+        )   << "in file " << STLfileName << endl
+            << "Problem: read " << STLnormals.size() << " normals"
+            << " but " << STLpoints.size() << " points"
+            << exit(FatalError);
+    }
+    */
 
-	pointField rawPoints(STLpoints.size());
+    pointField rawPoints(STLpoints.size());
 
-	forAll(rawPoints, i)
-	{
-		rawPoints[i] = STLpoints[i];
-	}
+    forAll(rawPoints, i)
+    {
+        rawPoints[i] = STLpoints[i];
+    }
 
-	STLpoints.clear();
+    STLpoints.clear();
 
-	setSize(lexer.nTriangles());
-	DynamicList<label>& STLlabels = lexer.STLlabels();
+    setSize(lexer.nTriangles());
+    DynamicList<label>& STLlabels = lexer.STLlabels();
 
-	label pointi = 0;
-	forAll(*this, i)
-	{
-		operator[](i)[0] = pointi++;
-		operator[](i)[1] = pointi++;
-		operator[](i)[2] = pointi++;
-		operator[](i).region() = STLlabels[i];
-	}
+    label pointi = 0;
+    forAll(*this, i)
+    {
+        operator[](i)[0] = pointi++;
+        operator[](i)[1] = pointi++;
+        operator[](i)[2] = pointi++;
+        operator[](i).region() = STLlabels[i];
+    }
 
-	STLlabels.clear();
+    STLlabels.clear();
 
-	// Stitch all points within SMALL meters.
-	stitchTriangles(rawPoints);
+    // Stitch all points within SMALL meters.
+    stitchTriangles(rawPoints);
 
-	// Convert solidNames into regionNames
-	patches_.setSize(lexer.STLsolidNames().size());
+    // Convert solidNames into regionNames
+    patches_.setSize(lexer.STLsolidNames().size());
 
-	for
-	(
-		HashTable<label, word>::const_iterator iter =
-			lexer.STLsolidNames().begin();
-		iter != lexer.STLsolidNames().end();
-		++iter
-	)
-	{
-		patches_[iter()].name() = iter.key();
-	}
+    for
+    (
+        HashTable<label, word>::const_iterator iter =
+            lexer.STLsolidNames().begin();
+        iter != lexer.STLsolidNames().end();
+        ++iter
+    )
+    {
+        patches_[iter()].name() = iter.key();
+    }
 
-	// Fill in the missing information in the patches
-	setDefaultPatches();
+    // Fill in the missing information in the patches
+    setDefaultPatches();
 
-	return true;
+    return true;
 }
 
 
  /* ------------------------------------------------------------------------ *\
-	------ End of STLToFoam.L
+    ------ End of STLToFoam.L
  \* ------------------------------------------------------------------------ */

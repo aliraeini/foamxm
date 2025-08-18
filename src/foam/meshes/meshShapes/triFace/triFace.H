@@ -1,39 +1,39 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::triFace
+    Foam::triFace
 
 Description
-	A triangular face using a FixedList of labels corresponding to mesh
-	vertices.
+    A triangular face using a FixedList of labels corresponding to mesh
+    vertices.
 
 SeeAlso
-	Foam::face, Foam::triangle
+    Foam::face, Foam::triangle
 
 SourceFiles
-	triFaceI.H
-	triFaceTemplates.C
+    triFaceI.H
+    triFaceTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -63,115 +63,118 @@ inline bool operator==(const triFace&, const triFace&);
 inline bool operator!=(const triFace&, const triFace&);
 
 
+/*---------------------------------------------------------------------------*\
+                          class triFace Declaration
+\*---------------------------------------------------------------------------*/
 
 class triFace
 :
-	public FixedList<label, 3>
+    public FixedList<label, 3>
 {
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		inline triFace();
+        //- Construct null
+        inline triFace();
 
-		//- Construct from three point labels
-		inline triFace
-		(
-			const label a,
-			const label b,
-			const label c
-		);
+        //- Construct from three point labels
+        inline triFace
+        (
+            const label a,
+            const label b,
+            const label c
+        );
 
-		//- Construct from a UList<label>
-		explicit inline triFace(const UList<label>&);
+        //- Construct from a UList<label>
+        explicit inline triFace(const UList<label>&);
 
-		//- Construct from Istream
-		inline triFace(Istream&);
-
-
-	// Member Functions
-
-		//- Collapse face by removing duplicate point labels
-		//  return the collapsed size, set collapsed point labels to -1
-		inline label collapse();
-
-		//- Return the edge direction on the face
-		//  - +1: forward (counter-clockwise) on the face
-		//  - -1: reverse (clockwise) on the face
-		//  -  0: edge not found on the face
-		inline int edgeDirection(const edge&) const;
+        //- Construct from Istream
+        inline triFace(Istream&);
 
 
-		// Properties
+    // Member Functions
 
-			//- Return the points corresponding to this face
-			inline pointField points(const pointField& points) const;
+        //- Collapse face by removing duplicate point labels
+        //  return the collapsed size, set collapsed point labels to -1
+        inline label collapse();
 
-			//- Return triangle as a face
-			inline face triFaceFace() const;
+        //- Return the edge direction on the face
+        //  - +1: forward (counter-clockwise) on the face
+        //  - -1: reverse (clockwise) on the face
+        //  -  0: edge not found on the face
+        inline int edgeDirection(const edge&) const;
 
-			//- Return number of edges
-			inline label nEdges() const;
 
-			//- Return edges
-			inline edgeList edges() const;
+        // Properties
 
-			//- Return centre (centroid)
-			inline point centre(const pointField&) const;
+            //- Return the points corresponding to this face
+            inline pointField points(const pointField& points) const;
 
-			//- Return scalar magnitude
-			inline scalar mag(const pointField&) const;
+            //- Return triangle as a face
+            inline face triFaceFace() const;
 
-			//- Return vector normal
-			inline vector normal(const pointField&) const;
+            //- Return number of edges
+            inline label nEdges() const;
 
-			//- Number of triangles after splitting
-			inline label nTriangles() const;
+            //- Return edges
+            inline edgeList edges() const;
 
-			//- Return face with reverse direction
-			inline triFace reverseFace() const;
+            //- Return centre (centroid)
+            inline point centre(const pointField&) const;
 
-			//- Return swept-volume
-			inline scalar sweptVol
-			(
-				const pointField& oldPoints,
-				const pointField& newPoints
-			) const;
+            //- Return scalar magnitude
+            inline scalar mag(const pointField&) const;
 
-			//- Return point intersection with a ray starting at p, with
-			//  direction n.
-			inline pointHit ray
-			(
-				const point& p,
-				const vector& q,
-				const pointField& points,
-				const intersection::algorithm = intersection::FULL_RAY,
-				const intersection::direction dir = intersection::VECTOR
-			) const;
+            //- Return vector normal
+            inline vector normal(const pointField&) const;
 
-			//- Return contact sphere diameter
-			inline scalar contactSphereDiameter
-			(
-				const point& p,
-				const vector& n,
-				const pointField& meshPoints
-			) const;
+            //- Number of triangles after splitting
+            inline label nTriangles() const;
 
-			//- Return the triangle
-			inline triPointRef tri(const pointField&) const;
+            //- Return face with reverse direction
+            inline triFace reverseFace() const;
 
-		//- compare triFaces
-		//  -  0: different
-		//  - +1: identical
-		//  - -1: same face, but different orientation
-		static inline int compare(const triFace&, const triFace&);
+            //- Return swept-volume
+            inline scalar sweptVol
+            (
+                const pointField& oldPoints,
+                const pointField& newPoints
+            ) const;
 
-	// Friend Operators
+            //- Return point intersection with a ray starting at p, with
+            //  direction n.
+            inline pointHit ray
+            (
+                const point& p,
+                const vector& q,
+                const pointField& points,
+                const intersection::algorithm = intersection::FULL_RAY,
+                const intersection::direction dir = intersection::VECTOR
+            ) const;
 
-		friend bool operator==(const triFace&, const triFace&);
-		friend bool operator!=(const triFace&, const triFace&);
+            //- Return contact sphere diameter
+            inline scalar contactSphereDiameter
+            (
+                const point& p,
+                const vector& n,
+                const pointField& meshPoints
+            ) const;
+
+            //- Return the triangle
+            inline triPointRef tri(const pointField&) const;
+
+        //- compare triFaces
+        //  -  0: different
+        //  - +1: identical
+        //  - -1: same face, but different orientation
+        static inline int compare(const triFace&, const triFace&);
+
+    // Friend Operators
+
+        friend bool operator==(const triFace&, const triFace&);
+        friend bool operator!=(const triFace&, const triFace&);
 };
 
 
@@ -180,18 +183,18 @@ public:
 template<>
 inline unsigned Hash<triFace>::operator()
 (
-	const triFace& t,
-	unsigned seed
+    const triFace& t,
+    unsigned seed
 ) const
 {
-	// Fortunately we don't need this very often
-	const uLabel t0(t[0]);
-	const uLabel t1(t[1]);
-	const uLabel t2(t[2]);
+    // Fortunately we don't need this very often
+    const uLabel t0(t[0]);
+    const uLabel t1(t[1]);
+    const uLabel t2(t[2]);
 
-	const uLabel val = (t0*t1*t2 + t0+t1+t2);
+    const uLabel val = (t0*t1*t2 + t0+t1+t2);
 
-	return Hash<uLabel>()(val, seed);
+    return Hash<uLabel>()(val, seed);
 }
 
 
@@ -200,7 +203,7 @@ inline unsigned Hash<triFace>::operator()
 template<>
 inline unsigned Hash<triFace>::operator()(const triFace& t) const
 {
-	return Hash<triFace>::operator()(t, 0);
+    return Hash<triFace>::operator()(t, 0);
 }
 
 
@@ -215,20 +218,20 @@ class offsetOp<triFace>
 
 public:
 
-	inline triFace operator()
-	(
-		const triFace& x,
-		const label offset
-	) const
-	{
-		triFace result(x);
+    inline triFace operator()
+    (
+        const triFace& x,
+        const label offset
+    ) const
+    {
+        triFace result(x);
 
-		forAll(x, xI)
-		{
-			result[xI] = x[xI] + offset;
-		}
-		return result;
-	}
+        forAll(x, xI)
+        {
+            result[xI] = x[xI] + offset;
+        }
+        return result;
+    }
 };
 
 

@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::ISstream
+    Foam::ISstream
 
 Description
-	Generic input stream.
+    Generic input stream.
 
 SourceFiles
-	ISstreamI.H
-	ISstream.C
+    ISstreamI.H
+    ISstream.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,153 +45,156 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class ISstream Declaration
+\*---------------------------------------------------------------------------*/
 
 class ISstream
 :
-	public Istream
+    public Istream
 {
-	// Private data
+    // Private data
 
-		fileName name_;
-		istream& is_;
-
-
-	// Private member functions
-
-		char nextValid();
-
-		void readWordToken(token&);
-
-	// Private Member Functions
+        fileName name_;
+        istream& is_;
 
 
-		//- Read a verbatim string (excluding block delimiters).
-		Istream& readVerbatim(string&);
+    // Private member functions
 
-		//- Read a variable name (includes '{')
-		Istream& readVariable(string&);
+        char nextValid();
 
-		//- Disallow default bitwise assignment
-		void operator=(const ISstream&);
+        void readWordToken(token&);
+
+    // Private Member Functions
+
+
+        //- Read a verbatim string (excluding block delimiters).
+        Istream& readVerbatim(string&);
+
+        //- Read a variable name (includes '{')
+        Istream& readVariable(string&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const ISstream&);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct as wrapper around istream
-		inline ISstream
-		(
-			istream& is,
-			const string& name,
-			streamFormat format = ASCII,
-			versionNumber version = currentVersion,
-			compressionType compression = UNCOMPRESSED
-		);
-
-
-	//- Destructor
-	virtual ~ISstream()
-	{}
+        //- Construct as wrapper around istream
+        inline ISstream
+        (
+            istream& is,
+            const string& name,
+            streamFormat format = ASCII,
+            versionNumber version = currentVersion,
+            compressionType compression = UNCOMPRESSED
+        );
 
 
-	// Member functions
-
-		// Inquiry
-
-			//- Return the name of the stream
-			//  Useful for Fstream to return the filename
-			virtual const fileName& name() const
-			{
-				return name_;
-			}
-
-			//- Return non-const access to the name of the stream
-			//  Useful to alter the stream name
-			virtual fileName& name()
-			{
-				return name_;
-			}
-
-			//- Return flags of output stream
-			virtual ios_base::fmtflags flags() const;
+    //- Destructor
+    virtual ~ISstream()
+    {}
 
 
-		// Read functions
+    // Member functions
 
-			//- Raw, low-level get character function.
-			inline ISstream& get(char&);
+        // Inquiry
 
-			//- Raw, low-level peek function.
-			//  Does not remove the character from the stream.
-			//  Returns the next character in the stream or EOF if the
-			//  end of file is read.
-			inline int peek();
+            //- Return the name of the stream
+            //  Useful for Fstream to return the filename
+            virtual const fileName& name() const
+            {
+                return name_;
+            }
 
-			//- Raw, low-level getline into a string function.
-			inline ISstream& getLine(string&);
+            //- Return non-const access to the name of the stream
+            //  Useful to alter the stream name
+            virtual fileName& name()
+            {
+                return name_;
+            }
 
-			//- Raw, low-level putback character function.
-			inline ISstream& putback(const char&);
-
-			//- Return next token from stream
-			virtual Istream& read(token&);
-
-			//- Read a character
-			virtual Istream& read(char&);
-
-			//- Read a word
-			virtual Istream& read(word&);
-
-			//- Read a string (including enclosing double-quotes).
-			//  Backslashes are retained, except when escaping double-quotes
-			//  and an embedded newline character.
-			virtual Istream& read(string&);
-
-			//- Read a label
-			virtual Istream& read(label&);
-
-			//- Read a floatScalar
-			virtual Istream& read(floatScalar&);
-
-			//- Read a doubleScalar
-			virtual Istream& read(doubleScalar&);
-
-			//- Read a longDoubleScalar
-			virtual Istream& read(longDoubleScalar&);
-
-			//- Read binary block
-			virtual Istream& read(char*, std::streamsize);
-
-			//- Rewind and return the stream so that it may be read again
-			virtual Istream& rewind();
+            //- Return flags of output stream
+            virtual ios_base::fmtflags flags() const;
 
 
-		// Stream state functions
+        // Read functions
 
-			//- Set flags of output stream
-			virtual ios_base::fmtflags flags(const ios_base::fmtflags flags);
+            //- Raw, low-level get character function.
+            inline ISstream& get(char&);
+
+            //- Raw, low-level peek function.
+            //  Does not remove the character from the stream.
+            //  Returns the next character in the stream or EOF if the
+            //  end of file is read.
+            inline int peek();
+
+            //- Raw, low-level getline into a string function.
+            inline ISstream& getLine(string&);
+
+            //- Raw, low-level putback character function.
+            inline ISstream& putback(const char&);
+
+            //- Return next token from stream
+            virtual Istream& read(token&);
+
+            //- Read a character
+            virtual Istream& read(char&);
+
+            //- Read a word
+            virtual Istream& read(word&);
+
+            //- Read a string (including enclosing double-quotes).
+            //  Backslashes are retained, except when escaping double-quotes
+            //  and an embedded newline character.
+            virtual Istream& read(string&);
+
+            //- Read a label
+            virtual Istream& read(label&);
+
+            //- Read a floatScalar
+            virtual Istream& read(floatScalar&);
+
+            //- Read a doubleScalar
+            virtual Istream& read(doubleScalar&);
+
+            //- Read a longDoubleScalar
+            virtual Istream& read(longDoubleScalar&);
+
+            //- Read binary block
+            virtual Istream& read(char*, std::streamsize);
+
+            //- Rewind and return the stream so that it may be read again
+            virtual Istream& rewind();
 
 
-		// STL stream
+        // Stream state functions
 
-			//- Access to underlying std::istream
-			virtual istream& stdStream()
-			{
-				return is_;
-			}
-
-			//- Const access to underlying std::istream
-			virtual const istream& stdStream() const
-			{
-				return is_;
-			}
+            //- Set flags of output stream
+            virtual ios_base::fmtflags flags(const ios_base::fmtflags flags);
 
 
-		// Print
+        // STL stream
 
-			//- Print description of IOstream to Ostream
-			virtual void print(Ostream&) const;
+            //- Access to underlying std::istream
+            virtual istream& stdStream()
+            {
+                return is_;
+            }
+
+            //- Const access to underlying std::istream
+            virtual const istream& stdStream() const
+            {
+                return is_;
+            }
+
+
+        // Print
+
+            //- Print description of IOstream to Ostream
+            virtual void print(Ostream&) const;
 };
 
 

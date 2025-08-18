@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -34,17 +34,17 @@ License
 template <class Type>
 void Foam::ParSortableList<Type>::write
 (
-	const List<Type>& elems,
-	Ostream& os
+    const List<Type>& elems,
+    Ostream& os
 ) const
 {
-	os << '(';
+    os << '(';
 
-	forAll(elems, elemI)
-	{
-		os << ' ' << elems[elemI];
-	}
-	os << ')';
+    forAll(elems, elemI)
+    {
+        os << ' ' << elems[elemI];
+    }
+    os << ')';
 }
 
 
@@ -52,71 +52,71 @@ void Foam::ParSortableList<Type>::write
 template <class Type>
 void Foam::ParSortableList<Type>::copyInto
 (
-	const List<Type>& values,
-	const labelList& indices,
-	const label fromProcNo,
-	label& destI,
-	List<taggedValue>& dest
+    const List<Type>& values,
+    const labelList& indices,
+    const label fromProcNo,
+    label& destI,
+    List<taggedValue>& dest
 ) const
 {
-	forAll(values, elemI)
-	{
-		taggedValue& tagVal = dest[destI];
+    forAll(values, elemI)
+    {
+        taggedValue& tagVal = dest[destI];
 
-		tagVal.value() = values[elemI];
-		tagVal.index() = indices[elemI];
-		tagVal.procID() = fromProcNo;
+        tagVal.value() = values[elemI];
+        tagVal.index() = indices[elemI];
+        tagVal.procID() = fromProcNo;
 
-		destI++;
-	}
+        destI++;
+    }
 }
 
 
 template <class Type>
 void Foam::ParSortableList<Type>::getPivots
 (
-	const List<Type>& elems,
-	List<Type>& pivots
+    const List<Type>& elems,
+    List<Type>& pivots
 ) const
 {
-	pivots.setSize(Pstream::nProcs());
+    pivots.setSize(Pstream::nProcs());
 
-	label pivotPos = 0;
+    label pivotPos = 0;
 
-	forAll(pivots, pivotI)
-	{
-		pivots[pivotI] = elems[pivotPos];
+    forAll(pivots, pivotI)
+    {
+        pivots[pivotI] = elems[pivotPos];
 
-		pivotPos += elems.size()/Pstream::nProcs();
-	}
+        pivotPos += elems.size()/Pstream::nProcs();
+    }
 }
 
 
 template <class Type>
 void Foam::ParSortableList<Type>::checkAndSend
 (
-	List<Type>& values,
-	labelList& indices,
-	const label bufSize,
-	const label destProcI
+    List<Type>& values,
+    labelList& indices,
+    const label bufSize,
+    const label destProcI
 ) const
 {
-	if (destProcI != Pstream::myProcNo())
-	{
-		values.setSize(bufSize);
-		indices.setSize(bufSize);
+    if (destProcI != Pstream::myProcNo())
+    {
+        values.setSize(bufSize);
+        indices.setSize(bufSize);
 
-		if (debug)
-		{
-			Pout<<  "Sending to " << destProcI << " elements:" << values
-				<< endl;
-		}
+        if (debug)
+        {
+            Pout<<  "Sending to " << destProcI << " elements:" << values
+                << endl;
+        }
 
-		{
-			OPstream toSlave(Pstream::blocking, destProcI);
-			toSlave << values << indices;
-		}
-	}
+        {
+            OPstream toSlave(Pstream::blocking, destProcI);
+            toSlave << values << indices;
+        }
+    }
 }
 
 
@@ -126,11 +126,11 @@ void Foam::ParSortableList<Type>::checkAndSend
 template <class Type>
 Foam::ParSortableList<Type>::ParSortableList(const UList<Type>& values)
 :
-	List<Type>(values),
-	indices_(0),
-	procs_(0)
+    List<Type>(values),
+    indices_(0),
+    procs_(0)
 {
-	sort();
+    sort();
 }
 
 
@@ -138,9 +138,9 @@ Foam::ParSortableList<Type>::ParSortableList(const UList<Type>& values)
 template <class Type>
 Foam::ParSortableList<Type>::ParSortableList(const label size)
 :
-	List<Type>(size),
-	indices_(0),
-	procs_(0)
+    List<Type>(size),
+    indices_(0),
+    procs_(0)
 {}
 
 
@@ -150,200 +150,200 @@ Foam::ParSortableList<Type>::ParSortableList(const label size)
 template <class Type>
 void Foam::ParSortableList<Type>::sort()
 {
-	//
-	// 0. Get total size of dataset.
-	//
+    //
+    // 0. Get total size of dataset.
+    //
 
-	label n = this->size();
+    label n = this->size();
 
-	reduce(n, sumOp<label>());
-
-
-	// 1. Sort list locally
-	SortableList<Type> sorted(*this);
-
-	// Collect elements at pivot points
-	labelListList sortedGatherList(Pstream::nProcs());
-
-	labelList& pivots = sortedGatherList[Pstream::myProcNo()];
-
-	getPivots(sorted, pivots);
-
-	if (debug)
-	{
-		Pout<< "pivots:";
-		write(pivots, Pout);
-		Pout<< endl;
-	}
+    reduce(n, sumOp<label>());
 
 
-	//
-	// 2. Combine pivotlist per processor onto master, sort, get pivots.
-	//
+    // 1. Sort list locally
+    SortableList<Type> sorted(*this);
 
-	Pstream::gatherList(sortedGatherList);
+    // Collect elements at pivot points
+    labelListList sortedGatherList(Pstream::nProcs());
 
-	if (Pstream::master())
-	{
-		labelList allPivots =
-			ListListOps::combine<labelList>
-			(
-				sortedGatherList,
-				accessOp<labelList>()
-			);
+    labelList& pivots = sortedGatherList[Pstream::myProcNo()];
 
-		SortableList<Type> sortedPivots(allPivots);
+    getPivots(sorted, pivots);
 
-		if (debug)
-		{
-			Pout<< "allPivots:";
-			write(allPivots, Pout);
-			Pout<< endl;
-		}
-
-		getPivots(sortedPivots, pivots);
-	}
-	Pstream::scatter(pivots);
-
-	if (debug)
-	{
-		Pout<< "new pivots:";
-		write(pivots, Pout);
-		Pout<< endl;
-	}
+    if (debug)
+    {
+        Pout<< "pivots:";
+        write(pivots, Pout);
+        Pout<< endl;
+    }
 
 
-	//
-	// 3. Distribute pivots & distribute.
-	//
+    //
+    // 2. Combine pivotlist per processor onto master, sort, get pivots.
+    //
 
-	label pivotI = 1;
-	label destProcI = 0;
+    Pstream::gatherList(sortedGatherList);
 
-	// Buffer for my own data. Keep original index together with value.
-	labelList ownValues(sorted.size());
-	labelList ownIndices(sorted.size());
-	label ownI = 0;
+    if (Pstream::master())
+    {
+        labelList allPivots =
+            ListListOps::combine<labelList>
+            (
+                sortedGatherList,
+                accessOp<labelList>()
+            );
 
-	// Buffer for sending data
-	labelList sendValues(sorted.size());
-	labelList sendIndices(sorted.size());
-	label sendI = 0;
+        SortableList<Type> sortedPivots(allPivots);
 
-	forAll(sorted, sortedI)
-	{
-		if ((pivotI < Pstream::nProcs()) && (sorted[sortedI] > pivots[pivotI]))
-		{
-			checkAndSend(sendValues, sendIndices, sendI, destProcI);
+        if (debug)
+        {
+            Pout<< "allPivots:";
+            write(allPivots, Pout);
+            Pout<< endl;
+        }
 
-			// Reset buffer.
-			sendValues.setSize(sorted.size());
-			sendIndices.setSize(sorted.size());
-			sendI = 0;
+        getPivots(sortedPivots, pivots);
+    }
+    Pstream::scatter(pivots);
 
-			pivotI++;
-			destProcI++;
-		}
-
-		if (destProcI != Pstream::myProcNo())
-		{
-			sendValues[sendI] = sorted[sortedI];
-			sendIndices[sendI] = sorted.indices()[sortedI];
-			sendI++;
-		}
-		else
-		{
-			ownValues[ownI] = sorted[sortedI];
-			ownIndices[ownI] = sorted.indices()[sortedI];
-			ownI++;
-		}
-	}
+    if (debug)
+    {
+        Pout<< "new pivots:";
+        write(pivots, Pout);
+        Pout<< endl;
+    }
 
 
-	// Handle trailing send buffer
-	if (sendI != 0)
-	{
-		checkAndSend(sendValues, sendIndices, sendI, destProcI);
-	}
+    //
+    // 3. Distribute pivots & distribute.
+    //
 
-	// Print ownValues
-	ownValues.setSize(ownI);
-	ownIndices.setSize(ownI);
+    label pivotI = 1;
+    label destProcI = 0;
 
-	if (debug & 2)
-	{
-		Pout<< "Not sending (to myself) elements "
-			<< ownValues << endl;
-	}
+    // Buffer for my own data. Keep original index together with value.
+    labelList ownValues(sorted.size());
+    labelList ownIndices(sorted.size());
+    label ownI = 0;
 
-	//
-	// 4. Combine pieces from all processors & sort. Use indices() from
-	// SortableList to remember source processor number.
-	//
+    // Buffer for sending data
+    labelList sendValues(sorted.size());
+    labelList sendIndices(sorted.size());
+    label sendI = 0;
 
-	// Allocate receive buffer. Acc. to paper upper bound is 2*n/p
-	// (n=total size, p=nProcs). Resize later on.
-	List<taggedValue> combinedValues(2 * n/Pstream::nProcs());
+    forAll(sorted, sortedI)
+    {
+        if ((pivotI < Pstream::nProcs()) && (sorted[sortedI] > pivots[pivotI]))
+        {
+            checkAndSend(sendValues, sendIndices, sendI, destProcI);
 
-	label combinedI = 0;
+            // Reset buffer.
+            sendValues.setSize(sorted.size());
+            sendIndices.setSize(sorted.size());
+            sendI = 0;
 
-	for (label procI = 0; procI < Pstream::nProcs(); procI++)
-	{
-		if (procI == Pstream::myProcNo())
-		{
-			if (debug & 2)
-			{
-				Pout<< "Copying from own:" << ownValues << endl;
-			}
+            pivotI++;
+            destProcI++;
+        }
 
-			// Copy ownValues,ownIndices into combined buffer
-			copyInto(ownValues, ownIndices, procI, combinedI, combinedValues);
-		}
-		else
-		{
-			labelList recValues;
-			labelList recIndices;
+        if (destProcI != Pstream::myProcNo())
+        {
+            sendValues[sendI] = sorted[sortedI];
+            sendIndices[sendI] = sorted.indices()[sortedI];
+            sendI++;
+        }
+        else
+        {
+            ownValues[ownI] = sorted[sortedI];
+            ownIndices[ownI] = sorted.indices()[sortedI];
+            ownI++;
+        }
+    }
 
-			{
-				if (debug)
-				{
-					Pout<< "Receiving from " << procI << endl;
-				}
 
-				IPstream fromSlave(Pstream::blocking, procI);
+    // Handle trailing send buffer
+    if (sendI != 0)
+    {
+        checkAndSend(sendValues, sendIndices, sendI, destProcI);
+    }
 
-				fromSlave >> recValues >> recIndices;
+    // Print ownValues
+    ownValues.setSize(ownI);
+    ownIndices.setSize(ownI);
 
-				if (debug & 2)
-				{
-					Pout<< "Received from " << procI
-					    << " elements:" << recValues << endl;
-				}
-			}
+    if (debug & 2)
+    {
+        Pout<< "Not sending (to myself) elements "
+            << ownValues << endl;
+    }
 
-			if (debug)
-			{
-				Pout<< "Copying starting at:" << combinedI << endl;
-			}
-			copyInto(recValues, recIndices, procI, combinedI, combinedValues);
-		}
-	}
-	combinedValues.setSize(combinedI);
+    //
+    // 4. Combine pieces from all processors & sort. Use indices() from
+    // SortableList to remember source processor number.
+    //
 
-	// Sort according to values
-	Foam::sort(combinedValues);
+    // Allocate receive buffer. Acc. to paper upper bound is 2*n/p
+    // (n=total size, p=nProcs). Resize later on.
+    List<taggedValue> combinedValues(2 * n/Pstream::nProcs());
 
-	// Copy into *this
-	this->setSize(combinedI);
-	indices_.setSize(combinedI);
-	procs_.setSize(combinedI);
+    label combinedI = 0;
 
-	forAll(combinedValues, elemI)
-	{
-		this->operator[](elemI) = combinedValues[elemI].value();
-		indices_[elemI] = combinedValues[elemI].index();
-		procs_[elemI] = combinedValues[elemI].procID();
-	}
+    for (label procI = 0; procI < Pstream::nProcs(); procI++)
+    {
+        if (procI == Pstream::myProcNo())
+        {
+            if (debug & 2)
+            {
+                Pout<< "Copying from own:" << ownValues << endl;
+            }
+
+            // Copy ownValues,ownIndices into combined buffer
+            copyInto(ownValues, ownIndices, procI, combinedI, combinedValues);
+        }
+        else
+        {
+            labelList recValues;
+            labelList recIndices;
+
+            {
+                if (debug)
+                {
+                    Pout<< "Receiving from " << procI << endl;
+                }
+
+                IPstream fromSlave(Pstream::blocking, procI);
+
+                fromSlave >> recValues >> recIndices;
+
+                if (debug & 2)
+                {
+                    Pout<< "Received from " << procI
+                        << " elements:" << recValues << endl;
+                }
+            }
+
+            if (debug)
+            {
+                Pout<< "Copying starting at:" << combinedI << endl;
+            }
+            copyInto(recValues, recIndices, procI, combinedI, combinedValues);
+        }
+    }
+    combinedValues.setSize(combinedI);
+
+    // Sort according to values
+    Foam::sort(combinedValues);
+
+    // Copy into *this
+    this->setSize(combinedI);
+    indices_.setSize(combinedI);
+    procs_.setSize(combinedI);
+
+    forAll(combinedValues, elemI)
+    {
+        this->operator[](elemI) = combinedValues[elemI].value();
+        indices_[elemI] = combinedValues[elemI].index();
+        procs_[elemI] = combinedValues[elemI].procID();
+    }
 }
 
 

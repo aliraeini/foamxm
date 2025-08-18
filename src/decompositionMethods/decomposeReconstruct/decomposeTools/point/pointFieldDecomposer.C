@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -70,10 +70,8 @@ pointFieldDecomposer::patchFieldDecomposer::patchFieldDecomposer
     // Check that all the patch point addresses are set
     if (directAddressing_.size() && min(directAddressing_) < 0)
     {
-        FatalErrorIn
-        (
-            "pointFieldDecomposer::patchFieldDecomposer()"
-        )   << "Incomplete patch point addressing"
+        FatalErrorInFunction
+            << "Incomplete patch point addressing"
             << abort(FatalError);
     }
 }

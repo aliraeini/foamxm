@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -91,40 +91,40 @@ License
 template<class Type>
 void Foam::distributedTriSurfaceMesh::distributeFields
 (
-	const mapDistribute& map
+    const mapDistribute& map
 )
 {
-	typedef DimensionedField<Type, triSurfaceGeoMesh> DimensionedSurfField;
+    typedef DimensionedField<Type, triSurfaceGeoMesh> DimensionedSurfField;
 
-	HashTable<DimensionedSurfField*> fields
-	(
-		objectRegistry::lookupClass
-		<DimensionedSurfField >()
-	);
+    HashTable<DimensionedSurfField*> fields
+    (
+        objectRegistry::lookupClass
+        <DimensionedSurfField >()
+    );
 
-	forAllIter (typename HashTable<DimensionedSurfField*>, fields, fieldIter)
-	{
-		DimensionedSurfField& field = *fieldIter();
+    forAllIter (typename HashTable<DimensionedSurfField*>, fields, fieldIter)
+    {
+        DimensionedSurfField& field = *fieldIter();
 
-		label oldSize = field.size();
+        label oldSize = field.size();
 
-		map.distribute
-		(
-			Pstream::nonBlocking,
-			List<labelPair>(0),
-			map.constructSize(),
-			map.subMap(),
-			map.constructMap(),
-			field
-		);
+        map.distribute
+        (
+            Pstream::nonBlocking,
+            List<labelPair>(0),
+            map.constructSize(),
+            map.subMap(),
+            map.constructMap(),
+            field
+        );
 
-		if (debug)
-		{
-			Info<< "Mapped " << field.typeName << ' ' << field.name()
-				<< " from size " << oldSize << " to size " << field.size()
-				<< endl;
-		}
-	}
+        if (debug)
+        {
+            Info<< "Mapped " << field.typeName << ' ' << field.name()
+                << " from size " << oldSize << " to size " << field.size()
+                << endl;
+        }
+    }
 }
 
 

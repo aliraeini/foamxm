@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::cyclicAMGInterfaceField
+    Foam::cyclicAMGInterfaceField
 
 Description
-	AMG agglomerated cyclic interface field.
+    AMG agglomerated cyclic interface field.
 
 SourceFiles
-	cyclicAMGInterfaceField.C
+    cyclicAMGInterfaceField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,115 +44,130 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                  Class cyclicAMGInterfaceField Declaration
+\*---------------------------------------------------------------------------*/
 
 class cyclicAMGInterfaceField
 :
-	public AMGInterfaceField,
-	virtual public cyclicLduInterfaceField
+    public AMGInterfaceField,
+    virtual public cyclicLduInterfaceField
 {
-	// Private data
+    // Private data
 
-		//- Local reference cast into the cyclic interface
-		const cyclicAMGInterface& cyclicInterface_;
+        //- Local reference cast into the cyclic interface
+        const cyclicAMGInterface& cyclicInterface_;
 
-		//- Is the transform required
-		bool doTransform_;
+        //- Is the transform required
+        bool doTransform_;
 
-		//- Rank of component for transformation
-		int rank_;
+        //- Rank of component for transformation
+        int rank_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		cyclicAMGInterfaceField(const cyclicAMGInterfaceField&);
+        //- Disallow default bitwise copy construct
+        cyclicAMGInterfaceField(const cyclicAMGInterfaceField&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const cyclicAMGInterfaceField&);
+        //- Disallow default bitwise assignment
+        void operator=(const cyclicAMGInterfaceField&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("cyclic");
+    //- Runtime type information
+    TypeName("cyclic");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from AMG interface and fine level interface field
-		cyclicAMGInterfaceField
-		(
-			const AMGInterface& AMGCp,
-			const lduInterfaceField& fineInterfaceField
-		);
-
-
-	// Destructor
-
-		virtual ~cyclicAMGInterfaceField();
+        //- Construct from AMG interface and fine level interface field
+        cyclicAMGInterfaceField
+        (
+            const AMGInterface& AMGCp,
+            const lduInterfaceField& fineInterfaceField
+        );
 
 
-	// Member Functions
-
-		// Access
-
-			//- Return size
-			label size() const
-			{
-				return cyclicInterface_.size();
-			}
+    //- Destructor
+    virtual ~cyclicAMGInterfaceField() = default;
 
 
-		// Coupled interface matrix update
+    // Member Functions
 
-			//- Transform neighbour field
-			virtual void transformCoupleField
-			(
-				scalarField& pnf,
-				const direction cmpt
-			) const
-			{
-				cyclicLduInterfaceField::transformCoupleField(pnf, cmpt);
-			}
+        // Access
 
-			//- Update result field based on interface functionality
-			virtual void updateInterfaceMatrix
-			(
-				const scalarField& psiInternal,
-				scalarField& result,
-				const lduMatrix&,
-				const scalarField& coeffs,
-				const direction cmpt,
-				const Pstream::commsTypes commsType,
-				const bool switchToLhs
-			) const;
+            //- Return size
+            label size() const
+            {
+                return cyclicInterface_.size();
+            }
 
 
-		//- Cyclic interface functions
+        // Coupled interface matrix update
 
-			//- Does the interface field perform the transfromation
-			virtual bool doTransform() const
-			{
-				return doTransform_;
-			}
+            //- Transform neighbour field
+            virtual void transformCoupleField
+            (
+                scalarField& pnf,
+                const direction cmpt
+            ) const
+            {
+                cyclicLduInterfaceField::transformCoupleField(pnf, cmpt);
+            }
 
-			//- Return face transformation tensor
-			virtual const tensorField& forwardT() const
-			{
-				return cyclicInterface_.forwardT();
-			}
+            //- Initialise neighbour matrix update
+            virtual void initInterfaceMatrixUpdate
+            (
+                const scalarField&,
+                scalarField&,
+                const lduMatrix&,
+                const scalarField&,
+                const direction,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const
+            {}
 
-			//- Return neighbour-cell transformation tensor
-			virtual const tensorField& reverseT() const
-			{
-				return cyclicInterface_.reverseT();
-			}
+            //- Update result field based on interface functionality
+            virtual void updateInterfaceMatrix
+            (
+                const scalarField& psiInternal,
+                scalarField& result,
+                const lduMatrix&,
+                const scalarField& coeffs,
+                const direction cmpt,
+                const Pstream::commsTypes commsType,
+                const bool switchToLhs
+            ) const;
 
-			//- Return rank of component for transform
-			virtual int rank() const
-			{
-				return rank_;
-			}
+
+        //- Cyclic interface functions
+
+            //- Does the interface field perform the transfromation
+            virtual bool doTransform() const
+            {
+                return doTransform_;
+            }
+
+            //- Return face transformation tensor
+            virtual const tensorField& forwardT() const
+            {
+                return cyclicInterface_.forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            virtual const tensorField& reverseT() const
+            {
+                return cyclicInterface_.reverseT();
+            }
+
+            //- Return rank of component for transform
+            virtual int rank() const
+            {
+                return rank_;
+            }
 };
 
 

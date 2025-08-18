@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,38 +31,38 @@ License
 // Calculates per point the neighbour data (= pointCells)
 void Foam::CPCCellToCellStencil::calcPointBoundaryData
 (
-	const boolList& isValidBFace,
-	const labelList& boundaryPoints,
-	Map<labelList>& neiGlobal
+    const boolList& isValidBFace,
+    const labelList& boundaryPoints,
+    Map<labelList>& neiGlobal
 ) const
 {
-	neiGlobal.resize(2*boundaryPoints.size());
+    neiGlobal.resize(2*boundaryPoints.size());
 
-	labelHashSet pointGlobals;
+    labelHashSet pointGlobals;
 
-	forAll(boundaryPoints, i)
-	{
-		label pointI = boundaryPoints[i];
+    forAll(boundaryPoints, i)
+    {
+        label pointI = boundaryPoints[i];
 
-		neiGlobal.insert
-		(
-			pointI,
-			calcFaceCells
-			(
-				isValidBFace,
-				mesh().pointFaces()[pointI],
-				pointGlobals
-			)
-		);
-	}
+        neiGlobal.insert
+        (
+            pointI,
+            calcFaceCells
+            (
+                isValidBFace,
+                mesh().pointFaces()[pointI],
+                pointGlobals
+            )
+        );
+    }
 
-	syncTools::syncPointMap
-	(
-		mesh(),
-		neiGlobal,
-		unionEqOp(),
-		false		   // apply separation
-	);
+    syncTools::syncPointMap
+    (
+        mesh(),
+        neiGlobal,
+        unionEqOp(),
+        false           // apply separation
+    );
 }
 
 
@@ -70,84 +70,84 @@ void Foam::CPCCellToCellStencil::calcPointBoundaryData
 // numbering). First element is always cell itself!
 void Foam::CPCCellToCellStencil::calcCellStencil
 (
-	labelListList& globalCellCells
+    labelListList& globalCellCells
 ) const
 {
-	// Calculate points on coupled patches
-	labelList boundaryPoints(allCoupledFacesPatch()().meshPoints());
+    // Calculate points on coupled patches
+    labelList boundaryPoints(allCoupledFacesPatch()().meshPoints());
 
 
-	// Mark boundary faces to be included in stencil (i.e. not coupled or empty)
-	boolList isValidBFace;
-	validBoundaryFaces(isValidBFace);
+    // Mark boundary faces to be included in stencil (i.e. not coupled or empty)
+    boolList isValidBFace;
+    validBoundaryFaces(isValidBFace);
 
 
-	// Swap pointCells for coupled points
-	Map<labelList> neiGlobal;
-	calcPointBoundaryData
-	(
-		isValidBFace,
-		boundaryPoints,
-		neiGlobal
-	);
+    // Swap pointCells for coupled points
+    Map<labelList> neiGlobal;
+    calcPointBoundaryData
+    (
+        isValidBFace,
+        boundaryPoints,
+        neiGlobal
+    );
 
-	globalCellCells.setSize(mesh().nCells());
+    globalCellCells.setSize(mesh().nCells());
 
-	// Do coupled points first
+    // Do coupled points first
 
-	forAll(boundaryPoints, i)
-	{
-		label pointI = boundaryPoints[i];
+    forAll(boundaryPoints, i)
+    {
+        label pointI = boundaryPoints[i];
 
-		const labelList& pGlobals = neiGlobal[pointI];
+        const labelList& pGlobals = neiGlobal[pointI];
 
-		// Distribute to all pointCells
-		const labelList& pCells = mesh().pointCells(pointI);
+        // Distribute to all pointCells
+        const labelList& pCells = mesh().pointCells(pointI);
 
-		forAll(pCells, j)
-		{
-			label cellI = pCells[j];
+        forAll(pCells, j)
+        {
+            label cellI = pCells[j];
 
-			// Insert pGlobals into globalCellCells
-			merge
-			(
-				globalNumbering().toGlobal(cellI),
-				pGlobals,
-				globalCellCells[cellI]
-			);
-		}
-	}
-	neiGlobal.clear();
+            // Insert pGlobals into globalCellCells
+            merge
+            (
+                globalNumbering().toGlobal(cellI),
+                pGlobals,
+                globalCellCells[cellI]
+            );
+        }
+    }
+    neiGlobal.clear();
 
-	// Do remaining points cells
-	labelHashSet pointGlobals;
+    // Do remaining points cells
+    labelHashSet pointGlobals;
 
-	for (label pointI = 0; pointI < mesh().nPoints(); pointI++)
-	{
-		labelList pGlobals
-		(
-			calcFaceCells
-			(
-				isValidBFace,
-				mesh().pointFaces()[pointI],
-				pointGlobals
-			)
-		);
+    for (label pointI = 0; pointI < mesh().nPoints(); pointI++)
+    {
+        labelList pGlobals
+        (
+            calcFaceCells
+            (
+                isValidBFace,
+                mesh().pointFaces()[pointI],
+                pointGlobals
+            )
+        );
 
-		const labelList& pCells = mesh().pointCells(pointI);
+        const labelList& pCells = mesh().pointCells(pointI);
 
-		forAll(pCells, j)
-		{
-			label cellI = pCells[j];
+        forAll(pCells, j)
+        {
+            label cellI = pCells[j];
 
-			merge
-			(
-				globalNumbering().toGlobal(cellI),
-				pGlobals,
-				globalCellCells[cellI]
-			);
-		}
-	}
+            merge
+            (
+                globalNumbering().toGlobal(cellI),
+                pGlobals,
+                globalCellCells[cellI]
+            );
+        }
+    }
 }
 
 
@@ -155,11 +155,11 @@ void Foam::CPCCellToCellStencil::calcCellStencil
 
 Foam::CPCCellToCellStencil::CPCCellToCellStencil(const polyMesh& mesh)
 :
-	cellToCellStencil(mesh)
+    cellToCellStencil(mesh)
 {
-	// Calculate per cell the (point) connected cells (in global numbering)
-	labelListList globalCellCells;
-	calcCellStencil(*this);
+    // Calculate per cell the (point) connected cells (in global numbering)
+    labelListList globalCellCells;
+    calcCellStencil(*this);
 }
 
 

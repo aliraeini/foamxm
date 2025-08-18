@@ -1,38 +1,38 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::CompactIOField
+    Foam::CompactIOField
 
 Description
-	A Field of objects of type \<T\> with automated input and output using
-	a compact storage. Behaves like IOField except when binary output in
-	case it writes a CompactListList.
+    A Field of objects of type \<T\> with automated input and output using
+    a compact storage. Behaves like IOField except when binary output in
+    case it writes a CompactListList.
 
-	Useful for fields of small subfields e.g. in lagrangian
+    Useful for fields of small subfields e.g. in lagrangian
 
 SourceFiles
-	CompactIOField.C
+    CompactIOField.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,71 +52,74 @@ template<class T, class BaseType> class CompactIOField;
 
 template<class T, class BaseType> Istream& operator>>
 (
-	Istream&,
-	CompactIOField<T, BaseType>&
+    Istream&,
+    CompactIOField<T, BaseType>&
 );
 
 template<class T, class BaseType> Ostream& operator<<
 (
-	Ostream&,
-	const CompactIOField<T, BaseType>&
+    Ostream&,
+    const CompactIOField<T, BaseType>&
 );
 
+/*---------------------------------------------------------------------------*\
+                        Class CompactIOField Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class T, class BaseType>
 class CompactIOField
 :
-	public regIOobject,
-	public Field<T>
+    public regIOobject,
+    public Field<T>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read according to header type
-		void readFromStream();
+        //- Read according to header type
+        void readFromStream();
 
 public:
 
-	//- Runtime type information
-	TypeName("FieldField");
+    //- Runtime type information
+    TypeName("FieldField");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from IOobject
-		CompactIOField(const IOobject&);
+        //- Construct from IOobject
+        CompactIOField(const IOobject&);
 
-		//- Construct from IOobject and size
-		CompactIOField(const IOobject&, const label);
+        //- Construct from IOobject and size
+        CompactIOField(const IOobject&, const label);
 
-		//- Construct from IOobject and a Field
-		CompactIOField(const IOobject&, const Field<T>&);
+        //- Construct from IOobject and a Field
+        CompactIOField(const IOobject&, const Field<T>&);
 
-		//- Construct by transferring the Field contents
-		CompactIOField(const IOobject&, const Xfer<Field<T> >&);
-
-
-	// Destructor
-
-		virtual ~CompactIOField();
+        //- Construct by transferring the Field contents
+        CompactIOField(const IOobject&, const Xfer<Field<T> >&);
 
 
-	// Member functions
+    // Destructor
 
-		virtual bool writeObject
-		(
-			IOstream::streamFormat,
-			IOstream::versionNumber,
-			IOstream::compressionType
-		) const;
-
-		virtual bool writeData(Ostream&) const;
+        virtual ~CompactIOField();
 
 
-	// Member operators
+    // Member functions
 
-		void operator=(const CompactIOField<T, BaseType>&);
+        virtual bool writeObject
+        (
+            IOstream::streamFormat,
+            IOstream::versionNumber,
+            IOstream::compressionType
+        ) const;
 
-		void operator=(const Field<T>&);
+        virtual bool writeData(Ostream&) const;
+
+
+    // Member operators
+
+        void operator=(const CompactIOField<T, BaseType>&);
+
+        void operator=(const Field<T>&);
 };
 
 
@@ -127,7 +130,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "CompactIOField.C"
+#   include "CompactIOField.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

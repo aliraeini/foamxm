@@ -1,25 +1,25 @@
 /*--------------------------------*- C++ -*----------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -39,10 +39,10 @@ using namespace Foam;
 //! @cond dummy
 int yyFlexLexer::yylex()
 {
-	FatalErrorIn("yyFlexLexer::yylex()")
-		<< "Should not have called this function"
-		<< abort(FatalError);
-	return 0;
+    FatalErrorIn("yyFlexLexer::yylex()")
+        << "Should not have called this function"
+        << abort(FatalError);
+    return 0;
 }
 //! @endcond dummy
 
@@ -56,7 +56,7 @@ extern "C" int yywrap()
 int yyFlexLexer::yywrap()
 #endif
 {
-	return 1;
+    return 1;
 }
 //! @endcond dummy
 
@@ -66,77 +66,77 @@ int yyFlexLexer::yywrap()
 //  The facets are within a solid/endsolid grouping
 class STLASCIILexer
 :
-	public yyFlexLexer
+    public yyFlexLexer
 {
-	// Private data
+    // Private data
 
-		bool  sorted_;
-		label groupID_;      // current solid group
-		label lineNo_;
-		word  startError_;
+        bool  sorted_;
+        label groupID_;      // current solid group
+        label lineNo_;
+        word  startError_;
 
-		DynamicList<point> points_;
-		DynamicList<label> facets_;
-		DynamicList<word>  names_;
-		DynamicList<label> sizes_;
-		HashTable<label>   lookup_;
+        DynamicList<point> points_;
+        DynamicList<label> facets_;
+        DynamicList<word>  names_;
+        DynamicList<label> sizes_;
+        HashTable<label>   lookup_;
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- From input stream and the approximate number of vertices in the STL
-		STLASCIILexer(istream* is, const label approxNpoints);
+        //- From input stream and the approximate number of vertices in the STL
+        STLASCIILexer(istream* is, const label approxNpoints);
 
 
-	// Member Functions
+    // Member Functions
 
-		//- The lexer function itself
-		int lex();
+        //- The lexer function itself
+        int lex();
 
-	// Access
+    // Access
 
-		//- Do all the solid groups appear in order
-		bool sorted() const
-		{
-			return sorted_;
-		}
+        //- Do all the solid groups appear in order
+        bool sorted() const
+        {
+            return sorted_;
+        }
 
-		//- A list of points corresponding to a pointField
-		DynamicList<point>& points()
-		{
-			return points_;
-		}
+        //- A list of points corresponding to a pointField
+        DynamicList<point>& points()
+        {
+            return points_;
+        }
 
-		//- A list of facet IDs (group IDs)
-		//  corresponds to the number of triangles
-		DynamicList<label>& facets()
-		{
-			return facets_;
-		}
+        //- A list of facet IDs (group IDs)
+        //  corresponds to the number of triangles
+        DynamicList<label>& facets()
+        {
+            return facets_;
+        }
 
-		//- Names
-		DynamicList<word>& names()
-		{
-			return names_;
-		}
+        //- Names
+        DynamicList<word>& names()
+        {
+            return names_;
+        }
 
-		//- Sizes
-		DynamicList<label>& sizes()
-		{
-			return sizes_;
-		}
+        //- Sizes
+        DynamicList<label>& sizes()
+        {
+            return sizes_;
+        }
 };
 
 
 STLASCIILexer::STLASCIILexer(istream* is, const label approxNpoints)
 :
-	yyFlexLexer(is),
-	sorted_(true),
-	groupID_(-1),
-	lineNo_(1),
-	points_(approxNpoints),
-	facets_(approxNpoints)
+    yyFlexLexer(is),
+    sorted_(true),
+    groupID_(-1),
+    lineNo_(1),
+    points_(approxNpoints),
+    facets_(approxNpoints)
 {}
 
 
@@ -191,7 +191,7 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 
 
  /* ------------------------------------------------------------------------ *\
-					  -----  Exclusive start states -----
+                      -----  Exclusive start states -----
  \* ------------------------------------------------------------------------ */
 
 %option stack
@@ -206,159 +206,159 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 %%
 
 %{
-	// End of read character pointer returned by strtof
-	// char* endPtr;
+    // End of read character pointer returned by strtof
+    // char* endPtr;
 
-	STLpoint normal;
-	STLpoint vertex;
-	label cmpt = 0;   // component index used for reading vertex
+    STLpoint normal;
+    STLpoint vertex;
+    label cmpt = 0;   // component index used for reading vertex
 
-	static const char* stateNames[7] =
-	{
-		"reading solid",
-		"reading solid name",
-		"reading facet",
-		"reading normal",
-		"reading vertices",
-		"reading vertex",
-		"error"
-	};
+    static const char* stateNames[7] =
+    {
+        "reading solid",
+        "reading solid name",
+        "reading facet",
+        "reading normal",
+        "reading vertices",
+        "reading vertex",
+        "error"
+    };
 
-	static const char* stateExpects[7] =
-	{
-		"'solid', 'color', 'facet' or 'endsolid'",
-		"<string>",
-		"'normal', 'outer loop' or 'endfacet'",
-		"<float> <float> <float>",
-		"'vertex' or 'endloop'",
-		"<float> <float> <float>",
-		""
-	};
+    static const char* stateExpects[7] =
+    {
+        "'solid', 'color', 'facet' or 'endsolid'",
+        "<string>",
+        "'normal', 'outer loop' or 'endfacet'",
+        "<float> <float> <float>",
+        "'vertex' or 'endloop'",
+        "<float> <float> <float>",
+        ""
+    };
 %}
 
 
  /* ------------------------------------------------------------------------ *\
-					        ------ Start Lexing ------
+                            ------ Start Lexing ------
  \* ------------------------------------------------------------------------ */
 
  /*                      ------ Reading control header ------                */
 
 {solid} {
-		BEGIN(readSolidName);
-	}
+        BEGIN(readSolidName);
+    }
 
 <readSolidName>{string} {
-		word name(Foam::string::validate<word>(YYText()));
+        word name(Foam::string::validate<word>(YYText()));
 
-		HashTable<label>::const_iterator fnd = lookup_.find(name);
-		if (fnd != lookup_.end())
-		{
-			if (groupID_ != fnd())
-			{
-				// group appeared out of order
-				sorted_ = false;
-			}
-			groupID_ = fnd();
-		}
-		else
-		{
-			groupID_ = sizes_.size();
-			lookup_.insert(name, groupID_);
-			names_.append(name);
-			sizes_.append(0);
-		}
-		BEGIN(INITIAL);
-	}
+        HashTable<label>::const_iterator fnd = lookup_.find(name);
+        if (fnd != lookup_.end())
+        {
+            if (groupID_ != fnd())
+            {
+                // group appeared out of order
+                sorted_ = false;
+            }
+            groupID_ = fnd();
+        }
+        else
+        {
+            groupID_ = sizes_.size();
+            lookup_.insert(name, groupID_);
+            names_.append(name);
+            sizes_.append(0);
+        }
+        BEGIN(INITIAL);
+    }
 
 <readSolidName>{space}\n {
-		word name("solid");
+        word name("solid");
 
-		HashTable<label>::const_iterator fnd = lookup_.find(name);
-		if (fnd != lookup_.end())
-		{
-			if (groupID_ != fnd())
-			{
-				// group appeared out of order
-				sorted_ = false;
-			}
-			groupID_ = fnd();
-		}
-		else
-		{
-			groupID_ = sizes_.size();
-			lookup_.insert(name, groupID_);
-			names_.append(name);
-			sizes_.append(0);
-		}
+        HashTable<label>::const_iterator fnd = lookup_.find(name);
+        if (fnd != lookup_.end())
+        {
+            if (groupID_ != fnd())
+            {
+                // group appeared out of order
+                sorted_ = false;
+            }
+            groupID_ = fnd();
+        }
+        else
+        {
+            groupID_ = sizes_.size();
+            lookup_.insert(name, groupID_);
+            names_.append(name);
+            sizes_.append(0);
+        }
 
-		lineNo_++;
-		BEGIN(INITIAL);
-	}
+        lineNo_++;
+        BEGIN(INITIAL);
+    }
 
 {color} {
-	}
+    }
 
 {facet} {
-		BEGIN(readFacet);
-	}
+        BEGIN(readFacet);
+    }
 
 <readFacet>{normal} {
-		BEGIN(readNormal);
-	}
+        BEGIN(readNormal);
+    }
 
 <readNormal>{point} {
-		/*
-		 skip reading normals:
-		 normal.x() = strtof(YYText(), &endPtr);
-		 normal.y() = strtof(endPtr, &endPtr);
-		 normal.z() = strtof(endPtr, &endPtr);
-		 normals_.append(normal);
-		 */
-		BEGIN(readFacet);
-	}
+        /*
+         skip reading normals:
+         normal.x() = strtof(YYText(), &endPtr);
+         normal.y() = strtof(endPtr, &endPtr);
+         normal.z() = strtof(endPtr, &endPtr);
+         normals_.append(normal);
+         */
+        BEGIN(readFacet);
+    }
 
 <readFacet>{outerloop} {
-		BEGIN(readVertices);
-	}
+        BEGIN(readVertices);
+    }
 
 <readVertices>{vertex} {
-		BEGIN(readVertex);
-	}
+        BEGIN(readVertex);
+    }
 
 <readVertex>{space}{signedInteger}{space} {
-		vertex[cmpt++] = atol(YYText());
+        vertex[cmpt++] = atol(YYText());
 
-		if (cmpt == 3)
-		{
-			cmpt = 0;
-			points_.append(vertex);
-			BEGIN(readVertices);
-		}
-	}
+        if (cmpt == 3)
+        {
+            cmpt = 0;
+            points_.append(vertex);
+            BEGIN(readVertices);
+        }
+    }
 
 <readVertex>{space}{float}{space} {
-		vertex[cmpt++] = atof(YYText());
+        vertex[cmpt++] = atof(YYText());
 
-		if (cmpt == 3)
-		{
-			cmpt = 0;
-			points_.append(vertex);
-			BEGIN(readVertices);
-		}
-	}
+        if (cmpt == 3)
+        {
+            cmpt = 0;
+            points_.append(vertex);
+            BEGIN(readVertices);
+        }
+    }
 
 <readVertices>{endloop} {
-		BEGIN(readFacet);
-	}
+        BEGIN(readFacet);
+    }
 
 <readFacet>{endfacet} {
-		facets_.append(groupID_);
-		sizes_[groupID_]++;
-		BEGIN(INITIAL);
-	}
+        facets_.append(groupID_);
+        sizes_[groupID_]++;
+        BEGIN(INITIAL);
+    }
 
 {endsolid} {
-	}
+    }
 
 
  /* ------------------ Ignore remaining space and \n s. -------------------- */
@@ -370,30 +370,30 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
  /* ------------------- Any other characters are errors -------------------- */
 
 <*>. {
-		startError_ = YYText();
-		yy_push_state(stlError);
-	}
+        startError_ = YYText();
+        yy_push_state(stlError);
+    }
 
 
  /* ---------------------------- Error handler ----------------------------- */
 
 <stlError>.* {
-		yy_pop_state();
-		FatalErrorIn
-		(
-			"fileFormats::STLsurfaceFormatCore::readASCII(const fileName&)"
-		)   << "while " << stateNames[YY_START] << " on line " << lineNo_ << nl
-			<< "    expected " << stateExpects[YY_START]
-			<< " but found '" << startError_.c_str() << YYText() << "'"
-			<< exit(FatalError);
-	}
+        yy_pop_state();
+        FatalErrorIn
+        (
+            "fileFormats::STLsurfaceFormatCore::readASCII(const fileName&)"
+        )   << "while " << stateNames[YY_START] << " on line " << lineNo_ << nl
+            << "    expected " << stateExpects[YY_START]
+            << " but found '" << startError_.c_str() << YYText() << "'"
+            << exit(FatalError);
+    }
 
 
  /*  ------------------------ On EOF terminate ----------------------------  */
 
 <<EOF>> {
-			yyterminate();
-	}
+            yyterminate();
+    }
 %%
 
 
@@ -402,26 +402,26 @@ endsolid              {space}("endsolid"|"ENDSOLID")({some_space}{word})*
 //
 bool Foam::fileFormats::STLsurfaceFormatCore::readASCII
 (
-	istream& is,
-	const off_t dataFileSize
+    istream& is,
+    const off_t dataFileSize
 )
 {
-	// Create the lexer with the approximate number of vertices in the STL
-	// from the file size
-	STLASCIILexer lexer(&is, dataFileSize/400);
-	while (lexer.lex() != 0) {}
+    // Create the lexer with the approximate number of vertices in the STL
+    // from the file size
+    STLASCIILexer lexer(&is, dataFileSize/400);
+    while (lexer.lex() != 0) {}
 
-	sorted_ = lexer.sorted();
+    sorted_ = lexer.sorted();
 
-	// transfer to normal lists
-	points_.transfer(lexer.points());
-	zoneIds_.transfer(lexer.facets());
-	names_.transfer(lexer.names());
-	sizes_.transfer(lexer.sizes());
+    // transfer to normal lists
+    points_.transfer(lexer.points());
+    zoneIds_.transfer(lexer.facets());
+    names_.transfer(lexer.names());
+    sizes_.transfer(lexer.sizes());
 
-	return true;
+    return true;
 }
 
  /* ------------------------------------------------------------------------ *\
-	------ End of STLfileFormatASCII.L
+    ------ End of STLfileFormatASCII.L
  \* ------------------------------------------------------------------------ */

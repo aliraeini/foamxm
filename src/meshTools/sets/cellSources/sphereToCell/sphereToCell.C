@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,17 +31,17 @@ License
 
 namespace Foam
 {
-	defineTypeNameAndDebug(sphereToCell, 0);
-	addToRunTimeSelectionTable(topoSetSource, sphereToCell, word);
-	addToRunTimeSelectionTable(topoSetSource, sphereToCell, istream);
+    defineTypeNameAndDebug(sphereToCell, 0);
+    addToRunTimeSelectionTable(topoSetSource, sphereToCell, word);
+    addToRunTimeSelectionTable(topoSetSource, sphereToCell, istream);
 }
 
 
 Foam::topoSetSource::addToUsageTable Foam::sphereToCell::usage_
 (
-	sphereToCell::typeName,
-	"\n    Usage: sphereToCell (centreX centreY centreZ) radius\n\n"
-	"    Select all cells with cellCentre within bounding sphere\n\n"
+    sphereToCell::typeName,
+    "\n    Usage: sphereToCell (centreX centreY centreZ) radius\n\n"
+    "    Select all cells with cellCentre within bounding sphere\n\n"
 );
 
 
@@ -49,18 +49,18 @@ Foam::topoSetSource::addToUsageTable Foam::sphereToCell::usage_
 
 void Foam::sphereToCell::combine(topoSet& set, const bool add) const
 {
-	const pointField& ctrs = mesh_.cellCentres();
+    const pointField& ctrs = mesh_.cellCentres();
 
-	const scalar radSquared = radius_*radius_;
+    const scalar radSquared = radius_*radius_;
 
-	forAll(ctrs, cellI)
-	{
-		scalar offset = magSqr(centre_ - ctrs[cellI]);
-		if (offset <= radSquared)
-		{
-			addOrDelete(set, cellI, add);
-		}
-	}
+    forAll(ctrs, cellI)
+    {
+        scalar offset = magSqr(centre_ - ctrs[cellI]);
+        if (offset <= radSquared)
+        {
+            addOrDelete(set, cellI, add);
+        }
+    }
 }
 
 
@@ -68,39 +68,39 @@ void Foam::sphereToCell::combine(topoSet& set, const bool add) const
 
 Foam::sphereToCell::sphereToCell
 (
-	const polyMesh& mesh,
-	const vector& centre,
-	const scalar radius
+    const polyMesh& mesh,
+    const vector& centre,
+    const scalar radius
 )
 :
-	topoSetSource(mesh),
-	centre_(centre),
-	radius_(radius)
+    topoSetSource(mesh),
+    centre_(centre),
+    radius_(radius)
 {}
 
 
 Foam::sphereToCell::sphereToCell
 (
-	const polyMesh& mesh,
-	const dictionary& dict
+    const polyMesh& mesh,
+    const dictionary& dict
 )
 :
-	topoSetSource(mesh),
-	centre_(dict.lookup("centre")),
-	radius_(readScalar(dict.lookup("radius")))
+    topoSetSource(mesh),
+    centre_(dict.lookup("centre")),
+    radius_(readScalar(dict.lookup("radius")))
 {}
 
 
 // Construct from Istream
 Foam::sphereToCell::sphereToCell
 (
-	const polyMesh& mesh,
-	Istream& is
+    const polyMesh& mesh,
+    Istream& is
 )
 :
-	topoSetSource(mesh),
-	centre_(checkIs(is)),
-	radius_(readScalar(checkIs(is)))
+    topoSetSource(mesh),
+    centre_(checkIs(is)),
+    radius_(readScalar(checkIs(is)))
 {}
 
 
@@ -114,24 +114,24 @@ Foam::sphereToCell::~sphereToCell()
 
 void Foam::sphereToCell::applyToSet
 (
-	const topoSetSource::setAction action,
-	topoSet& set
+    const topoSetSource::setAction action,
+    topoSet& set
 ) const
 {
-	if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
-	{
-		Info<< "    Adding cells with centre within sphere, with centre = "
-			<< centre_ << " and radius = " << radius_ << endl;
+    if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
+    {
+        Info<< "    Adding cells with centre within sphere, with centre = "
+            << centre_ << " and radius = " << radius_ << endl;
 
-		combine(set, true);
-	}
-	else if (action == topoSetSource::DELETE)
-	{
-		Info<< "    Removing cells with centre within sphere, with centre = "
-			<< centre_ << " and radius = " << radius_ << endl;
+        combine(set, true);
+    }
+    else if (action == topoSetSource::DELETE)
+    {
+        Info<< "    Removing cells with centre within sphere, with centre = "
+            << centre_ << " and radius = " << radius_ << endl;
 
-		combine(set, false);
-	}
+        combine(set, false);
+    }
 }
 
 

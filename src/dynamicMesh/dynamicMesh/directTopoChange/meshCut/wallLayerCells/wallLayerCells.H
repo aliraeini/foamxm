@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::wallLayerCells
+    Foam::wallLayerCells
 
 Description
-	After construction is a list of \<refineCell\> of cells within a certain
-	distance to the wall and with the wall normal direction.
+    After construction is a list of \<refineCell\> of cells within a certain
+    distance to the wall and with the wall normal direction.
 
 SourceFiles
-	wallLayerCells.C
+    wallLayerCells.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,32 +46,35 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class wallLayerCells Declaration
+\*---------------------------------------------------------------------------*/
 
 class wallLayerCells
 :
-	public edgeVertex,
-	public List<refineCell>
+    public edgeVertex,
+    public List<refineCell>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Check if any of the faces of cellI is on processorPatch
-		bool usesCoupledPatch(const label cellI) const;
+        //- Check if any of the faces of cellI is on processorPatch
+        bool usesCoupledPatch(const label cellI) const;
 
 public:
 
-	//- Runtime type information
-	ClassName("wallLayerCells");
+    //- Runtime type information
+    ClassName("wallLayerCells");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		wallLayerCells
-		(
-			const polyMesh& mesh,
-			const wordList& patchNames,
-			const label nLayers
-		);
+        //- Construct from components
+        wallLayerCells
+        (
+            const polyMesh& mesh,
+            const wordList& patchNames,
+            const label nLayers
+        );
 };
 
 

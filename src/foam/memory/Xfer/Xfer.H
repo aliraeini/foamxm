@@ -1,69 +1,69 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::Xfer
+    Foam::Xfer
 
 Description
-	A simple container for copying or transferring objects of type \<T\>.
+    A simple container for copying or transferring objects of type \<T\>.
 
-	The wrapped object of type \<T\> must implement a transfer() method and
-	an operator=() copy method.
+    The wrapped object of type \<T\> must implement a transfer() method and
+    an operator=() copy method.
 
-	Since it is decided upon construction of the Xfer object whether the
-	parameter is to be copied or transferred, the contents of the resulting
-	Xfer object can be transferred unconditionally. This greatly simplifies
-	defining constructors or methods in other classes with mixed
-	transfer/copy semantics without requiring 2^N different versions.
+    Since it is decided upon construction of the Xfer object whether the
+    parameter is to be copied or transferred, the contents of the resulting
+    Xfer object can be transferred unconditionally. This greatly simplifies
+    defining constructors or methods in other classes with mixed
+    transfer/copy semantics without requiring 2^N different versions.
 
-	When transferring between dissimilar types, the xferCopyTo() and
-	xferMoveTo() functions can prove useful. An example is transferring
-	from a DynamicList to a List.  Since the
-	List\<T\>::transfer(List\<T\>&) method could result in some allocated
-	memory becoming inaccessible, the xferMoveTo() function should be used to
-	invoke the correct List\<T\>::transfer(DynamicList\<T\>&) method.
+    When transferring between dissimilar types, the xferCopyTo() and
+    xferMoveTo() functions can prove useful. An example is transferring
+    from a DynamicList to a List.  Since the
+    List\<T\>::transfer(List\<T\>&) method could result in some allocated
+    memory becoming inaccessible, the xferMoveTo() function should be used to
+    invoke the correct List\<T\>::transfer(DynamicList\<T\>&) method.
 
-	@code
-		dynamicLabelList dynLst;
-		...
-		labelList plainLst( xferMoveTo<labelList>(dynLst) );
-	@endcode
+    @code
+        dynamicLabelList dynLst;
+        ...
+        labelList plainLst( xferMoveTo<labelList>(dynLst) );
+    @endcode
 
-	Of course, since this example is a very common operation, the
-	DynamicList::xfer() method transfers to a plain List anyhow.
-	It would thus be simpler (and clearer) just to use the following code:
+    Of course, since this example is a very common operation, the
+    DynamicList::xfer() method transfers to a plain List anyhow.
+    It would thus be simpler (and clearer) just to use the following code:
 
-	@code
-		dynamicLabelList dynLst;
-		...
-		labelList plainLst(dynLst.xfer());
-	@endcode
+    @code
+        dynamicLabelList dynLst;
+        ...
+        labelList plainLst(dynLst.xfer());
+    @endcode
 
 SeeAlso
-	xferCopy, xferCopyTo, xferMove, xferMoveTo, xferTmp
+    xferCopy, xferCopyTo, xferMove, xferMoveTo, xferTmp
 
 SourceFiles
-	XferI.H
+    XferI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -78,61 +78,65 @@ namespace Foam
 // Forward declaration of classes
 template<class T> class tmp;
 
+/*---------------------------------------------------------------------------*\
+                           Class Xfer Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class T>
 class Xfer
 {
-	// Private data
+    // Private data
 
-		//- Pointer to underlying datatype
-		mutable T* ptr_;
+        //- Pointer to underlying datatype
+        mutable T* ptr_;
 
 public:
 
-	// Static data members
+    // Static data members
 
-		//- Empty Xfer
-		static const Xfer<T> zero;
+        //- Empty Xfer
+        static const Xfer<T> zero;
 
-		operator const T*() const { return ptr_; }
-		 const T* operator&() const { return ptr_; }
-	// Constructors
+        // AQR hack?
+        operator const T*() const { return ptr_; }
+        const T* operator&() const { return ptr_; }
+    // Constructors
 
-		//- Store object pointer and manage its deletion
-		//  Can also be used later to transfer by assignment
-		inline explicit Xfer(T* = 0);
+        //- Store object pointer and manage its deletion
+        //  Can also be used later to transfer by assignment
+        inline explicit Xfer(T* = 0);
 
-		//- Construct by copying or by transferring the parameter contents
-		inline explicit Xfer(T&, bool allowTransfer=false);
+        //- Construct by copying or by transferring the parameter contents
+        inline explicit Xfer(T&, bool allowTransfer=false);
 
-		//- Construct by copying the parameter contents
-		inline explicit Xfer(const T&);
+        //- Construct by copying the parameter contents
+        inline explicit Xfer(const T&);
 
-		//- Construct by transferring the contents
-		inline Xfer(const Xfer<T>&);
+        //- Construct by transferring the contents
+        inline Xfer(const Xfer<T>&);
 
-	// Destructor
+    // Destructor
 
-		inline ~Xfer();
+        inline ~Xfer();
 
-	// Member Functions
+    // Member Functions
 
-		//- Return a null object reference
-		inline static const Xfer<T>& null();
+        //- Return a null object reference
+        inline static const Xfer<T>& null();
 
-	// Member Operators
+    // Member Operators
 
-		//- Transfer the contents into the object
-		inline void operator=(T&);
+        //- Transfer the contents into the object
+        inline void operator=(T&);
 
-		//- Transfer the contents into the object
-		inline void operator=(const Xfer<T>&);
+        //- Transfer the contents into the object
+        inline void operator=(const Xfer<T>&);
 
-		//- Reference to the underlying datatype
-		inline T& operator()() const;
+        //- Reference to the underlying datatype
+        inline T& operator()() const;
 
-		//- Pointer to the underlying datatype
-		inline T* operator->() const;
+        //- Pointer to the underlying datatype
+        inline T* operator->() const;
 
 };
 

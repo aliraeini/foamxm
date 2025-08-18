@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -232,218 +232,218 @@ Description
 
 void Foam::surfaceSets::getSurfaceSets
 (
-	const polyMesh& mesh,
-	const fileName&,
-	const triSurface&,
-	const triSurfaceSearch& querySurf,
-	const pointField& outsidePts,
+    const polyMesh& mesh,
+    const fileName&,
+    const triSurface&,
+    const triSurfaceSearch& querySurf,
+    const pointField& outsidePts,
 
-	const label nCutLayers,
+    const label nCutLayers,
 
-	labelHashSet& inside,
-	labelHashSet& outside,
-	labelHashSet& cut
+    labelHashSet& inside,
+    labelHashSet& outside,
+    labelHashSet& cut
 )
 {
-	// Construct search engine on mesh
-	meshSearch queryMesh(mesh, true);
+    // Construct search engine on mesh
+    meshSearch queryMesh(mesh, true);
 
 
-	// Check all 'outside' points
-	forAll(outsidePts, outsideI)
-	{
-		const point& outsidePoint = outsidePts[outsideI];
+    // Check all 'outside' points
+    forAll(outsidePts, outsideI)
+    {
+        const point& outsidePoint = outsidePts[outsideI];
 
-		// Find cell point is in. Linear search.
-		if (queryMesh.findCell(outsidePoint, -1, false) == -1)
-		{
-			FatalErrorIn
-			(
-				"surfaceSets::getSurfaceSets"
-				"(const polyMesh&, const fileName&, const triSurface&"
-				", const triSurfaceSearch&, const pointField&"
-				", labelHashSet&, labelHashSet&, labelHashSet&)"
-			)   << "outsidePoint " << outsidePoint
-				<< " is not inside any cell"
-				<< exit(FatalError);
-		}
-	}
+        // Find cell point is in. Linear search.
+        if (queryMesh.findCell(outsidePoint, -1, false) == -1)
+        {
+            FatalErrorIn
+            (
+                "surfaceSets::getSurfaceSets"
+                "(const polyMesh&, const fileName&, const triSurface&"
+                ", const triSurfaceSearch&, const pointField&"
+                ", labelHashSet&, labelHashSet&, labelHashSet&)"
+            )   << "outsidePoint " << outsidePoint
+                << " is not inside any cell"
+                << exit(FatalError);
+        }
+    }
 
-	// Cut faces with surface and classify cells
-	cellClassification cellType
-	(
-		mesh,
-		queryMesh,
-		querySurf,
-		outsidePts
-	);
+    // Cut faces with surface and classify cells
+    cellClassification cellType
+    (
+        mesh,
+        queryMesh,
+        querySurf,
+        outsidePts
+    );
 
-	if (nCutLayers > 0)
-	{
-		// Trim cutCells so they are max nCutLayers away (as seen in point-cell
-		// walk) from outside cells.
-		cellType.trimCutCells
-		(
-			nCutLayers,
-			cellClassification::OUTSIDE,
-			cellClassification::INSIDE
-		);
-	}
+    if (nCutLayers > 0)
+    {
+        // Trim cutCells so they are max nCutLayers away (as seen in point-cell
+        // walk) from outside cells.
+        cellType.trimCutCells
+        (
+            nCutLayers,
+            cellClassification::OUTSIDE,
+            cellClassification::INSIDE
+        );
+    }
 
-	forAll(cellType, cellI)
-	{
-		label cType = cellType[cellI];
+    forAll(cellType, cellI)
+    {
+        label cType = cellType[cellI];
 
-		if (cType == cellClassification::CUT)
-		{
-			cut.insert(cellI);
-		}
-		else if (cType == cellClassification::INSIDE)
-		{
-			inside.insert(cellI);
-		}
-		else if (cType == cellClassification::OUTSIDE)
-		{
-			outside.insert(cellI);
-		}
-	}
+        if (cType == cellClassification::CUT)
+        {
+            cut.insert(cellI);
+        }
+        else if (cType == cellClassification::INSIDE)
+        {
+            inside.insert(cellI);
+        }
+        else if (cType == cellClassification::OUTSIDE)
+        {
+            outside.insert(cellI);
+        }
+    }
 }
 
 
 Foam::labelHashSet Foam::surfaceSets::getHangingCells
 (
-	const primitiveMesh& mesh,
-	const labelHashSet& internalCells
+    const primitiveMesh& mesh,
+    const labelHashSet& internalCells
 )
 {
-	const cellList& cells = mesh.cells();
-	const faceList& faces = mesh.faces();
+    const cellList& cells = mesh.cells();
+    const faceList& faces = mesh.faces();
 
 
-	// Divide points into
-	// -referenced by internal only
-	// -referenced by outside only
-	// -mixed
+    // Divide points into
+    // -referenced by internal only
+    // -referenced by outside only
+    // -mixed
 
-	List<pointStatus> pointSide(mesh.nPoints(), NOTSET);
+    List<pointStatus> pointSide(mesh.nPoints(), NOTSET);
 
-	for (label cellI = 0; cellI < mesh.nCells(); cellI++)
-	{
-		if (internalCells.found(cellI))
-		{
-			// Inside cell. Mark all vertices seen from this cell.
-			const labelList& cFaces = cells[cellI];
+    for (label cellI = 0; cellI < mesh.nCells(); cellI++)
+    {
+        if (internalCells.found(cellI))
+        {
+            // Inside cell. Mark all vertices seen from this cell.
+            const labelList& cFaces = cells[cellI];
 
-			forAll(cFaces, cFaceI)
-			{
-				const face& f = faces[cFaces[cFaceI]];
+            forAll(cFaces, cFaceI)
+            {
+                const face& f = faces[cFaces[cFaceI]];
 
-				forAll(f, fp)
-				{
-					label pointI = f[fp];
+                forAll(f, fp)
+                {
+                    label pointI = f[fp];
 
-					if (pointSide[pointI] == NOTSET)
-					{
-					    pointSide[pointI] = INSIDE;
-					}
-					else if (pointSide[pointI] == OUTSIDE)
-					{
-					    pointSide[pointI] = MIXED;
-					}
-					else
-					{
-					    // mixed or inside stay same
-					}
-				}
-			}
-		}
-		else
-		{
-			// Outside cell
-			const labelList& cFaces = cells[cellI];
+                    if (pointSide[pointI] == NOTSET)
+                    {
+                        pointSide[pointI] = INSIDE;
+                    }
+                    else if (pointSide[pointI] == OUTSIDE)
+                    {
+                        pointSide[pointI] = MIXED;
+                    }
+                    else
+                    {
+                        // mixed or inside stay same
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Outside cell
+            const labelList& cFaces = cells[cellI];
 
-			forAll(cFaces, cFaceI)
-			{
-				const face& f = faces[cFaces[cFaceI]];
+            forAll(cFaces, cFaceI)
+            {
+                const face& f = faces[cFaces[cFaceI]];
 
-				forAll(f, fp)
-				{
-					label pointI = f[fp];
+                forAll(f, fp)
+                {
+                    label pointI = f[fp];
 
-					if (pointSide[pointI] == NOTSET)
-					{
-					    pointSide[pointI] = OUTSIDE;
-					}
-					else if (pointSide[pointI] == INSIDE)
-					{
-					    pointSide[pointI] = MIXED;
-					}
-					else
-					{
-					    // mixed or outside stay same
-					}
-				}
-			}
-		}
-	}
-
-
-	//OFstream mixedStr("mixed.obj");
-	//
-	//forAll(pointSide, pointI)
-	//{
-	//    if (pointSide[pointI] == MIXED)
-	//    {
-	//        const point& pt = points[pointI];
-	//
-	//        mixedStr << "v " << pt.x() << ' ' << pt.y() << ' ' << pt.z()
-	//            << endl;
-	//    }
-	//}
+                    if (pointSide[pointI] == NOTSET)
+                    {
+                        pointSide[pointI] = OUTSIDE;
+                    }
+                    else if (pointSide[pointI] == INSIDE)
+                    {
+                        pointSide[pointI] = MIXED;
+                    }
+                    else
+                    {
+                        // mixed or outside stay same
+                    }
+                }
+            }
+        }
+    }
 
 
-	// Determine cells using mixed points only
+    //OFstream mixedStr("mixed.obj");
+    //
+    //forAll(pointSide, pointI)
+    //{
+    //    if (pointSide[pointI] == MIXED)
+    //    {
+    //        const point& pt = points[pointI];
+    //
+    //        mixedStr << "v " << pt.x() << ' ' << pt.y() << ' ' << pt.z()
+    //            << endl;
+    //    }
+    //}
 
-	labelHashSet mixedOnlyCells(internalCells.size());
 
-	for
-	(
-		labelHashSet::const_iterator iter = internalCells.begin();
-		iter != internalCells.end();
-		++iter
-	)
-	{
-		label cellI = iter.key();
+    // Determine cells using mixed points only
 
-		const cell& cFaces = cells[cellI];
+    labelHashSet mixedOnlyCells(internalCells.size());
 
-		label usesMixedOnly = true;
+    for
+    (
+        labelHashSet::const_iterator iter = internalCells.begin();
+        iter != internalCells.end();
+        ++iter
+    )
+    {
+        label cellI = iter.key();
 
-		forAll(cFaces, i)
-		{
-			const face& f = faces[cFaces[i]];
+        const cell& cFaces = cells[cellI];
 
-			forAll(f, fp)
-			{
-				if (pointSide[f[fp]] != MIXED)
-				{
-					usesMixedOnly = false;
-					break;
-				}
-			}
+        label usesMixedOnly = true;
 
-			if (!usesMixedOnly)
-			{
-				break;
-			}
-		}
-		if (usesMixedOnly)
-		{
-			mixedOnlyCells.insert(cellI);
-		}
-	}
+        forAll(cFaces, i)
+        {
+            const face& f = faces[cFaces[i]];
 
-	return mixedOnlyCells;
+            forAll(f, fp)
+            {
+                if (pointSide[f[fp]] != MIXED)
+                {
+                    usesMixedOnly = false;
+                    break;
+                }
+            }
+
+            if (!usesMixedOnly)
+            {
+                break;
+            }
+        }
+        if (usesMixedOnly)
+        {
+            mixedOnlyCells.insert(cellI);
+        }
+    }
+
+    return mixedOnlyCells;
 }
 
 

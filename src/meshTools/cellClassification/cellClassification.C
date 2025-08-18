@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -40,7 +40,7 @@ Description
 
 namespace Foam
 {
-	defineTypeNameAndDebug(cellClassification, 0);
+    defineTypeNameAndDebug(cellClassification, 0);
 }
 
 
@@ -48,20 +48,20 @@ namespace Foam
 
 Foam::label Foam::cellClassification::count
 (
-	const labelList& elems,
-	const label elem
+    const labelList& elems,
+    const label elem
 )
 {
-	label cnt = 0;
+    label cnt = 0;
 
-	forAll(elems, elemI)
-	{
-		if (elems[elemI] == elem)
-		{
-			cnt++;
-		}
-	}
-	return cnt;
+    forAll(elems, elemI)
+    {
+        if (elems[elemI] == elem)
+        {
+            cnt++;
+        }
+    }
+    return cnt;
 }
 
 
@@ -72,170 +72,170 @@ Foam::label Foam::cellClassification::count
 // faces are pierced.
 Foam::boolList Foam::cellClassification::markFaces
 (
-	const triSurfaceSearch& search
+    const triSurfaceSearch& search
 ) const
 {
-	cpuTime timer;
+    cpuTime timer;
 
-	boolList cutFace(mesh_.nFaces(), false);
+    boolList cutFace(mesh_.nFaces(), false);
 
-	label nCutFaces = 0;
+    label nCutFaces = 0;
 
-	// Intersect mesh edges with surface (is fast) and mark all faces that
-	// use edge.
+    // Intersect mesh edges with surface (is fast) and mark all faces that
+    // use edge.
 
-	forAll(mesh_.edges(), edgeI)
-	{
-		if (debug && (edgeI % 10000 == 0))
-		{
-			Pout<< "Intersecting mesh edge " << edgeI << " with surface"
-				<< endl;
-		}
+    forAll(mesh_.edges(), edgeI)
+    {
+        if (debug && (edgeI % 10000 == 0))
+        {
+            Pout<< "Intersecting mesh edge " << edgeI << " with surface"
+                << endl;
+        }
 
-		const edge& e = mesh_.edges()[edgeI];
+        const edge& e = mesh_.edges()[edgeI];
 
-		const point& p0 = mesh_.points()[e.start()];
-		const point& p1 = mesh_.points()[e.end()];
+        const point& p0 = mesh_.points()[e.start()];
+        const point& p1 = mesh_.points()[e.end()];
 
-		pointIndexHit pHit(search.tree().findLineAny(p0, p1));
+        pointIndexHit pHit(search.tree().findLineAny(p0, p1));
 
-		if (pHit.hit())
-		{
-			const labelList& myFaces = mesh_.edgeFaces()[edgeI];
+        if (pHit.hit())
+        {
+            const labelList& myFaces = mesh_.edgeFaces()[edgeI];
 
-			forAll(myFaces, myFaceI)
-			{
-				label faceI = myFaces[myFaceI];
+            forAll(myFaces, myFaceI)
+            {
+                label faceI = myFaces[myFaceI];
 
-				if (!cutFace[faceI])
-				{
-					cutFace[faceI] = true;
+                if (!cutFace[faceI])
+                {
+                    cutFace[faceI] = true;
 
-					nCutFaces++;
-				}
-			}
-		}
-	}
+                    nCutFaces++;
+                }
+            }
+        }
+    }
 
-	if (debug)
-	{
-		Pout<< "Intersected edges of mesh with surface in = "
-			<< timer.cpuTimeIncrement() << " s\n" << endl << endl;
-	}
+    if (debug)
+    {
+        Pout<< "Intersected edges of mesh with surface in = "
+            << timer.cpuTimeIncrement() << " s\n" << endl << endl;
+    }
 
-	//
-	// Construct octree on faces that have not yet been marked as cut
-	//
+    //
+    // Construct octree on faces that have not yet been marked as cut
+    //
 
-	labelList allFaces(mesh_.nFaces() - nCutFaces);
+    labelList allFaces(mesh_.nFaces() - nCutFaces);
 
-	label allFaceI = 0;
+    label allFaceI = 0;
 
-	forAll(cutFace, faceI)
-	{
-		if (!cutFace[faceI])
-		{
-			allFaces[allFaceI++] = faceI;
-		}
-	}
+    forAll(cutFace, faceI)
+    {
+        if (!cutFace[faceI])
+        {
+            allFaces[allFaceI++] = faceI;
+        }
+    }
 
-	if (debug)
-	{
-		Pout<< "Testing " << allFaceI << " faces for piercing by surface"
-			<< endl;
-	}
+    if (debug)
+    {
+        Pout<< "Testing " << allFaceI << " faces for piercing by surface"
+            << endl;
+    }
 
-	treeBoundBox allBb(mesh_.points());
+    treeBoundBox allBb(mesh_.points());
 
-	// Extend domain slightly (also makes it 3D if was 2D)
-	scalar tol = 1e-6*allBb.avgDim();
+    // Extend domain slightly (also makes it 3D if was 2D)
+    scalar tol = 1e-6*allBb.avgDim();
 
-	point& bbMin = allBb.min();
-	bbMin.x() -= tol;
-	bbMin.y() -= tol;
-	bbMin.z() -= tol;
+    point& bbMin = allBb.min();
+    bbMin.x() -= tol;
+    bbMin.y() -= tol;
+    bbMin.z() -= tol;
 
-	point& bbMax = allBb.max();
-	bbMax.x() += 2*tol;
-	bbMax.y() += 2*tol;
-	bbMax.z() += 2*tol;
+    point& bbMax = allBb.max();
+    bbMax.x() += 2*tol;
+    bbMax.y() += 2*tol;
+    bbMax.z() += 2*tol;
 
-	indexedOctree<treeDataFace> faceTree
-	(
-		treeDataFace(false, mesh_, allFaces),
-		allBb,      // overall search domain
-		8,          // maxLevel
-		10,         // leafsize
-		3.0         // duplicity
-	);
+    indexedOctree<treeDataFace> faceTree
+    (
+        treeDataFace(false, mesh_, allFaces),
+        allBb,      // overall search domain
+        8,          // maxLevel
+        10,         // leafsize
+        3.0         // duplicity
+    );
 
-	const triSurface& surf = search.surface();
-	const edgeList& edges = surf.edges();
-	const pointField& localPoints = surf.localPoints();
+    const triSurface& surf = search.surface();
+    const edgeList& edges = surf.edges();
+    const pointField& localPoints = surf.localPoints();
 
-	label nAddFaces = 0;
+    label nAddFaces = 0;
 
-	forAll(edges, edgeI)
-	{
-		if (debug && (edgeI % 10000 == 0))
-		{
-			Pout<< "Intersecting surface edge " << edgeI
-				<< " with mesh faces" << endl;
-		}
-		const edge& e = edges[edgeI];
+    forAll(edges, edgeI)
+    {
+        if (debug && (edgeI % 10000 == 0))
+        {
+            Pout<< "Intersecting surface edge " << edgeI
+                << " with mesh faces" << endl;
+        }
+        const edge& e = edges[edgeI];
 
-		const point& start = localPoints[e.start()];
-		const point& end = localPoints[e.end()];
+        const point& start = localPoints[e.start()];
+        const point& end = localPoints[e.end()];
 
-		vector edgeNormal(end - start);
-		const scalar edgeMag = mag(edgeNormal);
-		const vector smallVec = 1E-9*edgeNormal;
+        vector edgeNormal(end - start);
+        const scalar edgeMag = mag(edgeNormal);
+        const vector smallVec = 1E-9*edgeNormal;
 
-		edgeNormal /= edgeMag+VSMALL;
+        edgeNormal /= edgeMag+VSMALL;
 
-		// Current start of pierce test
-		point pt = start;
+        // Current start of pierce test
+        point pt = start;
 
-		while (true)
-		{
-			pointIndexHit pHit(faceTree.findLine(pt, end));
+        while (true)
+        {
+            pointIndexHit pHit(faceTree.findLine(pt, end));
 
-			if (!pHit.hit())
-			{
-				break;
-			}
-			else
-			{
-				label faceI = faceTree.shapes().faceLabels()[pHit.index()];
+            if (!pHit.hit())
+            {
+                break;
+            }
+            else
+            {
+                label faceI = faceTree.shapes().faceLabels()[pHit.index()];
 
-				if (!cutFace[faceI])
-				{
-					cutFace[faceI] = true;
+                if (!cutFace[faceI])
+                {
+                    cutFace[faceI] = true;
 
-					nAddFaces++;
-				}
+                    nAddFaces++;
+                }
 
-				// Restart from previous endpoint
-				pt = pHit.hitPoint() + smallVec;
+                // Restart from previous endpoint
+                pt = pHit.hitPoint() + smallVec;
 
-				if (((pt-start) & edgeNormal) >= edgeMag)
-				{
-					break;
-				}
-			}
-		}
-	}
+                if (((pt-start) & edgeNormal) >= edgeMag)
+                {
+                    break;
+                }
+            }
+        }
+    }
 
-	if (debug)
-	{
-		Pout<< "Detected an additional " << nAddFaces << " faces cut"
-			<< endl;
+    if (debug)
+    {
+        Pout<< "Detected an additional " << nAddFaces << " faces cut"
+            << endl;
 
-		Pout<< "Intersected edges of surface with mesh faces in = "
-			<< timer.cpuTimeIncrement() << " s\n" << endl << endl;
-	}
+        Pout<< "Intersected edges of surface with mesh faces in = "
+            << timer.cpuTimeIncrement() << " s\n" << endl << endl;
+    }
 
-	return cutFace;
+    return cutFace;
 }
 
 
@@ -244,232 +244,232 @@ Foam::boolList Foam::cellClassification::markFaces
 // 'outside'
 void Foam::cellClassification::markCells
 (
-	const meshSearch& queryMesh,
-	const boolList& piercedFace,
-	const pointField& outsidePts
+    const meshSearch& queryMesh,
+    const boolList& piercedFace,
+    const pointField& outsidePts
 )
 {
-	// Use meshwave to partition mesh, starting from outsidePt
+    // Use meshwave to partition mesh, starting from outsidePt
 
 
-	// Construct null; sets type to NOTSET
-	List<cellInfo> cellInfoList(mesh_.nCells());
+    // Construct null; sets type to NOTSET
+    List<cellInfo> cellInfoList(mesh_.nCells());
 
-	// Mark cut cells first
-	forAll(piercedFace, faceI)
-	{
-		if (piercedFace[faceI])
-		{
-			cellInfoList[mesh_.faceOwner()[faceI]] =
-				cellInfo(cellClassification::CUT);
+    // Mark cut cells first
+    forAll(piercedFace, faceI)
+    {
+        if (piercedFace[faceI])
+        {
+            cellInfoList[mesh_.faceOwner()[faceI]] =
+                cellInfo(cellClassification::CUT);
 
-			if (mesh_.isInternalFace(faceI))
-			{
-				cellInfoList[mesh_.faceNeighbour()[faceI]] =
-					cellInfo(cellClassification::CUT);
-			}
-		}
-	}
+            if (mesh_.isInternalFace(faceI))
+            {
+                cellInfoList[mesh_.faceNeighbour()[faceI]] =
+                    cellInfo(cellClassification::CUT);
+            }
+        }
+    }
 
-	//
-	// Mark cells containing outside points as being outside
-	//
+    //
+    // Mark cells containing outside points as being outside
+    //
 
-	// Coarse guess number of faces
-	labelHashSet outsideFacesMap(outsidePts.size() * 6 * 2);
+    // Coarse guess number of faces
+    labelHashSet outsideFacesMap(outsidePts.size() * 6 * 2);
 
-	forAll(outsidePts, outsidePtI)
-	{
-		// Use linear search for points.
-		label cellI = queryMesh.findCell(outsidePts[outsidePtI], -1, false);
+    forAll(outsidePts, outsidePtI)
+    {
+        // Use linear search for points.
+        label cellI = queryMesh.findCell(outsidePts[outsidePtI], -1, false);
 
-		if (cellI == -1)
-		{
-			FatalErrorIn
-			(
-				"List<cellClassification::cType> markCells"
-				"(const meshSearch&, const boolList&, const pointField&)"
-			)   << "outsidePoint " << outsidePts[outsidePtI]
-				<< " is not inside any cell"
-				<< nl << "It might be on a face or outside the geometry"
-				<< exit(FatalError);
-		}
+        if (cellI == -1)
+        {
+            FatalErrorIn
+            (
+                "List<cellClassification::cType> markCells"
+                "(const meshSearch&, const boolList&, const pointField&)"
+            )   << "outsidePoint " << outsidePts[outsidePtI]
+                << " is not inside any cell"
+                << nl << "It might be on a face or outside the geometry"
+                << exit(FatalError);
+        }
 
-		cellInfoList[cellI] = cellInfo(cellClassification::OUTSIDE);
+        cellInfoList[cellI] = cellInfo(cellClassification::OUTSIDE);
 
-		// Mark faces of cellI
-		const labelList& myFaces = mesh_.cells()[cellI];
-		forAll(myFaces, myFaceI)
-		{
-			outsideFacesMap.insert(myFaces[myFaceI]);
-		}
-	}
+        // Mark faces of cellI
+        const labelList& myFaces = mesh_.cells()[cellI];
+        forAll(myFaces, myFaceI)
+        {
+            outsideFacesMap.insert(myFaces[myFaceI]);
+        }
+    }
 
 
-	//
-	// Mark faces to start wave from
-	//
+    //
+    // Mark faces to start wave from
+    //
 
-	labelList changedFaces(outsideFacesMap.toc());
+    labelList changedFaces(outsideFacesMap.toc());
 
-	List<cellInfo> changedFacesInfo
-	(
-		changedFaces.size(),
-		cellInfo(cellClassification::OUTSIDE)
-	);
+    List<cellInfo> changedFacesInfo
+    (
+        changedFaces.size(),
+        cellInfo(cellClassification::OUTSIDE)
+    );
 
-	MeshWave<cellInfo> cellInfoCalc
-	(
-		mesh_,
-		changedFaces,                       // Labels of changed faces
-		changedFacesInfo,                   // Information on changed faces
-		cellInfoList,                       // Information on all cells
-		mesh_.globalData().nTotalCells()    // max iterations
-	);
+    MeshWave<cellInfo> cellInfoCalc
+    (
+        mesh_,
+        changedFaces,                       // Labels of changed faces
+        changedFacesInfo,                   // Information on changed faces
+        cellInfoList,                       // Information on all cells
+        mesh_.globalData().nTotalCells()    // max iterations
+    );
 
-	// Get information out of cellInfoList
-	const List<cellInfo>& allInfo = cellInfoCalc.allCellInfo();
+    // Get information out of cellInfoList
+    const List<cellInfo>& allInfo = cellInfoCalc.allCellInfo();
 
-	forAll(allInfo, cellI)
-	{
-		label t = allInfo[cellI].type();
+    forAll(allInfo, cellI)
+    {
+        label t = allInfo[cellI].type();
 
-		if (t == cellClassification::NOTSET)
-		{
-			t = cellClassification::INSIDE;
-		}
-		operator[](cellI) = t;
-	}
+        if (t == cellClassification::NOTSET)
+        {
+            t = cellClassification::INSIDE;
+        }
+        operator[](cellI) = t;
+    }
 }
 
 
 void Foam::cellClassification::classifyPoints
 (
-	const label meshType,
-	const labelList& cellType,
-	List<pointStatus>& pointSide
+    const label meshType,
+    const labelList& cellType,
+    List<pointStatus>& pointSide
 ) const
 {
-	pointSide.setSize(mesh_.nPoints());
+    pointSide.setSize(mesh_.nPoints());
 
-	forAll(mesh_.pointCells(), pointI)
-	{
-		const labelList& pCells = mesh_.pointCells()[pointI];
+    forAll(mesh_.pointCells(), pointI)
+    {
+        const labelList& pCells = mesh_.pointCells()[pointI];
 
-		pointSide[pointI] = UNSET;
+        pointSide[pointI] = UNSET;
 
-		forAll(pCells, i)
-		{
-			label type = cellType[pCells[i]];
+        forAll(pCells, i)
+        {
+            label type = cellType[pCells[i]];
 
-			if (type == meshType)
-			{
-				if (pointSide[pointI] == UNSET)
-				{
-					pointSide[pointI] = MESH;
-				}
-				else if (pointSide[pointI] == NONMESH)
-				{
-					pointSide[pointI] = MIXED;
+            if (type == meshType)
+            {
+                if (pointSide[pointI] == UNSET)
+                {
+                    pointSide[pointI] = MESH;
+                }
+                else if (pointSide[pointI] == NONMESH)
+                {
+                    pointSide[pointI] = MIXED;
 
-					break;
-				}
-			}
-			else
-			{
-				if (pointSide[pointI] == UNSET)
-				{
-					pointSide[pointI] = NONMESH;
-				}
-				else if (pointSide[pointI] == MESH)
-				{
-					pointSide[pointI] = MIXED;
+                    break;
+                }
+            }
+            else
+            {
+                if (pointSide[pointI] == UNSET)
+                {
+                    pointSide[pointI] = NONMESH;
+                }
+                else if (pointSide[pointI] == MESH)
+                {
+                    pointSide[pointI] = MIXED;
 
-					break;
-				}
-			}
-		}
-	}
+                    break;
+                }
+            }
+        }
+    }
 }
 
 
 bool Foam::cellClassification::usesMixedPointsOnly
 (
-	const List<pointStatus>& pointSide,
-	const label cellI
+    const List<pointStatus>& pointSide,
+    const label cellI
 ) const
 {
-	const faceList& faces = mesh_.faces();
+    const faceList& faces = mesh_.faces();
 
-	const cell& cFaces = mesh_.cells()[cellI];
+    const cell& cFaces = mesh_.cells()[cellI];
 
-	forAll(cFaces, cFaceI)
-	{
-		const face& f = faces[cFaces[cFaceI]];
+    forAll(cFaces, cFaceI)
+    {
+        const face& f = faces[cFaces[cFaceI]];
 
-		forAll(f, fp)
-		{
-			if (pointSide[f[fp]] != MIXED)
-			{
-				return false;
-			}
-		}
-	}
+        forAll(f, fp)
+        {
+            if (pointSide[f[fp]] != MIXED)
+            {
+                return false;
+            }
+        }
+    }
 
-	// All points are mixed.
-	return true;
+    // All points are mixed.
+    return true;
 }
 
 
 void Foam::cellClassification::getMeshOutside
 (
-	const label meshType,
-	faceList& outsideFaces,
-	labelList& outsideOwner
+    const label meshType,
+    faceList& outsideFaces,
+    labelList& outsideOwner
 ) const
 {
-	const labelList& own = mesh_.faceOwner();
-	const labelList& nbr = mesh_.faceNeighbour();
-	const faceList& faces = mesh_.faces();
+    const labelList& own = mesh_.faceOwner();
+    const labelList& nbr = mesh_.faceNeighbour();
+    const faceList& faces = mesh_.faces();
 
-	outsideFaces.setSize(mesh_.nFaces());
-	outsideOwner.setSize(mesh_.nFaces());
-	label outsideI = 0;
+    outsideFaces.setSize(mesh_.nFaces());
+    outsideOwner.setSize(mesh_.nFaces());
+    label outsideI = 0;
 
-	// Get faces on interface between meshType and non-meshType
+    // Get faces on interface between meshType and non-meshType
 
-	for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
-	{
-		label ownType = operator[](own[faceI]);
-		label nbrType = operator[](nbr[faceI]);
+    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
+    {
+        label ownType = operator[](own[faceI]);
+        label nbrType = operator[](nbr[faceI]);
 
-		if (ownType == meshType && nbrType != meshType)
-		{
-			outsideFaces[outsideI] = faces[faceI];
-			outsideOwner[outsideI] = own[faceI];    // meshType cell
-			outsideI++;
-		}
-		else if (ownType != meshType && nbrType == meshType)
-		{
-			outsideFaces[outsideI] = faces[faceI];
-			outsideOwner[outsideI] = nbr[faceI];    // meshType cell
-			outsideI++;
-		}
-	}
+        if (ownType == meshType && nbrType != meshType)
+        {
+            outsideFaces[outsideI] = faces[faceI];
+            outsideOwner[outsideI] = own[faceI];    // meshType cell
+            outsideI++;
+        }
+        else if (ownType != meshType && nbrType == meshType)
+        {
+            outsideFaces[outsideI] = faces[faceI];
+            outsideOwner[outsideI] = nbr[faceI];    // meshType cell
+            outsideI++;
+        }
+    }
 
-	// Get faces on outside of real mesh with cells of meshType.
+    // Get faces on outside of real mesh with cells of meshType.
 
-	for (label faceI = mesh_.nInternalFaces(); faceI < mesh_.nFaces(); faceI++)
-	{
-		if (operator[](own[faceI]) == meshType)
-		{
-			outsideFaces[outsideI] = faces[faceI];
-			outsideOwner[outsideI] = own[faceI];    // meshType cell
-			outsideI++;
-		}
-	}
-	outsideFaces.setSize(outsideI);
-	outsideOwner.setSize(outsideI);
+    for (label faceI = mesh_.nInternalFaces(); faceI < mesh_.nFaces(); faceI++)
+    {
+        if (operator[](own[faceI]) == meshType)
+        {
+            outsideFaces[outsideI] = faces[faceI];
+            outsideOwner[outsideI] = own[faceI];    // meshType cell
+            outsideI++;
+        }
+    }
+    outsideFaces.setSize(outsideI);
+    outsideOwner.setSize(outsideI);
 }
 
 
@@ -478,51 +478,51 @@ void Foam::cellClassification::getMeshOutside
 // Construct from mesh and surface and point(s) on outside
 Foam::cellClassification::cellClassification
 (
-	const polyMesh& mesh,
-	const meshSearch& meshQuery,
-	const triSurfaceSearch& surfQuery,
-	const pointField& outsidePoints
+    const polyMesh& mesh,
+    const meshSearch& meshQuery,
+    const triSurfaceSearch& surfQuery,
+    const pointField& outsidePoints
 )
 :
-	labelList(mesh.nCells(), cellClassification::NOTSET),
-	mesh_(mesh)
+    labelList(mesh.nCells(), cellClassification::NOTSET),
+    mesh_(mesh)
 {
-	markCells
-	(
-		meshQuery,
-		markFaces(surfQuery),
-		outsidePoints
-	);
+    markCells
+    (
+        meshQuery,
+        markFaces(surfQuery),
+        outsidePoints
+    );
 }
 
 
 // Construct from mesh and meshType.
 Foam::cellClassification::cellClassification
 (
-	const polyMesh& mesh,
-	const labelList& cellType
+    const polyMesh& mesh,
+    const labelList& cellType
 )
 :
-	labelList(cellType),
-	mesh_(mesh)
+    labelList(cellType),
+    mesh_(mesh)
 {
-	if (mesh_.nCells() != size())
-	{
-		FatalErrorIn
-		(
-			"cellClassification::cellClassification"
-			"(const polyMesh&, const labelList&)"
-		)   << "Number of elements of cellType argument is not equal to the"
-			<< " number of cells" << abort(FatalError);
-	}
+    if (mesh_.nCells() != size())
+    {
+        FatalErrorIn
+        (
+            "cellClassification::cellClassification"
+            "(const polyMesh&, const labelList&)"
+        )   << "Number of elements of cellType argument is not equal to the"
+            << " number of cells" << abort(FatalError);
+    }
 }
 
 
 // Construct as copy
 Foam::cellClassification::cellClassification(const cellClassification& cType)
 :
-	labelList(cType),
-	mesh_(cType.mesh())
+    labelList(cType),
+    mesh_(cType.mesh())
 {}
 
 
@@ -533,13 +533,13 @@ Foam::cellClassification::cellClassification(const cellClassification& cType)
 // fillType. Returns number of cells changed.
 Foam::label Foam::cellClassification::trimCutCells
 (
-	const label nLayers,
-	const label meshType,
-	const label fillType
+    const label nLayers,
+    const label meshType,
+    const label fillType
 )
 {
-	// Temporary cell type for growing.
-	labelList newCellType(*this);
+    // Temporary cell type for growing.
+    labelList newCellType(*this);
 
 //    // Split types into outside and rest
 //    forAll(*this, cellI)
@@ -556,117 +556,117 @@ Foam::label Foam::cellClassification::trimCutCells
 //        }
 //    }
 
-	newCellType = *this;
+    newCellType = *this;
 
 
-	// Do point-cell-point walk on newCellType out from meshType cells
-	for (label iter = 0; iter < nLayers; iter++)
-	{
-		// Get status of points: visible from meshType (pointSide == MESH)
-		// or fillType/cutCells cells (pointSide == NONMESH) or
-		// both (pointSide == MIXED)
-		List<pointStatus> pointSide(mesh_.nPoints());
-		classifyPoints(meshType, newCellType, pointSide);
+    // Do point-cell-point walk on newCellType out from meshType cells
+    for (label iter = 0; iter < nLayers; iter++)
+    {
+        // Get status of points: visible from meshType (pointSide == MESH)
+        // or fillType/cutCells cells (pointSide == NONMESH) or
+        // both (pointSide == MIXED)
+        List<pointStatus> pointSide(mesh_.nPoints());
+        classifyPoints(meshType, newCellType, pointSide);
 
-		// Grow layer of outside cells
-		forAll(pointSide, pointI)
-		{
-			if (pointSide[pointI] == MIXED)
-			{
-				// Make cut
-				const labelList& pCells = mesh_.pointCells()[pointI];
+        // Grow layer of outside cells
+        forAll(pointSide, pointI)
+        {
+            if (pointSide[pointI] == MIXED)
+            {
+                // Make cut
+                const labelList& pCells = mesh_.pointCells()[pointI];
 
-				forAll(pCells, i)
-				{
-					label type = newCellType[pCells[i]];
+                forAll(pCells, i)
+                {
+                    label type = newCellType[pCells[i]];
 
-					if (type == cellClassification::CUT)
-					{
-					    // Found cut cell sharing point with
-					    // mesh type cell. Grow.
-					    newCellType[pCells[i]] = meshType;
-					}
-				}
-			}
-		}
-	}
+                    if (type == cellClassification::CUT)
+                    {
+                        // Found cut cell sharing point with
+                        // mesh type cell. Grow.
+                        newCellType[pCells[i]] = meshType;
+                    }
+                }
+            }
+        }
+    }
 
-	// Merge newCellType into *this:
-	// - leave meshType cells intact
-	// - leave nonMesh cells intact
-	// - make cutcells fillType if they were not marked in newCellType
+    // Merge newCellType into *this:
+    // - leave meshType cells intact
+    // - leave nonMesh cells intact
+    // - make cutcells fillType if they were not marked in newCellType
 
-	label nChanged = 0;
+    label nChanged = 0;
 
-	forAll(newCellType, cellI)
-	{
-		if (operator[](cellI) == cellClassification::CUT)
-		{
-			if (newCellType[cellI] != meshType)
-			{
-				// Cell was cutCell but further than nLayers away from
-				// meshType. Convert to fillType.
-				operator[](cellI) = fillType;
-				nChanged++;
-			}
-		}
-	}
+    forAll(newCellType, cellI)
+    {
+        if (operator[](cellI) == cellClassification::CUT)
+        {
+            if (newCellType[cellI] != meshType)
+            {
+                // Cell was cutCell but further than nLayers away from
+                // meshType. Convert to fillType.
+                operator[](cellI) = fillType;
+                nChanged++;
+            }
+        }
+    }
 
-	return nChanged;
+    return nChanged;
 }
 
 
 // Grow surface by pointNeighbours of type meshType
 Foam::label Foam::cellClassification::growSurface
 (
-	const label meshType,
-	const label fillType
+    const label meshType,
+    const label fillType
 )
 {
-	boolList hasMeshType(mesh_.nPoints(), false);
+    boolList hasMeshType(mesh_.nPoints(), false);
 
-	// Mark points used by meshType cells
+    // Mark points used by meshType cells
 
-	forAll(mesh_.pointCells(), pointI)
-	{
-		const labelList& myCells = mesh_.pointCells()[pointI];
+    forAll(mesh_.pointCells(), pointI)
+    {
+        const labelList& myCells = mesh_.pointCells()[pointI];
 
-		// Check if one of cells has meshType
-		forAll(myCells, myCellI)
-		{
-			label type = operator[](myCells[myCellI]);
+        // Check if one of cells has meshType
+        forAll(myCells, myCellI)
+        {
+            label type = operator[](myCells[myCellI]);
 
-			if (type == meshType)
-			{
-				hasMeshType[pointI] = true;
+            if (type == meshType)
+            {
+                hasMeshType[pointI] = true;
 
-				break;
-			}
-		}
-	}
+                break;
+            }
+        }
+    }
 
-	// Change neighbours of marked points
+    // Change neighbours of marked points
 
-	label nChanged = 0;
+    label nChanged = 0;
 
-	forAll(hasMeshType, pointI)
-	{
-		if (hasMeshType[pointI])
-		{
-			const labelList& myCells = mesh_.pointCells()[pointI];
+    forAll(hasMeshType, pointI)
+    {
+        if (hasMeshType[pointI])
+        {
+            const labelList& myCells = mesh_.pointCells()[pointI];
 
-			forAll(myCells, myCellI)
-			{
-				if (operator[](myCells[myCellI]) != meshType)
-				{
-					operator[](myCells[myCellI]) = fillType;
+            forAll(myCells, myCellI)
+            {
+                if (operator[](myCells[myCellI]) != meshType)
+                {
+                    operator[](myCells[myCellI]) = fillType;
 
-					nChanged++;
-				}
-			}
-		}
-	}
-	return nChanged;
+                    nChanged++;
+                }
+            }
+        }
+    }
+    return nChanged;
 }
 
 
@@ -676,214 +676,214 @@ Foam::label Foam::cellClassification::growSurface
 // onto the surface.
 Foam::label Foam::cellClassification::fillHangingCells
 (
-	const label meshType,
-	const label fillType,
-	const label maxIter
+    const label meshType,
+    const label fillType,
+    const label maxIter
 )
 {
-	label nTotChanged = 0;
+    label nTotChanged = 0;
 
-	for(label iter = 0; iter < maxIter; iter++)
-	{
-		label nChanged = 0;
+    for(label iter = 0; iter < maxIter; iter++)
+    {
+        label nChanged = 0;
 
-		// Get status of points: visible from meshType or non-meshType cells
-		List<pointStatus> pointSide(mesh_.nPoints());
-		classifyPoints(meshType, *this, pointSide);
+        // Get status of points: visible from meshType or non-meshType cells
+        List<pointStatus> pointSide(mesh_.nPoints());
+        classifyPoints(meshType, *this, pointSide);
 
-		// Check all cells using mixed point type for whether they use mixed
-		// points only. Note: could probably speed this up by counting number
-		// of mixed verts per face and mixed faces per cell or something?
-		forAll(pointSide, pointI)
-		{
-			if (pointSide[pointI] == MIXED)
-			{
-				const labelList& pCells = mesh_.pointCells()[pointI];
+        // Check all cells using mixed point type for whether they use mixed
+        // points only. Note: could probably speed this up by counting number
+        // of mixed verts per face and mixed faces per cell or something?
+        forAll(pointSide, pointI)
+        {
+            if (pointSide[pointI] == MIXED)
+            {
+                const labelList& pCells = mesh_.pointCells()[pointI];
 
-				forAll(pCells, i)
-				{
-					label cellI = pCells[i];
+                forAll(pCells, i)
+                {
+                    label cellI = pCells[i];
 
-					if (operator[](cellI) == meshType)
-					{
-					    if (usesMixedPointsOnly(pointSide, cellI))
-					    {
-					        operator[](cellI) = fillType;
+                    if (operator[](cellI) == meshType)
+                    {
+                        if (usesMixedPointsOnly(pointSide, cellI))
+                        {
+                            operator[](cellI) = fillType;
 
-					        nChanged++;
-					    }
-					}
-				}
-			}
-		}
-		nTotChanged += nChanged;
+                            nChanged++;
+                        }
+                    }
+                }
+            }
+        }
+        nTotChanged += nChanged;
 
-		Pout<< "removeHangingCells : changed " << nChanged
-			<< " hanging cells" << endl;
+        Pout<< "removeHangingCells : changed " << nChanged
+            << " hanging cells" << endl;
 
-		if (nChanged == 0)
-		{
-			break;
-		}
-	}
+        if (nChanged == 0)
+        {
+            break;
+        }
+    }
 
-	return nTotChanged;
+    return nTotChanged;
 }
 
 
 Foam::label Foam::cellClassification::fillRegionEdges
 (
-	const label meshType,
-	const label fillType,
-	const label maxIter
+    const label meshType,
+    const label fillType,
+    const label maxIter
 )
 {
-	label nTotChanged = 0;
+    label nTotChanged = 0;
 
-	for(label iter = 0; iter < maxIter; iter++)
-	{
-		// Get interface between meshType cells and non-meshType cells as a list
-		// of faces and for each face the cell which is the meshType.
-		faceList outsideFaces;
-		labelList outsideOwner;
+    for(label iter = 0; iter < maxIter; iter++)
+    {
+        // Get interface between meshType cells and non-meshType cells as a list
+        // of faces and for each face the cell which is the meshType.
+        faceList outsideFaces;
+        labelList outsideOwner;
 
-		getMeshOutside(meshType, outsideFaces, outsideOwner);
+        getMeshOutside(meshType, outsideFaces, outsideOwner);
 
-		// Build primitivePatch out of it and check it for problems.
-		primitiveFacePatch fp(outsideFaces, mesh_.points());
+        // Build primitivePatch out of it and check it for problems.
+        primitiveFacePatch fp(outsideFaces, mesh_.points());
 
-		const labelListList& edgeFaces = fp.edgeFaces();
+        const labelListList& edgeFaces = fp.edgeFaces();
 
-		label nChanged = 0;
+        label nChanged = 0;
 
-		// Check all edgeFaces for non-manifoldness
+        // Check all edgeFaces for non-manifoldness
 
-		forAll(edgeFaces, edgeI)
-		{
-			const labelList& eFaces = edgeFaces[edgeI];
+        forAll(edgeFaces, edgeI)
+        {
+            const labelList& eFaces = edgeFaces[edgeI];
 
-			if (eFaces.size() > 2)
-			{
-				// patch connected through pinched edge. Remove first face using
-				// edge (and not yet changed)
+            if (eFaces.size() > 2)
+            {
+                // patch connected through pinched edge. Remove first face using
+                // edge (and not yet changed)
 
-				forAll(eFaces, i)
-				{
-					label patchFaceI = eFaces[i];
+                forAll(eFaces, i)
+                {
+                    label patchFaceI = eFaces[i];
 
-					label ownerCell = outsideOwner[patchFaceI];
+                    label ownerCell = outsideOwner[patchFaceI];
 
-					if (operator[](ownerCell) == meshType)
-					{
-					    operator[](ownerCell) = fillType;
+                    if (operator[](ownerCell) == meshType)
+                    {
+                        operator[](ownerCell) = fillType;
 
-					    nChanged++;
+                        nChanged++;
 
-					    break;
-					}
-				}
-			}
-		}
+                        break;
+                    }
+                }
+            }
+        }
 
-		nTotChanged += nChanged;
+        nTotChanged += nChanged;
 
-		Pout<< "fillRegionEdges : changed " << nChanged
-			<< " cells using multiply connected edges" << endl;
+        Pout<< "fillRegionEdges : changed " << nChanged
+            << " cells using multiply connected edges" << endl;
 
-		if (nChanged == 0)
-		{
-			break;
-		}
-	}
+        if (nChanged == 0)
+        {
+            break;
+        }
+    }
 
-	return nTotChanged;
+    return nTotChanged;
 }
 
 
 Foam::label Foam::cellClassification::fillRegionPoints
 (
-	const label meshType,
-	const label fillType,
-	const label maxIter
+    const label meshType,
+    const label fillType,
+    const label maxIter
 )
 {
-	label nTotChanged = 0;
+    label nTotChanged = 0;
 
-	for(label iter = 0; iter < maxIter; iter++)
-	{
-		// Get interface between meshType cells and non-meshType cells as a list
-		// of faces and for each face the cell which is the meshType.
-		faceList outsideFaces;
-		labelList outsideOwner;
+    for(label iter = 0; iter < maxIter; iter++)
+    {
+        // Get interface between meshType cells and non-meshType cells as a list
+        // of faces and for each face the cell which is the meshType.
+        faceList outsideFaces;
+        labelList outsideOwner;
 
-		getMeshOutside(meshType, outsideFaces, outsideOwner);
+        getMeshOutside(meshType, outsideFaces, outsideOwner);
 
-		// Build primitivePatch out of it and check it for problems.
-		primitiveFacePatch fp(outsideFaces, mesh_.points());
+        // Build primitivePatch out of it and check it for problems.
+        primitiveFacePatch fp(outsideFaces, mesh_.points());
 
-		labelHashSet nonManifoldPoints;
+        labelHashSet nonManifoldPoints;
 
-		// Check for non-manifold points.
-		fp.checkPointManifold(false, &nonManifoldPoints);
+        // Check for non-manifold points.
+        fp.checkPointManifold(false, &nonManifoldPoints);
 
-		const Map<label>& meshPointMap = fp.meshPointMap();
+        const Map<label>& meshPointMap = fp.meshPointMap();
 
-		label nChanged = 0;
+        label nChanged = 0;
 
-		for
-		(
-			labelHashSet::const_iterator iter = nonManifoldPoints.begin();
-			iter != nonManifoldPoints.end();
-			++iter
-		)
-		{
-			// Find a face on fp using point and remove it.
-			label patchPointI = meshPointMap[iter.key()];
+        for
+        (
+            labelHashSet::const_iterator iter = nonManifoldPoints.begin();
+            iter != nonManifoldPoints.end();
+            ++iter
+        )
+        {
+            // Find a face on fp using point and remove it.
+            label patchPointI = meshPointMap[iter.key()];
 
-			const labelList& pFaces = fp.pointFaces()[patchPointI];
+            const labelList& pFaces = fp.pointFaces()[patchPointI];
 
-			// Remove any face using conflicting point. Does first face which
-			// has not yet been done. Could be more intelligent and decide which
-			// one would be best to remove.
-			forAll(pFaces, i)
-			{
-				label patchFaceI = pFaces[i];
+            // Remove any face using conflicting point. Does first face which
+            // has not yet been done. Could be more intelligent and decide which
+            // one would be best to remove.
+            forAll(pFaces, i)
+            {
+                label patchFaceI = pFaces[i];
 
-				label ownerCell = outsideOwner[patchFaceI];
+                label ownerCell = outsideOwner[patchFaceI];
 
-				if (operator[](ownerCell) == meshType)
-				{
-					operator[](ownerCell) = fillType;
+                if (operator[](ownerCell) == meshType)
+                {
+                    operator[](ownerCell) = fillType;
 
-					nChanged++;
+                    nChanged++;
 
-					break;
-				}
-			}
-		}
+                    break;
+                }
+            }
+        }
 
-		nTotChanged += nChanged;
+        nTotChanged += nChanged;
 
-		Pout<< "fillRegionPoints : changed " << nChanged
-			<< " cells using multiply connected points" << endl;
+        Pout<< "fillRegionPoints : changed " << nChanged
+            << " cells using multiply connected points" << endl;
 
-		if (nChanged == 0)
-		{
-			break;
-		}
-	}
+        if (nChanged == 0)
+        {
+            break;
+        }
+    }
 
-	return nTotChanged;
+    return nTotChanged;
 }
 
 
 void Foam::cellClassification::writeStats(Ostream& os) const
 {
-	os  << "Cells:" << size() << endl
-		<< "    notset  : " << count(*this, NOTSET) << endl
-		<< "    cut     : " << count(*this, CUT) << endl
-		<< "    inside  : " << count(*this, INSIDE) << endl
-		<< "    outside : " << count(*this, OUTSIDE) << endl;
+    os  << "Cells:" << size() << endl
+        << "    notset  : " << count(*this, NOTSET) << endl
+        << "    cut     : " << count(*this, CUT) << endl
+        << "    inside  : " << count(*this, INSIDE) << endl
+        << "    outside : " << count(*this, OUTSIDE) << endl;
 }
 
 
@@ -891,7 +891,7 @@ void Foam::cellClassification::writeStats(Ostream& os) const
 
 void Foam::cellClassification::operator=(const Foam::cellClassification& rhs)
 {
-	labelList::operator=(rhs);
+    labelList::operator=(rhs);
 }
 
 

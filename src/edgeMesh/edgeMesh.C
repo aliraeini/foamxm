@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,44 +33,44 @@ License
 
 void Foam::edgeMesh::calcPointEdges() const
 {
-	if (pointEdgesPtr_.valid())
-	{
-		FatalErrorIn("edgeMesh::calcPointEdges() const")
-			<< "pointEdges already calculated." << abort(FatalError);
-	}
+    if (pointEdgesPtr_.valid())
+    {
+        FatalErrorIn("edgeMesh::calcPointEdges() const")
+            << "pointEdges already calculated." << abort(FatalError);
+    }
 
-	pointEdgesPtr_.reset(new labelListList(points_.size()));
-	labelListList& pointEdges = pointEdgesPtr_();
+    pointEdgesPtr_.reset(new labelListList(points_.size()));
+    labelListList& pointEdges = pointEdgesPtr_();
 
-	// Count
-	labelList nEdgesPerPoint(points_.size(), 0);
+    // Count
+    labelList nEdgesPerPoint(points_.size(), 0);
 
-	forAll(edges_, edgeI)
-	{
-		const edge& e = edges_[edgeI];
+    forAll(edges_, edgeI)
+    {
+        const edge& e = edges_[edgeI];
 
-		nEdgesPerPoint[e[0]]++;
-		nEdgesPerPoint[e[1]]++;
-	}
+        nEdgesPerPoint[e[0]]++;
+        nEdgesPerPoint[e[1]]++;
+    }
 
-	// Size
-	forAll(pointEdges, pointI)
-	{
-		pointEdges[pointI].setSize(nEdgesPerPoint[pointI]);
-	}
+    // Size
+    forAll(pointEdges, pointI)
+    {
+        pointEdges[pointI].setSize(nEdgesPerPoint[pointI]);
+    }
 
-	// Fill
-	nEdgesPerPoint = 0;
+    // Fill
+    nEdgesPerPoint = 0;
 
-	forAll(edges_, edgeI)
-	{
-		const edge& e = edges_[edgeI];
+    forAll(edges_, edgeI)
+    {
+        const edge& e = edges_[edgeI];
 
-		label p0 = e[0];
-		pointEdges[p0][nEdgesPerPoint[p0]++] = edgeI;
-		label p1 = e[1];
-		pointEdges[p1][nEdgesPerPoint[p1]++] = edgeI;
-	}
+        label p0 = e[0];
+        pointEdges[p0][nEdgesPerPoint[p0]++] = edgeI;
+        label p1 = e[1];
+        pointEdges[p1][nEdgesPerPoint[p1]++] = edgeI;
+    }
 }
 
 
@@ -79,17 +79,17 @@ void Foam::edgeMesh::calcPointEdges() const
 // construct from components
 Foam::edgeMesh::edgeMesh(const pointField& points, const edgeList& edges)
 :
-	points_(points),
-	edges_(edges)
+    points_(points),
+    edges_(edges)
 {}
 
 
 // construct as copy
 Foam::edgeMesh::edgeMesh(const edgeMesh& em)
 :
-	points_(em.points_),
-	edges_(em.edges_),
-	pointEdgesPtr_(nullptr)
+    points_(em.points_),
+    edges_(em.edges_),
+    pointEdgesPtr_(nullptr)
 {}
 
 
@@ -97,145 +97,145 @@ Foam::edgeMesh::edgeMesh(const edgeMesh& em)
 
 Foam::label Foam::edgeMesh::regions(labelList& edgeRegion) const
 {
-	edgeRegion.setSize(edges_.size());
-	edgeRegion = -1;
+    edgeRegion.setSize(edges_.size());
+    edgeRegion = -1;
 
-	label startEdgeI = 0;
+    label startEdgeI = 0;
 
-	label currentRegion = 0;
+    label currentRegion = 0;
 
-	while (true)
-	{
-		while (startEdgeI < edges_.size() && edgeRegion[startEdgeI] != -1)
-		{
-			startEdgeI++;
-		}
+    while (true)
+    {
+        while (startEdgeI < edges_.size() && edgeRegion[startEdgeI] != -1)
+        {
+            startEdgeI++;
+        }
 
-		if (startEdgeI == edges_.size())
-		{
-			break;
-		}
+        if (startEdgeI == edges_.size())
+        {
+            break;
+        }
 
-		// Found edge that has not yet been assigned a region.
-		// Mark connected region with currentRegion starting at startEdgeI.
+        // Found edge that has not yet been assigned a region.
+        // Mark connected region with currentRegion starting at startEdgeI.
 
-		edgeRegion[startEdgeI] = currentRegion;
-		labelList edgesToVisit(1, startEdgeI);
+        edgeRegion[startEdgeI] = currentRegion;
+        labelList edgesToVisit(1, startEdgeI);
 
-		while (edgesToVisit.size())
-		{
-			// neighbours of current edgesToVisit
-			dynamicLabelList newEdgesToVisit(edgesToVisit.size());
+        while (edgesToVisit.size())
+        {
+            // neighbours of current edgesToVisit
+            dynamicLabelList newEdgesToVisit(edgesToVisit.size());
 
-			// Mark all point connected edges with current region.
-			forAll(edgesToVisit, i)
-			{
-				label edgeI = edgesToVisit[i];
+            // Mark all point connected edges with current region.
+            forAll(edgesToVisit, i)
+            {
+                label edgeI = edgesToVisit[i];
 
-				// Mark connected edges
-				const edge& e = edges_[edgeI];
+                // Mark connected edges
+                const edge& e = edges_[edgeI];
 
-				forAll(e, fp)
-				{
-					const labelList& pEdges = pointEdges()[e[fp]];
+                forAll(e, fp)
+                {
+                    const labelList& pEdges = pointEdges()[e[fp]];
 
-					forAll(pEdges, pEdgeI)
-					{
-						label nbrEdgeI = pEdges[pEdgeI];
+                    forAll(pEdges, pEdgeI)
+                    {
+                        label nbrEdgeI = pEdges[pEdgeI];
 
-						if (edgeRegion[nbrEdgeI] == -1)
-						{
-							edgeRegion[nbrEdgeI] = currentRegion;
-							newEdgesToVisit.append(nbrEdgeI);
-						}
-					}
-				}
-			}
+                        if (edgeRegion[nbrEdgeI] == -1)
+                        {
+                            edgeRegion[nbrEdgeI] = currentRegion;
+                            newEdgesToVisit.append(nbrEdgeI);
+                        }
+                    }
+                }
+            }
 
-			edgesToVisit.transfer(newEdgesToVisit);
-		}
+            edgesToVisit.transfer(newEdgesToVisit);
+        }
 
-		currentRegion++;
-	}
-	return currentRegion;
+        currentRegion++;
+    }
+    return currentRegion;
 }
 
 
 void Foam::edgeMesh::mergePoints(const scalar mergeDist)
 {
-	pointField newPoints;
-	labelList pointMap;
+    pointField newPoints;
+    labelList pointMap;
 
-	bool hasMerged = Foam::mergePoints
-	(
-		points_,
-		mergeDist,
-		false,
-		pointMap,
-		newPoints,
-		vector::zero
-	);
+    bool hasMerged = Foam::mergePoints
+    (
+        points_,
+        mergeDist,
+        false,
+        pointMap,
+        newPoints,
+        vector::zero
+    );
 
-	if (hasMerged)
-	{
-		pointEdgesPtr_.clear();
+    if (hasMerged)
+    {
+        pointEdgesPtr_.clear();
 
-		points_.transfer(newPoints);
+        points_.transfer(newPoints);
 
-		// Renumber and make sure e[0] < e[1] (not really nessecary)
-		forAll(edges_, edgeI)
-		{
-			edge& e = edges_[edgeI];
+        // Renumber and make sure e[0] < e[1] (not really nessecary)
+        forAll(edges_, edgeI)
+        {
+            edge& e = edges_[edgeI];
 
-			label p0 = pointMap[e[0]];
-			label p1 = pointMap[e[1]];
+            label p0 = pointMap[e[0]];
+            label p1 = pointMap[e[1]];
 
-			if (p0 < p1)
-			{
-				e[0] = p0;
-				e[1] = p1;
-			}
-			else
-			{
-				e[0] = p1;
-				e[1] = p0;
-			}
-		}
+            if (p0 < p1)
+            {
+                e[0] = p0;
+                e[1] = p1;
+            }
+            else
+            {
+                e[0] = p1;
+                e[1] = p0;
+            }
+        }
 
-		// Compact using a hashtable and commutative hash of edge.
-		StaticHashTable<label, edge, Hash<edge> > edgeToLabel
-		(
-			2*edges_.size()
-		);
+        // Compact using a hashtable and commutative hash of edge.
+        StaticHashTable<label, edge, Hash<edge> > edgeToLabel
+        (
+            2*edges_.size()
+        );
 
-		label newEdgeI = 0;
+        label newEdgeI = 0;
 
-		forAll(edges_, edgeI)
-		{
-			const edge& e = edges_[edgeI];
+        forAll(edges_, edgeI)
+        {
+            const edge& e = edges_[edgeI];
 
-			if (e[0] != e[1])
-			{
-				if (edgeToLabel.insert(e, newEdgeI))
-				{
-					newEdgeI++;
-				}
-			}
-		}
+            if (e[0] != e[1])
+            {
+                if (edgeToLabel.insert(e, newEdgeI))
+                {
+                    newEdgeI++;
+                }
+            }
+        }
 
-		edges_.setSize(newEdgeI);
+        edges_.setSize(newEdgeI);
 
-		for
-		(
-			StaticHashTable<label, edge, Hash<edge> >::const_iterator iter =
-				edgeToLabel.begin();
-			iter != edgeToLabel.end();
-			++iter
-		)
-		{
-			edges_[iter()] = iter.key();
-		}
-	}
+        for
+        (
+            StaticHashTable<label, edge, Hash<edge> >::const_iterator iter =
+                edgeToLabel.begin();
+            iter != edgeToLabel.end();
+            ++iter
+        )
+        {
+            edges_[iter()] = iter.key();
+        }
+    }
 }
 
 
@@ -243,9 +243,9 @@ void Foam::edgeMesh::mergePoints(const scalar mergeDist)
 
 void Foam::edgeMesh::operator=(const edgeMesh& rhs)
 {
-	points_ = rhs.points_;
-	edges_ = rhs.edges_;
-	pointEdgesPtr_.reset(nullptr);
+    points_ = rhs.points_;
+    edges_ = rhs.edges_;
+    pointEdgesPtr_.reset(nullptr);
 }
 
 

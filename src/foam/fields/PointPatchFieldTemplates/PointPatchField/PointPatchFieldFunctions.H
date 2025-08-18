@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Generic PointPatchField type.
+    Generic PointPatchField type.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,178 +33,178 @@ namespace Foam
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void component
 (
-	PointPatchField
-	<
-		PatchField,
-		Mesh,
-		PointPatch,
-		MatrixType,
-		typename Field<Type>::cmptType
-	>& sf,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,
-	const direction d
+    PointPatchField
+    <
+        PatchField,
+        Mesh,
+        PointPatch,
+        MatrixType,
+        typename Field<Type>::cmptType
+    >& sf,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,
+    const direction d
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void T
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f2
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f2
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type,
-	int r
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type,
+    int r
 >
 inline void pow
 (
-	Field<typename powProduct<Type, r>::type>& f,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& vf
+    Field<typename powProduct<Type, r>::type>& f,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& vf
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void sqr
 (
-	Field<typename outerProduct<Type, Type>::type>& f,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& vf
+    Field<typename outerProduct<Type, Type>::type>& f,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& vf
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void magSqr
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>& sf,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>& sf,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void mag
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>& sf,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>& sf,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void cmptAv
 (
-	PointPatchField
-	<
-		PatchField,
-		Mesh,
-		PointPatch,
-		MatrixType,
-		typename Field<Type>::cmptType
-	>& cf,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
+    PointPatchField
+    <
+        PatchField,
+        Mesh,
+        PointPatch,
+        MatrixType,
+        typename Field<Type>::cmptType
+    >& cf,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType,
-	class Type
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType,
+    class Type
 >
 
 inline void cmptMag
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& cf,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& cf,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f
 )
 {}
 
 
 #define BINARY_FUNCTION(func)                                                 \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void func                                                              \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f2 \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f2 \
 ){}                                                                           \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void func                                                              \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
-	const Type& s                                                             \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
+    const Type& s                                                             \
 ){}
 
 BINARY_FUNCTION(max)
@@ -218,19 +218,19 @@ BINARY_FUNCTION(invScale)
 /* * * * * * * * * * * * * * * * Global operators  * * * * * * * * * * * * * */
 
 #define UNARY_OPERATOR(op, opFunc)                                            \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
 ){}
 
 UNARY_OPERATOR(-, negate)
@@ -239,24 +239,24 @@ UNARY_OPERATOR(-, negate)
 
 
 #define BINARY_OPERATOR_FF(Type1, Type2, op, opFunc)                          \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type1>& f1,\
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type2>& f2 \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type1>& f1,\
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type2>& f2 \
 ){}
 
 #define BINARY_OPERATOR_R(Type1, Type2, op, opFunc)                           \
-	BINARY_OPERATOR_FF(Type1, Type2, op, opFunc)
+    BINARY_OPERATOR_FF(Type1, Type2, op, opFunc)
 
 BINARY_OPERATOR_R(Type, Type, +, add)
 BINARY_OPERATOR_R(Type, Type, -, subtract)
@@ -276,44 +276,44 @@ BINARY_OPERATOR_R(symmTensor, sphericalTensor, +, add)
 
 
 #define BINARY_TYPE_OPERATOR_TF(TYPE, op, opFunc)                             \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const TYPE& s,                                                            \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const TYPE& s,                                                            \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
 ){}
 
 
 #define BINARY_TYPE_OPERATOR_FT(TYPE, op, opFunc)                             \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type                                                                \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
-	const TYPE& s                                                             \
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f,       \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
+    const TYPE& s                                                             \
 ){}
 
 
 #define BINARY_TYPE_OPERATOR(TYPE, op, opFunc)                                \
-	BINARY_TYPE_OPERATOR_TF(TYPE, op, opFunc)                                 \
-	BINARY_TYPE_OPERATOR_FT(TYPE, op, opFunc)
+    BINARY_TYPE_OPERATOR_TF(TYPE, op, opFunc)                                 \
+    BINARY_TYPE_OPERATOR_FT(TYPE, op, opFunc)
 
 BINARY_TYPE_OPERATOR(Type, +, add)
 BINARY_TYPE_OPERATOR(Type, -, subtract)
@@ -327,65 +327,65 @@ BINARY_TYPE_OPERATOR_FT(scalar, /, divide)
 
 
 #define PRODUCT_OPERATOR(product, op, opFunc)                                 \
-					                                                          \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type1,                                                              \
-	class Type2                                                               \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type1,                                                              \
+    class Type2                                                               \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField                                                           \
-	<PatchField, Mesh, PointPatch, MatrixType,                                \
-	 typename product<Type1, Type2>::type>& f,                                \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type1>& f1,\
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type2>& f2 \
+    PointPatchField                                                           \
+    <PatchField, Mesh, PointPatch, MatrixType,                                \
+     typename product<Type1, Type2>::type>& f,                                \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type1>& f1,\
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type2>& f2 \
 ){}                                                                           \
-					                                                          \
-					                                                          \
+                                                                              \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Type,                                                               \
-	class Form,                                                               \
-	class Cmpt,                                                               \
-	int nCmpt                                                                 \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Type,                                                               \
+    class Form,                                                               \
+    class Cmpt,                                                               \
+    int nCmpt                                                                 \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField                                                           \
-	<PatchField, Mesh, PointPatch, MatrixType,                                \
-	 typename product<Type, Form>::type>& f,                                  \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
-	const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
+    PointPatchField                                                           \
+    <PatchField, Mesh, PointPatch, MatrixType,                                \
+     typename product<Type, Form>::type>& f,                                  \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1,\
+    const VectorSpace<Form,Cmpt,nCmpt>& vs                                    \
 ){}                                                                           \
-					                                                          \
-					                                                          \
+                                                                              \
+                                                                              \
 template                                                                      \
 <                                                                             \
-	template<class> class PatchField,                                         \
-	class Mesh,                                                               \
-	class PointPatch,                                                         \
-	template<class> class MatrixType,                                         \
-	class Form,                                                               \
-	class Cmpt,                                                               \
-	int nCmpt,                                                                \
-	class Type                                                                \
+    template<class> class PatchField,                                         \
+    class Mesh,                                                               \
+    class PointPatch,                                                         \
+    template<class> class MatrixType,                                         \
+    class Form,                                                               \
+    class Cmpt,                                                               \
+    int nCmpt,                                                                \
+    class Type                                                                \
 >                                                                             \
 inline void opFunc                                                            \
 (                                                                             \
-	PointPatchField                                                           \
-	<PatchField, Mesh, PointPatch, MatrixType,                                \
-	 typename product<Form, Type>::type>& f,                                  \
-	const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
+    PointPatchField                                                           \
+    <PatchField, Mesh, PointPatch, MatrixType,                                \
+     typename product<Form, Type>::type>& f,                                  \
+    const VectorSpace<Form,Cmpt,nCmpt>& vs,                                   \
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, Type>& f1 \
 ){}
 
 
@@ -399,183 +399,183 @@ PRODUCT_OPERATOR(scalarProduct, &&, dotdot)
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void hdual
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void hdual
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void diag
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void tr
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void dev
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void dev2
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void det
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, scalar>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void inv
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void hinv
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void symm
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, symmTensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, symmTensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void skew
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void eigenValues
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, vector>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 
 template
 <
-	template<class> class PatchField,
-	class Mesh,
-	class PointPatch,
-	template<class> class MatrixType
+    template<class> class PatchField,
+    class Mesh,
+    class PointPatch,
+    template<class> class MatrixType
 >
 void eigenVectors
 (
-	PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
-	const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
+    PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&,
+    const PointPatchField<PatchField, Mesh, PointPatch, MatrixType, tensor>&
 ){}
 
 

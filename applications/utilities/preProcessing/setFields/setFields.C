@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -88,7 +88,10 @@ void setFieldType
         forAll (field.boundaryField(), patchi)
         {
             // Forced patch assignment.  HJ, 1/Aug/2010
-            field.boundaryField()[patchi] ==
+            // field.boundaryField()[patchi] ==
+            //     field.boundaryField()[patchi].patchInternalField();
+
+            field.boundaryField()[patchi] =
                 field.boundaryField()[patchi].patchInternalField();
         }
 
@@ -96,12 +99,8 @@ void setFieldType
     }
     else
     {
-        WarningIn
-        (
-            "void setFieldType"
-            "(const fvMesh& mesh, const labelList& selectedCells,"
-            "Istream& fieldValueStream)"
-        ) << "Field " << fieldName << " not found" << endl;
+        WarningInFunction
+            << "Field " << fieldName << " not found" << endl;
     }
 }
 
@@ -164,7 +163,7 @@ public:
             }
             else
             {
-                WarningIn("setField::iNew::operator()(Istream& is)")
+                WarningInFunction
                     << "field type " << fieldType << " not currently supported"
                     << endl;
             }

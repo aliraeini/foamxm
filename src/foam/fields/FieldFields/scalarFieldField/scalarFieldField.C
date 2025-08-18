@@ -1,28 +1,28 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Specialisation of FieldField\<T\> for scalar.
+    Specialisation of FieldField\<T\> for scalar.
 
 \*---------------------------------------------------------------------------*/
 
@@ -41,42 +41,44 @@ namespace Foam
 template<template<class> class Field>
 void stabilise
 (
-	FieldField<Field, scalar>& f,
-	const FieldField<Field, scalar>& f1,
-	const scalar s
+    FieldField<Field, scalar>& f,
+    const FieldField<Field, scalar>& f1,
+    const scalar s
 )
 {
-	forAll(f, i)
-	{
-		stabilise(f[i], f1[i], s);
-	}
+    forAll(f, i)
+    {
+        stabilise(f[i], f1[i], s);
+    }
 }
+
 
 template<template<class> class Field>
 tmp<FieldField<Field, scalar> > stabilise
 (
-	const FieldField<Field, scalar>& f1,
-	const scalar s
+    const FieldField<Field, scalar>& f1,
+    const scalar s
 )
 {
-	tmp<FieldField<Field, scalar> > tf
-	(
-		FieldField<Field, scalar>::NewCalculatedType(f1)
-	);
-	stabilise(tf(), f1, s);
-	return tf;
+    tmp<FieldField<Field, scalar> > tf
+    (
+        FieldField<Field, scalar>::NewCalculatedType(f1)
+    );
+    stabilise(tf.ref(), f1, s);
+    return tf;
 }
+
 
 template<template<class> class Field>
 tmp<FieldField<Field, scalar> > stabilise
 (
-	const tmp<FieldField<Field, scalar> >& tf1,
-	const scalar s
+    const tmp<FieldField<Field, scalar> >& tf1,
+    const scalar s
 )
 {
-	tmp<FieldField<Field, scalar> > tf(tf1.ptr());
-	stabilise(tf(), tf(), s);
-	return tf;
+    tmp<FieldField<Field, scalar> > tf(tf1.ptr());
+    stabilise(tf.ref(), tf(), s);
+    return tf;
 }
 
 
@@ -133,50 +135,50 @@ UNARY_FUNCTION(scalar, scalar, y1)
 
 
 #define BesselFunc(func)                                                      \
-					                                                          \
+                                                                              \
 template<template<class> class Field>                                         \
 void func                                                                     \
 (                                                                             \
-	FieldField<Field, scalar>& res,                                           \
-	const int n,                                                              \
-	const FieldField<Field, scalar>& sf                                       \
+    FieldField<Field, scalar>& res,                                           \
+    const int n,                                                              \
+    const FieldField<Field, scalar>& sf                                       \
 )                                                                             \
 {                                                                             \
-	forAll(res, i)                                                            \
-	{                                                                         \
-		func(res[i], n, sf[i]);                                               \
-	}                                                                         \
+    forAll(res, i)                                                            \
+    {                                                                         \
+        func(res[i], n, sf[i]);                                               \
+    }                                                                         \
 }                                                                             \
-					                                                          \
+                                                                              \
 template<template<class> class Field>                                         \
 tmp<FieldField<Field, scalar> > func                                          \
 (                                                                             \
-	const int n,                                                              \
-	const FieldField<Field, scalar>& sf                                       \
+    const int n,                                                              \
+    const FieldField<Field, scalar>& sf                                       \
 )                                                                             \
 {                                                                             \
-	tmp<FieldField<Field, scalar> > tRes                                      \
-	(                                                                         \
-		FieldField<Field, scalar>::NewCalculatedType(sf)                      \
-	);                                                                        \
-	func(tRes(), n, sf);                                                      \
-	return tRes;                                                              \
+    tmp<FieldField<Field, scalar> > tRes                                      \
+    (                                                                         \
+        FieldField<Field, scalar>::NewCalculatedType(sf)                      \
+    );                                                                        \
+    func(tRes.ref(), n, sf);                                                  \
+    return tRes;                                                              \
 }                                                                             \
-					                                                          \
+                                                                              \
 template<template<class> class Field>                                         \
 tmp<FieldField<Field, scalar> > func                                          \
 (                                                                             \
-	const int n,                                                              \
-	const tmp<FieldField<Field, scalar> >& tsf                                \
+    const int n,                                                              \
+    const tmp<FieldField<Field, scalar> >& tsf                                \
 )                                                                             \
 {                                                                             \
-	tmp<FieldField<Field, scalar> > tRes                                      \
-	(                                                                         \
-		reuseTmpFieldField<Field, scalar, scalar>::New(tsf)                   \
-	);                                                                        \
-	func(tRes(), n, tsf());                                                   \
-	reuseTmpFieldField<Field, scalar, scalar>::clear(tsf);                    \
-	return tRes;                                                              \
+    tmp<FieldField<Field, scalar> > tRes                                      \
+    (                                                                         \
+        reuseTmpFieldField<Field, scalar, scalar>::New(tsf)                   \
+    );                                                                        \
+    func(tRes.ref(), n, tsf());                                               \
+    tsf.clear();                                                              \
+    return tRes;                                                              \
 }
 
 BesselFunc(jn)

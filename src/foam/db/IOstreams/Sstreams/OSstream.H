@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::OSstream
+    Foam::OSstream
 
 Description
-	Generic output stream.
+    Generic output stream.
 
 SourceFiles
-	OSstreamI.H
-	OSstream.C
+    OSstreamI.H
+    OSstream.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,165 +45,168 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                          Class OSstream Declaration
+\*---------------------------------------------------------------------------*/
 
 class OSstream
 :
-	public Ostream
+    public Ostream
 {
-	// Private data
+    // Private data
 
-		fileName name_;
-		ostream& os_;
+        fileName name_;
+        ostream& os_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise assignment
-		void operator=(const OSstream&);
+        //- Disallow default bitwise assignment
+        void operator=(const OSstream&);
 
 
 protected:
 
-		//- Return the stream reference
-		ostream& stream()
-		{
-			return os_;
-		}
+        //- Return the stream reference
+        ostream& stream()
+        {
+            return os_;
+        }
 
-		//- Return the const stream reference
-		const ostream& stream() const
-		{
-			return os_;
-		}
+        //- Return the const stream reference
+        const ostream& stream() const
+        {
+            return os_;
+        }
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Set stream status
-		OSstream
-		(
-			ostream& os,
-			const string& name,
-			streamFormat format = ASCII,
-			versionNumber version = currentVersion,
-			compressionType compression=UNCOMPRESSED
-		);
-
-
-	// Member functions
-
-		// Enquiry
-
-			//- Return the name of the stream
-			//  Useful for Fstream to return the filename
-			virtual const fileName& name() const
-			{
-				return name_;
-			}
-
-			//- Return non-const access to the name of the stream
-			//  Useful to alter the stream name
-			virtual fileName& name()
-			{
-				return name_;
-			}
-
-			//- Return flags of output stream
-			virtual ios_base::fmtflags flags() const;
+        //- Set stream status
+        OSstream
+        (
+            ostream& os,
+            const string& name,
+            streamFormat format = ASCII,
+            versionNumber version = currentVersion,
+            compressionType compression=UNCOMPRESSED
+        );
 
 
-		// Write functions
+    // Member functions
 
-			//- Write next token to stream
-			virtual Ostream& write(const token&);
+        // Enquiry
 
-			//- Write character
-			virtual Ostream& write(const char);
+            //- Return the name of the stream
+            //  Useful for Fstream to return the filename
+            virtual const fileName& name() const
+            {
+                return name_;
+            }
 
-			//- Write character string
-			virtual Ostream& write(const char*);
+            //- Return non-const access to the name of the stream
+            //  Useful to alter the stream name
+            virtual fileName& name()
+            {
+                return name_;
+            }
 
-			//- Write word
-			virtual Ostream& write(const word&);
-
-			//- Write string
-			//  In the rare case that the string contains a final trailing
-			//  backslash, it will be dropped to the appearance of an escaped
-			//  double-quote.
-			virtual Ostream& write(const string&);
-
-			//- Write std::string surrounded by quotes.
-			//  Optional write without quotes.
-			virtual Ostream& writeQuoted
-			(
-				const std::string&,
-				const bool quoted=true
-			);
-
-			//- Write label
-			virtual Ostream& write(const label);
-
-			//- Write floatScalar
-			virtual Ostream& write(const floatScalar);
-
-			//- Write doubleScalar
-			virtual Ostream& write(const doubleScalar);
-
-			//- Write longDoubleScalar
-			virtual Ostream& write(const longDoubleScalar);
-
-			//- Write binary block
-			virtual Ostream& write(const char*, std::streamsize);
-
-			//- Add indentation characters
-			virtual void indent();
+            //- Return flags of output stream
+            virtual ios_base::fmtflags flags() const;
 
 
-		// Stream state functions
+        // Write functions
 
-			//- Set flags of output stream
-			virtual ios_base::fmtflags flags(const ios_base::fmtflags flags);
+            //- Write next token to stream
+            virtual Ostream& write(const token&);
 
-			//- Flush stream
-			virtual void flush();
+            //- Write character
+            virtual Ostream& write(const char);
 
-			//- Add newline and flush stream
-			virtual void endl();
+            //- Write character string
+            virtual Ostream& write(const char*);
 
-			//- Get width of output field
-			virtual int width() const;
+            //- Write word
+            virtual Ostream& write(const word&);
 
-			//- Set width of output field (and return old width)
-			virtual int width(const int);
+            //- Write string
+            //  In the rare case that the string contains a final trailing
+            //  backslash, it will be dropped to the appearance of an escaped
+            //  double-quote.
+            virtual Ostream& write(const string&);
 
-			//- Get precision of output field
-			virtual int precision() const;
+            //- Write std::string surrounded by quotes.
+            //  Optional write without quotes.
+            virtual Ostream& writeQuoted
+            (
+                const std::string&,
+                const bool quoted=true
+            );
 
-			//- Set precision of output field (and return old precision)
-			virtual int precision(const int);
+            //- Write label
+            virtual Ostream& write(const label);
+
+            //- Write floatScalar
+            virtual Ostream& write(const floatScalar);
+
+            //- Write doubleScalar
+            virtual Ostream& write(const doubleScalar);
+
+            //- Write longDoubleScalar
+            virtual Ostream& write(const longDoubleScalar);
+
+            //- Write binary block
+            virtual Ostream& write(const char*, std::streamsize);
+
+            //- Add indentation characters
+            virtual void indent();
 
 
-		// STL stream
+        // Stream state functions
 
-			//- Access to underlying std::ostream
-			virtual ostream& stdStream()
-			{
-				return os_;
-			}
+            //- Set flags of output stream
+            virtual ios_base::fmtflags flags(const ios_base::fmtflags flags);
 
-			//- Const access to underlying std::ostream
-			virtual const ostream& stdStream() const
-			{
-				return os_;
-			}
+            //- Flush stream
+            virtual void flush();
+
+            //- Add newline and flush stream
+            virtual void endl();
+
+            //- Get width of output field
+            virtual int width() const;
+
+            //- Set width of output field (and return old width)
+            virtual int width(const int);
+
+            //- Get precision of output field
+            virtual int precision() const;
+
+            //- Set precision of output field (and return old precision)
+            virtual int precision(const int);
 
 
-		// Print
+        // STL stream
 
-			//- Print description of IOstream to Ostream
-			virtual void print(Ostream&) const;
+            //- Access to underlying std::ostream
+            virtual ostream& stdStream()
+            {
+                return os_;
+            }
+
+            //- Const access to underlying std::ostream
+            virtual const ostream& stdStream() const
+            {
+                return os_;
+            }
+
+
+        // Print
+
+            //- Print description of IOstream to Ostream
+            virtual void print(Ostream&) const;
 };
 
 

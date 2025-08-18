@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::line
+    Foam::line
 
 Description
-	A line primitive.
+    A line primitive.
 
 SourceFiles
-	lineI.H
+    lineI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -61,76 +61,79 @@ template<class Point, class PointRef>
 inline Ostream& operator<<(Ostream&, const line<Point, PointRef>&);
 
 
+/*---------------------------------------------------------------------------*\
+                           Class line Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Point, class PointRef>
 class line
 {
-	// Private data
+    // Private data
 
-		PointRef a_, b_;
+        PointRef a_, b_;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from two points
-		inline line(const Point& start, const Point& end);
+        //- Construct from two points
+        inline line(const Point& start, const Point& end);
 
-		//- Construct from Istream
-		inline line(Istream&);
-
-
-	// Member functions
-
-		// Access
-
-			//- Return first vertex
-			inline PointRef start() const;
-
-			//- Return second vertex
-			inline PointRef end() const;
+        //- Construct from Istream
+        inline line(Istream&);
 
 
-		// Properties
+    // Member functions
 
-			//- Return centre (centroid)
-			inline Point centre() const;
+        // Access
 
-			//- Return scalar magnitude
-			inline scalar mag() const;
+            //- Return first vertex
+            inline PointRef start() const;
 
-			//- Return start-end vector
-			inline Point vec() const;
-
-			//- Return nearest distance to line from a given point
-			//  If the nearest point is on the line, return a hit
-			PointHit<Point> nearestDist(const Point& p) const;
-
-			//- Return nearest distance from line to line. Returns distance
-			//  and sets both points (one on *this, one on the provided
-			//  linePointRef.
-			scalar nearestDist
-			(
-				const line<Point, const Point&>& edge,
-				Point& thisPoint,
-				Point& edgePoint
-			) const;
+            //- Return second vertex
+            inline PointRef end() const;
 
 
-	// Ostream operator
+        // Properties
 
-		friend Istream& operator>> <Point, PointRef>
-		(
-			Istream&,
-			line&
-		);
+            //- Return centre (centroid)
+            inline Point centre() const;
 
-		friend Ostream& operator<< <Point, PointRef>
-		(
-			Ostream&,
-			const line&
-		);
+            //- Return scalar magnitude
+            inline scalar mag() const;
+
+            //- Return start-end vector
+            inline Point vec() const;
+
+            //- Return nearest distance to line from a given point
+            //  If the nearest point is on the line, return a hit
+            PointHit<Point> nearestDist(const Point& p) const;
+
+            //- Return nearest distance from line to line. Returns distance
+            //  and sets both points (one on *this, one on the provided
+            //  linePointRef.
+            scalar nearestDist
+            (
+                const line<Point, const Point&>& edge,
+                Point& thisPoint,
+                Point& edgePoint
+            ) const;
+
+
+    // Ostream operator
+
+        friend Istream& operator>> <Point, PointRef>
+        (
+            Istream&,
+            line&
+        );
+
+        friend Ostream& operator<< <Point, PointRef>
+        (
+            Ostream&,
+            const line&
+        );
 };
 
 
@@ -138,9 +141,9 @@ public:
 template<>
 scalar line<point2D, const point2D&>::nearestDist
 (
-	const line<point2D, const point2D&>& edge,
-	point2D& thisPoint,
-	point2D& edgePoint
+    const line<point2D, const point2D&>& edge,
+    point2D& thisPoint,
+    point2D& edgePoint
 ) const;
 
 

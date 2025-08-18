@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -45,124 +45,124 @@ addToRunTimeSelectionTable(topoSetSource, faceToCell, istream);
 
 Foam::topoSetSource::addToUsageTable Foam::faceToCell::usage_
 (
-	faceToCell::typeName,
-	"\n    Usage: faceToCell <faceSet> neighbour|owner|any|all\n\n"
-	"    Select cells that are the owner|neighbour|any"
-	" of the faces in the faceSet or where all faces are in the faceSet\n\n"
+    faceToCell::typeName,
+    "\n    Usage: faceToCell <faceSet> neighbour|owner|any|all\n\n"
+    "    Select cells that are the owner|neighbour|any"
+    " of the faces in the faceSet or where all faces are in the faceSet\n\n"
 );
 
 template<>
 const char* Foam::NamedEnum<Foam::faceToCell::faceAction, 4>::names[] =
 {
-	"neighbour",
-	"owner",
-	"any",
-	"all"
+    "neighbour",
+    "owner",
+    "any",
+    "all"
 };
 
 const Foam::NamedEnum<Foam::faceToCell::faceAction, 4>
-	Foam::faceToCell::faceActionNames_;
+    Foam::faceToCell::faceActionNames_;
 
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 void Foam::faceToCell::combine(topoSet& set, const bool add) const
 {
-	// Load the set
-	faceSet loadedSet(mesh_, setName_);
+    // Load the set
+    faceSet loadedSet(mesh_, setName_);
 
 
-	// Handle owner/neighbour/any selection
-	for
-	(
-		faceSet::const_iterator iter = loadedSet.begin();
-		iter != loadedSet.end();
-		++iter
-	)
-	{
-		label faceI = iter.key();
+    // Handle owner/neighbour/any selection
+    for
+    (
+        faceSet::const_iterator iter = loadedSet.begin();
+        iter != loadedSet.end();
+        ++iter
+    )
+    {
+        label faceI = iter.key();
 
-		if ((option_ == OWNER) || (option_ == ANY))
-		{
-			label cellI = mesh_.faceOwner()[faceI];
+        if ((option_ == OWNER) || (option_ == ANY))
+        {
+            label cellI = mesh_.faceOwner()[faceI];
 
-			addOrDelete(set, cellI, add);
-		}
+            addOrDelete(set, cellI, add);
+        }
 
-		if (mesh_.isInternalFace(faceI))
-		{
-			if ((option_ == NEIGHBOUR) || (option_ == ANY))
-			{
-				label cellI = mesh_.faceNeighbour()[faceI];
+        if (mesh_.isInternalFace(faceI))
+        {
+            if ((option_ == NEIGHBOUR) || (option_ == ANY))
+            {
+                label cellI = mesh_.faceNeighbour()[faceI];
 
-				addOrDelete(set, cellI, add);
-			}
-		}
-	}
+                addOrDelete(set, cellI, add);
+            }
+        }
+    }
 
-	// Handle all selection.
-	if (option_ == ALL)
-	{
-		// Count number of selected faces per cell.
+    // Handle all selection.
+    if (option_ == ALL)
+    {
+        // Count number of selected faces per cell.
 
-		Map<label> facesPerCell(loadedSet.size());
+        Map<label> facesPerCell(loadedSet.size());
 
-		for
-		(
-			faceSet::const_iterator iter = loadedSet.begin();
-			iter != loadedSet.end();
-			++iter
-		)
-		{
-			label faceI = iter.key();
+        for
+        (
+            faceSet::const_iterator iter = loadedSet.begin();
+            iter != loadedSet.end();
+            ++iter
+        )
+        {
+            label faceI = iter.key();
 
-			label own = mesh_.faceOwner()[faceI];
+            label own = mesh_.faceOwner()[faceI];
 
-			Map<label>::iterator fndOwn = facesPerCell.find(own);
+            Map<label>::iterator fndOwn = facesPerCell.find(own);
 
-			if (fndOwn == facesPerCell.end())
-			{
-				facesPerCell.insert(own, 1);
-			}
-			else
-			{
-				fndOwn()++;
-			}
+            if (fndOwn == facesPerCell.end())
+            {
+                facesPerCell.insert(own, 1);
+            }
+            else
+            {
+                fndOwn()++;
+            }
 
-			if (mesh_.isInternalFace(faceI))
-			{
-				label nei = mesh_.faceNeighbour()[faceI];
+            if (mesh_.isInternalFace(faceI))
+            {
+                label nei = mesh_.faceNeighbour()[faceI];
 
-				Map<label>::iterator fndNei = facesPerCell.find(nei);
+                Map<label>::iterator fndNei = facesPerCell.find(nei);
 
-				if (fndNei == facesPerCell.end())
-				{
-					facesPerCell.insert(nei, 1);
-				}
-				else
-				{
-					fndNei()++;
-				}
-			}
-		}
+                if (fndNei == facesPerCell.end())
+                {
+                    facesPerCell.insert(nei, 1);
+                }
+                else
+                {
+                    fndNei()++;
+                }
+            }
+        }
 
-		// Include cells that are referenced as many times as they have faces
-		// -> all faces in set.
-		for
-		(
-			Map<label>::const_iterator iter = facesPerCell.begin();
-			iter != facesPerCell.end();
-			++iter
-		)
-		{
-			label cellI = iter.key();
+        // Include cells that are referenced as many times as they have faces
+        // -> all faces in set.
+        for
+        (
+            Map<label>::const_iterator iter = facesPerCell.begin();
+            iter != facesPerCell.end();
+            ++iter
+        )
+        {
+            label cellI = iter.key();
 
-			if (iter() == mesh_.cells()[cellI].size())
-			{
-				addOrDelete(set, cellI, add);
-			}
-		}
-	}
+            if (iter() == mesh_.cells()[cellI].size())
+            {
+                addOrDelete(set, cellI, add);
+            }
+        }
+    }
 }
 
 
@@ -171,40 +171,40 @@ void Foam::faceToCell::combine(topoSet& set, const bool add) const
 // Construct from components
 Foam::faceToCell::faceToCell
 (
-	const polyMesh& mesh,
-	const word& setName,
-	const faceAction option
+    const polyMesh& mesh,
+    const word& setName,
+    const faceAction option
 )
 :
-	topoSetSource(mesh),
-	setName_(setName),
-	option_(option)
+    topoSetSource(mesh),
+    setName_(setName),
+    option_(option)
 {}
 
 
 // Construct from dictionary
 Foam::faceToCell::faceToCell
 (
-	const polyMesh& mesh,
-	const dictionary& dict
+    const polyMesh& mesh,
+    const dictionary& dict
 )
 :
-	topoSetSource(mesh),
-	setName_(dict.lookup("set")),
-	option_(faceActionNames_.read(dict.lookup("option")))
+    topoSetSource(mesh),
+    setName_(dict.lookup("set")),
+    option_(faceActionNames_.read(dict.lookup("option")))
 {}
 
 
 // Construct from Istream
 Foam::faceToCell::faceToCell
 (
-	const polyMesh& mesh,
-	Istream& is
+    const polyMesh& mesh,
+    Istream& is
 )
 :
-	topoSetSource(mesh),
-	setName_(checkIs(is)),
-	option_(faceActionNames_.read(checkIs(is)))
+    topoSetSource(mesh),
+    setName_(checkIs(is)),
+    option_(faceActionNames_.read(checkIs(is)))
 {}
 
 
@@ -218,24 +218,24 @@ Foam::faceToCell::~faceToCell()
 
 void Foam::faceToCell::applyToSet
 (
-	const topoSetSource::setAction action,
-	topoSet& set
+    const topoSetSource::setAction action,
+    topoSet& set
 ) const
 {
-	if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
-	{
-		Info<< "    Adding cells according to faceSet " << setName_
-			<< " ..." << endl;
+    if ((action == topoSetSource::NEW) || (action == topoSetSource::ADD))
+    {
+        Info<< "    Adding cells according to faceSet " << setName_
+            << " ..." << endl;
 
-		combine(set, true);
-	}
-	else if (action == topoSetSource::DELETE)
-	{
-		Info<< "    Removing cells according to faceSet " << setName_
-			<< " ..." << endl;
+        combine(set, true);
+    }
+    else if (action == topoSetSource::DELETE)
+    {
+        Info<< "    Removing cells according to faceSet " << setName_
+            << " ..." << endl;
 
-		combine(set, false);
-	}
+        combine(set, false);
+    }
 }
 
 

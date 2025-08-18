@@ -5,14 +5,14 @@
     (
         dynamicFvMesh::New
         (
-			IOobject
-			(
-				dynamicFvMesh::defaultRegion,
-				runTime.timeName(),
-				runTime,
-				IOobject::MUST_READ
-			)
-		)
-	);
+            IOobject
+            (
+                dynamicFvMesh::defaultRegion,
+                runTime.timeName(),
+                runTime,
+                IOobject::MUST_READ
+            )
+        )
+    );
 
-	dynamicFvMesh& mesh = meshPtr();
+    dynamicFvMesh& mesh = meshPtr();

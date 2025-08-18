@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -33,13 +33,13 @@ License
 // INVALID is also evaluates to false, but don't rely on that
 const char* Foam::Switch::names[Foam::Switch::INVALID+1] =
 {
-	"false", "true",
-	"off",   "on",
-	"no",    "yes",
-	"n",     "y",
-	"f",     "t",
-	"none",  "true",  // is there a reasonable counterpart to "none"?
-	"invalid"
+    "false", "true",
+    "off",   "on",
+    "no",    "yes",
+    "n",     "y",
+    "f",     "t",
+    "none",  "true",  // is there a reasonable counterpart to "none"?
+    "invalid"
 };
 
 
@@ -47,70 +47,70 @@ const char* Foam::Switch::names[Foam::Switch::INVALID+1] =
 
 Foam::Switch::switchType Foam::Switch::asEnum
 (
-	const std::string& str,
-	const bool allowInvalid
+    const std::string& str,
+    const bool allowInvalid
 )
 {
-	for (int sw = 0; sw < Switch::INVALID; ++sw)
-	{
-		if (str == names[sw])
-		{
-			// handle aliases
-			switch (sw)
-			{
-				case Switch::NO_1:
-				case Switch::NONE:
-				{
-					return Switch::NO;
-					break;
-				}
+    for (int sw = 0; sw < Switch::INVALID; ++sw)
+    {
+        if (str == names[sw])
+        {
+            // handle aliases
+            switch (sw)
+            {
+                case Switch::NO_1:
+                case Switch::NONE:
+                {
+                    return Switch::NO;
+                    break;
+                }
 
-				case Switch::YES_1:
-				{
-					return Switch::YES;
-					break;
-				}
+                case Switch::YES_1:
+                {
+                    return Switch::YES;
+                    break;
+                }
 
-				case Switch::FALSE_1:
-				{
-					return Switch::FALSE;
-					break;
-				}
+                case Switch::FALSE_1:
+                {
+                    return Switch::FALSE;
+                    break;
+                }
 
-				case Switch::TRUE_1:
-				{
-					return Switch::TRUE;
-					break;
-				}
+                case Switch::TRUE_1:
+                {
+                    return Switch::TRUE;
+                    break;
+                }
 
-				default:
-				{
-					return switchType(sw);
-					break;
-				}
-			}
-		}
-	}
+                default:
+                {
+                    return switchType(sw);
+                    break;
+                }
+            }
+        }
+    }
 
-	if (!allowInvalid)
-	{
-		FatalErrorIn("Switch::asEnum(const std::string&, const bool)")
-			<< "unknown switch word " << str << nl
-			<< abort(FatalError);
-	}
+    if (!allowInvalid)
+    {
+        FatalErrorIn("Switch::asEnum(const std::string&, const bool)")
+            << "unknown switch word " << str << nl
+            << abort(FatalError);
+    }
 
-	return Switch::INVALID;
+    return Switch::INVALID;
 }
 
 
 Foam::Switch Foam::Switch::lookupOrAddToDict
 (
-	const word& name,
-	dictionary& dict,
-	const Switch& defaultValue
+    const word& name,
+    dictionary& dict,
+    const Switch& defaultValue
 )
 {
-	return dict.lookupOrAddDefault<Switch>(name, defaultValue);
+    return dict.lookupOrAddDefault<Switch>(name, defaultValue);
 }
 
 
@@ -118,19 +118,19 @@ Foam::Switch Foam::Switch::lookupOrAddToDict
 
 bool Foam::Switch::valid() const
 {
-	return switch_ <= Switch::NONE;
+    return switch_ <= Switch::NONE;
 }
 
 
 const char* Foam::Switch::asText() const
 {
-	return names[switch_];
+    return names[switch_];
 }
 
 
 bool Foam::Switch::readIfPresent(const word& name, const dictionary& dict)
 {
-	return dict.readIfPresent<Switch>(name, *this);
+    return dict.readIfPresent<Switch>(name, *this);
 }
 
 

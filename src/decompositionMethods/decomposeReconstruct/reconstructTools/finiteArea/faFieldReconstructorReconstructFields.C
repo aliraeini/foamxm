@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ void Foam::faFieldReconstructor::reconstructFaAreaField
     Field<Type>& iField = reconField.internalField();
 
     typename GeometricField<Type, faPatchField, areaMesh>::
-        Boundary& bouField = reconField.boundaryField();
+        GeometricBoundaryField& bouField = reconField.boundaryField();
 
     // Create global mesh patchs starts
 
@@ -315,7 +315,7 @@ Foam::faFieldReconstructor::reconstructFaAreaField
 
     reconstructFaAreaField
     (
-        treconField(),
+        treconField.ref(),
         procFields
     );
 
@@ -334,7 +334,7 @@ void Foam::faFieldReconstructor::reconstructFaEdgeField
     Field<Type>& iField = reconField.internalField();
 
     typename GeometricField<Type, faePatchField, edgeMesh>::
-        Boundary& bouField = reconField.boundaryField();
+        GeometricBoundaryField& bouField = reconField.boundaryField();
 
     labelList gStarts(mesh_.boundary().size(), -1);
 
@@ -629,7 +629,7 @@ Foam::faFieldReconstructor::reconstructFaEdgeField
     // Reconstruct field
     reconstructFaEdgeField
     (
-        treconField(),
+        treconField.ref(),
         procFields
     );
 

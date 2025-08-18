@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,108 +37,108 @@ namespace Foam
 
 supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 (
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF
 )
 :
-	mixedFvPatchVectorField(p, iF),
-	UInf_(vector::zero),
-	pInf_(0),
-	TInf_(0),
-	gamma_(0)
+    mixedFvPatchVectorField(p, iF),
+    UInf_(vector::zero),
+    pInf_(0),
+    TInf_(0),
+    gamma_(0)
 {
-	refValue() = patchInternalField();
-	refGrad() = vector::zero;
-	valueFraction() = 1;
+    refValue() = patchInternalField();
+    refGrad() = vector::zero;
+    valueFraction() = 1;
 }
 
 
 supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 (
-	const supersonicFreestreamFvPatchVectorField& ptf,
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF,
-	const fvPatchFieldMapper& mapper
+    const supersonicFreestreamFvPatchVectorField& ptf,
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF,
+    const fvPatchFieldMapper& mapper
 )
 :
-	mixedFvPatchVectorField(ptf, p, iF, mapper),
-	UInf_(ptf.UInf_),
-	pInf_(ptf.pInf_),
-	TInf_(ptf.TInf_),
-	gamma_(ptf.gamma_)
+    mixedFvPatchVectorField(ptf, p, iF, mapper),
+    UInf_(ptf.UInf_),
+    pInf_(ptf.pInf_),
+    TInf_(ptf.TInf_),
+    gamma_(ptf.gamma_)
 {}
 
 
 supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 (
-	const fvPatch& p,
-	const DimensionedField<vector, volMesh>& iF,
-	const dictionary& dict
+    const fvPatch& p,
+    const DimensionedField<vector, volMesh>& iF,
+    const dictionary& dict
 )
 :
-	mixedFvPatchVectorField(p, iF),
-	UInf_(dict.lookup("UInf")),
-	pInf_(readScalar(dict.lookup("pInf"))),
-	TInf_(readScalar(dict.lookup("TInf"))),
-	gamma_(readScalar(dict.lookup("gamma")))
+    mixedFvPatchVectorField(p, iF),
+    UInf_(dict.lookup("UInf")),
+    pInf_(readScalar(dict.lookup("pInf"))),
+    TInf_(readScalar(dict.lookup("TInf"))),
+    gamma_(readScalar(dict.lookup("gamma")))
 {
-	if (dict.found("value"))
-	{
-		fvPatchField<vector>::operator=
-		(
-			vectorField("value", dict, p.size())
-		);
-	}
-	else
-	{
-		fvPatchField<vector>::operator=(patchInternalField());
-	}
+    if (dict.found("value"))
+    {
+        fvPatchField<vector>::operator=
+        (
+            vectorField("value", dict, p.size())
+        );
+    }
+    else
+    {
+        fvPatchField<vector>::operator=(patchInternalField());
+    }
 
-	refValue() = *this;
-	refGrad() = vector::zero;
-	valueFraction() = 1;
+    refValue() = *this;
+    refGrad() = vector::zero;
+    valueFraction() = 1;
 
-	if (pInf_ < SMALL)
-	{
-		FatalIOErrorIn
-		(
-			"supersonicFreestreamFvPatchVectorField::"
-			"supersonicFreestreamFvPatchVectorField"
-			"(const fvPatch&, const vectorField&, const dictionary&)",
-			dict
-		)   << "    unphysical pInf specified (pInf <= 0.0)"
-			<< "\n    on patch " << this->patch().name()
-			<< " of field " << this->dimensionedInternalField().name()
-			<< " in file " << this->dimensionedInternalField().objectPath()
-			<< exit(FatalIOError);
-	}
+    if (pInf_ < SMALL)
+    {
+        FatalIOErrorIn
+        (
+            "supersonicFreestreamFvPatchVectorField::"
+            "supersonicFreestreamFvPatchVectorField"
+            "(const fvPatch&, const vectorField&, const dictionary&)",
+            dict
+        )   << "    unphysical pInf specified (pInf <= 0.0)"
+            << "\n    on patch " << this->patch().name()
+            << " of field " << this->dimensionedInternalField().name()
+            << " in file " << this->dimensionedInternalField().objectPath()
+            << exit(FatalIOError);
+    }
 }
 
 
 supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 (
-	const supersonicFreestreamFvPatchVectorField& sfspvf
+    const supersonicFreestreamFvPatchVectorField& sfspvf
 )
 :
-	mixedFvPatchVectorField(sfspvf),
-	UInf_(sfspvf.UInf_),
-	pInf_(sfspvf.pInf_),
-	TInf_(sfspvf.TInf_),
-	gamma_(sfspvf.gamma_)
+    mixedFvPatchVectorField(sfspvf),
+    UInf_(sfspvf.UInf_),
+    pInf_(sfspvf.pInf_),
+    TInf_(sfspvf.TInf_),
+    gamma_(sfspvf.gamma_)
 {}
 
 
 supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 (
-	const supersonicFreestreamFvPatchVectorField& sfspvf,
-	const DimensionedField<vector, volMesh>& iF
+    const supersonicFreestreamFvPatchVectorField& sfspvf,
+    const DimensionedField<vector, volMesh>& iF
 )
 :
-	mixedFvPatchVectorField(sfspvf, iF),
-	UInf_(sfspvf.UInf_),
-	pInf_(sfspvf.pInf_),
-	TInf_(sfspvf.TInf_),
-	gamma_(sfspvf.gamma_)
+    mixedFvPatchVectorField(sfspvf, iF),
+    UInf_(sfspvf.UInf_),
+    pInf_(sfspvf.pInf_),
+    TInf_(sfspvf.TInf_),
+    gamma_(sfspvf.gamma_)
 {}
 
 
@@ -146,158 +146,158 @@ supersonicFreestreamFvPatchVectorField::supersonicFreestreamFvPatchVectorField
 
 void supersonicFreestreamFvPatchVectorField::updateCoeffs()
 {
-	if (!size() || updated())
-	{
-		return;
-	}
+    if (!size() || updated())
+    {
+        return;
+    }
 
-	const fvPatchField<scalar>& pT =
-		lookupPatchField<volScalarField, scalar>("T");
+    const fvPatchField<scalar>& pT =
+        lookupPatchField<volScalarField, scalar>("T");
 
-	const fvPatchField<scalar>& pp =
-		lookupPatchField<volScalarField, scalar>("p");
+    const fvPatchField<scalar>& pp =
+        lookupPatchField<volScalarField, scalar>("p");
 
-	const fvPatchField<scalar>& ppsi =
-		lookupPatchField<volScalarField, scalar>("psi");
+    const fvPatchField<scalar>& ppsi =
+        lookupPatchField<volScalarField, scalar>("psi");
 
-	// Need R of the free-stream flow.  Assume R is independent of location
-	// along patch so use face 0
-	scalar R = 1.0/(ppsi[0]*pT[0]);
+    // Need R of the free-stream flow.  Assume R is independent of location
+    // along patch so use face 0
+    scalar R = 1.0/(ppsi[0]*pT[0]);
 
-	scalar MachInf = mag(UInf_)/sqrt(gamma_*R*TInf_);
+    scalar MachInf = mag(UInf_)/sqrt(gamma_*R*TInf_);
 
-	if (MachInf < 1.0)
-	{
-		FatalErrorIn
-		(
-			"supersonicFreestreamFvPatchVectorField::updateCoeffs()"
-		)   << "    MachInf < 1.0, free stream must be supersonic"
-			<< "\n    on patch " << this->patch().name()
-			<< " of field " << this->dimensionedInternalField().name()
-			<< " in file " << this->dimensionedInternalField().objectPath()
-			<< exit(FatalError);
-	}
+    if (MachInf < 1.0)
+    {
+        FatalErrorIn
+        (
+            "supersonicFreestreamFvPatchVectorField::updateCoeffs()"
+        )   << "    MachInf < 1.0, free stream must be supersonic"
+            << "\n    on patch " << this->patch().name()
+            << " of field " << this->dimensionedInternalField().name()
+            << " in file " << this->dimensionedInternalField().objectPath()
+            << exit(FatalError);
+    }
 
-	vectorField& Up = refValue();
-	valueFraction() = 1;
+    vectorField& Up = refValue();
+    valueFraction() = 1;
 
-	// get the near patch internal cell values
-	vectorField U = patchInternalField();
-
-
-	// Find the component of U normal to the free-stream flow and in the
-	// plane of the free-stream flow and the patch normal
-
-	// Direction of the free-stream flow
-	vector UInfHat = UInf_/mag(UInf_);
-
-	// Normal to the plane defined by the free-stream and the patch normal
-	vectorField nnInfHat = UInfHat ^ patch().nf();
-
-	//vectorField UnInf = U - nnInfHat*(nnInfHat & U);
-	//vectorField Un = UnInf - UInfHat*(UInfHat & UnInf);
-	//vectorField nHatInf =
-	//    (Un/(mag(Un) + SMALL)) * sign(patch().nf() & Un);
-
-	// Normal to the free-stream in the plane defined by the free-stream
-	// and the patch normal
-	vectorField nHatInf = nnInfHat ^ UInfHat;
-
-	// Component of U normal to the free-stream in the plane defined by the
-	// free-stream and the patch normal
-	vectorField Un = nHatInf*(nHatInf & U);
-
-	// The tangential component is
-	vectorField Ut = U - Un;
-
-	// Calculate the Prandtl-Meyer function of the free-stream
-	scalar nuMachInf =
-		sqrt((gamma_ + 1)/(gamma_ - 1))
-	   *atan(sqrt((gamma_ - 1)/(gamma_ + 1)*(sqr(MachInf) - 1)))
-	  - atan(sqr(MachInf) - 1);
+    // get the near patch internal cell values
+    vectorField U = patchInternalField();
 
 
-	// Set the patch boundary condition based on the Mach number and direction
-	// of the flow dictated by the boundary/free-stream pressure difference
+    // Find the component of U normal to the free-stream flow and in the
+    // plane of the free-stream flow and the patch normal
 
-	forAll(Up, facei)
-	{
-		if (pp[facei] >= pInf_) // If outflow
-		{
-			// Assume supersonic outflow and calculate the boundary velocity
-			// according to ???
+    // Direction of the free-stream flow
+    vector UInfHat = UInf_/mag(UInf_);
 
-			scalar fpp =
-				sqrt(sqr(MachInf) - 1)
-			   /(gamma_*sqr(MachInf))*mag(Ut[facei])*log(pp[facei]/pInf_);
+    // Normal to the plane defined by the free-stream and the patch normal
+    vectorField nnInfHat = UInfHat ^ patch().nf();
 
-			Up[facei] = Ut[facei] + fpp*nHatInf[facei];
+    //vectorField UnInf = U - nnInfHat*(nnInfHat & U);
+    //vectorField Un = UnInf - UInfHat*(UInfHat & UnInf);
+    //vectorField nHatInf =
+    //    (Un/(mag(Un) + SMALL)) * sign(patch().nf() & Un);
 
-			// Calculate the Mach number of the boundary velocity
-			scalar Mach = mag(Up[facei])/sqrt(gamma_/ppsi[facei]);
+    // Normal to the free-stream in the plane defined by the free-stream
+    // and the patch normal
+    vectorField nHatInf = nnInfHat ^ UInfHat;
 
-			if (Mach <= 1) // If subsonic
-			{
-				// Zero-gradient subsonic outflow
+    // Component of U normal to the free-stream in the plane defined by the
+    // free-stream and the patch normal
+    vectorField Un = nHatInf*(nHatInf & U);
 
-				Up[facei] = U[facei];
-				valueFraction()[facei] = 0;
-			}
-		}
-		else // if inflow
-		{
-			// Calculate the Mach number of the boundary velocity
-			// from the boundary pressure assuming constant total pressure
-			// expansion from the free-stream
-			scalar Mach =
-				sqrt
-				(
-					(2/(gamma_ - 1))*(1 + ((gamma_ - 1)/2)*sqr(MachInf))
-				   *pow(pp[facei]/pInf_, (1 - gamma_)/gamma_)
-				  - 2/(gamma_ - 1)
-				);
+    // The tangential component is
+    vectorField Ut = U - Un;
 
-			if (Mach > 1) // If supersonic
-			{
-				// Supersonic inflow is assumed to occur according to the
-				// Prandtl-Meyer expansion process
+    // Calculate the Prandtl-Meyer function of the free-stream
+    scalar nuMachInf =
+        sqrt((gamma_ + 1)/(gamma_ - 1))
+       *atan(sqrt((gamma_ - 1)/(gamma_ + 1)*(sqr(MachInf) - 1)))
+      - atan(sqr(MachInf) - 1);
 
-				scalar nuMachf =
-					sqrt((gamma_ + 1)/(gamma_ - 1))
-				   *atan(sqrt((gamma_ - 1)/(gamma_ + 1)*(sqr(Mach) - 1)))
-				  - atan(sqr(Mach) - 1);
 
-				scalar fpp = (nuMachInf - nuMachf)*mag(Ut[facei]);
+    // Set the patch boundary condition based on the Mach number and direction
+    // of the flow dictated by the boundary/free-stream pressure difference
 
-				Up[facei] = Ut[facei] + fpp*nHatInf[facei];
-			}
-			else // If subsonic
-			{
-				FatalErrorIn
-				(
-					"supersonicFreestreamFvPatchVectorField::updateCoeffs()"
-				)   << "unphysical subsonic inflow has been generated"
-					<< "\n    on patch " << this->patch().name()
-					<< " of field " << this->dimensionedInternalField().name()
-					<< " in file "
-					<< this->dimensionedInternalField().objectPath()
-					<< exit(FatalError);
-			}
-		}
-	}
+    forAll(Up, facei)
+    {
+        if (pp[facei] >= pInf_) // If outflow
+        {
+            // Assume supersonic outflow and calculate the boundary velocity
+            // according to ???
 
-	mixedFvPatchVectorField::updateCoeffs();
+            scalar fpp =
+                sqrt(sqr(MachInf) - 1)
+               /(gamma_*sqr(MachInf))*mag(Ut[facei])*log(pp[facei]/pInf_);
+
+            Up[facei] = Ut[facei] + fpp*nHatInf[facei];
+
+            // Calculate the Mach number of the boundary velocity
+            scalar Mach = mag(Up[facei])/sqrt(gamma_/ppsi[facei]);
+
+            if (Mach <= 1) // If subsonic
+            {
+                // Zero-gradient subsonic outflow
+
+                Up[facei] = U[facei];
+                valueFraction()[facei] = 0;
+            }
+        }
+        else // if inflow
+        {
+            // Calculate the Mach number of the boundary velocity
+            // from the boundary pressure assuming constant total pressure
+            // expansion from the free-stream
+            scalar Mach =
+                sqrt
+                (
+                    (2/(gamma_ - 1))*(1 + ((gamma_ - 1)/2)*sqr(MachInf))
+                   *pow(pp[facei]/pInf_, (1 - gamma_)/gamma_)
+                  - 2/(gamma_ - 1)
+                );
+
+            if (Mach > 1) // If supersonic
+            {
+                // Supersonic inflow is assumed to occur according to the
+                // Prandtl-Meyer expansion process
+
+                scalar nuMachf =
+                    sqrt((gamma_ + 1)/(gamma_ - 1))
+                   *atan(sqrt((gamma_ - 1)/(gamma_ + 1)*(sqr(Mach) - 1)))
+                  - atan(sqr(Mach) - 1);
+
+                scalar fpp = (nuMachInf - nuMachf)*mag(Ut[facei]);
+
+                Up[facei] = Ut[facei] + fpp*nHatInf[facei];
+            }
+            else // If subsonic
+            {
+                FatalErrorIn
+                (
+                    "supersonicFreestreamFvPatchVectorField::updateCoeffs()"
+                )   << "unphysical subsonic inflow has been generated"
+                    << "\n    on patch " << this->patch().name()
+                    << " of field " << this->dimensionedInternalField().name()
+                    << " in file "
+                    << this->dimensionedInternalField().objectPath()
+                    << exit(FatalError);
+            }
+        }
+    }
+
+    mixedFvPatchVectorField::updateCoeffs();
 }
 
 
 void supersonicFreestreamFvPatchVectorField::write(Ostream& os) const
 {
-	fvPatchVectorField::write(os);
-	os.writeKeyword("UInf") << UInf_ << token::END_STATEMENT << nl;
-	os.writeKeyword("pInf") << pInf_ << token::END_STATEMENT << nl;
-	os.writeKeyword("TInf") << TInf_ << token::END_STATEMENT << nl;
-	os.writeKeyword("gamma") << gamma_ << token::END_STATEMENT << nl;
-	writeEntry("value", os);
+    fvPatchVectorField::write(os);
+    os.writeKeyword("UInf") << UInf_ << token::END_STATEMENT << nl;
+    os.writeKeyword("pInf") << pInf_ << token::END_STATEMENT << nl;
+    os.writeKeyword("TInf") << TInf_ << token::END_STATEMENT << nl;
+    os.writeKeyword("gamma") << gamma_ << token::END_STATEMENT << nl;
+    writeEntry("value", os);
 }
 
 
@@ -305,8 +305,8 @@ void supersonicFreestreamFvPatchVectorField::write(Ostream& os) const
 
 makePatchTypeField
 (
-	fvPatchVectorField,
-	supersonicFreestreamFvPatchVectorField
+    fvPatchVectorField,
+    supersonicFreestreamFvPatchVectorField
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

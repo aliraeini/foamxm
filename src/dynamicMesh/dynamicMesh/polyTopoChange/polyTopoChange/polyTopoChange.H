@@ -1,36 +1,36 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	polyTopoChange
+    polyTopoChange
 
 Description
-	Class accumulates information on how to perform mesh refinement.
-	Once the refinement request is completed, polyMesh modifies the mesh
-	topology.
+    Class accumulates information on how to perform mesh refinement.
+    Once the refinement request is completed, polyMesh modifies the mesh
+    topology.
 
 SourceFiles
-	polyTopoChange.C
+    polyTopoChange.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,184 +56,187 @@ namespace Foam
 
 class polyMesh;
 
+/*---------------------------------------------------------------------------*\
+                       Class polyTopoChange Declaration
+\*---------------------------------------------------------------------------*/
 
 class polyTopoChange
 {
-	// Private data
+    // Private data
 
-		//- Reference to mesh to be refined
-		const polyMesh& mesh_;
+        //- Reference to mesh to be refined
+        const polyMesh& mesh_;
 
-		//- Points to add
-		DynamicList<polyAddPoint> addedPoints_;
+        //- Points to add
+        DynamicList<polyAddPoint> addedPoints_;
 
-		//- Points to modify
-		DynamicList<polyModifyPoint> modifiedPoints_;
+        //- Points to modify
+        DynamicList<polyModifyPoint> modifiedPoints_;
 
-		//- Points to remove
-		labelHashSet removedPoints_;
+        //- Points to remove
+        labelHashSet removedPoints_;
 
-		//- Faces to add
-		DynamicList<polyAddFace> addedFaces_;
+        //- Faces to add
+        DynamicList<polyAddFace> addedFaces_;
 
-		//- Faces to modify
-		DynamicList<polyModifyFace> modifiedFaces_;
+        //- Faces to modify
+        DynamicList<polyModifyFace> modifiedFaces_;
 
-		//- Faces to remove
-		labelHashSet removedFaces_;
+        //- Faces to remove
+        labelHashSet removedFaces_;
 
-		//- Number of cells to add
-		DynamicList<polyAddCell> addedCells_;
+        //- Number of cells to add
+        DynamicList<polyAddCell> addedCells_;
 
-		//- Cells to modify
-		DynamicList<polyModifyCell> modifiedCells_;
+        //- Cells to modify
+        DynamicList<polyModifyCell> modifiedCells_;
 
-		//- Cells to remove
-		labelHashSet removedCells_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		polyTopoChange(const polyTopoChange&);
-
-		//- Disallow default bitwise assignment
-		void operator=(const polyTopoChange&);
+        //- Cells to remove
+        labelHashSet removedCells_;
 
 
-	// Private static data
+    // Private Member Functions
 
-		//- Minimum dynamic list size for object insertion
-		static const label minListSize;
+        //- Disallow default bitwise copy construct
+        polyTopoChange(const polyTopoChange&) = delete;
 
-		//- Estimated fraction of removed points
-		static const label pointFraction;
+        //- Disallow default bitwise assignment
+        void operator=(const polyTopoChange&) = delete;
 
-		//- Estimated fraction of removed faces
-		static const label faceFraction;
 
-		//- Estimated fraction of removed cells
-		static const label cellFraction;
+    // Private static data
+
+        //- Minimum dynamic list size for object insertion
+        static const label minListSize;
+
+        //- Estimated fraction of removed points
+        static const label pointFraction;
+
+        //- Estimated fraction of removed faces
+        static const label faceFraction;
+
+        //- Estimated fraction of removed cells
+        static const label cellFraction;
 
 
 public:
 
-	static debug::debugSwitch debug;
+    static debug::debugSwitch debug;
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from mesh reference
-		polyTopoChange(const polyMesh&);
-
-
-	//- Destructor
-	~polyTopoChange();
+        //- Construct from mesh reference
+        polyTopoChange(const polyMesh&);
 
 
-	// Member Functions
-
-		// Definition of topological change
-
-			//- Set topological action
-			label setAction(const topoAction& action);
+    //- Destructor
+    ~polyTopoChange() = default;
 
 
-		// Topology morph data
+    // Member Functions
 
-			//- Is point removed?
-			inline bool pointRemoved(const label pointI) const;
+        // Definition of topological change
 
-			//- Is face removed?
-			inline bool faceRemoved(const label faceI) const;
+            //- Set topological action
+            label setAction(const topoAction& action);
 
-			//- Is cell removed?
-			inline bool cellRemoved(const label cellI) const;
 
-			//- Point balance (added - removed)
-			label pointBalance() const
-			{
-				return
-					addedPoints_.size()
-				  + modifiedPoints_.size()
-				  - removedPoints_.size();
-			}
+        // Topology morph data
 
-			//- Face balance (added - removed)
-			label faceBalance() const
-			{
-				return
-					addedFaces_.size()
-				  + modifiedFaces_.size()
-				  - removedFaces_.size();
-			}
+            //- Is point removed?
+            inline bool pointRemoved(const label pointI) const;
 
-			//- Cell balance (added - removed)
-			label cellBalance() const
-			{
-				return addedCells_.size() - removedCells_.size();
-			}
+            //- Is face removed?
+            inline bool faceRemoved(const label faceI) const;
 
-			//- Added points
-			const DynamicList<polyAddPoint>& addedPoints() const
-			{
-				return addedPoints_;
-			}
+            //- Is cell removed?
+            inline bool cellRemoved(const label cellI) const;
 
-			//- Modified points
-			const DynamicList<polyModifyPoint>& modifiedPoints() const
-			{
-				return modifiedPoints_;
-			}
+            //- Point balance (added - removed)
+            label pointBalance() const
+            {
+                return
+                    addedPoints_.size()
+                  + modifiedPoints_.size()
+                  - removedPoints_.size();
+            }
 
-			//- Map of removed points
-			const labelHashSet& removedPoints() const
-			{
-				return removedPoints_;
-			}
+            //- Face balance (added - removed)
+            label faceBalance() const
+            {
+                return
+                    addedFaces_.size()
+                  + modifiedFaces_.size()
+                  - removedFaces_.size();
+            }
 
-			//- Added faces
-			const DynamicList<polyAddFace>& addedFaces() const
-			{
-				return addedFaces_;
-			}
+            //- Cell balance (added - removed)
+            label cellBalance() const
+            {
+                return addedCells_.size() - removedCells_.size();
+            }
 
-			//- Modified faces
-			const DynamicList<polyModifyFace>& modifiedFaces() const
-			{
-				return modifiedFaces_;
-			}
+            //- Added points
+            const DynamicList<polyAddPoint>& addedPoints() const
+            {
+                return addedPoints_;
+            }
 
-			//- Map of removed faces
-			const labelHashSet& removedFaces() const
-			{
-				return removedFaces_;
-			}
+            //- Modified points
+            const DynamicList<polyModifyPoint>& modifiedPoints() const
+            {
+                return modifiedPoints_;
+            }
 
-			//- Added cells
-			const DynamicList<polyAddCell>& addedCells() const
-			{
-				return addedCells_;
-			}
+            //- Map of removed points
+            const labelHashSet& removedPoints() const
+            {
+                return removedPoints_;
+            }
 
-			//- Modified cells
-			const DynamicList<polyModifyCell>& modifiedCells() const
-			{
-				return modifiedCells_;
-			}
+            //- Added faces
+            const DynamicList<polyAddFace>& addedFaces() const
+            {
+                return addedFaces_;
+            }
 
-			//- Map of removed cells
-			const labelHashSet& removedCells() const
-			{
-				return removedCells_;
-			}
+            //- Modified faces
+            const DynamicList<polyModifyFace>& modifiedFaces() const
+            {
+                return modifiedFaces_;
+            }
 
-			//- Check for consistency and report status
-			//  Returns false for no error.
-			bool check() const;
+            //- Map of removed faces
+            const labelHashSet& removedFaces() const
+            {
+                return removedFaces_;
+            }
 
-			//- Clear all contents
-			void clear();
+            //- Added cells
+            const DynamicList<polyAddCell>& addedCells() const
+            {
+                return addedCells_;
+            }
+
+            //- Modified cells
+            const DynamicList<polyModifyCell>& modifiedCells() const
+            {
+                return modifiedCells_;
+            }
+
+            //- Map of removed cells
+            const labelHashSet& removedCells() const
+            {
+                return removedCells_;
+            }
+
+            //- Check for consistency and report status
+            //  Returns false for no error.
+            bool check() const;
+
+            //- Clear all contents
+            void clear();
 };
 
 

@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,78 +38,78 @@ Foam::label Foam::functionObjectFile::addChars = 7;
 
 void Foam::functionObjectFile::initStream(Ostream& os) const
 {
-	os.setf(ios_base::scientific, ios_base::floatfield);
-	os.width(charWidth());
+    os.setf(ios_base::scientific, ios_base::floatfield);
+    os.width(charWidth());
 }
 
 
 Foam::fileName Foam::functionObjectFile::baseFileDir() const
 {
-	fileName baseDir = obr_.time().path();
+    fileName baseDir = obr_.time().path();
 
-	if (Pstream::parRun())
-	{
-		// Put in undecomposed case (Note: gives problems for
-		// distributed data running)
-		baseDir = baseDir/".."/outputPrefix;
-	}
-	else
-	{
-		baseDir = baseDir/outputPrefix;
-	}
+    if (Pstream::parRun())
+    {
+        // Put in undecomposed case (Note: gives problems for
+        // distributed data running)
+        baseDir = baseDir/".."/outputPrefix;
+    }
+    else
+    {
+        baseDir = baseDir/outputPrefix;
+    }
 
-	// Append mesh name if not default region
-	if (isA<polyMesh>(obr_))
-	{
-		const polyMesh& mesh = refCast<const polyMesh>(obr_);
-		if (mesh.name() != polyMesh::defaultRegion)
-		{
-			baseDir = baseDir/mesh.name();
-		}
-	}
+    // Append mesh name if not default region
+    if (isA<polyMesh>(obr_))
+    {
+        const polyMesh& mesh = refCast<const polyMesh>(obr_);
+        if (mesh.name() != polyMesh::defaultRegion)
+        {
+            baseDir = baseDir/mesh.name();
+        }
+    }
 
-	return baseDir;
+    return baseDir;
 }
 
 
 Foam::fileName Foam::functionObjectFile::baseTimeDir() const
 {
-	return baseFileDir()/prefix_/obr_.time().timeName();
+    return baseFileDir()/prefix_/obr_.time().timeName();
 }
 
 
 void Foam::functionObjectFile::createFiles()
 {
-	if (Pstream::master())
-	{
-		const word startTimeName =
-			obr_.time().timeName(obr_.time().startTime().value());
+    if (Pstream::master())
+    {
+        const word startTimeName =
+            obr_.time().timeName(obr_.time().startTime().value());
 
-		forAll(names_, i)
-		{
-			if (!filePtrs_.set(i))
-			{
-				fileName outputDir(baseFileDir()/prefix_/startTimeName);
-				mkDir(outputDir);
+        forAll(names_, i)
+        {
+            if (!filePtrs_.set(i))
+            {
+                fileName outputDir(baseFileDir()/prefix_/startTimeName);
+                mkDir(outputDir);
 
-				word fName(names_[i]);
+                word fName(names_[i]);
 
-				// Check if file already exists
-				IFstream is(outputDir/(fName + ".dat"));
-				if (is.good())
-				{
-					fName = fName + "_" + obr_.time().timeName();
-				}
+                // Check if file already exists
+                IFstream is(outputDir/(fName + ".dat"));
+                if (is.good())
+                {
+                    fName = fName + "_" + obr_.time().timeName();
+                }
 
-				filePtrs_.set(i, new OFstream(outputDir/(fName + ".dat")));
+                filePtrs_.set(i, new OFstream(outputDir/(fName + ".dat")));
 
-				initStream(filePtrs_[i]);
+                initStream(filePtrs_[i]);
 
-				writeFileHeader(i);
+                writeFileHeader(i);
 
-			}
-		}
-	}
+            }
+        }
+    }
 }
 
 
@@ -119,43 +119,43 @@ void Foam::functionObjectFile::writeFileHeader(const label i)
 
 void Foam::functionObjectFile::write()
 {
-	createFiles();
+    createFiles();
 }
 
 
 void Foam::functionObjectFile::resetNames(const wordList& names)
 {
-	names_.clear();
-	names_.append(names);
+    names_.clear();
+    names_.append(names);
 
-	if (Pstream::master())
-	{
-		filePtrs_.clear();
-		filePtrs_.setSize(names_.size());
+    if (Pstream::master())
+    {
+        filePtrs_.clear();
+        filePtrs_.setSize(names_.size());
 
-		createFiles();
-	}
+        createFiles();
+    }
 }
 
 
 void Foam::functionObjectFile::resetName(const word& name)
 {
-	names_.clear();
-	names_.append(name);
+    names_.clear();
+    names_.append(name);
 
-	if (Pstream::master())
-	{
-		filePtrs_.clear();
-		filePtrs_.setSize(1);
+    if (Pstream::master())
+    {
+        filePtrs_.clear();
+        filePtrs_.setSize(1);
 
-		createFiles();
-	}
+        createFiles();
+    }
 }
 
 
 Foam::Omanip<int> Foam::functionObjectFile::valueWidth(const label offset) const
 {
-	return setw(IOstream::defaultPrecision() + addChars + offset);
+    return setw(IOstream::defaultPrecision() + addChars + offset);
 }
 
 
@@ -163,62 +163,62 @@ Foam::Omanip<int> Foam::functionObjectFile::valueWidth(const label offset) const
 
 Foam::functionObjectFile::functionObjectFile
 (
-	const objectRegistry& obr,
-	const word& prefix
+    const objectRegistry& obr,
+    const word& prefix
 )
 :
-	obr_(obr),
-	prefix_(prefix),
-	names_(),
-	filePtrs_()
+    obr_(obr),
+    prefix_(prefix),
+    names_(),
+    filePtrs_()
 {}
 
 
 Foam::functionObjectFile::functionObjectFile
 (
-	const objectRegistry& obr,
-	const word& prefix,
-	const word& name
+    const objectRegistry& obr,
+    const word& prefix,
+    const word& name
 )
 :
-	obr_(obr),
-	prefix_(prefix),
-	names_(),
-	filePtrs_()
+    obr_(obr),
+    prefix_(prefix),
+    names_(),
+    filePtrs_()
 {
-	names_.clear();
-	names_.append(name);
-	if (Pstream::master())
-	{
-		filePtrs_.clear();
-		filePtrs_.setSize(1);
+    names_.clear();
+    names_.append(name);
+    if (Pstream::master())
+    {
+        filePtrs_.clear();
+        filePtrs_.setSize(1);
 
-		// Cannot create files - need to access virtual function
-	}
+        // Cannot create files - need to access virtual function
+    }
 }
 
 
 Foam::functionObjectFile::functionObjectFile
 (
-	const objectRegistry& obr,
-	const word& prefix,
-	const wordList& names
+    const objectRegistry& obr,
+    const word& prefix,
+    const wordList& names
 )
 :
-	obr_(obr),
-	prefix_(prefix),
-	names_(names),
-	filePtrs_()
+    obr_(obr),
+    prefix_(prefix),
+    names_(names),
+    filePtrs_()
 {
-	names_.clear();
-	names_.append(names);
-	if (Pstream::master())
-	{
-		filePtrs_.clear();
-		filePtrs_.setSize(names_.size());
+    names_.clear();
+    names_.append(names);
+    if (Pstream::master())
+    {
+        filePtrs_.clear();
+        filePtrs_.setSize(names_.size());
 
-		// Cannot create files - need to access virtual function
-	}
+        // Cannot create files - need to access virtual function
+    }
 }
 
 
@@ -232,108 +232,108 @@ Foam::functionObjectFile::~functionObjectFile()
 
 const Foam::wordList& Foam::functionObjectFile::names() const
 {
-	return names_;
+    return names_;
 }
 
 
 Foam::OFstream& Foam::functionObjectFile::file()
 {
-	if (!Pstream::master())
-	{
-		FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
-			<< "Request for file() can only be done by the master process"
-			<< abort(FatalError);
-	}
+    if (!Pstream::master())
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
+            << "Request for file() can only be done by the master process"
+            << abort(FatalError);
+    }
 
-	if (filePtrs_.size() != 1)
-	{
-		WarningIn("Foam::Ostream& Foam::functionObjectFile::file()")
-			<< "Requested single file, but multiple files are present"
-			<< endl;
-	}
+    if (filePtrs_.size() != 1)
+    {
+        WarningIn("Foam::Ostream& Foam::functionObjectFile::file()")
+            << "Requested single file, but multiple files are present"
+            << endl;
+    }
 
-	if (!filePtrs_.set(0))
-	{
-		FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
-			<< "File pointer at index " << 0 << " not allocated"
-			<< abort(FatalError);
-	}
+    if (!filePtrs_.set(0))
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
+            << "File pointer at index " << 0 << " not allocated"
+            << abort(FatalError);
+    }
 
-	return filePtrs_[0];
+    return filePtrs_[0];
 }
 
 
 Foam::PtrList<Foam::OFstream>& Foam::functionObjectFile::files()
 {
-	if (!Pstream::master())
-	{
-		FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::files()")
-			<< "Request for files() can only be done by the master process"
-			<< abort(FatalError);
-	}
+    if (!Pstream::master())
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::files()")
+            << "Request for files() can only be done by the master process"
+            << abort(FatalError);
+    }
 
-	return filePtrs_;
+    return filePtrs_;
 }
 
 
 Foam::OFstream& Foam::functionObjectFile::file(const label i)
 {
-	if (!Pstream::master())
-	{
-		FatalErrorIn
-		(
-			"Foam::OFstream& Foam::functionObjectFile::file(const label)"
-		)
-			<< "Request for file(i) can only be done by the master process"
-			<< abort(FatalError);
-	}
+    if (!Pstream::master())
+    {
+        FatalErrorIn
+        (
+            "Foam::OFstream& Foam::functionObjectFile::file(const label)"
+        )
+            << "Request for file(i) can only be done by the master process"
+            << abort(FatalError);
+    }
 
-	if (!filePtrs_.set(i))
-	{
-		FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
-			<< "File pointer at index " << i << " not allocated"
-			<< abort(FatalError);
-	}
+    if (!filePtrs_.set(i))
+    {
+        FatalErrorIn("Foam::OFstream& Foam::functionObjectFile::file()")
+            << "File pointer at index " << i << " not allocated"
+            << abort(FatalError);
+    }
 
-	return filePtrs_[i];
+    return filePtrs_[i];
 }
 
 
 Foam::label Foam::functionObjectFile::charWidth() const
 {
-	return IOstream::defaultPrecision() + addChars;
+    return IOstream::defaultPrecision() + addChars;
 }
 
 
 void Foam::functionObjectFile::writeCommented
 (
-	Ostream& os,
-	const string& str
+    Ostream& os,
+    const string& str
 ) const
 {
-	os  << setw(1) << "#" << setw(1) << ' '
-		<< setw(charWidth() - 2) << str.c_str();
+    os  << setw(1) << "#" << setw(1) << ' '
+        << setw(charWidth() - 2) << str.c_str();
 }
 
 
 void Foam::functionObjectFile::writeTabbed
 (
-	Ostream& os,
-	const string& str
+    Ostream& os,
+    const string& str
 ) const
 {
-	os  << tab << setw(charWidth()) << str.c_str();
+    os  << tab << setw(charWidth()) << str.c_str();
 }
 
 
 void Foam::functionObjectFile::writeHeader
 (
-	Ostream& os,
-	const string& str
+    Ostream& os,
+    const string& str
 ) const
 {
-	os  << setw(1) << "#" << setw(1) << ' '
-		<< setf(ios_base::left) << setw(charWidth() - 2) << str.c_str() << nl;
+    os  << setw(1) << "#" << setw(1) << ' '
+        << setf(ios_base::left) << setw(charWidth() - 2) << str.c_str() << nl;
 }
 
 

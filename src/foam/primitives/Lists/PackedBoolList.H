@@ -1,42 +1,42 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-	Foam::PackedBoolList
+    Foam::PackedBoolList
 
 Description
-	A bit-packed bool list.
+    A bit-packed bool list.
 
-	In addition to the obvious memory advantage over using a
-	List\<bool\>, this class also provides a number of bit-like
-	operations.
+    In addition to the obvious memory advantage over using a
+    List\<bool\>, this class also provides a number of bit-like
+    operations.
 
 SourceFiles
-	PackedBoolListI.H
-	PackedBoolList.C
+    PackedBoolListI.H
+    PackedBoolList.C
 
 SeeAlso
-	Foam::PackedList
+    Foam::PackedList
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,203 +57,206 @@ class PackedBoolList;
 //- \typedef A List of PackedBoolList
 typedef List<PackedBoolList> PackedBoolListList;
 
+/*---------------------------------------------------------------------------*\
+                       Class PackedBoolList Declaration
+\*---------------------------------------------------------------------------*/
 
 class PackedBoolList
 :
-	public PackedList<1>
+    public PackedList<1>
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Preparation, resizing before a bitor operation
-		//  returns true if the later result needs trimming
-		bool bitorPrepare(const PackedList<1>& lst, label& maxPackLen);
+        //- Preparation, resizing before a bitor operation
+        //  returns true if the later result needs trimming
+        bool bitorPrepare(const PackedList<1>& lst, label& maxPackLen);
 
-		//- Set the listed indices. Return number of elements changed.
-		//  Does auto-vivify for non-existent entries.
-		template<class LabelListType>
-		label setIndices(const LabelListType& indices);
+        //- Set the listed indices. Return number of elements changed.
+        //  Does auto-vivify for non-existent entries.
+        template<class LabelListType>
+        label setIndices(const LabelListType& indices);
 
-		//- Unset the listed indices. Return number of elements changed.
-		//  Never auto-vivify entries.
-		template<class LabelListType>
-		label unsetIndices(const LabelListType& indices);
+        //- Unset the listed indices. Return number of elements changed.
+        //  Never auto-vivify entries.
+        template<class LabelListType>
+        label unsetIndices(const LabelListType& indices);
 
-		//- Subset with the listed indices. Return number of elements subsetted.
-		template<class LabelListType>
-		label subsetIndices(const LabelListType& indices);
+        //- Subset with the listed indices. Return number of elements subsetted.
+        template<class LabelListType>
+        label subsetIndices(const LabelListType& indices);
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		inline PackedBoolList();
+        //- Construct null
+        inline PackedBoolList();
 
-		//- Construct from Istream
-		PackedBoolList(Istream&);
+        //- Construct from Istream
+        PackedBoolList(Istream&);
 
-		//- Construct with given size, initializes list to 0
-		explicit inline PackedBoolList(const label size);
+        //- Construct with given size, initializes list to 0
+        explicit inline PackedBoolList(const label size);
 
-		//- Construct with given size and value for all elements
-		inline PackedBoolList(const label size, const bool val);
+        //- Construct with given size and value for all elements
+        inline PackedBoolList(const label size, const bool val);
 
-		//- Copy constructor
-		inline PackedBoolList(const PackedBoolList&);
+        //- Copy constructor
+        inline PackedBoolList(const PackedBoolList&);
 
-		//- Copy constructor
-		explicit inline PackedBoolList(const PackedList<1>&);
+        //- Copy constructor
+        explicit inline PackedBoolList(const PackedList<1>&);
 
-		//- Construct by transferring the parameter contents
-		inline PackedBoolList(const Xfer<PackedBoolList>&);
+        //- Construct by transferring the parameter contents
+        inline PackedBoolList(const Xfer<PackedBoolList>&);
 
-		//- Construct by transferring the parameter contents
-		inline PackedBoolList(const Xfer<PackedList<1> >&);
+        //- Construct by transferring the parameter contents
+        inline PackedBoolList(const Xfer<PackedList<1> >&);
 
-		//- Construct from a list of bools
-		explicit inline PackedBoolList(const Foam::UList<bool>&);
+        //- Construct from a list of bools
+        explicit inline PackedBoolList(const Foam::UList<bool>&);
 
-		//- Construct from a list of labels
-		//  using the labels as indices to indicate which bits are set
-		explicit inline PackedBoolList(const UList<label>& indices);
+        //- Construct from a list of labels
+        //  using the labels as indices to indicate which bits are set
+        explicit inline PackedBoolList(const Foam::UList<label>& indices);
 
-		//- Construct from a list of labels
-		//  using the labels as indices to indicate which bits are set
-		explicit inline PackedBoolList(const UIndirectList<label>& indices);
+        //- Construct from a list of labels
+        //  using the labels as indices to indicate which bits are set
+        explicit inline PackedBoolList(const UIndirectList<label>& indices);
 
-		//- Clone
-		inline autoPtr<PackedBoolList> clone() const;
-
-
-	// Member Functions
-
-		// Access
-
-			using PackedList<1>::set;
-			using PackedList<1>::unset;
-
-			//- Set specified bits.
-			void set(const PackedList<1>&);
-
-			//- Set the listed indices. Return number of elements changed.
-			//  Does auto-vivify for non-existent entries.
-			label set(const UList<label>& indices);
-
-			//- Set the listed indices. Return number of elements changed.
-			//  Does auto-vivify for non-existent entries.
-			label set(const UIndirectList<label>& indices);
-
-			//- Unset specified bits.
-			void unset(const PackedList<1>&);
-
-			//- Unset the listed indices. Return number of elements changed.
-			//  Never auto-vivify entries.
-			label unset(const UList<label>& indices);
-
-			//- Unset the listed indices. Return number of elements changed.
-			//  Never auto-vivify entries.
-			label unset(const UIndirectList<label>& indices);
-
-			//- Subset with the specified list.
-			void subset(const PackedList<1>&);
-
-			//- Subset with the listed indices.
-			//  Return number of elements subsetted.
-			label subset(const UList<label>& indices);
-
-			//- Subset with the listed indices.
-			//  Return number of elements subsetted.
-			label subset(const UIndirectList<label>& indices);
+        //- Clone
+        inline autoPtr<PackedBoolList> clone() const;
 
 
-			//- Return indices of the used (true) elements as a list of labels
-			Xfer<labelList> used() const;
+    // Member Functions
+
+        // Access
+
+            using PackedList<1>::set;
+            using PackedList<1>::unset;
+
+            //- Set specified bits.
+            void set(const PackedList<1>&);
+
+            //- Set the listed indices. Return number of elements changed.
+            //  Does auto-vivify for non-existent entries.
+            label set(const Foam::UList<label>& indices);
+
+            //- Set the listed indices. Return number of elements changed.
+            //  Does auto-vivify for non-existent entries.
+            label set(const UIndirectList<label>& indices);
+
+            //- Unset specified bits.
+            void unset(const PackedList<1>&);
+
+            //- Unset the listed indices. Return number of elements changed.
+            //  Never auto-vivify entries.
+            label unset(const Foam::UList<label>& indices);
+
+            //- Unset the listed indices. Return number of elements changed.
+            //  Never auto-vivify entries.
+            label unset(const UIndirectList<label>& indices);
+
+            //- Subset with the specified list.
+            void subset(const PackedList<1>&);
+
+            //- Subset with the listed indices.
+            //  Return number of elements subsetted.
+            label subset(const Foam::UList<label>& indices);
+
+            //- Subset with the listed indices.
+            //  Return number of elements subsetted.
+            label subset(const UIndirectList<label>& indices);
 
 
-		// Edit
-
-			//- Transfer the contents of the argument list into this list
-			//  and annul the argument list.
-			inline void transfer(PackedBoolList&);
-
-			//- Transfer the contents of the argument list into this list
-			//  and annul the argument list.
-			inline void transfer(PackedList<1>&);
-
-			//- Transfer contents to the Xfer container
-			inline Xfer<PackedBoolList> xfer();
+            //- Return indices of the used (true) elements as a list of labels
+            Xfer<labelList> used() const;
 
 
-	// Member Operators
+        // Edit
 
-			//- Assignment of all entries to the given value.
-			inline PackedBoolList& operator=(const bool val);
+            //- Transfer the contents of the argument list into this list
+            //  and annul the argument list.
+            inline void transfer(PackedBoolList&);
 
-			//- Assignment operator.
-			inline PackedBoolList& operator=(const PackedBoolList&);
+            //- Transfer the contents of the argument list into this list
+            //  and annul the argument list.
+            inline void transfer(PackedList<1>&);
 
-			//- Assignment operator.
-			inline PackedBoolList& operator=(const PackedList<1>&);
-
-			//- Assignment operator.
-			PackedBoolList& operator=(const Foam::UList<bool>&);
-
-			//- Assignment operator,
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator=(const UList<label>& indices);
-
-			//- Assignment operator,
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator=(const UIndirectList<label>&);
-
-			//- Complement operator
-			inline PackedBoolList operator~() const;
-
-			//- And operator (lists may be dissimilar sizes)
-			inline PackedBoolList& operator&=(const PackedList<1>&);
-
-			//- And operator (lists may be dissimilar sizes)
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator&=(const UList<label>& indices);
-
-			//- And operator (lists may be dissimilar sizes)
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator&=(const UIndirectList<label>&);
-
-			//- Xor operator (lists may be dissimilar sizes)
-			//  Retains unique entries
-			PackedBoolList& operator^=(const PackedList<1>&);
-
-			//- Or operator (lists may be dissimilar sizes)
-			inline PackedBoolList& operator|=(const PackedList<1>&);
-
-			//- Or operator (lists may be dissimilar sizes),
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator|=(const UList<label>& indices);
-
-			//- Or operator (lists may be dissimilar sizes),
-			//  using the labels as indices to indicate which bits are set
-			inline PackedBoolList& operator|=(const UIndirectList<label>&);
+            //- Transfer contents to the Xfer container
+            inline Xfer<PackedBoolList> xfer();
 
 
-			//- Add entries to this list, synonymous with the or operator
-			inline PackedBoolList& operator+=(const PackedList<1>&);
+    // Member Operators
 
-			//- Add entries to this list, synonymous with the or operator
-			inline PackedBoolList& operator+=(const UList<label>& indices);
+            //- Assignment of all entries to the given value.
+            inline PackedBoolList& operator=(const bool val);
 
-			//- Add entries to this list, synonymous with the or operator
-			inline PackedBoolList& operator+=(const UIndirectList<label>&);
+            //- Assignment operator.
+            inline PackedBoolList& operator=(const PackedBoolList&);
 
-			//- Remove entries from this list - unset the specified bits
-			inline PackedBoolList& operator-=(const PackedList<1>&);
+            //- Assignment operator.
+            inline PackedBoolList& operator=(const PackedList<1>&);
 
-			//- Remove entries from this list - unset the specified bits
-			inline PackedBoolList& operator-=(const UList<label>& indices);
+            //- Assignment operator.
+            PackedBoolList& operator=(const Foam::UList<bool>&);
 
-			//- Remove entries from this list - unset the specified bits
-			inline PackedBoolList& operator-=(const UIndirectList<label>&);
+            //- Assignment operator,
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator=(const Foam::UList<label>& indices);
+
+            //- Assignment operator,
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator=(const UIndirectList<label>&);
+
+            //- Complement operator
+            inline PackedBoolList operator~() const;
+
+            //- And operator (lists may be dissimilar sizes)
+            inline PackedBoolList& operator&=(const PackedList<1>&);
+
+            //- And operator (lists may be dissimilar sizes)
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator&=(const Foam::UList<label>& indices);
+
+            //- And operator (lists may be dissimilar sizes)
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator&=(const UIndirectList<label>&);
+
+            //- Xor operator (lists may be dissimilar sizes)
+            //  Retains unique entries
+            PackedBoolList& operator^=(const PackedList<1>&);
+
+            //- Or operator (lists may be dissimilar sizes)
+            inline PackedBoolList& operator|=(const PackedList<1>&);
+
+            //- Or operator (lists may be dissimilar sizes),
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator|=(const Foam::UList<label>& indices);
+
+            //- Or operator (lists may be dissimilar sizes),
+            //  using the labels as indices to indicate which bits are set
+            inline PackedBoolList& operator|=(const UIndirectList<label>&);
+
+
+            //- Add entries to this list, synonymous with the or operator
+            inline PackedBoolList& operator+=(const PackedList<1>&);
+
+            //- Add entries to this list, synonymous with the or operator
+            inline PackedBoolList& operator+=(const Foam::UList<label>& indices);
+
+            //- Add entries to this list, synonymous with the or operator
+            inline PackedBoolList& operator+=(const UIndirectList<label>&);
+
+            //- Remove entries from this list - unset the specified bits
+            inline PackedBoolList& operator-=(const PackedList<1>&);
+
+            //- Remove entries from this list - unset the specified bits
+            inline PackedBoolList& operator-=(const Foam::UList<label>& indices);
+
+            //- Remove entries from this list - unset the specified bits
+            inline PackedBoolList& operator-=(const UIndirectList<label>&);
 };
 
 
@@ -262,8 +265,8 @@ public:
 //- Intersect lists - the result is trimmed to the smallest intersecting size
 PackedBoolList operator&
 (
-	const PackedBoolList& lst1,
-	const PackedBoolList& lst2
+    const PackedBoolList& lst1,
+    const PackedBoolList& lst2
 );
 
 
@@ -271,16 +274,16 @@ PackedBoolList operator&
 //  The result is trimmed to the smallest intersecting size
 PackedBoolList operator^
 (
-	const PackedBoolList& lst1,
-	const PackedBoolList& lst2
+    const PackedBoolList& lst1,
+    const PackedBoolList& lst2
 );
 
 
 //- Combine lists
 PackedBoolList operator|
 (
-	const PackedBoolList& lst1,
-	const PackedBoolList& lst2
+    const PackedBoolList& lst1,
+    const PackedBoolList& lst2
 );
 
 

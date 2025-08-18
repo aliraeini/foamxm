@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::TimeActivatedExplicitSourceList
+    Foam::TimeActivatedExplicitSourceList
 
 Description
-	List of time activeted explict sources
+    List of time activeted explict sources
 
 SourceFiles
-	TimeActivatedExplicitSourceList.C
+    TimeActivatedExplicitSourceList.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -57,97 +57,106 @@ class TimeActivatedExplicitSourceList;
 template<class Type>
 Ostream& operator<<
 (
-	Ostream&,
-	const TimeActivatedExplicitSourceList<Type>&
+    Ostream&,
+    const TimeActivatedExplicitSourceList<Type>&
 );
 
+/*---------------------------------------------------------------------------*\
+             Class TimeActivatedExplicitSourceList Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class TimeActivatedExplicitSourceList
 :
-	public IOPtrList<TimeActivatedExplicitSource<Type> >
+    public IOPtrList<TimeActivatedExplicitSource<Type> >
 {
 private:
 
-	// Private data
+    // Private data
 
-		//- Name of source properties list
-		word name_;
+        //- Name of source properties list
+        word name_;
 
-		//- Reference to the mesh database
-		const fvMesh& mesh_;
+        //- Reference to the mesh database
+        const fvMesh& mesh_;
 
-		//- Dimensions of source properties
-		dimensionSet dimensions_;
+        //- Dimensions of source properties
+        dimensionSet dimensions_;
 
-		//- List of field names the source is working on
-		wordList fieldNames_;
+        //- List of field names the source is working on
+        wordList fieldNames_;
 
 
-	// Private member functions
+    // Private member functions
 
-		//- Disallow default bitwise copy construct
-		TimeActivatedExplicitSourceList
-		(
-			const TimeActivatedExplicitSourceList<Type>&
-		);
+        //- Disallow default bitwise copy construct
+        TimeActivatedExplicitSourceList
+        (
+            const TimeActivatedExplicitSourceList<Type>&
+        ) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const TimeActivatedExplicitSourceList<Type>&);
+        //- Disallow default bitwise assignment
+        void operator=(const TimeActivatedExplicitSourceList<Type>&) = delete;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components with list of field names
-		TimeActivatedExplicitSourceList
-		(
-			const word& name,
-			const fvMesh& mesh,
-			const dimensionSet& dimensions,
-			const wordList& fieldNames
-		);
+        //- Construct from components with list of field names
+        TimeActivatedExplicitSourceList
+        (
+            const word& name,
+            const fvMesh& mesh,
+            const dimensionSet& dimensions,
+            const wordList& fieldNames
+        );
 
-		//- Construct from components with single field name
-		TimeActivatedExplicitSourceList
-		(
-			const word& name,
-			const fvMesh& mesh,
-			const dimensionSet& dimensions,
-			const word& fieldName
-		);
-
-
-	// Member Functions
-
-		// Evaluation
-
-			//- Return the source for field, fieldI
-			tmp<DimensionedField<Type, volMesh> > Su
-			(
-				const label fieldI = 0
-			);
-
-			//- Return the total source for all fields
-			tmp<DimensionedField<Type, volMesh> > SuTot();
+        //- Construct from components with single field name
+        TimeActivatedExplicitSourceList
+        (
+            const word& name,
+            const fvMesh& mesh,
+            const dimensionSet& dimensions,
+            const word& fieldName
+        );
 
 
+    // Member Functions
 
-		// I-O
+        // Evaluation
 
-			//- Read data from Istream
-			bool readData(Istream& is);
+            //- Return the source for field, fieldI
+            tmp<DimensionedField<Type, volMesh> > Su
+            (
+                const label fieldI = 0
+            ) const;
 
-			//- Write data to Istream
-			bool writeData(Ostream& os) const;
+            //- Return the total source for all fields
+            tmp<DimensionedField<Type, volMesh> > SuTot() const;
 
-			//- Ostream operator
-			friend Ostream& operator<< <Type>
-			(
-				Ostream& os,
-				const TimeActivatedExplicitSourceList& sources
-			);
+            //- Return the source for field, fieldI
+            void limitField
+            (
+                GeometricField<Type, fvPatchField, volMesh>& psi,
+                const label fieldI
+            ) const;
+
+
+        // I-O
+
+            //- Read data from Istream
+            bool readData(Istream& is);
+
+            //- Write data to Istream
+            bool writeData(Ostream& os) const;
+
+            //- Ostream operator
+            friend Ostream& operator<< <Type>
+            (
+                Ostream& os,
+                const TimeActivatedExplicitSourceList& sources
+            );
 };
 
 
@@ -158,7 +167,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "TimeActivatedExplicitSourceList.C"
+#   include "TimeActivatedExplicitSourceList.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

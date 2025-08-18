@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 InNamspace
-	Foam
+    Foam
 
 Description
-	Various functions to operate on Lists.
+    Various functions to operate on Lists.
 
 SourceFiles
-	ListOps.C
-	ListOpsTemplates.C
+    ListOps.C
+    ListOpsTemplates.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -140,9 +140,9 @@ void invertManyToMany(const label len, const UList<InList>&, List<OutList>&);
 template<class InList, class OutList>
 List<OutList> invertManyToMany(const label len, const UList<InList>& in)
 {
-	List<OutList> out;
-	invertManyToMany<InList,OutList>(len, in, out);
-	return out;
+    List<OutList> out;
+    invertManyToMany<InList,OutList>(len, in, out);
+    return out;
 }
 
 //- Create identity map (map[i] == i) of given length
@@ -153,37 +153,37 @@ labelList identity(const label len);
 template<class ListType>
 label findIndex
 (
-	const ListType&,
-	typename ListType::const_reference,
-	const label start=0
+    const ListType&,
+    typename ListType::const_reference,
+    const label start=0
 );
 
 //- Find all occurences of given element. Linear search.
 template<class ListType>
 labelList findIndices
 (
-	const ListType&,
-	typename ListType::const_reference,
-	const label start=0
+    const ListType&,
+    typename ListType::const_reference,
+    const label start=0
 );
 
 //- Opposite of findIndices: set values at indices to given value
 template<class ListType>
 void setValues
 (
-	ListType&,
-	const UList<label>& indices,
-	typename ListType::const_reference
+    ListType&,
+    const UList<label>& indices,
+    typename ListType::const_reference
 );
 
 //- Opposite of findIndices: set values at indices to given value
 template<class ListType>
 ListType createWithValues
 (
-	const label sz,
-	typename ListType::const_reference initValue,
-	const UList<label>& indices,
-	typename ListType::const_reference setValue
+    const label sz,
+    typename ListType::const_reference initValue,
+    const UList<label>& indices,
+    typename ListType::const_reference setValue
 );
 
 //- Find index of max element (and larger than given element).
@@ -203,9 +203,9 @@ label findMin(const ListType&, const label start=0);
 template<class ListType>
 label findSortedIndex
 (
-	const ListType&,
-	typename ListType::const_reference,
-	const label start=0
+    const ListType&,
+    typename ListType::const_reference,
+    const label start=0
 );
 
 
@@ -214,10 +214,10 @@ label findSortedIndex
 template<class ListType, class BinaryOp>
 label findLower
 (
-	const ListType&,
-	typename ListType::const_reference,
-	const label stary,
-	const BinaryOp& bop
+    const ListType&,
+    typename ListType::const_reference,
+    const label stary,
+    const BinaryOp& bop
 );
 
 
@@ -226,9 +226,9 @@ label findLower
 template<class ListType>
 label findLower
 (
-	const ListType&,
-	typename ListType::const_reference,
-	const label start=0
+    const ListType&,
+    typename ListType::const_reference,
+    const label start=0
 );
 
 
@@ -249,7 +249,7 @@ template<class T>
 class ListAppendEqOp
 {
 public:
-	void operator()(List<T>& x, const List<T>& y) const;
+    void operator()(List<T>& x, const List<T>& y) const;
 };
 
 
@@ -281,7 +281,7 @@ void inplaceRotateList(ListType<DataType>& list, label n);
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "ListOpsTemplates.C"
+#   include "ListOpsTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

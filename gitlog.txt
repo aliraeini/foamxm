@@ -1,0 +1,10 @@
+* 883a9bcbc Moved spare blockMeshDict
+* 481a0705d Clean up. Remove SuSp stabilisation term from transport
+* 9787afbc9 Add start averaging time
+* 4fcf89af3 Moved flux function objects into separate library
+* 036d75748 (origin/nextRelease) Formatting
+* cf626781b foamx4m
+* 03b786de7 (HEAD -> master) delete unused
+
+git remote show origin:
+  Fetch URL: https://git.code.sf.net/p/foam-extend/foam-extend-5.0

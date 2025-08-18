@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	BlockCoeffMaxNorm
+    BlockCoeffMaxNorm
 
 Description
-	Class for BlockCoeff maximum element magnitude norm.
+    Class for BlockCoeff maximum element magnitude norm.
 
 Author
-	Klas Jareteg, 2013-03-07
+    Klas Jareteg, 2013-03-07
 
 SourceFiles
-	BlockCoeffMaxNorm.C
+    BlockCoeffMaxNorm.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -52,61 +52,64 @@ namespace Foam
 // * * * * * * Forward declaration of template friend fuctions * * * * * * * //
 
 
+/*---------------------------------------------------------------------------*\
+                        Class BlockCoeffMaxNorm Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class BlockCoeffMaxNorm
 :
-	public BlockCoeffNorm<Type>
+    public BlockCoeffNorm<Type>
 {
-	// Private data
+    // Private data
 
-		//- Control data dictionary
-		dictionary dict_;
+        //- Control data dictionary
+        dictionary dict_;
 
 
 protected:
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		//- Return dictionary
-		const dictionary& dict() const
-		{
-			return dict_;
-		}
+        //- Return dictionary
+        const dictionary& dict() const
+        {
+            return dict_;
+        }
 
 
 public:
 
-	//- Runtime type information
-	TypeName("maxNorm");
+    //- Runtime type information
+    TypeName("maxNorm");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from dictionary
-		BlockCoeffMaxNorm
-		(
-			const dictionary& dict
-		);
+        //- Construct from dictionary
+        BlockCoeffMaxNorm
+        (
+            const dictionary& dict
+        );
 
-	//- Destructor
-	virtual ~BlockCoeffMaxNorm()
-	{}
+    //- Destructor
+    virtual ~BlockCoeffMaxNorm()
+    {}
 
 
-	// Member functions
+    // Member functions
 
-		//- Solve
-		virtual scalar normalize
-		(
-			const BlockCoeff<Type>& a
-		);
+        //- Solve
+        virtual scalar normalize
+        (
+            const BlockCoeff<Type>& a
+        );
 
-		virtual void normalize
-		(
-			Field<scalar>& b,
-			const CoeffField<Type>& a
-		);
+        virtual void normalize
+        (
+            Field<scalar>& b,
+            const CoeffField<Type>& a
+        );
 };
 
 
@@ -117,7 +120,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "BlockCoeffMaxNorm.C"
+#   include "BlockCoeffMaxNorm.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

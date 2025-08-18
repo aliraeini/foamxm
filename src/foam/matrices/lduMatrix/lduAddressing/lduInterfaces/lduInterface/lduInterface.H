@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::lduInterface
+    Foam::lduInterface
 
 Description
-	An abstract base class for implicitly-coupled interfaces
-	e.g. processor and cyclic patches.
+    An abstract base class for implicitly-coupled interfaces
+    e.g. processor and cyclic patches.
 
 SourceFiles
-	lduInterface.C
+    lduInterface.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,111 +46,114 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-
+// Forward declaration of classes
 class crMatrix;
 
 template<class T>
 class autoPtr;
 
+/*---------------------------------------------------------------------------*\
+                     Class lduInterface Declaration
+\*---------------------------------------------------------------------------*/
 
 class lduInterface
 {
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		lduInterface(const lduInterface&);
+        //- Disallow default bitwise copy construct
+        lduInterface(const lduInterface&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const lduInterface&);
+        //- Disallow default bitwise assignment
+        void operator=(const lduInterface&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("lduInterface");
+    //- Runtime type information
+    TypeName("lduInterface");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		lduInterface()
-		{}
-
-
-	//- Destructor
-	virtual ~lduInterface();
+        //- Construct null
+        lduInterface()
+        {}
 
 
-	// Member Functions
-
-		// Access
-
-			//- Return true if interface is coupled
-			virtual bool coupled() const = 0;
-
-			//- Return faceCell addressing
-			virtual bool master() const = 0;
-
-			//- Return faceCell addressing
-			virtual const unallocLabelList& faceCells() const = 0;
+    //- Destructor
+    virtual ~lduInterface();
 
 
-		// Interface transfer functions
+    // Member Functions
 
-			//- Return the values of the given internal data adjacent to
-			//  the interface as a field
-			virtual tmp<labelField> interfaceInternalField
-			(
-				const unallocLabelList& internalData
-			) const = 0;
+        // Access
 
-			//- Initialise interface data transfer
-			virtual void initTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const
-			{}
+            //- Return true if interface is coupled
+            virtual bool coupled() const = 0;
 
-			//- Transfer and return neighbour field
-			virtual tmp<labelField> transfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& interfaceData
-			) const = 0;
+            //- Does this side own the patch ?
+            virtual bool master() const = 0;
 
-			//- Initialise transfer of internal field adjacent to the interface
-			virtual void initInternalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& iF
-			) const
-			{}
+            //- Return faceCell addressing
+            virtual const labelUList& faceCells() const = 0;
 
-			//- Transfer and return internal field adjacent to the interface
-			virtual tmp<labelField> internalFieldTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const unallocLabelList& iF
-			) const = 0;
 
-			//- Initialise transfer of prolongation matrix to the interface
-			virtual void initProlongationTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const crMatrix& filteredP
-			) const
-			{
-				Pout<< "lduInterface::initProlongationTransfer()" << endl;
-			}
+        // Interface transfer functions
 
-			//- Transfer and return prolongation matrix adjacent to
-			//  the interface
-			virtual autoPtr<crMatrix> prolongationTransfer
-			(
-				const Pstream::commsTypes commsType,
-				const crMatrix& filteredP
-			) const;
+            //- Return the values of the given internal data adjacent to
+            //  the interface as a field
+            virtual tmp<labelField> interfaceInternalField
+            (
+                const labelUList& internalData
+            ) const = 0;
+
+            //- Initialise interface data transfer
+            virtual void initTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const
+            {}
+
+            //- Transfer and return neighbour field
+            virtual tmp<labelField> transfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& interfaceData
+            ) const = 0;
+
+            //- Initialise transfer of internal field adjacent to the interface
+            virtual void initInternalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& iF
+            ) const
+            {}
+
+            //- Transfer and return internal field adjacent to the interface
+            virtual tmp<labelField> internalFieldTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const labelUList& iF
+            ) const = 0;
+
+            //- Initialise transfer of prolongation matrix to the interface
+            virtual void initProlongationTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const crMatrix& filteredP
+            ) const
+            {
+                Pout<< "lduInterface::initProlongationTransfer()" << endl;
+            }
+
+            //- Transfer and return prolongation matrix adjacent to
+            //  the interface
+            virtual autoPtr<crMatrix> prolongationTransfer
+            (
+                const Pstream::commsTypes commsType,
+                const crMatrix& filteredP
+            ) const;
 };
 
 

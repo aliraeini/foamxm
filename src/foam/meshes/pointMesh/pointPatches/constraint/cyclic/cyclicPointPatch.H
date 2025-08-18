@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::cyclicPointPatch
+    Foam::cyclicPointPatch
 
 Description
-	Cyclic patch for post-processing.
+    Cyclic patch for post-processing.
 
 SourceFiles
-	cyclicPointPatch.C
+    cyclicPointPatch.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -43,107 +43,110 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                      Class cyclicPointPatch Declaration
+\*---------------------------------------------------------------------------*/
 
 class cyclicPointPatch
 :
-	public coupledFacePointPatch
+    public coupledFacePointPatch
 {
-	// Private data
+    // Private data
 
-		//- Local reference cast into the cyclic patch
-		const cyclicPolyPatch& cyclicPolyPatch_;
-
-
-	// Demand driven private data
-
-		//- The set of pairs of points that require transformation
-		//  and/or mapping
-		edgeList transformPairs_;
+        //- Local reference cast into the cyclic patch
+        const cyclicPolyPatch& cyclicPolyPatch_;
 
 
-	// Private Member Functions
+    // Demand driven private data
 
-		//- Disallow default construct as copy
-		cyclicPointPatch(const cyclicPointPatch&);
+        //- The set of pairs of points that require transformation
+        //  and/or mapping
+        edgeList transformPairs_;
 
-		//- Disallow default assignment
-		void operator=(const cyclicPointPatch&);
+
+    // Private Member Functions
+
+        //- Disallow default construct as copy
+        cyclicPointPatch(const cyclicPointPatch&);
+
+        //- Disallow default assignment
+        void operator=(const cyclicPointPatch&);
 
 
 protected:
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		//- Initialise the calculation of the patch geometry
-		virtual void initGeometry()
-		{}
+        //- Initialise the calculation of the patch geometry
+        virtual void initGeometry()
+        {}
 
-		//- Calculate the patch geometry
-		virtual void calcGeometry()
-		{}
+        //- Calculate the patch geometry
+        virtual void calcGeometry()
+        {}
 
-		//- Correct patches after moving points
-		virtual void movePoints()
-		{}
+        //- Correct patches after moving points
+        virtual void movePoints()
+        {}
 
-		//- Initialise the update of the patch topology
-		virtual void initUpdateMesh();
+        //- Initialise the update of the patch topology
+        virtual void initUpdateMesh();
 
-		//- Update of the patch topology
-		virtual void updateMesh();
+        //- Update of the patch topology
+        virtual void updateMesh();
 
 
 public:
 
-	typedef coupledPointPatch CoupledPointPatch;
-	typedef pointBoundaryMesh BoundaryMesh;
+    typedef coupledPointPatch CoupledPointPatch;
+    typedef pointBoundaryMesh BoundaryMesh;
 
 
-	//- Runtime type information
-	TypeName(cyclicPolyPatch::typeName_());
+    //- Runtime type information
+    TypeName(cyclicPolyPatch::typeName_());
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from components
-		cyclicPointPatch
-		(
-			const polyPatch& patch,
-			const pointBoundaryMesh& bm
-		);
-
-
-	//- Destructor
-	virtual ~cyclicPointPatch();
+        //- Construct from components
+        cyclicPointPatch
+        (
+            const polyPatch& patch,
+            const pointBoundaryMesh& bm
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~cyclicPointPatch();
 
-		// Access
 
-			//- Return the underlying cyclicPolyPatch
-			const cyclicPolyPatch& cyclicPatch() const
-			{
-				return cyclicPolyPatch_;
-			}
+    // Member Functions
 
-			//- Are the cyclic planes parallel
-			bool parallel() const
-			{
-				return cyclicPolyPatch_.parallel();
-			}
+        // Access
 
-			//- Return face transformation tensor
-			const tensorField& forwardT() const
-			{
-				return cyclicPolyPatch_.forwardT();
-			}
+            //- Return the underlying cyclicPolyPatch
+            const cyclicPolyPatch& cyclicPatch() const
+            {
+                return cyclicPolyPatch_;
+            }
 
-			//- Return neighbour-cell transformation tensor
-			const tensorField& reverseT() const
-			{
-				return cyclicPolyPatch_.reverseT();
-			}
+            //- Are the cyclic planes parallel
+            bool parallel() const
+            {
+                return cyclicPolyPatch_.parallel();
+            }
+
+            //- Return face transformation tensor
+            const tensorField& forwardT() const
+            {
+                return cyclicPolyPatch_.forwardT();
+            }
+
+            //- Return neighbour-cell transformation tensor
+            const tensorField& reverseT() const
+            {
+                return cyclicPolyPatch_.reverseT();
+            }
 };
 
 

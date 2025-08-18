@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::inverseFaceDistanceDiffusivity
+    Foam::inverseFaceDistanceDiffusivity
 
 Description
-	Inverse distance to the given patches motion diffusivity.
+    Inverse distance to the given patches motion diffusivity.
 
 SourceFiles
-	inverseFaceDistanceDiffusivity.C
+    inverseFaceDistanceDiffusivity.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,51 +42,54 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class inverseFaceDistanceDiffusivity Declaration
+\*---------------------------------------------------------------------------*/
 
 class inverseFaceDistanceDiffusivity
 :
-	public uniformDiffusivity
+    public uniformDiffusivity
 {
-	// Private data
+    // Private data
 
-		//- Patches selected to base the distance on
-		wordList patchNames_;
+        //- Patches selected to base the distance on
+        wordList patchNames_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		inverseFaceDistanceDiffusivity(const inverseFaceDistanceDiffusivity&);
+        //- Disallow default bitwise copy construct
+        inverseFaceDistanceDiffusivity(const inverseFaceDistanceDiffusivity&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const inverseFaceDistanceDiffusivity&);
+        //- Disallow default bitwise assignment
+        void operator=(const inverseFaceDistanceDiffusivity&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("inverseFaceDistance");
+    //- Runtime type information
+    TypeName("inverseFaceDistance");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct for the given fvMotionSolver and data Istream
-		inverseFaceDistanceDiffusivity
-		(
-			const fvMotionSolver& mSolver,
-			Istream& mdData
-		);
-
-
-	// Destructor
-
-		virtual ~inverseFaceDistanceDiffusivity();
+        //- Construct for the given fvMotionSolver and data Istream
+        inverseFaceDistanceDiffusivity
+        (
+            const fvMotionSolver& mSolver,
+            Istream& mdData
+        );
 
 
-	// Member Functions
+    // Destructor
 
-		//- Correct the motion diffusivity
-		virtual void correct();
+        virtual ~inverseFaceDistanceDiffusivity();
+
+
+    // Member Functions
+
+        //- Correct the motion diffusivity
+        virtual void correct();
 };
 
 

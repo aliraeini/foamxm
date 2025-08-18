@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::fv::laplacianScheme
+    Foam::fv::laplacianScheme
 
 Description
-	Abstract base class for laplacian schemes.
+    Abstract base class for laplacian schemes.
 
 SourceFiles
-	laplacianScheme.C
+    laplacianScheme.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,142 +58,144 @@ class fvMesh;
 namespace fv
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class laplacianScheme Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type, class GType>
 class laplacianScheme
 :
-	public refCount
+    public refCount
 {
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		const fvMesh& mesh_;
-		tmp<surfaceInterpolationScheme<GType> > tinterpGammaScheme_;
-		tmp<snGradScheme<Type> > tsnGradScheme_;
+        const fvMesh& mesh_;
+        tmp<surfaceInterpolationScheme<GType> > tinterpGammaScheme_;
+        tmp<snGradScheme<Type> > tsnGradScheme_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Disallow copy construct
-		laplacianScheme(const laplacianScheme&);
+        //- Disallow copy construct
+        laplacianScheme(const laplacianScheme&) = delete;
 
-		//- Disallow default bitwise assignment
-		void operator=(const laplacianScheme&);
+        //- Disallow default bitwise assignment
+        void operator=(const laplacianScheme&) = delete;
 
 
 public:
 
-	//- Runtime type information
-	virtual const word& type() const = 0;
+    //- Runtime type information
+    virtual const word& type() const = 0;
 
 
-	// Declare run-time constructor selection tables
+    // Declare run-time constructor selection tables
 
-		declareRunTimeSelectionTable
-		(
-			tmp,
-			laplacianScheme,
-			Istream,
-			(const fvMesh& mesh, Istream& schemeData),
-			(mesh, schemeData)
-		);
-
-
-	// Constructors
-
-		//- Construct from mesh
-		laplacianScheme(const fvMesh& mesh)
-		:
-			mesh_(mesh),
-			tinterpGammaScheme_(new linear<GType>(mesh)),
-			tsnGradScheme_(new correctedSnGrad<Type>(mesh))
-		{}
-
-		//- Construct from mesh and Istream
-		laplacianScheme(const fvMesh& mesh, Istream& is)
-		:
-			mesh_(mesh),
-			tinterpGammaScheme_(nullptr),
-			tsnGradScheme_(nullptr)
-		{
-			tinterpGammaScheme_ = tmp<surfaceInterpolationScheme<GType> >
-			(
-				surfaceInterpolationScheme<GType>::New(mesh, is)
-			);
-
-			tsnGradScheme_ = tmp<snGradScheme<Type> >
-			(
-				snGradScheme<Type>::New(mesh, is)
-			);
-		}
-
-		//- Construct from mesh, interpolation and snGradScheme schemes
-		laplacianScheme
-		(
-			const fvMesh& mesh,
-			const tmp<surfaceInterpolationScheme<GType> >& igs,
-			const tmp<snGradScheme<Type> >& sngs
-		)
-		:
-			mesh_(mesh),
-			tinterpGammaScheme_(igs),
-			tsnGradScheme_(sngs)
-		{}
+        declareRunTimeSelectionTable
+        (
+            tmp,
+            laplacianScheme,
+            Istream,
+            (const fvMesh& mesh, Istream& schemeData),
+            (mesh, schemeData)
+        );
 
 
-	// Selectors
+    // Constructors
 
-		//- Return a pointer to a new laplacianScheme created on freestore
-		static tmp<laplacianScheme<Type, GType> > New
-		(
-			const fvMesh& mesh,
-			Istream& schemeData
-		);
+        //- Construct from mesh
+        laplacianScheme(const fvMesh& mesh)
+        :
+            mesh_(mesh),
+            tinterpGammaScheme_(new linear<GType>(mesh)),
+            tsnGradScheme_(new correctedSnGrad<Type>(mesh))
+        {}
+
+        //- Construct from mesh and Istream
+        laplacianScheme(const fvMesh& mesh, Istream& is)
+        :
+            mesh_(mesh),
+            tinterpGammaScheme_(nullptr),
+            tsnGradScheme_(nullptr)
+        {
+            tinterpGammaScheme_ = tmp<surfaceInterpolationScheme<GType> >
+            (
+                surfaceInterpolationScheme<GType>::New(mesh, is)
+            );
+
+            tsnGradScheme_ = tmp<snGradScheme<Type> >
+            (
+                snGradScheme<Type>::New(mesh, is)
+            );
+        }
+
+        //- Construct from mesh, interpolation and snGradScheme schemes
+        laplacianScheme
+        (
+            const fvMesh& mesh,
+            const tmp<surfaceInterpolationScheme<GType> >& igs,
+            const tmp<snGradScheme<Type> >& sngs
+        )
+        :
+            mesh_(mesh),
+            tinterpGammaScheme_(igs),
+            tsnGradScheme_(sngs)
+        {}
 
 
-	// Destructor
+    // Selectors
 
-		virtual ~laplacianScheme();
+        //- Return a pointer to a new laplacianScheme created on freestore
+        static tmp<laplacianScheme<Type, GType> > New
+        (
+            const fvMesh& mesh,
+            Istream& schemeData
+        );
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~laplacianScheme() = default;
 
-		//- Return mesh reference
-		const fvMesh& mesh() const
-		{
-			return mesh_;
-		}
 
-		virtual tmp<fvMatrix<Type> > fvmLaplacian
-		(
-			const GeometricField<GType, fvsPatchField, surfaceMesh>&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+    // Member Functions
 
-		virtual tmp<fvMatrix<Type> > fvmLaplacian
-		(
-			const GeometricField<GType, fvPatchField, volMesh>&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        //- Return mesh reference
+        const fvMesh& mesh() const
+        {
+            return mesh_;
+        }
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        virtual tmp<fvMatrix<Type> > fvmLaplacian
+        (
+            const GeometricField<GType, fvsPatchField, surfaceMesh>&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
-		(
-			const GeometricField<GType, fvsPatchField, surfaceMesh>&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		) = 0;
+        virtual tmp<fvMatrix<Type> > fvmLaplacian
+        (
+            const GeometricField<GType, fvPatchField, volMesh>&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
-		(
-			const GeometricField<GType, fvPatchField, volMesh>&,
-			const GeometricField<Type, fvPatchField, volMesh>&
-		);
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
+
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
+        (
+            const GeometricField<GType, fvsPatchField, surfaceMesh>&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const = 0;
+
+        virtual tmp<GeometricField<Type, fvPatchField, volMesh> > fvcLaplacian
+        (
+            const GeometricField<GType, fvPatchField, volMesh>&,
+            const GeometricField<Type, fvPatchField, volMesh>&
+        ) const;
 };
 
 
@@ -210,17 +212,17 @@ public:
 // Add the patch constructor functions to the hash tables
 
 #define makeFvLaplacianTypeScheme(SS, Type, GType)                            \
-					                                                          \
-	typedef SS<Type, GType> SS##Type##GType;                                  \
-	defineNamedTemplateTypeNameAndDebug(SS##Type##GType, 0);                  \
-					                                                          \
-	laplacianScheme<Type, GType>::                                            \
-		addIstreamConstructorToTable<SS<Type, GType> >                        \
-	add##SS##Type##GType##IstreamConstructorToTable_;
+                                                                              \
+    typedef SS<Type, GType> SS##Type##GType;                                  \
+    defineNamedTemplateTypeNameAndDebug(SS##Type##GType, 0);                  \
+                                                                              \
+    laplacianScheme<Type, GType>::                                            \
+        addIstreamConstructorToTable<SS<Type, GType> >                        \
+    add##SS##Type##GType##IstreamConstructorToTable_;
 
 
 #define makeFvLaplacianScheme(SS)                                             \
-					                                                          \
+                                                                              \
 makeFvLaplacianTypeScheme(SS, scalar, scalar)                                 \
 makeFvLaplacianTypeScheme(SS, scalar, symmTensor)                             \
 makeFvLaplacianTypeScheme(SS, scalar, tensor)                                 \
@@ -235,7 +237,7 @@ makeFvLaplacianTypeScheme(SS, vector, diagTensor)                             \
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "laplacianScheme.C"
+#   include "laplacianScheme.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

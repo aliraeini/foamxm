@@ -1,40 +1,40 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	edgeCorrectedVolPointInterpolation
+    edgeCorrectedVolPointInterpolation
 
 Description
-	Volume-to-point interpolation class which introduces the
-	correction for the points shared between the patches.  This is
-	done by gradient-based extrapolation into the vertices from the
-	boundary faces around them using inverse-distance weighting.  This
-	kind of interpolation is useful when trying to use the volume
-	field as a basis of the mesh motion.
+    Volume-to-point interpolation class which introduces the
+    correction for the points shared between the patches.  This is
+    done by gradient-based extrapolation into the vertices from the
+    boundary faces around them using inverse-distance weighting.  This
+    kind of interpolation is useful when trying to use the volume
+    field as a basis of the mesh motion.
 
 SourceFiles
-	edgeCorrectedVolPointInterpolation.C
-	edgeCorrectedVolPointInterpolate.C
+    edgeCorrectedVolPointInterpolation.C
+    edgeCorrectedVolPointInterpolate.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -49,126 +49,129 @@ SourceFiles
 namespace Foam
 {
 
+/*---------------------------------------------------------------------------*\
+              Class edgeCorrectedVolPointInterpolation Declaration
+\*---------------------------------------------------------------------------*/
 
 class edgeCorrectedVolPointInterpolation
 :
-	public volPointInterpolation
+    public volPointInterpolation
 {
-	// Private data
+    // Private data
 
-		//- Extrapolation vectors
-		mutable vectorListList extrapolationVectors_;
-
-
-	// Private Member Functions
-
-		//- Disallow default bitwise copy construct
-		edgeCorrectedVolPointInterpolation
-		(
-			const edgeCorrectedVolPointInterpolation&
-		);
-
-		//- Disallow default bitwise assignment
-		void operator=(const edgeCorrectedVolPointInterpolation&);
+        //- Extrapolation vectors
+        mutable vectorListList extrapolationVectors_;
 
 
-		//- Construct extrapolation vectors
-		void makeExtrapolationVectors() const;
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        edgeCorrectedVolPointInterpolation
+        (
+            const edgeCorrectedVolPointInterpolation&
+        );
+
+        //- Disallow default bitwise assignment
+        void operator=(const edgeCorrectedVolPointInterpolation&);
+
+
+        //- Construct extrapolation vectors
+        void makeExtrapolationVectors() const;
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Constructor given fvMesh and pointMesh.
-		edgeCorrectedVolPointInterpolation(const fvMesh&, const pointMesh&);
-
-
-	// Destructor
-
-		virtual ~edgeCorrectedVolPointInterpolation();
+        //- Constructor given fvMesh and pointMesh.
+        edgeCorrectedVolPointInterpolation(const fvMesh&, const pointMesh&);
 
 
-	// Member Functions
+    // Destructor
 
-		//- Update mesh topology using the morph engine
-		virtual void updateMesh();
-
-		//- Correct weighting factors for moving mesh.
-		virtual bool movePoints();
+        virtual ~edgeCorrectedVolPointInterpolation();
 
 
-	// Interpolation functions
+    // Member Functions
 
-		//- Interpolate from volField to pointField
-		//  using inverse distance weighting with boundary correction
-		//  given the field and its gradient
-		template<class Type>
-		void interpolate
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&,
-			const GeometricField
-			<
-				typename outerProduct<vector, Type>::type,
-				fvPatchField,
-				volMesh
-			>&,
-			GeometricField<Type, pointPatchField, pointMesh>&
-		) const;
+        //- Update mesh topology using the morph engine
+        virtual void updateMesh();
 
-		//- Interpolate volField returning pointField
-		//  using inverse distance weighting with boundary correction
-		//  given the field and its gradient
-		template<class Type>
-		tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&,
-			const GeometricField
-			<
-				typename outerProduct<vector, Type>::type,
-				fvPatchField,
-				volMesh
-			>&
-		) const;
+        //- Correct weighting factors for moving mesh.
+        virtual bool movePoints();
 
-		//- Interpolate tmp<volField> returning pointField
-		//  using inverse distance weighting with boundary correction
-		//  given the field and its gradient
-		template<class Type>
-		tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
-		(
-			const tmp<GeometricField<Type, fvPatchField, volMesh> >&,
-			const GeometricField
-			<
-				typename outerProduct<vector, Type>::type,
-				fvPatchField,
-				volMesh
-			>&
-		) const;
 
-		template<class Type>
-		tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
-		(
-			const GeometricField<Type, fvPatchField, volMesh>&,
-			const tmp<GeometricField
-			<
-				typename outerProduct<vector, Type>::type,
-				fvPatchField,
-				volMesh
-			> >&
-		) const;
+    // Interpolation functions
 
-		template<class Type>
-		tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
-		(
-			const tmp<GeometricField<Type, fvPatchField, volMesh> >&,
-			const tmp<GeometricField
-			<
-				typename outerProduct<vector, Type>::type,
-				fvPatchField,
-				volMesh
-			> >&
-		) const;
+        //- Interpolate from volField to pointField
+        //  using inverse distance weighting with boundary correction
+        //  given the field and its gradient
+        template<class Type>
+        void interpolate
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&,
+            const GeometricField
+            <
+                typename outerProduct<vector, Type>::type,
+                fvPatchField,
+                volMesh
+            >&,
+            GeometricField<Type, pointPatchField, pointMesh>&
+        ) const;
+
+        //- Interpolate volField returning pointField
+        //  using inverse distance weighting with boundary correction
+        //  given the field and its gradient
+        template<class Type>
+        tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&,
+            const GeometricField
+            <
+                typename outerProduct<vector, Type>::type,
+                fvPatchField,
+                volMesh
+            >&
+        ) const;
+
+        //- Interpolate tmp<volField> returning pointField
+        //  using inverse distance weighting with boundary correction
+        //  given the field and its gradient
+        template<class Type>
+        tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
+        (
+            const tmp<GeometricField<Type, fvPatchField, volMesh> >&,
+            const GeometricField
+            <
+                typename outerProduct<vector, Type>::type,
+                fvPatchField,
+                volMesh
+            >&
+        ) const;
+
+        template<class Type>
+        tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
+        (
+            const GeometricField<Type, fvPatchField, volMesh>&,
+            const tmp<GeometricField
+            <
+                typename outerProduct<vector, Type>::type,
+                fvPatchField,
+                volMesh
+            > >&
+        ) const;
+
+        template<class Type>
+        tmp<GeometricField<Type, pointPatchField, pointMesh> > interpolate
+        (
+            const tmp<GeometricField<Type, fvPatchField, volMesh> >&,
+            const tmp<GeometricField
+            <
+                typename outerProduct<vector, Type>::type,
+                fvPatchField,
+                volMesh
+            > >&
+        ) const;
 };
 
 

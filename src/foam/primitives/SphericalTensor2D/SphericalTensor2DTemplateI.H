@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,10 +42,10 @@ inline SphericalTensor2D<Cmpt>::SphericalTensor2D()
 template <class Cmpt>
 inline SphericalTensor2D<Cmpt>::SphericalTensor2D
 (
-	const VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>& vs
+    const VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>& vs
 )
 :
-	VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>(vs)
+    VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>(vs)
 {}
 
 
@@ -53,7 +53,7 @@ inline SphericalTensor2D<Cmpt>::SphericalTensor2D
 template <class Cmpt>
 inline SphericalTensor2D<Cmpt>::SphericalTensor2D(const Cmpt& stii)
 {
-	this->v_[II] = stii;
+    this->v_[II] = stii;
 }
 
 
@@ -61,7 +61,7 @@ inline SphericalTensor2D<Cmpt>::SphericalTensor2D(const Cmpt& stii)
 template <class Cmpt>
 inline SphericalTensor2D<Cmpt>::SphericalTensor2D(Istream& is)
 :
-	VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>(is)
+    VectorSpace<SphericalTensor2D<Cmpt>, Cmpt, 1>(is)
 {}
 
 
@@ -70,14 +70,14 @@ inline SphericalTensor2D<Cmpt>::SphericalTensor2D(Istream& is)
 template <class Cmpt>
 inline const Cmpt&  SphericalTensor2D<Cmpt>::ii() const
 {
-	return this->v_[II];
+    return this->v_[II];
 }
 
 
 template <class Cmpt>
 inline Cmpt& SphericalTensor2D<Cmpt>::ii()
 {
-	return this->v_[II];
+    return this->v_[II];
 }
 
 
@@ -88,11 +88,11 @@ template <class Cmpt>
 inline SphericalTensor2D<Cmpt>
 operator&
 (
-	const SphericalTensor2D<Cmpt>& st1,
-	const SphericalTensor2D<Cmpt>& st2
+    const SphericalTensor2D<Cmpt>& st1,
+    const SphericalTensor2D<Cmpt>& st2
 )
 {
-	return SphericalTensor2D<Cmpt>(st1.ii()*st2.ii());
+    return SphericalTensor2D<Cmpt>(st1.ii()*st2.ii());
 }
 
 
@@ -101,11 +101,11 @@ template <class Cmpt>
 inline Vector2D<Cmpt>
 operator&(const SphericalTensor2D<Cmpt>& st, const Vector2D<Cmpt>& v)
 {
-	return Vector2D<Cmpt>
-	(
-		st.ii()*v.x(),
-					   st.ii()*v.y()
-	);
+    return Vector2D<Cmpt>
+    (
+        st.ii()*v.x(),
+                       st.ii()*v.y()
+    );
 }
 
 
@@ -114,11 +114,11 @@ template <class Cmpt>
 inline Vector2D<Cmpt>
 operator&(const Vector2D<Cmpt>& v, const SphericalTensor2D<Cmpt>& st)
 {
-	return Vector2D<Cmpt>
-	(
-		v.x()*st.ii(),
-					   v.y()*st.ii()
-	);
+    return Vector2D<Cmpt>
+    (
+        v.x()*st.ii(),
+                       v.y()*st.ii()
+    );
 }
 
 
@@ -127,7 +127,7 @@ template <class Cmpt>
 inline SphericalTensor2D<Cmpt>
 operator/(const scalar s, const SphericalTensor2D<Cmpt>& st)
 {
-	return SphericalTensor2D<Cmpt>(s/st.ii());
+    return SphericalTensor2D<Cmpt>(s/st.ii());
 }
 
 
@@ -135,7 +135,7 @@ operator/(const scalar s, const SphericalTensor2D<Cmpt>& st)
 template <class Cmpt>
 inline Cmpt tr(const SphericalTensor2D<Cmpt>& st)
 {
-	return 2*st.ii();
+    return 2*st.ii();
 }
 
 
@@ -143,7 +143,7 @@ inline Cmpt tr(const SphericalTensor2D<Cmpt>& st)
 template <class Cmpt>
 inline SphericalTensor2D<Cmpt> sph(const SphericalTensor2D<Cmpt>& st)
 {
-	return st;
+    return st;
 }
 
 
@@ -151,7 +151,7 @@ inline SphericalTensor2D<Cmpt> sph(const SphericalTensor2D<Cmpt>& st)
 template <class Cmpt>
 inline Cmpt det(const SphericalTensor2D<Cmpt>& st)
 {
-	return st.ii()*st.ii();
+    return st.ii()*st.ii();
 }
 
 
@@ -159,7 +159,7 @@ inline Cmpt det(const SphericalTensor2D<Cmpt>& st)
 template <class Cmpt>
 inline SphericalTensor2D<Cmpt> inv(const SphericalTensor2D<Cmpt>& st)
 {
-	return SphericalTensor2D<Cmpt>(1.0/st.ii());
+    return SphericalTensor2D<Cmpt>(1.0/st.ii());
 }
 
 
@@ -168,7 +168,7 @@ class outerProduct<SphericalTensor2D<Cmpt>, Cmpt>
 {
 public:
 
-	typedef SphericalTensor2D<Cmpt> type;
+    typedef SphericalTensor2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -176,7 +176,7 @@ class outerProduct<Cmpt, SphericalTensor2D<Cmpt> >
 {
 public:
 
-	typedef SphericalTensor2D<Cmpt> type;
+    typedef SphericalTensor2D<Cmpt> type;
 };
 
 
@@ -185,7 +185,7 @@ class innerProduct<SphericalTensor2D<Cmpt>, SphericalTensor2D<Cmpt> >
 {
 public:
 
-	typedef SphericalTensor2D<Cmpt> type;
+    typedef SphericalTensor2D<Cmpt> type;
 };
 
 
@@ -194,7 +194,7 @@ class innerProduct<SphericalTensor2D<Cmpt>, Vector2D<Cmpt> >
 {
 public:
 
-	typedef Vector2D<Cmpt> type;
+    typedef Vector2D<Cmpt> type;
 };
 
 template<class Cmpt>
@@ -202,7 +202,7 @@ class innerProduct<Vector2D<Cmpt>, SphericalTensor2D<Cmpt> >
 {
 public:
 
-	typedef Vector2D<Cmpt> type;
+    typedef Vector2D<Cmpt> type;
 };
 
 

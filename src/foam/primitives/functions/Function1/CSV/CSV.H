@@ -1,50 +1,50 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::Function1Types::CSV
+    Foam::Function1Types::CSV
 
 Description
-	Templated CSV container data entry.  Reference column is always a scalar,
-	e.g. time
+    Templated CSV container data entry.  Reference column is always a scalar,
+    e.g. time
 
-	\verbatim
-		<entryName> csvFile;
-		<entryName>Coeffs
-		{
-			nHeaderLine         4;          // number of header lines
-			refColumn           0;          // reference column index
-			componentColumns    (1 2 3);    // component column indices
-			separator           ",";        // optional (defaults to ",")
-			mergeSeparators     no;         // merge multiple separators
-			fileName            "fileXYZ";  // name of csv data file
-			outOfBounds         clamp;      // optional out-of-bounds handling
-			interpolationScheme linear;     // optional interpolation scheme
-		}
-	\endverbatim
+    \verbatim
+        <entryName> csvFile;
+        <entryName>Coeffs
+        {
+            nHeaderLine         4;          // number of header lines
+            refColumn           0;          // reference column index
+            componentColumns    (1 2 3);    // component column indices
+            separator           ",";        // optional (defaults to ",")
+            mergeSeparators     no;         // merge multiple separators
+            fileName            "fileXYZ";  // name of csv data file
+            outOfBounds         clamp;      // optional out-of-bounds handling
+            interpolationScheme linear;     // optional interpolation scheme
+        }
+    \endverbatim
 
 SourceFiles
-	CSV.C
+    CSV.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -64,85 +64,88 @@ namespace Foam
 namespace Function1Types
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class CSV Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class CSV
 :
-	public TableBase<Type>
+    public TableBase<Type>
 {
-	// Private data
+    // Private data
 
-		//- Coefficients dictionary (for convenience on reading)
-		dictionary coeffs_;
+        //- Coefficients dictionary (for convenience on reading)
+        dictionary coeffs_;
 
-		//- Number header lines
-		label nHeaderLine_;
+        //- Number header lines
+        label nHeaderLine_;
 
-		//- Column of the time
-		label refColumn_;
+        //- Column of the time
+        label refColumn_;
 
-		//- Labels of the components
-		labelList componentColumns_;
+        //- Labels of the components
+        labelList componentColumns_;
 
-		//- Separator character
-		char separator_;
+        //- Separator character
+        char separator_;
 
-		//- Merge separators flag, e.g. ',,,' becomes ','
-		bool mergeSeparators_;
+        //- Merge separators flag, e.g. ',,,' becomes ','
+        bool mergeSeparators_;
 
-		//- File name for csv table
-		fileName fName_;
+        //- File name for csv table
+        fileName fName_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Read csv data table
-		void read();
+        //- Read csv data table
+        void read();
 
-		//- Read the next value from the splitted string
-		Type readValue(const List<string>&);
+        //- Read the next value from the splitted string
+        Type readValue(const List<string>&);
 
-		//- Disallow default bitwise assignment
-		void operator=(const CSV<Type>&);
+        //- Disallow default bitwise assignment
+        void operator=(const CSV<Type>&);
 
 
 public:
 
-	//- Runtime type information
-	TypeName("csvFile");
+    //- Runtime type information
+    TypeName("csvFile");
 
 
-	// Constructors
+    // Constructors
 
-		//- Construct from entry name and dictionary
-		CSV
-		(
-			const word& entryName,
-			const dictionary& dict,
-			const word& ext = "Coeffs"
-		);
+        //- Construct from entry name and dictionary
+        CSV
+        (
+            const word& entryName,
+            const dictionary& dict,
+            const word& ext = "Coeffs"
+        );
 
-		//- Copy constructor
-		CSV(const CSV<Type>& tbl);
+        //- Copy constructor
+        CSV(const CSV<Type>& tbl);
 
-		//- Construct and return a clone
-		virtual tmp<Function1<Type> > clone() const
-		{
-			return tmp<Function1<Type> >(new CSV<Type>(*this));
-		}
-
-
-	//- Destructor
-	virtual ~CSV();
+        //- Construct and return a clone
+        virtual tmp<Function1<Type> > clone() const
+        {
+            return tmp<Function1<Type> >(new CSV<Type>(*this));
+        }
 
 
-	// Member Functions
+    //- Destructor
+    virtual ~CSV();
 
-		//- Return const access to the file name
-		virtual const fileName& fName() const;
 
-		//- Write in dictionary format
-		virtual void writeData(Ostream& os) const;
+    // Member Functions
+
+        //- Return const access to the file name
+        virtual const fileName& fName() const;
+
+        //- Write in dictionary format
+        virtual void writeData(Ostream& os) const;
 };
 
 
@@ -161,7 +164,7 @@ Foam::scalar CSV<scalar>::readValue(const List<string>& splitted);
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-	#include "CSV.C"
+    #include "CSV.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

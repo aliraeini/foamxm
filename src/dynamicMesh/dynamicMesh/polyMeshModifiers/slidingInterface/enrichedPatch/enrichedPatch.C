@@ -1,31 +1,31 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
-	Enriched patch
+    Enriched patch
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved.  Copyright Hrvoje Jasak.
 
 \*---------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ Author
 
 namespace Foam
 {
-	defineTypeNameAndDebug(enrichedPatch, 0);
+    defineTypeNameAndDebug(enrichedPatch, 0);
 }
 
 
@@ -44,92 +44,92 @@ namespace Foam
 
 void Foam::enrichedPatch::calcMeshPoints() const
 {
-	if (meshPointsPtr_)
-	{
-		FatalErrorIn("void enrichedPatch::calcMeshPoints() const")
-			<< "Mesh points already calculated."
-			<< abort(FatalError);
-	}
+    if (meshPointsPtr_)
+    {
+        FatalErrorIn("void enrichedPatch::calcMeshPoints() const")
+            << "Mesh points already calculated."
+            << abort(FatalError);
+    }
 
-	meshPointsPtr_ = new labelList(pointMap().toc());
-	labelList& mp = *meshPointsPtr_;
+    meshPointsPtr_ = new labelList(pointMap().toc());
+    labelList& mp = *meshPointsPtr_;
 
-	sort(mp);
+    sort(mp);
 }
 
 
 void Foam::enrichedPatch::calcLocalFaces() const
 {
-	if (localFacesPtr_)
-	{
-		FatalErrorIn("void enrichedPatch::calcLocalFaces() const")
-			<< "Local faces already calculated."
-			<< abort(FatalError);
-	}
+    if (localFacesPtr_)
+    {
+        FatalErrorIn("void enrichedPatch::calcLocalFaces() const")
+            << "Local faces already calculated."
+            << abort(FatalError);
+    }
 
-	// Invert mesh points and renumber faces using it
-	const labelList& mp = meshPoints();
+    // Invert mesh points and renumber faces using it
+    const labelList& mp = meshPoints();
 
-	Map<label> mpLookup(2*mp.size());
+    Map<label> mpLookup(2*mp.size());
 
-	forAll (mp, mpI)
-	{
-		mpLookup.insert(mp[mpI], mpI);
-	}
+    forAll (mp, mpI)
+    {
+        mpLookup.insert(mp[mpI], mpI);
+    }
 
-	const faceList& faces = enrichedFaces();
+    const faceList& faces = enrichedFaces();
 
-	localFacesPtr_ = new faceList(faces.size());
-	faceList& lf = *localFacesPtr_;
+    localFacesPtr_ = new faceList(faces.size());
+    faceList& lf = *localFacesPtr_;
 
-	forAll (faces, faceI)
-	{
-		const face& f = faces[faceI];
+    forAll (faces, faceI)
+    {
+        const face& f = faces[faceI];
 
-		face& curlf = lf[faceI];
+        face& curlf = lf[faceI];
 
-		curlf.setSize(f.size());
+        curlf.setSize(f.size());
 
-		forAll (f, pointI)
-		{
-			curlf[pointI] = mpLookup.find(f[pointI])();
-		}
-	}
+        forAll (f, pointI)
+        {
+            curlf[pointI] = mpLookup.find(f[pointI])();
+        }
+    }
 }
 
 
 void Foam::enrichedPatch::calcLocalPoints() const
 {
-	if (localPointsPtr_)
-	{
-		FatalErrorIn("void enrichedPatch::calcLocalPoints() const")
-			<< "Local points already calculated."
-			<< abort(FatalError);
-	}
+    if (localPointsPtr_)
+    {
+        FatalErrorIn("void enrichedPatch::calcLocalPoints() const")
+            << "Local points already calculated."
+            << abort(FatalError);
+    }
 
-	const labelList& mp = meshPoints();
+    const labelList& mp = meshPoints();
 
-	localPointsPtr_ = new pointField(mp.size());
-	pointField& lp = *localPointsPtr_;
+    localPointsPtr_ = new pointField(mp.size());
+    pointField& lp = *localPointsPtr_;
 
-	forAll (lp, i)
-	{
-		lp[i] = pointMap().find(mp[i])();
-	}
+    forAll (lp, i)
+    {
+        lp[i] = pointMap().find(mp[i])();
+    }
 }
 
 
 void Foam::enrichedPatch::clearOut()
 {
-	deleteDemandDrivenData(enrichedFacesPtr_);
+    deleteDemandDrivenData(enrichedFacesPtr_);
 
-	deleteDemandDrivenData(meshPointsPtr_);
-	deleteDemandDrivenData(localFacesPtr_);
-	deleteDemandDrivenData(localPointsPtr_);
-	deleteDemandDrivenData(pointPointsPtr_);
-	deleteDemandDrivenData(masterPointFacesPtr_);
+    deleteDemandDrivenData(meshPointsPtr_);
+    deleteDemandDrivenData(localFacesPtr_);
+    deleteDemandDrivenData(localPointsPtr_);
+    deleteDemandDrivenData(pointPointsPtr_);
+    deleteDemandDrivenData(masterPointFacesPtr_);
 
-	clearCutFaces();
+    clearCutFaces();
 }
 
 
@@ -138,35 +138,35 @@ void Foam::enrichedPatch::clearOut()
 // Construct from components
 Foam::enrichedPatch::enrichedPatch
 (
-	const primitiveFacePatch& masterPatch,
-	const primitiveFacePatch& slavePatch,
-	const labelList& slavePointPointHits,
-	const labelList& slavePointEdgeHits,
-	const List<objectHit>& slavePointFaceHits
+    const primitiveFacePatch& masterPatch,
+    const primitiveFacePatch& slavePatch,
+    const labelList& slavePointPointHits,
+    const labelList& slavePointEdgeHits,
+    const List<objectHit>& slavePointFaceHits
 )
 :
-	masterPatch_(masterPatch),
-	slavePatch_(slavePatch),
-	pointMap_
-	(
-		masterPatch_.meshPoints().size()
-	  + slavePatch_.meshPoints().size()
-	),
-	pointMapComplete_(false),
-	pointMergeMap_(2*slavePatch_.meshPoints().size()),
-	slavePointPointHits_(slavePointPointHits),
-	slavePointEdgeHits_(slavePointEdgeHits),
-	slavePointFaceHits_(slavePointFaceHits),
-	enrichedFacesPtr_(nullptr),
-	meshPointsPtr_(nullptr),
-	localFacesPtr_(nullptr),
-	localPointsPtr_(nullptr),
-	pointPointsPtr_(nullptr),
-	masterPointFacesPtr_(nullptr),
-	cutFacesPtr_(nullptr),
-	cutFaceMasterPtr_(nullptr),
-	cutFaceSlavePtr_(nullptr),
-	localCutFacesPtr_(nullptr)
+    masterPatch_(masterPatch),
+    slavePatch_(slavePatch),
+    pointMap_
+    (
+        masterPatch_.meshPoints().size()
+      + slavePatch_.meshPoints().size()
+    ),
+    pointMapComplete_(false),
+    pointMergeMap_(2*slavePatch_.meshPoints().size()),
+    slavePointPointHits_(slavePointPointHits),
+    slavePointEdgeHits_(slavePointEdgeHits),
+    slavePointFaceHits_(slavePointFaceHits),
+    enrichedFacesPtr_(nullptr),
+    meshPointsPtr_(nullptr),
+    localFacesPtr_(nullptr),
+    localPointsPtr_(nullptr),
+    pointPointsPtr_(nullptr),
+    masterPointFacesPtr_(nullptr),
+    cutFacesPtr_(nullptr),
+    cutFaceMasterPtr_(nullptr),
+    cutFaceSlavePtr_(nullptr),
+    localCutFacesPtr_(nullptr)
 {}
 
 
@@ -174,7 +174,7 @@ Foam::enrichedPatch::enrichedPatch
 
 Foam::enrichedPatch::~enrichedPatch()
 {
-	clearOut();
+    clearOut();
 }
 
 
@@ -182,74 +182,74 @@ Foam::enrichedPatch::~enrichedPatch()
 
 const Foam::labelList& Foam::enrichedPatch::meshPoints() const
 {
-	if (!meshPointsPtr_)
-	{
-		calcMeshPoints();
-	}
+    if (!meshPointsPtr_)
+    {
+        calcMeshPoints();
+    }
 
-	return *meshPointsPtr_;
+    return *meshPointsPtr_;
 }
 
 
 const Foam::faceList& Foam::enrichedPatch::localFaces() const
 {
-	if (!localFacesPtr_)
-	{
-		calcLocalFaces();
-	}
+    if (!localFacesPtr_)
+    {
+        calcLocalFaces();
+    }
 
-	return *localFacesPtr_;
+    return *localFacesPtr_;
 }
 
 
 const Foam::pointField& Foam::enrichedPatch::localPoints() const
 {
-	if (!localPointsPtr_)
-	{
-		calcLocalPoints();
-	}
+    if (!localPointsPtr_)
+    {
+        calcLocalPoints();
+    }
 
-	return *localPointsPtr_;
+    return *localPointsPtr_;
 }
 
 
 const Foam::labelListList& Foam::enrichedPatch::pointPoints() const
 {
-	if (!pointPointsPtr_)
-	{
-		calcPointPoints();
-	}
+    if (!pointPointsPtr_)
+    {
+        calcPointPoints();
+    }
 
-	return *pointPointsPtr_;
+    return *pointPointsPtr_;
 }
 
 
 bool Foam::enrichedPatch::checkSupport() const
 {
-	const faceList& faces = enrichedFaces();
+    const faceList& faces = enrichedFaces();
 
-	bool error = false;
+    bool error = false;
 
-	forAll (faces, faceI)
-	{
-		const face& curFace = faces[faceI];
+    forAll (faces, faceI)
+    {
+        const face& curFace = faces[faceI];
 
-		forAll (curFace, pointI)
-		{
-			if (!pointMap().found(curFace[pointI]))
-			{
-				WarningIn("void enrichedPatch::checkSupport()")
-					<< "Point " << pointI << " of face " << faceI
-					<< " global point index: " << curFace[pointI]
-					<< " not supported in point map.  This is not allowed."
-					<< endl;
+        forAll (curFace, pointI)
+        {
+            if (!pointMap().found(curFace[pointI]))
+            {
+                WarningIn("void enrichedPatch::checkSupport()")
+                    << "Point " << pointI << " of face " << faceI
+                    << " global point index: " << curFace[pointI]
+                    << " not supported in point map.  This is not allowed."
+                    << endl;
 
-				error = true;
-			}
-		}
-	}
+                error = true;
+            }
+        }
+    }
 
-	return error;
+    return error;
 }
 
 

@@ -1,37 +1,37 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::SHA1Digest
+    Foam::SHA1Digest
 
 Description
-	The SHA1 message digest.
+    The SHA1 message digest.
 
 See also
-	Foam::SHA1
+    Foam::SHA1
 
 SourceFiles
-	SHA1Digest.C
+    SHA1Digest.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -56,95 +56,98 @@ Ostream& operator<<(Ostream&, const SHA1Digest&);
 Istream& operator>>(Istream&, SHA1Digest&);
 
 
+/*---------------------------------------------------------------------------*\
+                         Class SHA1Digest Declaration
+\*---------------------------------------------------------------------------*/
 
 class SHA1Digest
 {
 public:
-	friend class SHA1;
+    friend class SHA1;
 
-	// Static data members
+    // Static data members
 
-		//- The length of the (uncoded) digest contents
-		static const unsigned length = 20;
+        //- The length of the (uncoded) digest contents
+        static const unsigned length = 20;
 
-		//- A null digest (ie, all zero)
-		static const SHA1Digest null;
-
-
-	// Constructors
-
-		//- Construct a zero digest
-		SHA1Digest();
-
-		//- Construct read a digest
-		SHA1Digest(Istream&);
+        //- A null digest (ie, all zero)
+        static const SHA1Digest null;
 
 
-	// Member Functions
+    // Constructors
 
-		//- Reset the digest to zero
-		void clear();
+        //- Construct a zero digest
+        SHA1Digest();
 
-		//- Return true if the digest is empty (ie, all zero).
-		bool empty() const;
-
-		//- Return (40-byte) text representation, optionally with '_' prefix
-		std::string str(const bool prefixed=false) const;
-
-		//- Write (40-byte) text representation, optionally with '_' prefix
-		Ostream& write(Ostream&, const bool prefixed=false) const;
+        //- Construct read a digest
+        SHA1Digest(Istream&);
 
 
-	// Member Operators
+    // Member Functions
 
-		//- Equality operator
-		bool operator==(const SHA1Digest&) const;
+        //- Reset the digest to zero
+        void clear();
 
-		//- Compare to (40-byte) text representation (eg, from sha1sum)
-		//  An %empty string is equivalent to
-		//  "0000000000000000000000000000000000000000"
-		//  The hexdigits may optionally start with a '_' prefix
-		bool operator==(const std::string& hexdigits) const;
+        //- Return true if the digest is empty (ie, all zero).
+        bool empty() const;
 
-		//- Compare to (40-byte) text representation (eg, from sha1sum)
-		//  A %null or %empty string is equivalent to
-		//  "0000000000000000000000000000000000000000"
-		//  The hexdigits may optionally start with a '_' prefix
-		bool operator==(const char* hexdigits) const;
+        //- Return (40-byte) text representation, optionally with '_' prefix
+        std::string str(const bool prefixed=false) const;
+
+        //- Write (40-byte) text representation, optionally with '_' prefix
+        Ostream& write(Ostream&, const bool prefixed=false) const;
 
 
-		//- Inequality operator
-		bool operator!=(const SHA1Digest&) const;
+    // Member Operators
 
-		//- Inequality operator
-		bool operator!=(const std::string& hexdigits) const;
+        //- Equality operator
+        bool operator==(const SHA1Digest&) const;
 
-		//- Inequality operator
-		bool operator!=(const char* hexdigits) const;
+        //- Compare to (40-byte) text representation (eg, from sha1sum)
+        //  An %empty string is equivalent to
+        //  "0000000000000000000000000000000000000000"
+        //  The hexdigits may optionally start with a '_' prefix
+        bool operator==(const std::string& hexdigits) const;
+
+        //- Compare to (40-byte) text representation (eg, from sha1sum)
+        //  A %null or %empty string is equivalent to
+        //  "0000000000000000000000000000000000000000"
+        //  The hexdigits may optionally start with a '_' prefix
+        bool operator==(const char* hexdigits) const;
+
+
+        //- Inequality operator
+        bool operator!=(const SHA1Digest&) const;
+
+        //- Inequality operator
+        bool operator!=(const std::string& hexdigits) const;
+
+        //- Inequality operator
+        bool operator!=(const char* hexdigits) const;
 
 
 
 
-	// IOstream Operators
+    // IOstream Operators
 
-		//- Read (40-byte) text representation
-		//  Since leading and intermediate underscores are skipped, a '_' can
-		//  be prefixed to the text representation to use an unquoted
-		//  SHA1Digest without parsing ambiguities as a number.
-		friend Istream& operator>>(Istream&, SHA1Digest&);
+        //- Read (40-byte) text representation
+        //  Since leading and intermediate underscores are skipped, a '_' can
+        //  be prefixed to the text representation to use an unquoted
+        //  SHA1Digest without parsing ambiguities as a number.
+        friend Istream& operator>>(Istream&, SHA1Digest&);
 
-		//- Write (40-byte) text representation, unquoted and without prefix
-		friend Ostream& operator<<(Ostream&, const SHA1Digest&);
+        //- Write (40-byte) text representation, unquoted and without prefix
+        friend Ostream& operator<<(Ostream&, const SHA1Digest&);
 
 
 private:
-	// Private data
+    // Private data
 
-		//- The digest contents
-		unsigned char v_[length];
+        //- The digest contents
+        unsigned char v_[length];
 
-		//- Read hexadecimal value, ignoring leading or intermediate '_'
-		static unsigned char readHexDigit(Istream&);
+        //- Read hexadecimal value, ignoring leading or intermediate '_'
+        static unsigned char readHexDigit(Istream&);
 };
 
 

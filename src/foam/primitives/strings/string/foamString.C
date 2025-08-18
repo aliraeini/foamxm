@@ -1,25 +1,25 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,133 +38,133 @@ const Foam::string Foam::string::null;
 
 Foam::string::size_type Foam::string::count(const char c) const
 {
-	size_type cCount = 0;
+    size_type cCount = 0;
 
-	for (const_iterator iter = begin(); iter != end(); ++iter)
-	{
-		if (*iter == c)
-		{
-			cCount++;
-		}
-	}
+    for (const_iterator iter = begin(); iter != end(); ++iter)
+    {
+        if (*iter == c)
+        {
+            cCount++;
+        }
+    }
 
-	return cCount;
+    return cCount;
 }
 
 
 Foam::string& Foam::string::replace
 (
-	const string& oldStr,
-	const string& newStr,
-	size_type start
+    const string& oldStr,
+    const string& newStr,
+    size_type start
 )
 {
-	size_type newStart = start;
+    size_type newStart = start;
 
-	if ((newStart = find(oldStr, newStart)) != npos)
-	{
-		std::string::replace(newStart, oldStr.size(), newStr);
-	}
+    if ((newStart = find(oldStr, newStart)) != npos)
+    {
+        std::string::replace(newStart, oldStr.size(), newStr);
+    }
 
-	return *this;
+    return *this;
 }
 
 
 Foam::string& Foam::string::replaceAll
 (
-	const string& oldStr,
-	const string& newStr,
-	size_type start
+    const string& oldStr,
+    const string& newStr,
+    size_type start
 )
 {
-	if (oldStr.size())
-	{
-		size_type newStart = start;
+    if (oldStr.size())
+    {
+        size_type newStart = start;
 
-		while ((newStart = find(oldStr, newStart)) != npos)
-		{
-			std::string::replace(newStart, oldStr.size(), newStr);
-			newStart += newStr.size();
-		}
-	}
+        while ((newStart = find(oldStr, newStart)) != npos)
+        {
+            std::string::replace(newStart, oldStr.size(), newStr);
+            newStart += newStr.size();
+        }
+    }
 
-	return *this;
+    return *this;
 }
 
 
 Foam::string& Foam::string::expand(const bool allowEmpty)
 {
-	stringOps::inplaceExpand(*this, allowEmpty);
-	return *this;
+    stringOps::inplaceExpand(*this, allowEmpty);
+    return *this;
 }
 
 
 bool Foam::string::removeRepeated(const char character)
 {
-	bool changed = false;
+    bool changed = false;
 
-	if (character && find(character) != npos)
-	{
-		string::size_type nChar=0;
-		iterator iter2 = begin();
+    if (character && find(character) != npos)
+    {
+        string::size_type nChar=0;
+        iterator iter2 = begin();
 
-		char prev = 0;
+        char prev = 0;
 
-		for
-		(
-			string::const_iterator iter1 = iter2;
-			iter1 != end();
-			iter1++
-		)
-		{
-			char c = *iter1;
+        for
+        (
+            string::const_iterator iter1 = iter2;
+            iter1 != end();
+            iter1++
+        )
+        {
+            char c = *iter1;
 
-			if (prev == c && c == character)
-			{
-				changed = true;
-			}
-			else
-			{
-				*iter2 = prev = c;
-				++iter2;
-				++nChar;
-			}
-		}
-		resize(nChar);
-	}
+            if (prev == c && c == character)
+            {
+                changed = true;
+            }
+            else
+            {
+                *iter2 = prev = c;
+                ++iter2;
+                ++nChar;
+            }
+        }
+        resize(nChar);
+    }
 
-	return changed;
+    return changed;
 }
 
 
 Foam::string Foam::string::removeRepeated(const char character) const
 {
-	string str(*this);
-	str.removeRepeated(character);
-	return str;
+    string str(*this);
+    str.removeRepeated(character);
+    return str;
 }
 
 
 bool Foam::string::removeTrailing(const char character)
 {
-	bool changed = false;
+    bool changed = false;
 
-	string::size_type nChar = size();
-	if (character && nChar > 1 && operator[](nChar-1) == character)
-	{
-		resize(nChar-1);
-		changed = true;
-	}
+    string::size_type nChar = size();
+    if (character && nChar > 1 && operator[](nChar-1) == character)
+    {
+        resize(nChar-1);
+        changed = true;
+    }
 
-	return changed;
+    return changed;
 }
 
 
 Foam::string Foam::string::removeTrailing(const char character) const
 {
-	string str(*this);
-	str.removeTrailing(character);
-	return str;
+    string str(*this);
+    str.removeTrailing(character);
+    return str;
 }
 
 

@@ -1,34 +1,34 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	Foam::polyTopoChanger
+    Foam::polyTopoChanger
 
 Description
-	List of mesh modifiers defining the mesh dynamics.
+    List of mesh modifiers defining the mesh dynamics.
 
 SourceFiles
-	polyTopoChanger.C
+    polyTopoChanger.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -44,150 +44,153 @@ SourceFiles
 namespace Foam
 {
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Forward declaration of classes
 class polyMesh;
 class mapPolyMesh;
 class polyBoundaryMesh;
 
-
+// Forward declaration of friend functions and operators
 class polyTopoChanger;
 
 Ostream& operator<<(Ostream&, const polyTopoChanger&);
 
 
+/*---------------------------------------------------------------------------*\
+                      Class polyTopoChanger Declaration
+\*---------------------------------------------------------------------------*/
 
 class polyTopoChanger
 :
-	public PtrList<polyMeshModifier>,
-	public regIOobject
+    public PtrList<polyMeshModifier>,
+    public regIOobject
 {
-	// Private data
+    // Private data
 
-		//- Current time index for mesh morph
-		label morphIndex_;
+        //- Current time index for mesh morph
+        label morphIndex_;
 
-	// Private Member Functions
 
-		//- Disallow default bitwise copy construct
-		polyTopoChanger(const polyTopoChanger&);
+    // Private Member Functions
 
-		//- Disallow default bitwise assignment
-		void operator=(const polyTopoChanger&);
+        //- Disallow default bitwise copy construct
+        polyTopoChanger(const polyTopoChanger&) = delete;
 
-		void readModifiers();
+        //- Disallow default bitwise assignment
+        void operator=(const polyTopoChanger&) = delete;
+
+        void readModifiers();
 
 
 protected:
 
-	// Protected data
+    // Protected data
 
-		//- Reference to mesh
-		polyMesh& mesh_;
+        //- Reference to mesh
+        polyMesh& mesh_;
 
 
-	// Protected Member Functions
+    // Protected Member Functions
 
-		// Topology changes
+        // Topology changes
 
-			//- Rotate a face nShift positions in anticlockwise direction
-			static face rotateFace(const face& f, const label nShift);
+            //- Rotate a face nShift positions in anticlockwise direction
+            static face rotateFace(const face& f, const label nShift);
 
-			//- Determine ordering of faces in coupled patches.
-			//  Calculate mapping to shuffle faces inside coupled patches and
-			//  rotation to make 0th vertex in faces align.
-			static bool reorderCoupledPatches
-			(
-				const polyBoundaryMesh& boundary,
-				const labelList& patchStarts,
-				const labelList& patchSizes,
-				const faceList& faces,
-				const pointField& points,
-				labelList& faceMap,
-				labelList& rotation
-			);
+            //- Determine ordering of faces in coupled patches.
+            //  Calculate mapping to shuffle faces inside coupled patches and
+            //  rotation to make 0th vertex in faces align.
+            static bool reorderCoupledPatches
+            (
+                const polyBoundaryMesh& boundary,
+                const labelList& patchStarts,
+                const labelList& patchSizes,
+                const faceList& faces,
+                const pointField& points,
+                labelList& faceMap,
+                labelList& rotation
+            );
 
-			//- Sync communications required for couple patch reordering when
-			//  there is no local topological change
-			void syncCoupledPatches();
+            //- Sync communications required for couple patch reordering when
+            //  there is no local topological change
+            void syncCoupledPatches();
 
 
 public:
 
-	//- Runtime type information
-	TypeName("polyTopoChanger");
+    //- Runtime type information
+    TypeName("polyTopoChanger");
 
 
-	// Constructors
+    // Constructors
 
-		//- Read constructor given IOobject and a polyMesh
-		polyTopoChanger(const IOobject&, polyMesh&);
+        //- Read constructor given IOobject and a polyMesh
+        polyTopoChanger(const IOobject&, polyMesh&);
 
-		//- Read constructor for given polyMesh
-		explicit polyTopoChanger(polyMesh&);
-
-	// Destructor
-
-		virtual ~polyTopoChanger()
-		{}
+        //- Read constructor for given polyMesh
+        explicit polyTopoChanger(polyMesh&);
 
 
-	// Member functions
-
-		//- Return the mesh reference
-		const polyMesh& mesh() const
-		{
-			return mesh_;
-		}
-
-		//- Return a list of patch types
-		wordList types() const;
-
-		//- Return a list of patch names
-		wordList names() const;
-
-		//- Is topology change required
-		bool changeTopology() const;
-
-		//- Return topology change request
-		autoPtr<polyTopoChange> topoChangeRequest() const;
-
-		//- Modify point motion
-		void modifyMotionPoints(pointField&) const;
-
-		static autoPtr<mapPolyMesh> changeMesh
-		(
-			polyMesh&,
-			const polyTopoChange&
-		);
-
-		autoPtr<mapPolyMesh> changeMesh();
-
-		//- Force recalculation of locally stored data on topological change
-		void update(const mapPolyMesh& m);
-
-		//- Add given set of topology modifiers to the topoChanger
-		void addTopologyModifiers(const List<polyMeshModifier*>& tm);
-
-		//- Find modifier given a name
-		label findModifierID(const word& modName) const;
-
-		//- Return morph index
-		label morphIndex() const;
+    //- Destructor
+    virtual ~polyTopoChanger() = default;
 
 
-		//- writeData member function required by regIOobject
-		bool writeData(Ostream&) const;
+    // Member functions
+
+        //- Return the mesh reference
+        const polyMesh& mesh() const
+        {
+            return mesh_;
+        }
+
+        //- Return a list of patch types
+        wordList types() const;
+
+        //- Return a list of patch names
+        wordList names() const;
+
+        //- Is topology change required
+        bool changeTopology() const;
+
+        //- Return topology change request
+        autoPtr<polyTopoChange> topoChangeRequest() const;
+
+        //- Modify point motion
+        void modifyMotionPoints(pointField&) const;
+
+        static autoPtr<mapPolyMesh> changeMesh
+        (
+            polyMesh&,
+            const polyTopoChange&
+        );
+
+        autoPtr<mapPolyMesh> changeMesh();
+
+        //- Force recalculation of locally stored data on topological change
+        void update(const mapPolyMesh& m);
+
+        //- Add given set of topology modifiers to the topoChanger
+        void addTopologyModifiers(const List<polyMeshModifier*>& tm);
+
+        //- Find modifier given a name
+        label findModifierID(const word& modName) const;
+
+        //- Return morph index
+        label morphIndex() const;
 
 
-	// Member Operators
-
-		bool operator!=(const polyTopoChanger&) const;
-		bool operator==(const polyTopoChanger&) const;
+        //- writeData member function required by regIOobject
+        bool writeData(Ostream&) const;
 
 
-	// Ostream operator
+    // Member Operators
 
-		friend Ostream& operator<<(Ostream&, const polyTopoChanger&);
+        bool operator!=(const polyTopoChanger&) const;
+        bool operator==(const polyTopoChanger&) const;
+
+
+    // Ostream operator
+
+        friend Ostream& operator<<(Ostream&, const polyTopoChanger&);
 };
 
 

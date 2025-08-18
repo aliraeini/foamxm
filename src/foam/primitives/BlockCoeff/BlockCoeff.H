@@ -1,35 +1,35 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.1
+   \\    /   O peration     | Version:     5.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-	blockCoeff
+    blockCoeff
 
 Description
-	Block coefficient combines a scalar, linear and square coefficient
-	for different levels of coupling
+    Block coefficient combines a scalar, linear and square coefficient
+    for different levels of coupling
 
 Author
-	Hrvoje Jasak, Wikki Ltd.  All rights reserved
+    Hrvoje Jasak, Wikki Ltd.  All rights reserved
 
 \*---------------------------------------------------------------------------*/
 
@@ -53,300 +53,303 @@ class BlockCoeff;
 template<class Type>
 Ostream& operator<<(Ostream&, const BlockCoeff<Type>&);
 
+/*---------------------------------------------------------------------------*\
+                          Class BlockCoeff Declaration
+\*---------------------------------------------------------------------------*/
 
 template<class Type>
 class BlockCoeff
 :
-	public blockCoeffBase
+    public blockCoeffBase
 {
 public:
 
-	// Public data types
+    // Public data types
 
-		//- Component type
-		typedef Type xType;
-		typedef Field<xType> xTypeField;
+        //- Component type
+        typedef Type xType;
+        typedef Field<xType> xTypeField;
 
-		//- Coefficient type
-		typedef typename pTraits<Type>::cmptType scalarType;
-		typedef Type linearType;
-		typedef typename outerProduct<Type, Type>::type squareType;
+        //- Coefficient type
+        typedef typename pTraits<Type>::cmptType scalarType;
+        typedef Type linearType;
+        typedef typename outerProduct<Type, Type>::type squareType;
 
-		//- Field type
-		typedef Field<scalarType> scalarTypeField;
-		typedef Field<linearType> linearTypeField;
-		typedef Field<squareType> squareTypeField;
-
-
-	//- Multiplication trait
-	class multiply
-	{
-	public:
-
-		multiply() {}
-
-		// Coefficient times type multiplication
-
-			Type operator()(const scalarType& c, const Type& x) const
-			{
-				return c*x;
-			}
-
-			Type operator()(const linearType& c, const Type& x) const
-			{
-				return cmptMultiply(c, x);
-			}
-
-			Type operator()(const squareType& c, const Type& x) const
-			{
-				return (c & x);
-			}
-
-			Type operator()(const BlockCoeff<Type>& c, const Type& x) const
-			{
-				if (c.scalarCoeffPtr_)
-				{
-					return operator()(*c.scalarCoeffPtr_, x);
-				}
-				else if (c.linearCoeffPtr_)
-				{
-					return operator()(*c.linearCoeffPtr_, x);
-				}
-				else if (c.squareCoeffPtr_)
-				{
-					return operator()(*c.squareCoeffPtr_, x);
-				}
-				else
-				{
-					return pTraits<Type>::zero;
-				}
-			}
+        //- Field type
+        typedef Field<scalarType> scalarTypeField;
+        typedef Field<linearType> linearTypeField;
+        typedef Field<squareType> squareTypeField;
 
 
-		// Coefficient times coefficient multiplication. Needed for BlockILUCp
-		// preconditioner. VV, 12/Jul/2015.
+    //- Multiplication trait
+    class multiply
+    {
+    public:
 
-			scalarType activeTypeMultiply
-			(
-				const scalarType& a,
-				const scalarType& b
-			) const
-			{
-				return a*b;
-			}
+        multiply() {}
 
-			linearType activeTypeMultiply
-			(
-				const linearType& a,
-				const linearType& b
-			) const
-			{
-				return cmptMultiply(a, b);
-			}
+        // Coefficient times type multiplication
 
-			squareType activeTypeMultiply
-			(
-				const squareType& a,
-				const squareType& b
-			) const
-			{
-				return (a & b);
-			}
+            Type operator()(const scalarType& c, const Type& x) const
+            {
+                return c*x;
+            }
 
+            Type operator()(const linearType& c, const Type& x) const
+            {
+                return cmptMultiply(c, x);
+            }
 
-		// Transpose functions
+            Type operator()(const squareType& c, const Type& x) const
+            {
+                return (c & x);
+            }
 
-			scalarType transpose(const scalarType& c) const
-			{
-				return c;
-			}
-
-			linearType transpose(const linearType& c) const
-			{
-				return c;
-			}
-
-			squareType transpose(const squareType& c) const
-			{
-				return c.T();
-			}
+            Type operator()(const BlockCoeff<Type>& c, const Type& x) const
+            {
+                if (c.scalarCoeffPtr_)
+                {
+                    return operator()(*c.scalarCoeffPtr_, x);
+                }
+                else if (c.linearCoeffPtr_)
+                {
+                    return operator()(*c.linearCoeffPtr_, x);
+                }
+                else if (c.squareCoeffPtr_)
+                {
+                    return operator()(*c.squareCoeffPtr_, x);
+                }
+                else
+                {
+                    return pTraits<Type>::zero;
+                }
+            }
 
 
-		// Inverse functions
+        // Coefficient times coefficient multiplication. Needed for BlockILUCp
+        // preconditioner. VV, 12/Jul/2015.
 
-			scalarType inverse(const scalarType& c) const
-			{
-				return 1.0/c;
-			}
+            scalarType activeTypeMultiply
+            (
+                const scalarType& a,
+                const scalarType& b
+            ) const
+            {
+                return a*b;
+            }
 
-			linearType inverse(const linearType& c) const
-			{
-				return cmptDivide(pTraits<linearType>::one, c);
-			}
+            linearType activeTypeMultiply
+            (
+                const linearType& a,
+                const linearType& b
+            ) const
+            {
+                return cmptMultiply(a, b);
+            }
 
-			squareType inverse(const squareType& c) const
-			{
-				return inv(c);
-			}
+            squareType activeTypeMultiply
+            (
+                const squareType& a,
+                const squareType& b
+            ) const
+            {
+                return (a & b);
+            }
 
 
-		// Triple product of coefficients
+        // Transpose functions
 
-			scalarType tripleProduct
-			(
-				const scalarType& a,
-				const scalarType& b,
-				const scalarType& c
-			) const
-			{
-				return a*c/b;
-			}
+            scalarType transpose(const scalarType& c) const
+            {
+                return c;
+            }
 
-			linearType tripleProduct
-			(
-				const scalarType& a,
-				const linearType& b,
-				const scalarType& c
-			) const
-			{
-				return a*c*inverse(b);
-			}
+            linearType transpose(const linearType& c) const
+            {
+                return c;
+            }
 
-			linearType tripleProduct
-			(
-				const linearType& a,
-				const linearType& b,
-				const linearType& c
-			) const
-			{
-				return cmptDivide(cmptMultiply(a, c), b);
-			}
+            squareType transpose(const squareType& c) const
+            {
+                return c.T();
+            }
 
-			squareType tripleProduct
-			(
-				const scalarType& a,
-				const squareType& b,
-				const scalarType& c
-			) const
-			{
-				return a*c*inv(b);
-			}
 
-			squareType tripleProduct
-			(
-				const linearType& a,
-				const squareType& b,
-				const linearType& c
-			) const
-			{
-				squareType result;
-				linearType sac = cmptMultiply(a, c);
+        // Inverse functions
 
-				expandLinear(result, sac);
-				return result & inv(b);
-			}
+            scalarType inverse(const scalarType& c) const
+            {
+                return 1.0/c;
+            }
 
-			squareType tripleProduct
-			(
-				const squareType& a,
-				const squareType& b,
-				const squareType& c
-			) const
-			{
-				return (a & inv(b)) & c;
-			}
-	};
+            linearType inverse(const linearType& c) const
+            {
+                return cmptDivide(pTraits<linearType>::one, c);
+            }
+
+            squareType inverse(const squareType& c) const
+            {
+                return inv(c);
+            }
+
+
+        // Triple product of coefficients
+
+            scalarType tripleProduct
+            (
+                const scalarType& a,
+                const scalarType& b,
+                const scalarType& c
+            ) const
+            {
+                return a*c/b;
+            }
+
+            linearType tripleProduct
+            (
+                const scalarType& a,
+                const linearType& b,
+                const scalarType& c
+            ) const
+            {
+                return a*c*inverse(b);
+            }
+
+            linearType tripleProduct
+            (
+                const linearType& a,
+                const linearType& b,
+                const linearType& c
+            ) const
+            {
+                return cmptDivide(cmptMultiply(a, c), b);
+            }
+
+            squareType tripleProduct
+            (
+                const scalarType& a,
+                const squareType& b,
+                const scalarType& c
+            ) const
+            {
+                return a*c*inv(b);
+            }
+
+            squareType tripleProduct
+            (
+                const linearType& a,
+                const squareType& b,
+                const linearType& c
+            ) const
+            {
+                squareType result;
+                linearType sac = cmptMultiply(a, c);
+
+                expandLinear(result, sac);
+                return result & inv(b);
+            }
+
+            squareType tripleProduct
+            (
+                const squareType& a,
+                const squareType& b,
+                const squareType& c
+            ) const
+            {
+                return (a & inv(b)) & c;
+            }
+    };
 
 
 private:
 
-	// Private data
+    // Private data
 
-		//- Scalar coefficient
-		mutable scalarType* scalarCoeffPtr_;
+        //- Scalar coefficient
+        mutable scalarType* scalarCoeffPtr_;
 
-		//- Linear coefficient
-		mutable linearType* linearCoeffPtr_;
+        //- Linear coefficient
+        mutable linearType* linearCoeffPtr_;
 
-		//- Square coefficient
-		mutable squareType* squareCoeffPtr_;
+        //- Square coefficient
+        mutable squareType* squareCoeffPtr_;
 
 
-	// Private Member Functions
+    // Private Member Functions
 
-		//- Promote to scalar
-		scalarType& toScalar();
+        //- Promote to scalar
+        scalarType& toScalar();
 
-		//- Promote to linear
-		linearType& toLinear();
+        //- Promote to linear
+        linearType& toLinear();
 
-		//- Promote to square
-		squareType& toSquare();
+        //- Promote to square
+        squareType& toSquare();
 
 
 public:
 
-	// Constructors
+    // Constructors
 
-		//- Construct null
-		explicit BlockCoeff();
+        //- Construct null
+        explicit BlockCoeff();
 
-		//- Construct as copy
-		BlockCoeff(const BlockCoeff<Type>&);
+        //- Construct as copy
+        BlockCoeff(const BlockCoeff<Type>&);
 
-		//- Construct from Istream
-		BlockCoeff(Istream&);
+        //- Construct from Istream
+        BlockCoeff(Istream&);
 
-		//- Clone
-		BlockCoeff<Type> clone() const;
-
-
-	//- Destructor
-	~BlockCoeff();
-
-		//- Clear data
-		void clear();
+        //- Clone
+        BlockCoeff<Type> clone() const;
 
 
-	// Member functions
+    //- Destructor
+    ~BlockCoeff();
 
-		//- Return active type
-		blockCoeffBase::activeLevel activeType() const;
-
-		//- Check pointers: only one type should be active (debug only)
-		void checkActive() const;
-
-		// Return as typed.  Fails when asked for the incorrect type
-
-			//- Return as scalar
-			const scalarType& asScalar() const;
-			scalarType& asScalar();
-
-			//- Return as linear
-			const linearType& asLinear() const;
-			linearType& asLinear();
-
-			//- Return as square
-			const squareType& asSquare() const;
-			squareType& asSquare();
+        //- Clear data
+        void clear();
 
 
-		//- Return component
-		scalarType component(const direction) const;
+    // Member functions
+
+        //- Return active type
+        blockCoeffBase::activeLevel activeType() const;
+
+        //- Check pointers: only one type should be active (debug only)
+        void checkActive() const;
+
+        // Return as typed.  Fails when asked for the incorrect type
+
+            //- Return as scalar
+            const scalarType& asScalar() const;
+            scalarType& asScalar();
+
+            //- Return as linear
+            const linearType& asLinear() const;
+            linearType& asLinear();
+
+            //- Return as square
+            const squareType& asSquare() const;
+            squareType& asSquare();
 
 
-	// Member operators
+        //- Return component
+        scalarType component(const direction) const;
 
-		void operator=(const BlockCoeff<Type>&);
+
+    // Member operators
+
+        void operator=(const BlockCoeff<Type>&);
 
 
-	// IOstream operators
+    // IOstream operators
 
-		friend Ostream& operator<< <Type>
-		(
-			Ostream&,
-			const BlockCoeff<Type>&
-		);
+        friend Ostream& operator<< <Type>
+        (
+            Ostream&,
+            const BlockCoeff<Type>&
+        );
 };
 
 
@@ -357,7 +360,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#	include "BlockCoeff.C"
+#   include "BlockCoeff.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
