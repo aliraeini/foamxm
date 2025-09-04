@@ -82,28 +82,40 @@ $(faceToCell)/MeshObjects/centredCFCFaceToCellStencilObject.C
 
 fvPatchFields = fields/fvPatchFields
 $(fvPatchFields)/fvPatchField/fvPatchFields.C
+$(fvPatchFields)/fvPatchField/fvPatchVectorNFields.C
 
 basicFvPatchFields = $(fvPatchFields)/basic
 $(basicFvPatchFields)/basicSymmetry/basicSymmetryFvPatchScalarField.C
 $(basicFvPatchFields)/calculated/calculatedFvPatchFields.C
+$(basicFvPatchFields)/calculated/calculatedFvPatchVectorNFields.C
 $(basicFvPatchFields)/extrapolatedCalculated/extrapolatedCalculatedFvPatchFields.C
+$(basicFvPatchFields)/extrapolatedCalculated/extrapolatedCalculatedFvPatchVectorNFields.C
 $(basicFvPatchFields)/coupled/coupledFvPatchFields.C
+$(basicFvPatchFields)/coupled/coupledFvPatchVectorNFields.C
 $(basicFvPatchFields)/directionMixed/directionMixedFvPatchFields.C
 $(basicFvPatchFields)/fixedGradient/fixedGradientFvPatchFields.C
+$(basicFvPatchFields)/fixedGradient/fixedGradientFvPatchVectorNFields.C
 $(basicFvPatchFields)/fixedValue/fixedValueFvPatchFields.C
+$(basicFvPatchFields)/fixedValue/fixedValueFvPatchVectorNFields.C
 $(basicFvPatchFields)/generic/genericFvPatchFields.C
+$(basicFvPatchFields)/generic/genericFvPatchVectorNFields.C
 $(basicFvPatchFields)/mixed/mixedFvPatchFields.C
 $(basicFvPatchFields)/sliced/slicedFvPatchFields.C
 $(basicFvPatchFields)/transform/transformFvPatchFields.C
 $(basicFvPatchFields)/transform/transformFvPatchScalarField.C
+$(basicFvPatchFields)/transform/transformFvPatchVectorNFields.C
 $(basicFvPatchFields)/zeroGradient/zeroGradientFvPatchFields.C
+$(basicFvPatchFields)/zeroGradient/zeroGradientFvPatchVectorNFields.C
 
 constraintFvPatchFields = $(fvPatchFields)/constraint
 $(constraintFvPatchFields)/cyclic/cyclicFvPatchFields.C
+$(constraintFvPatchFields)/cyclic/cyclicFvPatchVectorNFields.C
 $(constraintFvPatchFields)/empty/emptyFvPatchFields.C
+$(constraintFvPatchFields)/empty/emptyFvPatchVectorNFields.C
 $(constraintFvPatchFields)/jumpCyclic/jumpCyclicFvPatchFields.C
 $(constraintFvPatchFields)/processor/processorFvPatchFields.C
 $(constraintFvPatchFields)/processor/processorFvPatchScalarField.C
+$(constraintFvPatchFields)/processor/processorFvPatchVectorNFields.C
 $(constraintFvPatchFields)/symmetry/symmetryFvPatchFields.C
 $(constraintFvPatchFields)/wedge/wedgeFvPatchFields.C
 $(constraintFvPatchFields)/wedge/wedgeFvPatchScalarField.C
@@ -186,8 +198,18 @@ $(constraintFvsPatchFields)/wedge/wedgeFvsPatchFields.C
 $(constraintFvsPatchFields)/mixingPlane/mixingPlaneFvsPatchFields.C
 $(constraintFvsPatchFields)/regionCoupling/regionCouplingFvsPatchFields.C
 
+fvsPatchVectorNFields = $(fvsPatchFields)/fvsPatchVectorNFields
+$(fvsPatchVectorNFields)/fvsPatchVectorNFields.C
+$(fvsPatchVectorNFields)/calculatedFvsPatchVectorNFields.C
+$(fvsPatchVectorNFields)/emptyFvsPatchVectorNFields.C
+$(fvsPatchVectorNFields)/wedgeFvsPatchVectorNFields.C
+$(fvsPatchVectorNFields)/coupledFvsPatchVectorNFields.C
+$(fvsPatchVectorNFields)/processorFvsPatchVectorNFields.C
+
 fields/volFields/volFields.C
+fields/volFields/volVectorNFields.C
 fields/surfaceFields/surfaceFields.C
+fields/surfaceFields/surfaceVectorNFields.C
 
 fvMatrices/fvMatrices.C
 fvMatrices/fvScalarMatrix/fvScalarMatrix.C
@@ -215,6 +237,7 @@ $(pointVolInterpolation)/pointVolInterpolation.C
 surfaceInterpolation = interpolation/surfaceInterpolation
 $(surfaceInterpolation)/surfaceInterpolation/surfaceInterpolation.C
 $(surfaceInterpolation)/surfaceInterpolationScheme/surfaceInterpolationSchemes.C
+$(surfaceInterpolation)/VectorNSurfaceInterpolationSchemes/VectorNSurfaceInterpolationSchemes.C
 
 schemes = $(surfaceInterpolation)/schemes
 $(schemes)/linear/linear.C

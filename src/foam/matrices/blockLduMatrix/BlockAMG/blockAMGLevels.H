@@ -28,9 +28,9 @@ License
 #include "coarseBlockAMGLevel.H"
 
 // KRJ included to make the different types
-//#include "VectorTensorNFieldsFwd.H"
-//#include "ExpandTensorNField.H"
-//#include "VectorNFieldTypes.H"
+#include "VectorTensorNFieldsFwd.H"
+#include "ExpandTensorNField.H"
+#include "VectorNFieldTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

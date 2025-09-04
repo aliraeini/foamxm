@@ -34,9 +34,6 @@ SourceFiles
     BlockAMGLevel.C
 
 \*---------------------------------------------------------------------------*/
-#ifndef USE_VecN
-#define forAllVectorNTypes(...)
-#endif
 
 #ifndef BlockAMGLevel_H
 #define BlockAMGLevel_H

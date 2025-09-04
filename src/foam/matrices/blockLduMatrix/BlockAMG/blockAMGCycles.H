@@ -25,12 +25,10 @@ License
 
 #include "BlockAMGCycle.H"
 
-#ifdef USE_VecN
 // KRJ included to make the different types
 #include "VectorTensorNFieldsFwd.H"
 #include "ExpandTensorNField.H"
 #include "VectorNFieldTypes.H"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,13 +43,12 @@ typedef BlockAMGCycle<scalar> blockAMGScalarCycle;
 typedef BlockAMGCycle<vector> blockAMGVectorCycle;
 typedef BlockAMGCycle<tensor> blockAMGTensorCycle;
 
-#ifdef USE_VecN
 #define makeTypedef(type, Type, args...)                \
     typedef BlockAMGCycle<type > blockAMG##Type##Cycle;
 
 forAllVectorNTypes(makeTypedef)
 #undef makeTypedef
-#endif
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

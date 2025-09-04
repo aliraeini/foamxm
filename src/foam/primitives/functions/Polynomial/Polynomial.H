@@ -108,9 +108,6 @@ public:
         Polynomial();
 
         //- Construct from C-array of coefficients
-        Polynomial(const Polynomial&);
-
-        //- Construct from C-array of coefficients
         explicit Polynomial(const scalar coeffs[PolySize]);
 
         //- Construct from a list of coefficients

@@ -6,20 +6,20 @@
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
 License
-	This file is part of foam-extend.
+    This file is part of foam-extend.
 
-	foam-extend is free software: you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
+    foam-extend is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
-	foam-extend is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	General Public License for more details.
+    foam-extend is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::fileFormats::VTKsurfaceFormatCore
@@ -38,7 +38,6 @@ SourceFiles
 #include "Ostream.H"
 #include "OFstream.H"
 #include "MeshedSurface.H"
-//#include "objectRegistry.H"
 
 
 ///////////////////////////////////////////
@@ -76,7 +75,7 @@ class VTKsurfaceFormatCore
 {
 protected:
 
-    // Protected Static Member Functions
+    // Protected Member Functions
 
 
     // Data
@@ -152,19 +151,18 @@ protected:
 
 
 
-
         //- Write header information with points
         static void writeHeader
         (
-			Ostream&,
-			const pointField&
+            Ostream&,
+            const pointField&
         );
 
-        //- Write regions (zones) information as CellData
-		static void writeTail(Ostream&, const UList<surfZone>&);
+        //- Write trailing information with zone information
+        static void writeTail(Ostream&, const UList<surfZone>&);
 
-        //- Write regions (zones) information as CellData
-		static void writeTail(Ostream&, const UList<label>& zoneIds);
+        //- Write trailing information with zone Ids
+        static void writeTail(Ostream&, const UList<label>& zoneIds);
 };
 
 

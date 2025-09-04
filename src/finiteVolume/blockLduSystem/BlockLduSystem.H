@@ -40,16 +40,9 @@ SourceFiles
 #ifndef BlockLduSystem_H
 #define BlockLduSystem_H
 
-#include "BlockLduMatrix.H"
-#include "volFields.H"
-#include "fvSolution.H"
-#include "volFieldsFwd.H"
-#include "surfaceFieldsFwd.H"
-#include "blockLduMatrices.H"
-
-//#include "blockVectorNMatrices.H"
-//#include "VectorNFieldTypes.H"
-//#include "volVectorNFields.H"
+#include "blockVectorNMatrices.H"
+#include "VectorNFieldTypes.H"
+#include "volVectorNFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

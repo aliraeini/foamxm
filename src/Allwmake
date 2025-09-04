@@ -35,8 +35,8 @@ wmake libso meshTools
 wmake libso finiteVolume
 #wmake libso finiteArea
 
-#wmake libso lduSolvers
-#wmake libso VectorN
+wmake libso lduSolvers
+'wmake libso VectorN
 
 #wmake libso tetFiniteElement
 wmake libso decompositionMethods/decomposeReconstruct

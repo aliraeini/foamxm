@@ -25,7 +25,7 @@ License
 
 #include "solutionControl.H"
 #include "fieldTypes.H"
-//#include "VectorNFieldTypes.H"
+#include "VectorNFieldTypes.H"
 #include "fvc.H"
 #include "inletOutletFvPatchFields.H"
 #include "slipFvPatchFields.H"
@@ -179,7 +179,6 @@ void Foam::solutionControl::storePrevIterFields() const
     storePrevIter<symmTensor>();
     storePrevIter<tensor>();
 
-#ifdef USE_VecN
     storePrevIter<vector2>();
     storePrevIter<vector4>();
     storePrevIter<vector6>();
@@ -194,7 +193,6 @@ void Foam::solutionControl::storePrevIterFields() const
     storePrevIter<tensor4>();
     storePrevIter<tensor6>();
     storePrevIter<tensor8>();
-#endif //USE_VecN
 }
 
 
@@ -233,8 +231,6 @@ Foam::scalar Foam::solutionControl::maxResidual
     maxTypeResidual<symmTensor>(fieldName, data, firstRes, lastRes);
     maxTypeResidual<tensor>(fieldName, data, firstRes, lastRes);
 
-#ifdef USE_VecN
-
     maxTypeResidual<vector2>(fieldName, data, firstRes, lastRes);
     maxTypeResidual<vector4>(fieldName, data, firstRes, lastRes);
     maxTypeResidual<vector6>(fieldName, data, firstRes, lastRes);
@@ -249,8 +245,6 @@ Foam::scalar Foam::solutionControl::maxResidual
     maxTypeResidual<tensor4>(fieldName, data, firstRes, lastRes);
     maxTypeResidual<tensor6>(fieldName, data, firstRes, lastRes);
     maxTypeResidual<tensor8>(fieldName, data, firstRes, lastRes);
-
-#endif //USE_VecN
 
     return firstRes;
 }
