@@ -32,7 +32,7 @@
 
 cmake_minimum_required (VERSION 2.8)
 
-project(foamx4m C CXX)
+project(foamxm C CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 

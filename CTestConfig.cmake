@@ -10,12 +10,12 @@
 # on the foam-extend CDash service hosted on SourceForge.Net
 # See here: http://foam-extend.sourceforge.net/CDash/index.php
 #
-set(CTEST_PROJECT_NAME "foamx4m")
+set(CTEST_PROJECT_NAME "foamxm")
 set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
 
 set(CTEST_DROP_METHOD "http")
-set(CTEST_DROP_SITE "foamx4m.sourceforge.netERROR")
-set(CTEST_DROP_LOCATION "/CDash/submit.php?project=foamx4m")
+set(CTEST_DROP_SITE "foamxm.sourceforge.netERROR")
+set(CTEST_DROP_LOCATION "/CDash/submit.php?project=foamxm")
 set(CTEST_DROP_SITE_CDASH TRUE)
 
 # We can override those variables for local sites so you can use

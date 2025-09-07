@@ -3,7 +3,7 @@
 * 9787afbc9 Add start averaging time
 * 4fcf89af3 Moved flux function objects into separate library
 * 036d75748 (origin/nextRelease) Formatting
-* cf626781b foamx4m
+* cf626781b foamxm
 * 03b786de7 (HEAD -> master) delete unused
 
 git remote show origin:

@@ -33,10 +33,8 @@
 #------------------------------------------------------------------------------
 
 export WM_PROJECT=foam
-export WM_FORK='x4m'
+export WM_FORK='xm'
 export WM_PROJECT_VERSION=5.1
-
-foamInstall=`cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd`
 
 ###############################################################################
 # USER EDITABLE PART
@@ -46,8 +44,7 @@ foamInstall=`cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd`
 #
 # Location of FOAM installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#foamInstall=/opt/FOAM
+foamInstall=`cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd`
 # foamInstall=~$WM_PROJECT
 # foamInstall=/usr/local/$WM_PROJECT
 # foamInstall=/opt/$WM_PROJECT
@@ -130,7 +127,7 @@ _foamSource()
 if [ "$WM_OSTYPE" == "MSWindows" ]
 then
     _foamSource $WM_PROJECT_DIR/etc/prefs.sh.mingw
-	export WM_ARCH=mingw
+    export WM_ARCH=mingw
 elif [ -e $WM_PROJECT_DIR/etc/prefs.sh ]
 then
     _foamSource $WM_PROJECT_DIR/etc/prefs.sh
@@ -141,7 +138,6 @@ else
     # Detect system type and set environment variables appropriately
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     export WM_ARCH=`uname -s`
-
 fi
 
 
@@ -319,26 +315,26 @@ Darwin)
     then
         if [ -e '/opt/local/bin/mpicc' ]
         then
-        readlink /opt/local/bin/mpicc | grep openmpi >/dev/null
+            readlink /opt/local/bin/mpicc | grep openmpi >/dev/null
         if [ $? -eq "0" ]
         then
             export WM_MPLIB=MACPORTOPENMPI
             if [ "$FOAM_VERBOSE" -a "$PS1" ]
             then
-            echo "Using OpenMPI from MacPorts"
+                echo "Using OpenMPI from MacPorts"
             fi
         else
             readlink /opt/local/bin/mpicc | grep mpich >/dev/null
             if [ $? -eq "0" ]
             then
-            export WM_MPLIB=MACPORTMPICH
+                export WM_MPLIB=MACPORTMPICH
             if [ "$FOAM_VERBOSE" -a "$PS1" ]
             then
                 echo "Using MPICH from MacPorts"
             fi
             else
-            echo "/opt/local/bin/mpicc neither OpenMPI nor MPICH. Confused. Defaulting to OPENMPI"
-            export WM_MPLIB=OPENMPI
+                echo "/opt/local/bin/mpicc neither OpenMPI nor MPICH. Confused. Defaulting to OPENMPI"
+                export WM_MPLIB=OPENMPI
             fi
         fi
         fi
@@ -390,11 +386,11 @@ Darwin)
         # Seems like there is no Fortran-frontend for LLVM at thistime
         elif [ "$WM_BASE_COMPILER" == "Dragonegg" ]
         then
-        export WM_CC="dragonegg-$WM_MACPORT_VERSION-gcc"
-        export WM_CXX="dragonegg-$WM_MACPORT_VERSION-g++"
-        export WM_CXX="dragonegg-$WM_MACPORT_VERSION-gfortran"
+            export WM_CC="dragonegg-$WM_MACPORT_VERSION-gcc"
+            export WM_CXX="dragonegg-$WM_MACPORT_VERSION-g++"
+            export WM_CXX="dragonegg-$WM_MACPORT_VERSION-gfortran"
         else
-        echo "Unknown base compiler $WM_BASE_COMPILER"
+            echo "Unknown base compiler $WM_BASE_COMPILER"
         fi
 
         ruleDirBase=$WM_PROJECT_DIR/wmake/rules/$WM_ARCH
@@ -402,8 +398,8 @@ Darwin)
         ruleDir=$ruleDirBase$WM_COMPILER
         if [ ! -e $ruleDir ]
         then
-        echo "Rule directory $ruleDir not existing. Linking to $ruleDirTarget"
-        ln -s $ruleDirTarget $ruleDir
+            echo "Rule directory $ruleDir not existing. Linking to $ruleDirTarget"
+            ln -s $ruleDirTarget $ruleDir
         fi
         unset ruleDir ruleDirBase
     fi

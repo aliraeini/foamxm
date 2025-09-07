@@ -76,9 +76,9 @@ find_package(OpenMP)
 
 # Path to ParaViewConfig.cmake
 set(ParaView_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/packages/ParaView-4.4.0/platforms/linux64GccDPOpt/lib/cmake/paraview-4.4)
-find_package(ParaView REQUIRED)
+find_package(ParaView)
 
-find_package(Mesquite REQUIRED)
+find_package(Mesquite)
 if(MESQUITE_FOUND)
   add_library(mesquite SHARED IMPORTED)
   set_property(TARGET mesquite PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${MESQUITE_INCLUDE_DIRS})
@@ -241,4 +241,3 @@ set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/foam-extend-4.1")
 set(CPACK_SOURCE_STRIP_FILES "1")
 include(CPack)
-

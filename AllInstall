@@ -17,8 +17,8 @@ msInst=${msInst:-$1}
 msInst=${msInst:-../..}
 echo "msInst: '${msInst}'"
 
-mkdir -p ${msInst}/bin/foamx4m
+mkdir -p ${msInst}/bin/foamxm
 mkdir -p ${msInst}/lib
 
-cp  $FOAM_APPBIN/*  ${msInst}/bin/foamx4m   || echo "not built"
-cp  $FOAM_LIBBIN/*  ${msInst}/lib/          || echo "not built"
+cp  $FOAM_APPBIN/*  ${msInst}/bin/foamxm   || echo "not built"
+cp  $FOAM_LIBBIN/*  ${msInst}/lib/         || echo "not built"
