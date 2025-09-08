@@ -2111,7 +2111,7 @@ bool checkFacePyramids
                 "bool checkFacePyramids("
                 "const polyMeshGen&, const bool, const scalar,"
                 " labelHashSet*, const boolList*)"
-            )   << "Error in face pyramids: " << nErrorPyrs
+            )   << "Errors in face pyramids: " << nErrorPyrs
                 << " faces pointing the wrong way!"
                 << endl;
 
@@ -3509,5 +3509,3 @@ label findWorstQualityFaces
 } // End namespace Foam
 
 // ************************************************************************* //
-
-
