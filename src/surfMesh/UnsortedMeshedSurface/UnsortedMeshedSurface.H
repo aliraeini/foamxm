@@ -317,6 +317,8 @@ public:
                 const labelHashSet& include
             ) const;
 
+            using MeshedSurface<Face>::reset;
+
             //- Transfer components (points, faces, zone ids).
             virtual void reset
             (
