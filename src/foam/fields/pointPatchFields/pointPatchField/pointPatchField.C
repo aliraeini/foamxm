@@ -50,6 +50,17 @@ pointPatchField<Type>::pointPatchField
 template<class Type>
 pointPatchField<Type>::pointPatchField
 (
+	const pointPatchField<Type>& ptf
+)
+:
+	PointPatchField
+	<Foam::pointPatchField, pointMesh, pointPatch, DummyMatrix, Type>(ptf)
+{}
+
+
+template<class Type>
+pointPatchField<Type>::pointPatchField
+(
 	const pointPatchField<Type>& ptf,
 	const DimensionedField<Type, pointMesh>& iF
 )

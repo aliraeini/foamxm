@@ -112,6 +112,8 @@ public:
 
         // Member operators
 
+        inline void operator=(const meshOctreeCubeBasic&);
+
         // Friend operators
 
         friend inline Ostream& operator<<

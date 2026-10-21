@@ -47,7 +47,6 @@ SourceFiles
 
 #include <unordered_map>
 #include <functional>
-#include <memory>
 using deleter_t = std::function<void(void *)>;
 using unique_void_ptr = std::unique_ptr<void, deleter_t>;
 template<typename T>  auto deleter_silent (void const * data) -> void {  T const* p = static_cast<T const*>(data);   if(p) delete p; }

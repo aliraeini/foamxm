@@ -123,6 +123,7 @@ public:
 
 	// Member operators
 
+		inline void operator=(const septernion&);
 		inline void operator*=(const septernion&);
 
 		inline void operator=(const vector&);

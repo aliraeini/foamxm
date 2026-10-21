@@ -368,6 +368,7 @@ void Foam::mapDistribute::distribute
 	{
 		FatalErrorInFunction
 			<< "Unknown communication schedule "
+			<< Pstream::commsTypeNames[commsType]
 			<< abort(FatalError);
 	}
 }

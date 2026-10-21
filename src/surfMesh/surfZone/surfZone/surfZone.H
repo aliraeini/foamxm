@@ -102,6 +102,9 @@ public:
 			const label index
 		);
 
+		//- Construct as copy
+		surfZone(const surfZone&);
+
 		//- Construct from another zone, resetting the index
 		surfZone(const surfZone&, const label index);
 

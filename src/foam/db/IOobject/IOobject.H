@@ -441,6 +441,11 @@ public:
 				return *this;
 			}
 
+
+	// Member operators
+
+		IOobject(const IOobject&) = default;
+		void operator=(const IOobject&);
 };
 
 

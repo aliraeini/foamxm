@@ -88,6 +88,15 @@ Foam::surfacePatch::surfacePatch
 {}
 
 
+// Construct as copy
+Foam::surfacePatch::surfacePatch(const Foam::surfacePatch& sp)
+:
+	geometricSurfacePatch(sp),
+	size_(sp.size()),
+	start_(sp.start())
+{}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void Foam::surfacePatch::write(Ostream& os) const

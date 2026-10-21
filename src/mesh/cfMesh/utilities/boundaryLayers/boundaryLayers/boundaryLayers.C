@@ -242,8 +242,8 @@ void boundaryLayers::findPatchesToBeTreatedTogether()
             //- 2. number of face nodes
             //- 3. faces nodes and vertex coordinates
             LongList<labelledPoint>& dps = exchangePoints[neiProc];
-            dps.append(labelledPoint(globalEdgeLabel[beI], point::zero));
-            dps.append(labelledPoint(f.size(), point::zero));
+            dps.append(labelledPoint(globalEdgeLabel[beI], point()));
+            dps.append(labelledPoint(f.size(), point()));
             forAll(f, pI)
             {
                 dps.append

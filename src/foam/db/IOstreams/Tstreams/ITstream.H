@@ -99,6 +99,20 @@ public:
 			setGood();
 		}
 
+
+		//- Construct as copy
+		ITstream(const ITstream& its)
+		:
+			Istream(ASCII, currentVersion),
+			tokenList(its),
+			name_(its.name_),
+			tokenIndex_(0)
+		{
+			setOpened();
+			setGood();
+		}
+
+
 		//- Destructor
 		virtual ~ITstream()
 		{}

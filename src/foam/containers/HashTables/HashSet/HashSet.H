@@ -91,6 +91,12 @@ public:
 			}
 		}
 
+		//- Construct as copy
+		HashSet(const HashSet<Key, Hash>& hs)
+		:
+			HashTable<nil, Key, Hash>(hs)
+		{}
+
 		//- Construct by transferring the parameter contents
 		explicit HashSet(const Xfer<HashSet<Key, Hash> >& hs)
 		:

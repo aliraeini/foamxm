@@ -87,6 +87,7 @@ public:
 
     // Operators
 
+        void operator=(const patchRefinement&);
         friend Istream& operator>>(Istream&, patchRefinement&);
         friend Ostream& operator<<(Ostream&, const patchRefinement&);
         friend bool operator==(const patchRefinement&, const patchRefinement&);

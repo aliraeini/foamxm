@@ -651,30 +651,14 @@ void Foam::MRFZone::absoluteVelocity(volVectorField& U) const
 		U[cellI] += (rotVel ^ (C[cellI] - origin));
 	}
 
-	// For precision and consistency, normal component of the
-	// absolute velocity must match the mesh flux exactly
-	// HJ, 3/Jul/2020
-
-	const surfaceScalarField& meshVel = meshVelocity();
-	const surfaceScalarField& magSf = mesh_.magSf();
-
 	// Included faces
 	forAll (includedFaces_, patchI)
 	{
-		vectorField n = mesh_.boundary()[patchI].nf();
-
 		forAll (includedFaces_[patchI], i)
 		{
 			label patchFaceI = includedFaces_[patchI][i];
-
-			vector Up =
-				rotVel ^ (C.boundaryField()[patchI][patchFaceI] - origin);
-
-			scalar Un = meshVel.boundaryField()[patchI][patchFaceI]/
-				magSf.boundaryField()[patchI][patchFaceI];
-
 			U.boundaryField()[patchI][patchFaceI] =
-				(Up + n[patchFaceI]*(Un - (n[patchFaceI] & Up)));
+				(rotVel ^ (C.boundaryField()[patchI][patchFaceI] - origin));
 		}
 	}
 

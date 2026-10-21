@@ -96,6 +96,12 @@ class labelledPair
 
     // Member operators
 
+        inline void operator=(const labelledPair& lpp)
+        {
+            pLabel_ = lpp.pLabel_;
+            pair_ = lpp.pair_;
+        }
+
         inline bool operator==
         (
             const labelledPair& lpp

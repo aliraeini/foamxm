@@ -123,6 +123,7 @@ public:
 
 	// Member operators
 
+		inline const complex& operator=(const complex&);
 		inline void operator+=(const complex&);
 		inline void operator-=(const complex&);
 		inline void operator*=(const complex&);

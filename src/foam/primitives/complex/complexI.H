@@ -75,6 +75,13 @@ inline complex complex::conjugate() const
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
+inline const complex& complex::operator=(const complex& c)
+{
+	re = c.re;
+	im = c.im;
+	return *this;
+}
+
 
 inline void complex::operator+=(const complex& c)
 {

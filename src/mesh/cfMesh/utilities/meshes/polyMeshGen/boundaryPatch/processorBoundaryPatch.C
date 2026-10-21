@@ -126,6 +126,16 @@ Istream& processorBoundaryPatch::operator>>(Istream& is)
     return is;
 }
 
+void processorBoundaryPatch::operator=(const processorBoundaryPatch& wp)
+{
+    name_ = wp.name_;
+    type_ = wp.type_;
+    nFaces_ = wp.nFaces_;
+    startFace_ = wp.startFace_;
+    myProcNo_ = wp.myProcNo_;
+    neighbProcNo_ = wp.neighbProcNo_;
+}
+
 bool processorBoundaryPatch::operator!=(const processorBoundaryPatch& wp) const
 {
     if( name_ != wp.name_ )

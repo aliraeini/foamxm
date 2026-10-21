@@ -82,6 +82,9 @@ public:
 			const label index
 		);
 
+		//- Construct as copy
+		boundaryPatch(const boundaryPatch&);
+
 		//- Clone
 		autoPtr<boundaryPatch> clone() const;
 

@@ -73,6 +73,9 @@ public:
 			const DimensionedField<Type, pointMesh>&
 		);
 
+		//- Construct as copy
+		pointPatchField(const pointPatchField<Type>&);
+
 		//- Construct and return a clone
 		virtual autoPtr<pointPatchField<Type> > clone() const
 		{
@@ -139,3 +142,4 @@ public:
 #endif
 
 // ************************************************************************* //
+
