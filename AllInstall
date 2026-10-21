@@ -13,12 +13,15 @@ if [ "$PWD" != "$WM_PROJECT_DIR" ] ; then
     exit 1
 fi
 
-msInst=${msInst:-$1}
-msInst=${msInst:-../..}
-echo "msInst: '${msInst}'"
+MS_INST=${MS_INST:-$1}
+MS_INST=${MS_INST:-../..}
+echo "MS_INST: '${MS_INST}'"
 
-mkdir -p ${msInst}/bin/foamxm
-mkdir -p ${msInst}/lib
+mkdir -p ${MS_INST}/bin/foamxm
+mkdir -p ${MS_INST}/lib
 
-cp  $FOAM_APPBIN/*  ${msInst}/bin/foamxm   || echo "not built"
-cp  $FOAM_LIBBIN/*  ${msInst}/lib/         || echo "not built"
+cp  $FOAM_APPBIN/*  ${MS_INST}/bin/foamxm/   || echo "not built"
+cp  $FOAM_LIBBIN/*  ${MS_INST}/lib/         || echo "not built"
+
+cp -a etc ${MS_INST}/bin/foamxm/
+cp -a bin ${MS_INST}/bin/foamxm/

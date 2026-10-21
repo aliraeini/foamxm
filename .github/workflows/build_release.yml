@@ -1,0 +1,28 @@
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      MS_INST: ./foamxm-${GITHUB_SHA::7}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set env
+        run: echo "MS_INST=foamxm-${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build
+        run: ./AllMake
+      - name: Install
+        run: ./AllInstall
+      - name: Package
+        run: tar -czf $MS_INST $MS_INST-ubuntu-24.04-x64.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            $MS_INST-ubuntu-24.04-x64.tar.gz

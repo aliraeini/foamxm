@@ -22,6 +22,3 @@ set -ex
 src/Allwmake
 applications/Allwmake
 
-mv lib inst
-mv inst/* inst/lib
-mv applications/bin/*  inst/bin
