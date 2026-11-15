@@ -1,6 +1,6 @@
 .SUFFIXES: .C .cxx .cc .cpp
 
-c++WARN     = -Wall -Wextra -Wno-unused-parameter -Wnon-virtual-dtor
+c++WARN     = -Wall -Wextra -Wno-unused-parameter -Wno-overloaded-virtual -Wnon-virtual-dtor
 
 # Suppress some warnings for flex++ and CGAL
 c++LESSWARN = -Wno-old-style-cast -Wno-unused-local-typedefs -Wno-array-bounds

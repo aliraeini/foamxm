@@ -119,7 +119,7 @@ Foam::BlockLduMatrix<Type>& Foam::BlockAMGCycle<Type>::coarseMatrix()
             << abort(FatalError);
     }
 
-    return coarseLevelPtr_->matrix();
+    return coarseLevelPtr_->levelPtr_->matrix();
 }
 
 
